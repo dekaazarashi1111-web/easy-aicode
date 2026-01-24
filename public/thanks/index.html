@@ -1,0 +1,25 @@
+<!doctype html>
+<html lang="ja">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>購入ありがとうございます | {{PRODUCT_NAME}}</title>
+  <link rel="stylesheet" href="/style.css" />
+</head>
+<body>
+  <main class="container page">
+    <h1>購入ありがとうございます</h1>
+    <p>
+      決済が完了しました。次のステップは以下です。
+    </p>
+    <ol>
+      <li>購入時のメールアドレス宛に、受け取り案内（またはダウンロードリンク）を送付します。</li>
+      <li>メールが届かない場合は迷惑メールをご確認の上、<a href="mailto:{{SUPPORT_EMAIL}}">{{SUPPORT_EMAIL}}</a> までご連絡ください。</li>
+    </ol>
+    <p class="note">
+      StripeのリダイレクトURLに <code>?session_id={CHECKOUT_SESSION_ID}</code> を付けると、内部処理（将来の自動化）に利用できます。
+    </p>
+    <p><a class="btn btn-ghost" href="/">トップへ戻る</a></p>
+  </main>
+</body>
+</html>
