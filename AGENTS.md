@@ -41,6 +41,7 @@
 ## 6. Git ポリシー
 - push 禁止（指示があるときのみ）。履歴改変禁止。
 - **各タスク完了時に必ずコミットすること**（1 タスク = 1 コミット）。メッセージは `id: 要約` 形式が望ましい。
+- ユーザーから指示がなくても、タスク完了時は**自動でコミットまで実施**する。
 - 放置運用優先時は `codex-loop.yaml` の `git.auto_commit_dirty` / `git.ignore_run_logs` / `git.assume_unchanged` を有効化し、`run_log.md` / `blockers.md` 等の差分は無視または自動コミットで継続する。
 
 ## 6.1 sudo パスワード
