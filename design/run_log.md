@@ -74,3 +74,12 @@
 - Verify: bash scripts/verify_wsl.sh PASS
 - Commit: -
 - Network: なし
+
+## 2026-01-27T09:09:33Z
+- Task: - / ブログタグ絞り込み
+- Status: DONE
+- Summary: ブログハブにタグ一覧・件数の表示とクリック絞り込みを追加
+- Files changed: output/saas-static-presetA/public/blog/index.html, output/saas-static-presetA/public/style.css, output/saas-static-presetA/public/site.js, output/saas-static-presetA/public/blog/posts.json, scripts/build_blog_index.py, design/STRUCTURE.md, output/saas-static-presetA/README.md
+- Verify: bash scripts/verify_wsl.sh PASS
+- Commit: -
+- Network: なし

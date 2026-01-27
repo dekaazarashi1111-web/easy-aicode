@@ -71,8 +71,8 @@
       ]
     }
   </script>
-        <!-- BLOG_ITEMLIST_JSONLD_START -->
-    <script type="application/ld+json">
+                <!-- BLOG_ITEMLIST_JSONLD_START -->
+        <script type="application/ld+json">
 {
   "@context": "https://schema.org",
   "@type": "ItemList",
@@ -91,8 +91,8 @@
     }
   ]
 }
-    </script>
-    <!-- BLOG_ITEMLIST_JSONLD_END -->
+        </script>
+        <!-- BLOG_ITEMLIST_JSONLD_END -->
   <!-- Google tag (gtag.js) -->
   <script async src="https://www.googletagmanager.com/gtag/js?id=G-QTPYX6S1D6"></script>
   <script>
@@ -135,6 +135,19 @@
           <a class="btn btn--primary" href="/products.html">製品を見る</a>
           <a class="btn btn--ghost" href="/support.html">サポートへ</a>
         </div>
+
+        <div class="tag-filter" data-blog-tags>
+          <!-- TAG_FILTER_START -->
+          <div class="tag-filter__title">タグで絞り込む</div>
+          <div class="tag-filter__list">
+            <button class="tag-filter__btn" type="button" data-tag="all" aria-pressed="true">全て <span class="tag-filter__count">2</span></button>
+            <button class="tag-filter__btn" type="button" data-tag="更新" aria-pressed="false">更新 <span class="tag-filter__count">2</span></button>
+            <button class="tag-filter__btn" type="button" data-tag="運用" aria-pressed="false">運用 <span class="tag-filter__count">2</span></button>
+            <button class="tag-filter__btn" type="button" data-tag="テスト" aria-pressed="false">テスト <span class="tag-filter__count">1</span></button>
+            <button class="tag-filter__btn" type="button" data-tag="テンプレート" aria-pressed="false">テンプレート <span class="tag-filter__count">1</span></button>
+          </div>
+          <!-- TAG_FILTER_END -->
+        </div>
       </div>
 
       <div class="card blog-hero">
@@ -153,7 +166,7 @@
 
       <div class="grid blog-grid" data-blog-list data-posts-url="/blog/posts.json">
         <!-- BLOG_LIST_START -->
-        <article class="card blog-card">
+        <article class="card blog-card" data-tags="運用,テンプレート,更新">
           <a class="blog-card__link" href="/blog/posts/first-update.html">
             <div class="blog-card__media">
               <img class="blog-card__image" src="/blog/assets/blog-hero.svg" alt="はじめての更新のヘッダー画像" loading="lazy" />
@@ -169,7 +182,7 @@
             </div>
           </a>
         </article>
-        <article class="card blog-card">
+        <article class="card blog-card" data-tags="運用,テスト,更新">
           <a class="blog-card__link" href="/blog/posts/test-update.html">
             <div class="blog-card__media">
               <img class="blog-card__image" src="/blog/assets/blog-hero.svg" alt="テスト更新のヘッダー画像" loading="lazy" />

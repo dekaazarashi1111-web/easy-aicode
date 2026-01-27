@@ -41,6 +41,7 @@
 - `tags` を追加すると**関連記事が自動生成**される。
 - タグは後から自由に増減可能。
 - タグは `posts.json` に出力され、関連判定に使われる。
+- ブログハブに**タグ一覧と件数**が自動表示される（クリックで絞り込み）。
 
 ### 2.3 自動生成スクリプト
 `/scripts/build_blog_index.py` を実行すると以下を更新/生成する。
@@ -56,6 +57,8 @@
   - `<!-- BLOG_LIST_START -->` ～ `<!-- BLOG_LIST_END -->`
 - ブログのItemList JSON-LD:
   - `<!-- BLOG_ITEMLIST_JSONLD_START -->` ～ `<!-- BLOG_ITEMLIST_JSONLD_END -->`
+- タグフィルタ:
+  - `<!-- TAG_FILTER_START -->` ～ `<!-- TAG_FILTER_END -->`
 - 記事の関連記事:
   - `<!-- RELATED_POSTS_START -->` ～ `<!-- RELATED_POSTS_END -->`
 

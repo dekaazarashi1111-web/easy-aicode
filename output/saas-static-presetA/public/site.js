@@ -108,6 +108,9 @@ const formatDate = (value) => {
 const createBlogCard = (post) => {
   const article = document.createElement("article");
   article.className = "card blog-card";
+  if (Array.isArray(post.tags)) {
+    article.dataset.tags = post.tags.join(",");
+  }
 
   const link = document.createElement("a");
   link.className = "blog-card__link";
@@ -163,6 +166,59 @@ const createBlogCard = (post) => {
   return article;
 };
 
+const normalizeTag = (value) => value.trim().toLowerCase();
+
+const applyTagFilter = (tag) => {
+  const blogList = document.querySelector("[data-blog-list]");
+  if (!blogList) return;
+
+  const cards = blogList.querySelectorAll(".blog-card");
+  if (cards.length === 0) return;
+  const emptyState = document.querySelector("[data-blog-empty]");
+  let matches = 0;
+
+  cards.forEach((card) => {
+    const raw = card.dataset.tags || "";
+    const tags = raw.split(",").map(normalizeTag).filter(Boolean);
+    const isMatch = tag === "all" || tags.includes(normalizeTag(tag));
+    card.style.display = isMatch ? "" : "none";
+    if (isMatch) matches += 1;
+  });
+
+  if (emptyState) {
+    if (matches === 0) {
+      emptyState.textContent = "該当する記事がありません。";
+      emptyState.hidden = false;
+    } else {
+      emptyState.hidden = true;
+    }
+  }
+};
+
+const initTagFilters = () => {
+  const container = document.querySelector("[data-blog-tags]");
+  if (!container) return;
+
+  const buttons = Array.from(container.querySelectorAll("[data-tag]"));
+  if (buttons.length === 0) return;
+
+  const setActive = (activeTag) => {
+    buttons.forEach((button) => {
+      const isActive = button.dataset.tag === activeTag;
+      button.setAttribute("aria-pressed", String(isActive));
+    });
+    applyTagFilter(activeTag);
+  };
+
+  buttons.forEach((button) => {
+    button.addEventListener("click", () => {
+      setActive(button.dataset.tag || "all");
+    });
+  });
+
+  setActive("all");
+};
+
 const initBlogList = () => {
   const blogList = document.querySelector("[data-blog-list]");
   if (!blogList) return;
@@ -190,18 +246,22 @@ const initBlogList = () => {
         showEmpty("現在、公開中の記事はありません。");
         return;
       }
-      blogList.innerHTML = "";
-      posts.forEach((post) => {
-        if (post && post.url) {
-          blogList.appendChild(createBlogCard(post));
-        }
-      });
+      if (!blogList.querySelector(".blog-card")) {
+        blogList.innerHTML = "";
+        posts.forEach((post) => {
+          if (post && post.url) {
+            blogList.appendChild(createBlogCard(post));
+          }
+        });
+      }
       if (!blogList.children.length) {
         showEmpty("現在、公開中の記事はありません。");
       }
+      initTagFilters();
     })
     .catch(() => {
       showEmpty("記事一覧を読み込めませんでした。");
+      initTagFilters();
     });
 };
 

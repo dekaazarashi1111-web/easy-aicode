@@ -23,6 +23,8 @@ BLOG_LIST_START = "<!-- BLOG_LIST_START -->"
 BLOG_LIST_END = "<!-- BLOG_LIST_END -->"
 BLOG_ITEMLIST_START = "<!-- BLOG_ITEMLIST_JSONLD_START -->"
 BLOG_ITEMLIST_END = "<!-- BLOG_ITEMLIST_JSONLD_END -->"
+TAG_FILTER_START = "<!-- TAG_FILTER_START -->"
+TAG_FILTER_END = "<!-- TAG_FILTER_END -->"
 
 META_RE = re.compile(
     r"<script[^>]*id=['\"]post-meta['\"][^>]*>(.*?)</script>",
@@ -96,9 +98,11 @@ def render_blog_cards(posts, indent: str) -> str:
         date = escape(post.get("date") or "")
         alt = escape(f"{post.get('title') or '記事'}のヘッダー画像")
 
+        tags = ",".join(post.get("tags", []))
+        data_tags = escape(tags)
         lines.extend(
             [
-                f"{indent}<article class=\"card blog-card\">",
+                f"{indent}<article class=\"card blog-card\" data-tags=\"{data_tags}\">",
                 f"{indent}  <a class=\"blog-card__link\" href=\"{url}\">",
                 f"{indent}    <div class=\"blog-card__media\">",
                 f"{indent}      <img class=\"blog-card__image\" src=\"{cover}\" alt=\"{alt}\" loading=\"lazy\" />",
@@ -121,6 +125,36 @@ def render_blog_cards(posts, indent: str) -> str:
                 f"{indent}</article>",
             ]
         )
+    return "\n".join(lines)
+
+
+def render_tag_filter(posts, indent: str) -> str:
+    counts = {}
+    for post in posts:
+        for tag in post.get("tags", []):
+            key = tag.strip()
+            if not key:
+                continue
+            counts[key] = counts.get(key, 0) + 1
+
+    sorted_tags = sorted(counts.items(), key=lambda item: (-item[1], item[0]))
+
+    lines = [
+        f"{indent}<div class=\"tag-filter__title\">タグで絞り込む</div>",
+        f"{indent}<div class=\"tag-filter__list\">",
+    ]
+    total = len(posts)
+    lines.append(
+        f"{indent}  <button class=\"tag-filter__btn\" type=\"button\" data-tag=\"all\" aria-pressed=\"true\">"
+        f"全て <span class=\"tag-filter__count\">{total}</span></button>"
+    )
+    for tag, count in sorted_tags:
+        safe_tag = escape(tag)
+        lines.append(
+            f"{indent}  <button class=\"tag-filter__btn\" type=\"button\" data-tag=\"{safe_tag}\" aria-pressed=\"false\">"
+            f"{safe_tag} <span class=\"tag-filter__count\">{count}</span></button>"
+        )
+    lines.append(f"{indent}</div>")
     return "\n".join(lines)
 
 
@@ -186,6 +220,8 @@ def update_blog_index(posts):
     list_indent = list_marker_match.group(1) if list_marker_match else ""
     item_marker_match = re.search(r"(^[ \t]*)" + re.escape(BLOG_ITEMLIST_START), content, re.M)
     item_indent = item_marker_match.group(1) if item_marker_match else ""
+    tag_marker_match = re.search(r"(^[ \t]*)" + re.escape(TAG_FILTER_START), content, re.M)
+    tag_indent = tag_marker_match.group(1) if tag_marker_match else ""
 
     if BLOG_LIST_START in content and BLOG_LIST_END in content:
         cards = render_blog_cards(posts, list_indent)
@@ -231,6 +267,14 @@ def update_blog_index(posts):
         content = before_items + script_block + after_items
     else:
         print("blog itemlist markers not found in blog/index.html", file=sys.stderr)
+
+    if TAG_FILTER_START in content and TAG_FILTER_END in content:
+        filter_block = render_tag_filter(posts, tag_indent)
+        before_tags, rest_tags = content.split(TAG_FILTER_START, 1)
+        _, after_tags = rest_tags.split(TAG_FILTER_END, 1)
+        content = before_tags + f"{TAG_FILTER_START}\n{filter_block}\n{tag_indent}{TAG_FILTER_END}" + after_tags
+    else:
+        print("tag filter markers not found in blog/index.html", file=sys.stderr)
 
     BLOG_INDEX.write_text(content, encoding="utf-8")
 
