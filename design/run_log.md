@@ -56,3 +56,12 @@
 - Verify: bash scripts/verify_wsl.sh PASS
 - Commit: -
 - Network: なし
+
+## 2026-01-27T08:48:31Z
+- Task: - / GA4タグ埋め込み
+- Status: DONE
+- Summary: GA4測定ID G-QTPYX6S1D6 を全ページに追加
+- Files changed: output/saas-static-presetA/public/**/*.html
+- Verify: bash scripts/verify_wsl.sh PASS
+- Commit: -
+- Network: なし

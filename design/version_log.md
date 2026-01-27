@@ -67,3 +67,11 @@
   - BreadcrumbとブログItemListの構造化データを追加
   - 301リダイレクトとsitemap/robots/feedを更新
 - Verify: bash scripts/verify_wsl.sh PASS
+
+## 2026-01-27T08:48:31Z
+- Version: -
+- Commit: -
+- Task: - / GA4タグ埋め込み
+- Summary:
+  - GA4 gtag.js スニペットを全ページのheadへ追加
+- Verify: bash scripts/verify_wsl.sh PASS
