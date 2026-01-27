@@ -93,3 +93,11 @@
   - ブログハブにタグ一覧と件数を自動生成
   - タグクリックで記事を絞り込むJSを追加
 - Verify: bash scripts/verify_wsl.sh PASS
+
+## 2026-01-27T09:14:35Z
+- Version: -
+- Commit: -
+- Task: - / 関連記事補完ロジック更新
+- Summary:
+  - タグ一致が少ない場合に最新記事で補完するロジックへ更新
+- Verify: bash scripts/verify_wsl.sh PASS

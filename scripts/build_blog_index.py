@@ -186,6 +186,23 @@ def render_related_cards(base_post, posts, indent: str) -> str:
 
     related_posts = [item[1] for item in candidates][:3]
 
+    if len(related_posts) < 3:
+        seen = {post["url"] for post in related_posts}
+        seen.add(base_post["url"])
+        remaining = []
+        for post in posts:
+            if post["url"] in seen:
+                continue
+            remaining.append(post)
+        remaining.sort(
+            key=lambda item: parse_date(item.get("date") or "") or datetime.date.min,
+            reverse=True,
+        )
+        for post in remaining:
+            related_posts.append(post)
+            if len(related_posts) >= 3:
+                break
+
     if not related_posts:
         related_posts = [
             {

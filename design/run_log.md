@@ -83,3 +83,12 @@
 - Verify: bash scripts/verify_wsl.sh PASS
 - Commit: -
 - Network: なし
+
+## 2026-01-27T09:14:35Z
+- Task: - / 関連記事補完ロジック更新
+- Status: DONE
+- Summary: タグ一致が足りない場合に最新記事で関連記事を補完
+- Files changed: scripts/build_blog_index.py, output/saas-static-presetA/public/blog/posts/*.html, design/STRUCTURE.md
+- Verify: bash scripts/verify_wsl.sh PASS
+- Commit: -
+- Network: なし
