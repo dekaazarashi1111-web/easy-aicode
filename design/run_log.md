@@ -65,3 +65,12 @@
 - Verify: bash scripts/verify_wsl.sh PASS
 - Commit: -
 - Network: なし
+
+## 2026-01-27T09:04:32Z
+- Task: - / ブログタグ・関連記事土台
+- Status: DONE
+- Summary: ブログタグと関連記事の自動生成基盤を追加し、構造メモを作成
+- Files changed: output/saas-static-presetA/public/blog/posts/*.html, output/saas-static-presetA/public/style.css, output/saas-static-presetA/public/blog/posts.json, scripts/build_blog_index.py, output/saas-static-presetA/README.md, design/STRUCTURE.md
+- Verify: bash scripts/verify_wsl.sh PASS
+- Commit: -
+- Network: なし

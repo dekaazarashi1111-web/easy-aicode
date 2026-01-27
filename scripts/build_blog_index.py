@@ -28,6 +28,8 @@ META_RE = re.compile(
     r"<script[^>]*id=['\"]post-meta['\"][^>]*>(.*?)</script>",
     re.IGNORECASE | re.DOTALL,
 )
+RELATED_START = "<!-- RELATED_POSTS_START -->"
+RELATED_END = "<!-- RELATED_POSTS_END -->"
 
 STATIC_PAGES = [
     {"path": "/", "file": PUBLIC_DIR / "index.html", "priority": "1.0", "indexable": True},
@@ -72,6 +74,15 @@ def load_meta(path: Path):
 
     meta = dict(meta)
     meta["url"] = f"/blog/posts/{path.name}"
+    meta["path"] = path
+    tags = meta.get("tags", [])
+    if isinstance(tags, str):
+        tags = [t.strip() for t in tags.split(",") if t.strip()]
+    elif isinstance(tags, list):
+        tags = [str(t).strip() for t in tags if str(t).strip()]
+    else:
+        tags = []
+    meta["tags"] = tags
     return meta, None
 
 
@@ -110,6 +121,58 @@ def render_blog_cards(posts, indent: str) -> str:
                 f"{indent}</article>",
             ]
         )
+    return "\n".join(lines)
+
+
+def normalize_tags(tags):
+    return {tag.strip().lower() for tag in tags if tag.strip()}
+
+
+def render_related_cards(base_post, posts, indent: str) -> str:
+    base_tags = normalize_tags(base_post.get("tags", []))
+    candidates = []
+    for post in posts:
+        if post["url"] == base_post["url"]:
+            continue
+        shared = base_tags & normalize_tags(post.get("tags", []))
+        score = len(shared)
+        if score == 0:
+            continue
+        candidates.append((score, post))
+
+    candidates.sort(
+        key=lambda item: (
+            -item[0],
+            -(
+                parse_date(item[1].get("date") or "")
+                or datetime.date.min
+            ).toordinal(),
+        )
+    )
+
+    related_posts = [item[1] for item in candidates][:3]
+
+    if not related_posts:
+        related_posts = [
+            {
+                "title": "ブログ一覧を見る",
+                "description": "最新の記事を一覧で確認できます。",
+                "url": "/blog/",
+            }
+        ]
+
+    lines = []
+    for post in related_posts:
+        title = escape(post.get("title") or "Untitled")
+        desc = escape(post.get("description") or "")
+        url = escape(post.get("url") or "/blog/")
+        lines.append(f"{indent}<a class=\"card card--interactive\" href=\"{url}\">")
+        lines.append(f"{indent}  <h3 class=\"card__title\">{title}</h3>")
+        if desc:
+            lines.append(f"{indent}  <p class=\"card__body\">{desc}</p>")
+        if post.get("date"):
+            lines.append(f"{indent}  <p class=\"muted\">{post.get('date')}</p>")
+        lines.append(f"{indent}</a>")
     return "\n".join(lines)
 
 
@@ -170,6 +233,24 @@ def update_blog_index(posts):
         print("blog itemlist markers not found in blog/index.html", file=sys.stderr)
 
     BLOG_INDEX.write_text(content, encoding="utf-8")
+
+
+def update_related_posts(posts):
+    for post in posts:
+        path = post.get("path")
+        if not path or not Path(path).exists():
+            continue
+        content = Path(path).read_text(encoding="utf-8")
+        if RELATED_START not in content or RELATED_END not in content:
+            print(f"related markers not found in {Path(path).name}", file=sys.stderr)
+            continue
+        marker_match = re.search(r"(^[ \t]*)" + re.escape(RELATED_START), content, re.M)
+        indent = marker_match.group(1) if marker_match else ""
+        cards = render_related_cards(post, posts, indent)
+        before, rest = content.split(RELATED_START, 1)
+        _, after = rest.split(RELATED_END, 1)
+        updated = before + f"{RELATED_START}\n{cards}\n{indent}{RELATED_END}" + after
+        Path(path).write_text(updated, encoding="utf-8")
 
 
 def build_feed(posts):
@@ -295,12 +376,19 @@ def main():
         reverse=True,
     )
 
+    json_posts = []
+    for post in posts:
+        clean = dict(post)
+        clean.pop("path", None)
+        json_posts.append(clean)
+
     POSTS_JSON.write_text(
-        json.dumps(posts, ensure_ascii=False, indent=2) + "\n",
+        json.dumps(json_posts, ensure_ascii=False, indent=2) + "\n",
         encoding="utf-8",
     )
 
     update_blog_index(posts)
+    update_related_posts(posts)
     build_feed(posts)
     build_sitemap(posts)
     build_robots()

@@ -4,6 +4,11 @@
     "description": "ブログの使い方と更新方針を紹介します。",
     "date": "2026-01-27",
     "cover": "/blog/assets/blog-hero.svg",
+    "tags": [
+      "運用",
+      "テンプレート",
+      "更新"
+    ],
     "url": "/blog/posts/first-update.html"
   },
   {
@@ -11,6 +16,11 @@
     "description": "Cloudflare Pages 確認用のテスト記事です。",
     "date": "2026-01-27",
     "cover": "/blog/assets/blog-hero.svg",
+    "tags": [
+      "運用",
+      "テスト",
+      "更新"
+    ],
     "url": "/blog/posts/test-update.html"
   }
 ]

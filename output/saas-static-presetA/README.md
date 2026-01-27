@@ -10,6 +10,7 @@
 ## ブログ
 - ブログ一覧は `public/blog/index.html` です。
 - 記事は `public/blog/posts/` に HTML を追加します。
+- 記事の `post-meta` に `tags` を追加すると、関連記事が自動で更新されます。
 - 記事一覧の反映には `scripts/build_blog_index.py` を実行します。
 - `scripts/build_blog_index.py` は以下も生成します:
   - `public/blog/posts.json`

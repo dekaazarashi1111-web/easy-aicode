@@ -75,3 +75,12 @@
 - Summary:
   - GA4 gtag.js スニペットを全ページのheadへ追加
 - Verify: bash scripts/verify_wsl.sh PASS
+
+## 2026-01-27T09:04:32Z
+- Version: -
+- Commit: -
+- Task: - / ブログタグ・関連記事土台
+- Summary:
+  - 記事タグと関連記事自動更新の仕組みを追加
+  - 構造ルールを design/STRUCTURE.md に集約
+- Verify: bash scripts/verify_wsl.sh PASS
