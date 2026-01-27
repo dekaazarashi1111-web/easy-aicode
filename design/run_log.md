@@ -47,3 +47,12 @@
 - Verify: bash scripts/verify_wsl.sh PASS
 - Commit: -
 - Network: なし
+
+## 2026-01-27T08:16:47Z
+- Task: - / SEO総仕上げ
+- Status: DONE
+- Summary: OGP画像PNG・リダイレクト・Breadcrumb/ItemListを追加し、URL/メタを最終調整
+- Files changed: output/saas-static-presetA/public/**/*.html, output/saas-static-presetA/public/assets/og-default.png, output/saas-static-presetA/public/assets/logo.png, output/saas-static-presetA/public/favicon.png, output/saas-static-presetA/public/_redirects, output/saas-static-presetA/public/sitemap.xml, output/saas-static-presetA/public/robots.txt, output/saas-static-presetA/public/blog/feed.xml, scripts/build_blog_index.py, output/saas-static-presetA/README.md
+- Verify: bash scripts/verify_wsl.sh PASS
+- Commit: -
+- Network: なし

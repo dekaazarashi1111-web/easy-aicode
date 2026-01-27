@@ -6,6 +6,9 @@
   <title>Winter Gator | 製品</title>
   <meta name="description" content="Winter Gator の製品一覧と購入案内です。" />
   <link rel="canonical" href="https://wintergator.com/products.html" />
+  <link rel="alternate" hreflang="ja" href="https://wintergator.com/products.html" />
+  <link rel="icon" href="/favicon.png" />
+  <link rel="apple-touch-icon" href="/assets/logo.png" />
   <meta name="robots" content="index,follow,max-image-preview:large" />
   <meta name="author" content="Winter Gator" />
   <meta name="theme-color" content="#6366f1" />
@@ -15,14 +18,19 @@
   <meta property="og:type" content="website" />
   <meta property="og:url" content="https://wintergator.com/products.html" />
   <meta property="og:locale" content="ja_JP" />
-  <meta property="og:image" content="https://wintergator.com/blog/assets/blog-hero.svg" />
-  <meta property="og:image:alt" content="Winter Gator のヘッダー画像" />
+  <meta property="og:image" content="https://wintergator.com/assets/og-default.png" />
+  <meta property="og:image:secure_url" content="https://wintergator.com/assets/og-default.png" />
+  <meta property="og:image:alt" content="Winter Gator | 製品 のOG画像" />
   <meta property="og:image:width" content="1200" />
-  <meta property="og:image:height" content="800" />
+  <meta property="og:image:height" content="630" />
   <meta name="twitter:card" content="summary_large_image" />
+  <meta name="twitter:site" content="@REPLACE_ME_TWITTER" />
+  <meta name="twitter:creator" content="@REPLACE_ME_TWITTER" />
   <meta name="twitter:title" content="Winter Gator | 製品" />
   <meta name="twitter:description" content="Winter Gator の製品一覧と購入案内です。" />
-  <meta name="twitter:image" content="https://wintergator.com/blog/assets/blog-hero.svg" />
+  <meta name="twitter:image" content="https://wintergator.com/assets/og-default.png" />
+  <meta name="twitter:image:alt" content="Winter Gator | 製品 のOG画像" />
+  <meta name="twitter:url" content="https://wintergator.com/products.html" />
   <link rel="stylesheet" href="/style.css" />
   <script src="/site.js" defer></script>
   <script type="application/ld+json">
@@ -32,19 +40,46 @@
       "name": "CODEX COMPANION",
       "description": "販売導線と最低限の情報を整えた静的テンプレート。",
       "image": [
-        "https://wintergator.com/blog/assets/blog-hero.svg"
+        "https://wintergator.com/assets/og-default.png"
       ],
       "brand": {
         "@type": "Organization",
-        "name": "Winter Gator"
+        "name": "Winter Gator",
+        "url": "https://wintergator.com/",
+        "logo": "https://wintergator.com/assets/logo.png"
       },
       "offers": {
         "@type": "Offer",
         "url": "https://wintergator.com/products.html#pricing",
         "priceCurrency": "JPY",
         "price": "9800",
-        "availability": "https://schema.org/OutOfStock"
+        "availability": "https://schema.org/OutOfStock",
+        "seller": {
+          "@type": "Organization",
+          "name": "Winter Gator",
+          "url": "https://wintergator.com/"
+        }
       }
+    }
+  </script>
+  <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "BreadcrumbList",
+      "itemListElement": [
+        {
+          "@type": "ListItem",
+          "position": 1,
+          "name": "ホーム",
+          "item": "https://wintergator.com/"
+        },
+        {
+          "@type": "ListItem",
+          "position": 2,
+          "name": "製品",
+          "item": "https://wintergator.com/products.html"
+        }
+      ]
     }
   </script>
 </head>
@@ -53,7 +88,7 @@
 
 <nav class="nav">
   <div class="container nav__inner">
-    <a class="nav__brand" href="/index.html">Winter Gator</a>
+    <a class="nav__brand" href="/">Winter Gator</a>
 
     <div class="nav__links">
       <a class="nav__link" aria-current="page" href="/products.html">製品</a>

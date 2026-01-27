@@ -21,23 +21,25 @@ ROBOTS_FILE = PUBLIC_DIR / "robots.txt"
 SITE_URL = os.environ.get("SITE_URL", "https://wintergator.com").rstrip("/")
 BLOG_LIST_START = "<!-- BLOG_LIST_START -->"
 BLOG_LIST_END = "<!-- BLOG_LIST_END -->"
+BLOG_ITEMLIST_START = "<!-- BLOG_ITEMLIST_JSONLD_START -->"
+BLOG_ITEMLIST_END = "<!-- BLOG_ITEMLIST_JSONLD_END -->"
 
 META_RE = re.compile(
     r"<script[^>]*id=['\"]post-meta['\"][^>]*>(.*?)</script>",
     re.IGNORECASE | re.DOTALL,
 )
 
-STATIC_PAGES = {
-    "/index.html": PUBLIC_DIR / "index.html",
-    "/products.html": PUBLIC_DIR / "products.html",
-    "/support.html": PUBLIC_DIR / "support.html",
-    "/terms.html": PUBLIC_DIR / "terms.html",
-    "/privacy.html": PUBLIC_DIR / "privacy.html",
-    "/refund.html": PUBLIC_DIR / "refund.html",
-    "/thanks.html": PUBLIC_DIR / "thanks.html",
-    "/blog/": PUBLIC_DIR / "blog/index.html",
-    "/tokusho": PUBLIC_DIR / "tokusho/index.html",
-}
+STATIC_PAGES = [
+    {"path": "/", "file": PUBLIC_DIR / "index.html", "priority": "1.0", "indexable": True},
+    {"path": "/products.html", "file": PUBLIC_DIR / "products.html", "priority": "0.8", "indexable": True},
+    {"path": "/support.html", "file": PUBLIC_DIR / "support.html", "priority": "0.6", "indexable": True},
+    {"path": "/terms.html", "file": PUBLIC_DIR / "terms.html", "priority": "0.4", "indexable": True},
+    {"path": "/privacy.html", "file": PUBLIC_DIR / "privacy.html", "priority": "0.4", "indexable": True},
+    {"path": "/refund.html", "file": PUBLIC_DIR / "refund.html", "priority": "0.4", "indexable": True},
+    {"path": "/thanks.html", "file": PUBLIC_DIR / "thanks.html", "priority": "0.1", "indexable": False},
+    {"path": "/blog/", "file": PUBLIC_DIR / "blog/index.html", "priority": "0.7", "indexable": True},
+    {"path": "/tokusho", "file": PUBLIC_DIR / "tokusho/index.html", "priority": "0.4", "indexable": True},
+]
 
 
 def parse_date(value: str):
@@ -117,19 +119,57 @@ def update_blog_index(posts):
         return
 
     content = BLOG_INDEX.read_text(encoding="utf-8")
-    if BLOG_LIST_START not in content or BLOG_LIST_END not in content:
+    list_marker_match = re.search(r"(^[ \t]*)" + re.escape(BLOG_LIST_START), content, re.M)
+    list_indent = list_marker_match.group(1) if list_marker_match else ""
+    item_marker_match = re.search(r"(^[ \t]*)" + re.escape(BLOG_ITEMLIST_START), content, re.M)
+    item_indent = item_marker_match.group(1) if item_marker_match else ""
+
+    if BLOG_LIST_START in content and BLOG_LIST_END in content:
+        cards = render_blog_cards(posts, list_indent)
+        before, rest = content.split(BLOG_LIST_START, 1)
+        _, after = rest.split(BLOG_LIST_END, 1)
+        content = before + f"{BLOG_LIST_START}\n{cards}\n{list_indent}{BLOG_LIST_END}" + after
+    else:
         print("blog list markers not found in blog/index.html", file=sys.stderr)
-        return
 
-    marker_match = re.search(r"(^[ \t]*)" + re.escape(BLOG_LIST_START), content, re.M)
-    indent = marker_match.group(1) if marker_match else ""
-    cards = render_blog_cards(posts, indent)
+    if BLOG_ITEMLIST_START in content and BLOG_ITEMLIST_END in content:
+        item_entries = []
+        for idx, post in enumerate(posts, start=1):
+            url = to_absolute(post.get("url") or "/blog/")
+            name = post.get("title") or "Untitled"
+            item_entries.append(
+                {
+                    "@type": "ListItem",
+                    "position": idx,
+                    "name": name,
+                    "url": url,
+                }
+            )
 
-    before, rest = content.split(BLOG_LIST_START, 1)
-    _, after = rest.split(BLOG_LIST_END, 1)
+        itemlist = {
+            "@context": "https://schema.org",
+            "@type": "ItemList",
+            "itemListElement": item_entries,
+        }
 
-    new_block = f"{BLOG_LIST_START}\n{cards}\n{indent}{BLOG_LIST_END}"
-    BLOG_INDEX.write_text(before + new_block + after, encoding="utf-8")
+        itemlist_json = json.dumps(itemlist, ensure_ascii=False, indent=2)
+        script_block = "\n".join(
+            [
+                f"{item_indent}{BLOG_ITEMLIST_START}",
+                f"{item_indent}<script type=\"application/ld+json\">",
+                itemlist_json,
+                f"{item_indent}</script>",
+                f"{item_indent}{BLOG_ITEMLIST_END}",
+            ]
+        )
+
+        before_items, rest_items = content.split(BLOG_ITEMLIST_START, 1)
+        _, after_items = rest_items.split(BLOG_ITEMLIST_END, 1)
+        content = before_items + script_block + after_items
+    else:
+        print("blog itemlist markers not found in blog/index.html", file=sys.stderr)
+
+    BLOG_INDEX.write_text(content, encoding="utf-8")
 
 
 def build_feed(posts):
@@ -178,16 +218,19 @@ def build_feed(posts):
 def build_sitemap(posts):
     urls = []
 
-    for url_path, file_path in STATIC_PAGES.items():
+    for page in STATIC_PAGES:
+        if not page["indexable"]:
+            continue
+        file_path = page["file"]
         lastmod = None
         if file_path.exists():
             lastmod = datetime.date.fromtimestamp(file_path.stat().st_mtime)
         urls.append(
             {
-                "loc": to_absolute(url_path),
+                "loc": to_absolute(page["path"]),
                 "lastmod": lastmod.isoformat() if lastmod else None,
                 "changefreq": "weekly",
-                "priority": "0.7",
+                "priority": page["priority"],
             }
         )
 

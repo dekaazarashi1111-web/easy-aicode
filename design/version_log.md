@@ -57,3 +57,13 @@
   - 本番ドメインの絶対URLをcanonical/OG/Twitter/RSSに反映
   - sitemap/robots/feedを本番ドメインで再生成
 - Verify: bash scripts/verify_wsl.sh PASS
+
+## 2026-01-27T08:16:47Z
+- Version: -
+- Commit: -
+- Task: - / SEO総仕上げ
+- Summary:
+  - OGP/ロゴ/ファビコンPNGを追加しメタ情報を最適化
+  - BreadcrumbとブログItemListの構造化データを追加
+  - 301リダイレクトとsitemap/robots/feedを更新
+- Verify: bash scripts/verify_wsl.sh PASS
