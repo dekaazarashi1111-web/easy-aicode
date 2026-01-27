@@ -38,3 +38,12 @@
 - Verify: bash scripts/verify_wsl.sh PASS
 - Commit: -
 - Network: なし
+
+## 2026-01-27T08:01:36Z
+- Task: - / SEO絶対URL化
+- Status: DONE
+- Summary: 本番ドメインに合わせてcanonical/OG/Twitter/RSSのURLを絶対化
+- Files changed: output/saas-static-presetA/public/**/*.html, output/saas-static-presetA/public/blog/feed.xml, output/saas-static-presetA/public/sitemap.xml, output/saas-static-presetA/public/robots.txt
+- Verify: bash scripts/verify_wsl.sh PASS
+- Commit: -
+- Network: なし

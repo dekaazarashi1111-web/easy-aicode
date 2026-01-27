@@ -48,3 +48,12 @@
   - Blog/FAQ/Product/各種WebPageの構造化データを追加
   - sitemap/robots/RSS生成とブログ一覧の静的出力を追加
 - Verify: bash scripts/verify_wsl.sh PASS
+
+## 2026-01-27T08:01:36Z
+- Version: -
+- Commit: -
+- Task: - / SEO絶対URL化
+- Summary:
+  - 本番ドメインの絶対URLをcanonical/OG/Twitter/RSSに反映
+  - sitemap/robots/feedを本番ドメインで再生成
+- Verify: bash scripts/verify_wsl.sh PASS
