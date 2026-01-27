@@ -11,3 +11,12 @@
 - Verify: bash scripts/verify_wsl.sh PASS
 - Commit: -
 - Network: なし
+
+## 2026-01-27T07:32:29Z
+- Task: - / テスト用ブログ記事追加
+- Status: DONE
+- Summary: Cloudflare Pages 確認用のテスト記事を追加し、記事一覧を更新
+- Files changed: output/saas-static-presetA/public/blog/posts/test-update.html, output/saas-static-presetA/public/blog/posts.json
+- Verify: bash scripts/verify_wsl.sh PASS
+- Commit: -
+- Network: なし

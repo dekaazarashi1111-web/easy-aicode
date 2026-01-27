@@ -20,3 +20,12 @@
   - 記事メタデータをJSON化するスクリプトと初回記事を追加
   - ナビ/フッターにブログ導線を追加、CSS/JSを拡張
 - Verify: bash scripts/verify_wsl.sh PASS
+
+## 2026-01-27T07:32:29Z
+- Version: -
+- Commit: -
+- Task: - / テスト用ブログ記事追加
+- Summary:
+  - テスト用ブログ記事を1本追加
+  - 記事一覧JSONを再生成
+- Verify: bash scripts/verify_wsl.sh PASS

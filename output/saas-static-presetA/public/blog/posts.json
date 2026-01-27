@@ -5,5 +5,12 @@
     "date": "2026-01-27",
     "cover": "/blog/assets/blog-hero.svg",
     "url": "/blog/posts/first-update.html"
+  },
+  {
+    "title": "テスト更新",
+    "description": "Cloudflare Pages 確認用のテスト記事です。",
+    "date": "2026-01-27",
+    "cover": "/blog/assets/blog-hero.svg",
+    "url": "/blog/posts/test-update.html"
   }
 ]
