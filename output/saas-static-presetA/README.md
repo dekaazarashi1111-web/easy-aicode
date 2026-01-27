@@ -7,6 +7,11 @@
 ## Stripe リンク設定
 `public/site.js` の `STRIPE_URL` を実際の Stripe Payment Link に置き換えるだけで反映されます。
 
+## ブログ
+- ブログ一覧は `public/blog/index.html` です。
+- 記事は `public/blog/posts/` に HTML を追加します。
+- 記事一覧の反映には `scripts/build_blog_index.py` を実行します。
+
 ## デプロイ
 Git に push するだけでデプロイ可能です（ビルド手順なし）。
 
@@ -18,3 +23,4 @@ Pages:
 - terms.html
 - privacy.html
 - refund.html
+- blog/index.html

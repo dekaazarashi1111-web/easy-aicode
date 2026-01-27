@@ -3,8 +3,8 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Winter Gator | 返金ポリシー</title>
-  <meta name="description" content="Winter Gator の返金ポリシー（簡易版）です。" />
+  <title>Winter Gator | ブログ</title>
+  <meta name="description" content="Winter Gator のブログ。更新情報や運用のコツをまとめます。" />
   <link rel="stylesheet" href="/style.css" />
   <script src="/site.js" defer></script>
 </head>
@@ -17,7 +17,7 @@
 
     <div class="nav__links">
       <a class="nav__link" href="/products.html">製品</a>
-      <a class="nav__link" href="/blog/">ブログ</a>
+      <a class="nav__link" aria-current="page" href="/blog/">ブログ</a>
       <a class="nav__link" href="/support.html">サポート</a>
       <a class="nav__link" href="/terms.html">利用規約</a>
       <a class="nav__link" href="/tokusho">特商法</a>
@@ -29,31 +29,35 @@
 
 <main id="main">
   <section class="section">
-    <div class="container stack stack--lg">
-      <div class="stack">
-        <p class="kicker">返金</p>
-        <h1 class="h1">返金ポリシー</h1>
-        <p class="lead">返金条件と連絡方法の要点です。</p>
+    <div class="container grid" style="--grid-min: 320px;">
+      <div class="stack stack--lg">
+        <div class="stack">
+          <p class="kicker">ブログ</p>
+          <h1 class="h1">更新情報と運用ガイド</h1>
+          <p class="lead">テンプレートの使い方や、運用をスムーズにするヒントをまとめます。</p>
+        </div>
+        <div class="cluster">
+          <a class="btn btn--primary" href="/products.html">製品を見る</a>
+          <a class="btn btn--ghost" href="/support.html">サポートへ</a>
+        </div>
       </div>
 
-      <article class="card">
-        <div class="prose">
-          <h2>返金条件</h2>
-          <ul>
-            <li>決済後の案内前にキャンセル希望があった場合</li>
-            <li>提供内容に重大な不具合があり解決できない場合</li>
-          </ul>
+      <div class="card blog-hero">
+        <img class="blog-hero__image" src="/blog/assets/blog-hero.svg" alt="更新情報をまとめたヘッダー画像" />
+        <p class="note" style="margin-top: 0;">最新の更新やTipsを週次で掲載予定です。</p>
+      </div>
+    </div>
+  </section>
 
-          <h2>返金の流れ</h2>
-          <ul>
-            <li>購入時のメールアドレスと注文情報を記載</li>
-            <li>確認後、返金可否をメールで連絡</li>
-          </ul>
+  <section class="section section--alt" id="articles">
+    <div class="container stack">
+      <div class="stack">
+        <h2 class="h2">記事一覧</h2>
+        <p class="muted">新着順で表示されます。</p>
+      </div>
 
-          <h2>連絡先</h2>
-          <p>返金のご相談は <a href="mailto:support@wintergator.com">support@wintergator.com</a> までご連絡ください。</p>
-        </div>
-      </article>
+      <div class="grid blog-grid" data-blog-list data-posts-url="/blog/posts.json"></div>
+      <p class="note" data-blog-empty hidden>記事の準備中です。</p>
     </div>
   </section>
 </main>

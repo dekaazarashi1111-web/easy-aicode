@@ -678,6 +678,76 @@ a[aria-disabled="true"] {
 }
 
 /* ------------------------------
+   Blog
+------------------------------ */
+
+.blog-hero {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-4);
+}
+
+.blog-hero__image {
+  width: 100%;
+  border-radius: var(--radius-2);
+  border: var(--border-w) solid var(--border);
+  background: var(--surface-2);
+  box-shadow: var(--shadow-1);
+}
+
+.blog-grid {
+  --grid-min: 280px;
+}
+
+.blog-card {
+  padding: 0;
+  overflow: hidden;
+}
+
+.blog-card__link {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-4);
+  padding: var(--space-5);
+  text-decoration: none;
+  color: inherit;
+  height: 100%;
+}
+
+.blog-card__media {
+  aspect-ratio: 16 / 9;
+  border-radius: var(--radius-2);
+  overflow: hidden;
+  border: var(--border-w) solid var(--border);
+  background: var(--surface-2);
+}
+
+.blog-card__image {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.blog-card__meta {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-2);
+  font-size: var(--text-xs);
+  color: var(--text-muted);
+}
+
+.blog-card__title {
+  font-size: var(--text-lg);
+  margin: 0;
+}
+
+.blog-card__cta {
+  align-self: flex-start;
+  padding-inline: 0.7rem;
+}
+
+/* ------------------------------
    FAQ (details / summary)
 ------------------------------ */
 

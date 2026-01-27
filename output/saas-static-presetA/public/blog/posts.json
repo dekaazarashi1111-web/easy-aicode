@@ -1,0 +1,9 @@
+[
+  {
+    "title": "はじめての更新",
+    "description": "ブログの使い方と更新方針を紹介します。",
+    "date": "2026-01-27",
+    "cover": "/blog/assets/blog-hero.svg",
+    "url": "/blog/posts/first-update.html"
+  }
+]
