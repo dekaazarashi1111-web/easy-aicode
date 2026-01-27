@@ -38,3 +38,13 @@
   - ブログ記事の末尾に関連ページセクションを追加
   - 関連カードのリンク表現を共通化
 - Verify: bash scripts/verify_wsl.sh PASS
+
+## 2026-01-27T07:55:24Z
+- Version: -
+- Commit: -
+- Task: - / SEO最適化
+- Summary:
+  - 全ページにcanonical/OG/Twitter/robotsを追加
+  - Blog/FAQ/Product/各種WebPageの構造化データを追加
+  - sitemap/robots/RSS生成とブログ一覧の静的出力を追加
+- Verify: bash scripts/verify_wsl.sh PASS

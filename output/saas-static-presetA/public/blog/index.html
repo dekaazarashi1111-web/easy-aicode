@@ -5,8 +5,42 @@
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>Winter Gator | ブログ</title>
   <meta name="description" content="Winter Gator のブログ。更新情報や運用のコツをまとめます。" />
+  <link rel="canonical" href="/blog/" />
+  <meta name="robots" content="index,follow,max-image-preview:large" />
+  <meta name="author" content="Winter Gator" />
+  <meta name="theme-color" content="#6366f1" />
+  <meta property="og:site_name" content="Winter Gator" />
+  <meta property="og:title" content="Winter Gator | ブログ" />
+  <meta property="og:description" content="Winter Gator のブログ。更新情報や運用のコツをまとめます。" />
+  <meta property="og:type" content="website" />
+  <meta property="og:url" content="/blog/" />
+  <meta property="og:locale" content="ja_JP" />
+  <meta property="og:image" content="/blog/assets/blog-hero.svg" />
+  <meta property="og:image:alt" content="Winter Gator ブログのヘッダー画像" />
+  <meta property="og:image:width" content="1200" />
+  <meta property="og:image:height" content="800" />
+  <meta name="twitter:card" content="summary_large_image" />
+  <meta name="twitter:title" content="Winter Gator | ブログ" />
+  <meta name="twitter:description" content="Winter Gator のブログ。更新情報や運用のコツをまとめます。" />
+  <meta name="twitter:image" content="/blog/assets/blog-hero.svg" />
+  <link rel="alternate" type="application/rss+xml" title="Winter Gator Blog" href="/blog/feed.xml" />
   <link rel="stylesheet" href="/style.css" />
   <script src="/site.js" defer></script>
+  <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "Blog",
+      "name": "Winter Gator Blog",
+      "url": "https://wintergator.com/blog/",
+      "description": "Winter Gator のブログ。更新情報や運用のコツをまとめます。",
+      "publisher": {
+        "@type": "Organization",
+        "name": "Winter Gator",
+        "url": "https://wintergator.com/",
+        "email": "support@wintergator.com"
+      }
+    }
+  </script>
 </head>
 <body>
 <a class="skip-link" href="#main">本文へスキップ</a>
@@ -56,7 +90,42 @@
         <p class="muted">新着順で表示されます。</p>
       </div>
 
-      <div class="grid blog-grid" data-blog-list data-posts-url="/blog/posts.json"></div>
+      <div class="grid blog-grid" data-blog-list data-posts-url="/blog/posts.json">
+        <!-- BLOG_LIST_START -->
+        <article class="card blog-card">
+          <a class="blog-card__link" href="/blog/posts/first-update.html">
+            <div class="blog-card__media">
+              <img class="blog-card__image" src="/blog/assets/blog-hero.svg" alt="はじめての更新のヘッダー画像" loading="lazy" />
+            </div>
+            <div class="stack">
+              <div class="blog-card__meta">
+                <span>2026-01-27</span>
+                <span class="pill">記事</span>
+              </div>
+              <h3 class="blog-card__title">はじめての更新</h3>
+              <p class="muted">ブログの使い方と更新方針を紹介します。</p>
+              <span class="btn btn--ghost btn--sm blog-card__cta">続きを読む</span>
+            </div>
+          </a>
+        </article>
+        <article class="card blog-card">
+          <a class="blog-card__link" href="/blog/posts/test-update.html">
+            <div class="blog-card__media">
+              <img class="blog-card__image" src="/blog/assets/blog-hero.svg" alt="テスト更新のヘッダー画像" loading="lazy" />
+            </div>
+            <div class="stack">
+              <div class="blog-card__meta">
+                <span>2026-01-27</span>
+                <span class="pill">記事</span>
+              </div>
+              <h3 class="blog-card__title">テスト更新</h3>
+              <p class="muted">Cloudflare Pages 確認用のテスト記事です。</p>
+              <span class="btn btn--ghost btn--sm blog-card__cta">続きを読む</span>
+            </div>
+          </a>
+        </article>
+        <!-- BLOG_LIST_END -->
+      </div>
       <p class="note" data-blog-empty hidden>記事の準備中です。</p>
     </div>
   </section>

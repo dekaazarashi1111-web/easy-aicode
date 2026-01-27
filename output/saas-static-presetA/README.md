@@ -11,6 +11,13 @@
 - ブログ一覧は `public/blog/index.html` です。
 - 記事は `public/blog/posts/` に HTML を追加します。
 - 記事一覧の反映には `scripts/build_blog_index.py` を実行します。
+- `scripts/build_blog_index.py` は以下も生成します:
+  - `public/blog/posts.json`
+  - `public/blog/feed.xml`
+  - `public/sitemap.xml`
+  - `public/robots.txt`
+- 本番URLが異なる場合は `SITE_URL` 環境変数で上書きできます。
+  - 例: `SITE_URL=https://example.com scripts/build_blog_index.py`
 
 ## デプロイ
 Git に push するだけでデプロイ可能です（ビルド手順なし）。

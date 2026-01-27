@@ -48,6 +48,50 @@ if (buyLinks.length > 0) {
   }
 }
 
+const toAbsoluteUrl = (value) => {
+  if (!value) return value;
+  if (/^https?:\/\//i.test(value)) {
+    return value;
+  }
+  try {
+    return new URL(value, window.location.origin).href;
+  } catch (error) {
+    return value;
+  }
+};
+
+const updateSeoUrls = () => {
+  const canonical = document.querySelector('link[rel="canonical"]');
+  if (canonical) {
+    canonical.setAttribute("href", toAbsoluteUrl(canonical.getAttribute("href")));
+  }
+
+  const ogUrl = document.querySelector('meta[property="og:url"]');
+  if (ogUrl) {
+    ogUrl.setAttribute("content", toAbsoluteUrl(ogUrl.getAttribute("content")));
+  }
+
+  const ogImage = document.querySelector('meta[property="og:image"]');
+  if (ogImage) {
+    ogImage.setAttribute("content", toAbsoluteUrl(ogImage.getAttribute("content")));
+  }
+
+  const ogImageSecure = document.querySelector('meta[property="og:image:secure_url"]');
+  if (ogImageSecure) {
+    ogImageSecure.setAttribute(
+      "content",
+      toAbsoluteUrl(ogImageSecure.getAttribute("content"))
+    );
+  }
+
+  const twitterImage = document.querySelector('meta[name="twitter:image"]');
+  if (twitterImage) {
+    twitterImage.setAttribute("content", toAbsoluteUrl(twitterImage.getAttribute("content")));
+  }
+};
+
+updateSeoUrls();
+
 const formatDate = (value) => {
   if (!value) return "";
   const date = new Date(value);

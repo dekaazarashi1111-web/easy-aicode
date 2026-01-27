@@ -29,3 +29,12 @@
 - Verify: bash scripts/verify_wsl.sh PASS
 - Commit: -
 - Network: なし
+
+## 2026-01-27T07:55:24Z
+- Task: - / SEO最適化
+- Status: DONE
+- Summary: 各ページにSEOメタ・構造化データを追加し、sitemap/robots/RSSを生成
+- Files changed: output/saas-static-presetA/public/*.html, output/saas-static-presetA/public/blog/index.html, output/saas-static-presetA/public/blog/posts/*.html, output/saas-static-presetA/public/site.js, output/saas-static-presetA/public/blog/feed.xml, output/saas-static-presetA/public/sitemap.xml, output/saas-static-presetA/public/robots.txt, output/saas-static-presetA/public/blog/posts.json, scripts/build_blog_index.py, output/saas-static-presetA/README.md
+- Verify: bash scripts/verify_wsl.sh PASS
+- Commit: -
+- Network: なし
