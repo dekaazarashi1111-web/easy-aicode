@@ -1,0 +1,83 @@
+<!doctype html>
+<html lang="ja">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Winter Gator | ブログ</title>
+  <meta name="description" content="Winter Gator のブログ。更新情報や運用のコツをまとめます。" />
+  <link rel="stylesheet" href="/style.css" />
+  <script src="/site.js" defer></script>
+</head>
+<body>
+<a class="skip-link" href="#main">本文へスキップ</a>
+
+<nav class="nav">
+  <div class="container nav__inner">
+    <a class="nav__brand" href="/index.html">Winter Gator</a>
+
+    <div class="nav__links">
+      <a class="nav__link" href="/products.html">製品</a>
+      <a class="nav__link" aria-current="page" href="/blog/">ブログ</a>
+      <a class="nav__link" href="/support.html">サポート</a>
+      <a class="nav__link" href="/terms.html">利用規約</a>
+      <a class="nav__link" href="/tokusho">特商法</a>
+      <a class="btn btn--secondary btn--sm" href="/privacy.html">プライバシー</a>
+      <a class="btn btn--primary btn--sm" href="/products.html#pricing">購入</a>
+    </div>
+  </div>
+</nav>
+
+<main id="main">
+  <section class="section">
+    <div class="container grid" style="--grid-min: 320px;">
+      <div class="stack stack--lg">
+        <div class="stack">
+          <p class="kicker">ブログ</p>
+          <h1 class="h1">更新情報と運用ガイド</h1>
+          <p class="lead">テンプレートの使い方や、運用をスムーズにするヒントをまとめます。</p>
+        </div>
+        <div class="cluster">
+          <a class="btn btn--primary" href="/products.html">製品を見る</a>
+          <a class="btn btn--ghost" href="/support.html">サポートへ</a>
+        </div>
+      </div>
+
+      <div class="card blog-hero">
+        <img class="blog-hero__image" src="/blog/assets/blog-hero.svg" alt="更新情報をまとめたヘッダー画像" />
+        <p class="note" style="margin-top: 0;">最新の更新やTipsを週次で掲載予定です。</p>
+      </div>
+    </div>
+  </section>
+
+  <section class="section section--alt" id="articles">
+    <div class="container stack">
+      <div class="stack">
+        <h2 class="h2">記事一覧</h2>
+        <p class="muted">新着順で表示されます。</p>
+      </div>
+
+      <div class="grid blog-grid" data-blog-list data-posts-url="/blog/posts.json"></div>
+      <p class="note" data-blog-empty hidden>記事の準備中です。</p>
+    </div>
+  </section>
+</main>
+
+<footer class="footer">
+  <div class="container footer__inner">
+    <p class="muted">© Winter Gator</p>
+    <div class="footer__links">
+      <a href="/products.html">製品</a>
+      <a href="/blog/">ブログ</a>
+      <a href="/support.html">サポート</a>
+      <a href="/terms.html">利用規約</a>
+      <a href="/tokusho">特商法</a>
+      <a href="/privacy.html">プライバシー</a>
+      <a href="/refund.html">返金</a>
+    </div>
+  </div>
+  <div class="container">
+    <p class="note">本製品はOpenAI等の公式製品ではなく、独立して開発されています。</p>
+  </div>
+</footer>
+</body>
+</html>

@@ -1,0 +1,111 @@
+<!doctype html>
+<html lang="ja">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Winter Gator | 製品</title>
+  <meta name="description" content="Winter Gator の製品一覧と購入案内です。" />
+  <link rel="stylesheet" href="/style.css" />
+  <script src="/site.js" defer></script>
+</head>
+<body>
+<a class="skip-link" href="#main">本文へスキップ</a>
+
+<nav class="nav">
+  <div class="container nav__inner">
+    <a class="nav__brand" href="/index.html">Winter Gator</a>
+
+    <div class="nav__links">
+      <a class="nav__link" aria-current="page" href="/products.html">製品</a>
+      <a class="nav__link" href="/blog/">ブログ</a>
+      <a class="nav__link" href="/support.html">サポート</a>
+      <a class="nav__link" href="/terms.html">利用規約</a>
+      <a class="nav__link" href="/tokusho">特商法</a>
+      <a class="btn btn--secondary btn--sm" href="/privacy.html">プライバシー</a>
+      <a class="btn btn--primary btn--sm" href="/products.html#pricing">購入</a>
+    </div>
+  </div>
+</nav>
+
+<main id="main">
+  <section class="section">
+    <div class="container stack stack--lg">
+      <div class="stack">
+        <p class="kicker">製品</p>
+        <h1 class="h1">製品一覧</h1>
+        <p class="lead">公開中の製品と、今後のラインアップ予定です。</p>
+      </div>
+
+      <div class="grid">
+        <article class="card card--interactive">
+          <span class="pill">利用可能</span>
+          <h3 class="card__title" style="margin-top: 0.75rem;">CODEX COMPANION</h3>
+          <p class="card__body">販売導線と最低限の情報を整えた静的テンプレート。</p>
+          <div class="spacer"></div>
+          <a class="btn btn--primary btn--wide" data-stripe="buy" data-enabled-text="購入する" data-disabled-text="販売準備中" href="/products.html#pricing">購入する</a>
+        </article>
+
+        <article class="card card--interactive">
+          <span class="pill">近日公開</span>
+          <h3 class="card__title" style="margin-top: 0.75rem;">次期テンプレート</h3>
+          <p class="card__body">追加機能を拡張した構成を準備中です。</p>
+          <div class="spacer"></div>
+          <a class="btn btn--secondary btn--wide btn--disabled" href="#" aria-disabled="true" tabindex="-1">準備中</a>
+        </article>
+
+        <article class="card card--interactive">
+          <span class="pill">近日公開</span>
+          <h3 class="card__title" style="margin-top: 0.75rem;">運用支援パック</h3>
+          <p class="card__body">運用サポートを含むパッケージを準備しています。</p>
+          <div class="spacer"></div>
+          <a class="btn btn--secondary btn--wide btn--disabled" href="#" aria-disabled="true" tabindex="-1">詳細準備中</a>
+        </article>
+      </div>
+    </div>
+  </section>
+
+  <section class="section section--alt" id="pricing">
+    <div class="container stack">
+      <h2 class="h2">購入方法</h2>
+      <p class="muted">現在は買い切りのみの提供です。</p>
+      <p class="note">現在は販売準備中です。販売開始後に購入ボタンが有効になります。</p>
+
+      <div class="grid">
+        <div class="card">
+          <h3 class="card__title">買い切り（ベータ）</h3>
+          <div class="price">
+            <span class="price__amount">¥9,800</span>
+            <span class="price__period">買い切り</span>
+          </div>
+          <ul class="list">
+            <li>テンプレート一式</li>
+            <li>最小限の実運用設定</li>
+            <li>メールサポート</li>
+          </ul>
+          <div class="spacer"></div>
+          <a class="btn btn--primary btn--wide" data-stripe="buy" data-enabled-text="Stripeで購入" data-disabled-text="販売準備中" href="/products.html#pricing">Stripeで購入</a>
+        </div>
+      </div>
+    </div>
+  </section>
+</main>
+
+<footer class="footer">
+  <div class="container footer__inner">
+    <p class="muted">© Winter Gator</p>
+    <div class="footer__links">
+      <a href="/products.html">製品</a>
+      <a href="/blog/">ブログ</a>
+      <a href="/support.html">サポート</a>
+      <a href="/terms.html">利用規約</a>
+      <a href="/tokusho">特商法</a>
+      <a href="/privacy.html">プライバシー</a>
+      <a href="/refund.html">返金</a>
+    </div>
+  </div>
+  <div class="container">
+    <p class="note">本製品はOpenAI等の公式製品ではなく、独立して開発されています。</p>
+  </div>
+</footer>
+</body>
+</html>
