@@ -29,3 +29,12 @@
   - テスト用ブログ記事を1本追加
   - 記事一覧JSONを再生成
 - Verify: bash scripts/verify_wsl.sh PASS
+
+## 2026-01-27T07:39:42Z
+- Version: -
+- Commit: -
+- Task: - / ブログ記事に関連ページ追加
+- Summary:
+  - ブログ記事の末尾に関連ページセクションを追加
+  - 関連カードのリンク表現を共通化
+- Verify: bash scripts/verify_wsl.sh PASS

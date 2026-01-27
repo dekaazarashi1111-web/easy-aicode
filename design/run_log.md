@@ -20,3 +20,12 @@
 - Verify: bash scripts/verify_wsl.sh PASS
 - Commit: -
 - Network: なし
+
+## 2026-01-27T07:39:42Z
+- Task: - / ブログ記事に関連ページ追加
+- Status: DONE
+- Summary: ブログ記事下部に関連ページセクションを追加
+- Files changed: output/saas-static-presetA/public/blog/posts/first-update.html, output/saas-static-presetA/public/blog/posts/test-update.html, output/saas-static-presetA/public/style.css
+- Verify: bash scripts/verify_wsl.sh PASS
+- Commit: -
+- Network: なし
