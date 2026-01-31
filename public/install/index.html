@@ -66,26 +66,109 @@
   <section class="section">
     <div class="container stack">
       <div class="stack">
-        <p class="kicker">インストール</p>
-        <h1 class="h1">イチメAI（日本語AIコーディング入門）をインストールする</h1>
-        <p class="lead">/thanks からダウンロードしたファイルを使います。Windowsでの導入に迷ったらこの手順を確認してください。</p>
+        <p class="kicker">起動ガイド</p>
+        <h1 class="h1">イチメAI（日本語AIコーディング入門）— Windows β</h1>
+        <p class="lead">購入後のダウンロードから初回起動までを、実際の導線に合わせて短くまとめました。</p>
       </div>
 
       <div class="card">
-        <h2 class="h2">手順</h2>
+        <h2 class="h2">まず、購入後はどうなる？</h2>
         <ol class="list">
-          <li>/thanks で「ダウンロード」をクリックして、インストーラを保存します。</li>
-          <li>ダウンロードしたインストーラ（.exe）を起動します。</li>
-          <li>Windowsの警告が出た場合は「詳細情報」→「実行」を選択します。</li>
-          <li>起動後に案内されるセットアップに従って完了します。</li>
+          <li>決済が完了すると購入完了ページ（<a href="/thanks">/thanks</a>）が表示されます。</li>
+          <li>「ダウンロード」を押すと、/dl?token=... のリンクからインストーラ（.exe）が保存されます。</li>
+          <li>インストール後、アプリを起動します。</li>
+          <li>初回はアプリ内の「ログイン」からOpenAIアカウントでログインします。</li>
         </ol>
       </div>
 
+      <div class="card">
+        <h2 class="h2">30秒で始める（最短）</h2>
+        <ol class="list">
+          <li><a href="/thanks">/thanks</a> で「ダウンロード」を押す</li>
+          <li>ダウンロードした .exe をダブルクリック</li>
+          <li>インストール後にアプリを起動 → 「ログイン」</li>
+          <li>ログイン完了後に「状態更新」を押す</li>
+          <li>「新しく作る」を選び、やりたいことを1文で入力</li>
+        </ol>
+      </div>
+
+      <div class="grid">
+        <article class="card">
+          <h3 class="card__title">1) ダウンロード</h3>
+          <ul class="list">
+            <li><a href="/thanks">/thanks</a> で「ダウンロード」を押します。</li>
+            <li>画面が進まない場合は「再確認」を押してください。</li>
+          </ul>
+        </article>
+        <article class="card">
+          <h3 class="card__title">2) インストール</h3>
+          <ul class="list">
+            <li>ダウンロードした .exe を実行します。</li>
+            <li>SmartScreenが出た場合は「詳細情報」→「実行」で進めます。</li>
+          </ul>
+        </article>
+        <article class="card">
+          <h3 class="card__title">3) 初回起動とログイン</h3>
+          <ul class="list">
+            <li>アプリを起動して「ログイン」を押します。</li>
+            <li>ブラウザでOpenAIアカウントにログインします。</li>
+            <li>完了後に「状態更新」で先へ進みます。</li>
+          </ul>
+        </article>
+        <article class="card">
+          <h3 class="card__title">4) 最初の成功体験</h3>
+          <ul class="list">
+            <li>「新しく作る」を選びます。</li>
+            <li>入力欄にやりたいことを短く書きます（1文でOK）。</li>
+          </ul>
+        </article>
+      </div>
+
       <div class="card" style="background: var(--surface-2);">
-        <h2 class="h2">困ったとき</h2>
+        <h2 class="h2">よくあるつまずき</h2>
+        <div class="stack">
+          <details class="faq">
+            <summary>ダウンロードできない / 何も起きない</summary>
+            <div class="prose">
+              <p>/thanks の「再確認」を押してから、もう一度「ダウンロード」を試してください。</p>
+            </div>
+          </details>
+          <details class="faq">
+            <summary>「download not found」などが出る</summary>
+            <div class="prose">
+              <p>セッション情報が読み取れない可能性があります。/thanks に戻り、再確認を押してからやり直してください。</p>
+            </div>
+          </details>
+          <details class="faq">
+            <summary>起動しない / すぐ落ちる</summary>
+            <div class="prose">
+              <p>セキュリティソフトが実行を止めている場合があります。例外設定や別PCでの確認をお試しください。</p>
+            </div>
+          </details>
+          <details class="faq">
+            <summary>ログインがうまくいかない</summary>
+            <div class="prose">
+              <p>企業ネットワークなどで外部通信が制限されている可能性があります。別の回線でお試しください。</p>
+            </div>
+          </details>
+        </div>
+      </div>
+
+      <div class="card">
+        <h2 class="h2">困ったとき（サポート）</h2>
         <ul class="list">
-          <li>ダウンロードが表示されない場合は /thanks の「再確認」を押してください。</li>
-          <li>それでも進まない場合はサポートへご連絡ください。</li>
+          <li>どの画面で止まったか（スクショOK）</li>
+          <li>表示されたメッセージ（コピペOK）</li>
+          <li>Windowsのバージョン</li>
+        </ul>
+        <p class="muted">連絡先：<a href="mailto:support@wintergator.com">support@wintergator.com</a></p>
+        <p class="muted">返信目安：平日48時間以内</p>
+      </div>
+
+      <div class="card" style="background: var(--surface-2);">
+        <h2 class="h2">重要な注意</h2>
+        <ul class="list">
+          <li>本製品はOpenAI等の公式製品ではありません。</li>
           <li>Windowsのみ（β）です。</li>
         </ul>
       </div>
@@ -93,7 +176,15 @@
       <div class="cluster">
         <a class="btn btn--primary" href="/thanks">ダウンロードに戻る</a>
         <a class="btn btn--secondary" href="/support.html">サポートへ</a>
+        <a class="btn btn--ghost" href="/start">はじめるページ</a>
       </div>
+
+      <p class="muted" style="font-size: var(--text-sm);">
+        関連リンク:
+        <a href="/refund.html">返金</a> /
+        <a href="/tokusho">特商法</a> /
+        <a href="/terms.html">利用規約</a>
+      </p>
     </div>
   </section>
 </main>
