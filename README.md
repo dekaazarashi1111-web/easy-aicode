@@ -43,3 +43,27 @@ Pages:
 - privacy.html
 - refund.html
 - blog/index.html
+
+## Cloudflare Pages Functions
+### Bindings
+- KV: `WG_KV`
+- R2: `WG_R2`
+
+### Secrets / Variables
+- `STRIPE_WEBHOOK_SECRET` (必須)
+- `STRIPE_API_KEY` (任意)
+- `DOWNLOAD_R2_KEY` (必須: R2内のオブジェクトキー)
+- `TOKEN_TTL_SECONDS` (任意: デフォルト 259200)
+- `MAX_DOWNLOADS` (任意: デフォルト 3)
+- `MAIL_PROVIDER` (任意: `mailchannels` または `resend`)
+- `MAIL_API_KEY` (任意)
+- `FROM_EMAIL` / `SUPPORT_EMAIL` (任意)
+
+### Stripe 設定
+- Webhook エンドポイント: `/api/stripe-webhook`
+- Webhook イベント: `checkout.session.completed`, `checkout.session.async_payment_succeeded`
+- Payment Link の成功時リダイレクト: `/thanks?session_id={CHECKOUT_SESSION_ID}`
+
+### 動作概要
+- Stripe決済完了 → KVにDLトークン保存 → `/dl?token=...` でR2から配布
+- `/api/order-status?session_id=...` で準備状況を返す（/thanks から参照）
