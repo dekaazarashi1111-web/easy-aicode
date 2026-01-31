@@ -71,7 +71,7 @@
           <div class="stack">
             <p class="kicker">購入完了</p>
             <h1 class="h1">購入ありがとうございます</h1>
-            <p class="lead">決済確認後、原則24時間以内にメールでご案内します（手動対応）。</p>
+            <p class="lead">決済後すぐにダウンロードできます（/thanks）。うまく表示されない場合は再確認ボタンを押すか、サポートへご連絡ください（メール案内は必要時のみ・手動）。</p>
           </div>
 
           <div class="card" style="background: var(--surface-2);">
@@ -80,10 +80,11 @@
               <p class="muted" id="statusText">ステータス確認中...</p>
               <div class="cluster" id="downloadSection" hidden>
                 <a class="btn btn--primary" id="downloadButton" href="#">ダウンロード</a>
-                <button class="btn btn--secondary" id="refreshButton" type="button">再確認</button>
+                <a class="btn btn--ghost" href="/install">次にやること（インストール手順）</a>
               </div>
               <div class="cluster" id="waitingSection" hidden>
                 <button class="btn btn--secondary" id="waitingRefresh" type="button">再確認</button>
+                <a class="btn btn--ghost" href="/support.html">サポートへ</a>
               </div>
             </div>
           </div>
@@ -93,7 +94,7 @@
             <a class="btn btn--ghost" href="/support.html">サポートへ</a>
           </div>
 
-          <p class="muted">メールが届かない場合は <a href="mailto:support@wintergator.com">support@wintergator.com</a> までご連絡ください。</p>
+          <p class="muted">ダウンロードが表示されない場合は <a href="mailto:support@wintergator.com">support@wintergator.com</a> までご連絡ください。</p>
         </div>
       </div>
     </div>
@@ -125,7 +126,6 @@
   const downloadSection = document.getElementById("downloadSection");
   const waitingSection = document.getElementById("waitingSection");
   const downloadButton = document.getElementById("downloadButton");
-  const refreshButton = document.getElementById("refreshButton");
   const waitingRefresh = document.getElementById("waitingRefresh");
   const params = new URLSearchParams(window.location.search);
   const sessionId = params.get("session_id");
@@ -173,7 +173,6 @@
     }
   };
 
-  if (refreshButton) refreshButton.addEventListener("click", checkStatus);
   if (waitingRefresh) waitingRefresh.addEventListener("click", checkStatus);
 
   checkStatus();

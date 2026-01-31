@@ -187,7 +187,7 @@ export async function onRequest(context) {
 
   const dlUrl = `${new URL(request.url).origin}/dl?token=${token}`;
   const provider = env.MAIL_PROVIDER;
-  const apiKey = env.MAIL_API_KEY || "";
+  const mailKey = env.MAIL_API_KEY || "";
   const from =
     env.FROM_EMAIL || env.SUPPORT_EMAIL || "support@wintergator.com";
 
@@ -196,7 +196,7 @@ export async function onRequest(context) {
     const text = `ご購入ありがとうございます。\n\nダウンロードはこちら:\n${dlUrl}\n\n有効期限: ${ttl}秒\n\nサポート: ${env.SUPPORT_EMAIL || "support@wintergator.com"}`;
     const sent = await sendMail({
       provider,
-      apiKey,
+      apiKey: mailKey,
       from,
       to: email,
       subject,
