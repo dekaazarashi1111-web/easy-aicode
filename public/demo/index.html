@@ -4902,6 +4902,29 @@ button[disabled],
   .demo-disclaimer .demo-disclaimer-inner {
     padding: 10px 16px;
   }
+
+  body {
+    min-height: 100svh;
+    min-height: 100dvh;
+  }
+
+  .app.chat-app {
+    height: auto;
+    min-height: 100svh;
+    min-height: 100dvh;
+    overflow: auto;
+  }
+
+  .demo-app.chat-app {
+    height: auto;
+    min-height: calc(100svh - var(--demo-disclaimer-height));
+    min-height: calc(100dvh - var(--demo-disclaimer-height));
+  }
+
+  .demo-control-panel {
+    top: calc(var(--demo-disclaimer-height) + 12px);
+    right: 12px;
+  }
 }
 
     </style>
