@@ -4,6 +4,22 @@ const START_URL = SITE_CONFIG.START_URL || "/start";
 const DEFAULT_BLOG_COVER = "/blog/assets/blog-hero.svg";
 
 const buyLinks = document.querySelectorAll('a[data-stripe="buy"]');
+const sendAnalyticsEvent = (name, params = {}) => {
+  if (typeof window.gtag !== "function") return;
+  const sanitized = {};
+  Object.entries(params).forEach(([key, value]) => {
+    if (value === undefined || value === null) return;
+    if (typeof value === "string" || typeof value === "number" || typeof value === "boolean") {
+      sanitized[key] = value;
+    } else {
+      sanitized[key] = JSON.stringify(value);
+    }
+  });
+  window.gtag("event", name, {
+    ...sanitized,
+    transport_type: "beacon",
+  });
+};
 
 const getEnabledText = (link) => {
   if (!link.dataset.enabledText) {
@@ -106,6 +122,39 @@ const updateXProfileLinks = () => {
 };
 
 updateXProfileLinks();
+
+const formatLabel = (value) =>
+  (value || "")
+    .toString()
+    .replace(/\s+/g, " ")
+    .trim()
+    .slice(0, 80);
+
+const sanitizeHref = (href) => {
+  if (!href) return "";
+  if (/^mailto:/i.test(href)) return "mailto";
+  if (/^tel:/i.test(href)) return "tel";
+  return href;
+};
+
+document.addEventListener("click", (event) => {
+  const target = event.target.closest("a, button");
+  if (!target) return;
+  const label = formatLabel(target.textContent);
+  const href = target.tagName === "A" ? sanitizeHref(target.getAttribute("href")) : "";
+  const trackData = {
+    label,
+    href,
+    tag: target.tagName.toLowerCase(),
+  };
+  if (target.dataset.stripe) {
+    trackData.stripe = "buy";
+  }
+  if (target.dataset.xProfile) {
+    trackData.x_profile = "true";
+  }
+  sendAnalyticsEvent("ui_click", trackData);
+});
 
 const formatDate = (value) => {
   if (!value) return "";

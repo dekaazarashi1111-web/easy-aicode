@@ -36,6 +36,15 @@
     <meta name="robots" content="noindex" />
     <script src="/assets/site-config.js"></script>
     <script src="/site.js" defer></script>
+    <!-- Google tag (gtag.js) -->
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-QTPYX6S1D6"></script>
+    <script>
+      window.dataLayer = window.dataLayer || [];
+      function gtag(){dataLayer.push(arguments);}
+      gtag('js', new Date());
+
+      gtag('config', 'G-QTPYX6S1D6');
+    </script>
     <style>
 @import url('https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&family=Space+Grotesk:wght@400;500;600;700&display=swap');
 
@@ -5463,6 +5472,30 @@ button[disabled],
 
       const sessionId = getSessionId();
 
+      const normalizePayload = (payload = {}) => {
+        const sanitized = {};
+        Object.entries(payload).forEach(([key, value]) => {
+          if (value === undefined || value === null) return;
+          if (typeof value === "string" || typeof value === "number" || typeof value === "boolean") {
+            sanitized[key] = value;
+          } else {
+            sanitized[key] = JSON.stringify(value);
+          }
+        });
+        return sanitized;
+      };
+
+      const sendToGA = (eventName, payload = {}) => {
+        if (typeof window.gtag !== "function") return;
+        const params = normalizePayload(payload);
+        window.gtag("event", eventName, {
+          ...params,
+          session_id: sessionId,
+          event_category: "demo",
+          transport_type: "beacon",
+        });
+      };
+
       const track = (eventName, payload = {}) => {
         const event = {
           sessionId,
@@ -5487,6 +5520,7 @@ button[disabled],
             // no-op
           }
         }
+        sendToGA(eventName, payload);
       };
 
       const viewTitles = {
@@ -6706,6 +6740,19 @@ ${logLines[logIndex]}`;
 
       document.addEventListener("pointerdown", handleLockedInteraction, true);
       document.addEventListener("click", handleLockedInteraction, true);
+      document.addEventListener("click", (event) => {
+        const target = event.target.closest("button, a, [data-action]");
+        if (!target) return;
+        const label = (target.textContent || "").replace(/\s+/g, " ").trim().slice(0, 80);
+        const action = target.getAttribute("data-action") || "";
+        const href = target.tagName === "A" ? (target.getAttribute("href") || "") : "";
+        track("demo_ui_click", {
+          label,
+          action,
+          href,
+          tag: target.tagName.toLowerCase(),
+        });
+      });
 
       demoMenuButton.addEventListener("click", () => toggleMenu());
       document.addEventListener("click", (event) => {
