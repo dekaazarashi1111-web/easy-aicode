@@ -4902,9 +4902,10 @@ code {
   position: sticky;
   top: var(--demo-disclaimer-height);
   z-index: 120;
-  background: rgba(248, 250, 252, 0.96);
-  border-bottom: 1px solid rgba(15, 23, 42, 0.08);
+  background: rgba(255, 247, 237, 0.98);
+  border-bottom: 1px solid rgba(245, 158, 11, 0.35);
   backdrop-filter: blur(6px);
+  box-shadow: 0 6px 16px rgba(15, 23, 42, 0.08);
 }
 
 .demo-cta-inner {
@@ -5496,7 +5497,7 @@ button[disabled],
         work: "",
         running: "準備中",
         preview: "プレビュー",
-        complete: "完了",
+        complete: "次へ：はじめる",
         continue: "続きを開く",
         settings: "設定",
       };
@@ -5831,7 +5832,7 @@ button[disabled],
         `,
         complete: () => `
             <div class="start-flow-block">
-              <h3 class="start-flow-title">完了</h3>
+              <h3 class="start-flow-title">デモ完了</h3>
               <p class="start-flow-text">デモはここまでです。次の一手を開始ページにまとめました。</p>
               <button class="btn primary start-flow-primary" type="button" data-action="final-cta">次へ：はじめる</button>
               <p class="micro">${APP_NAME} の購入・配布枠・案内をまとめています。</p>
