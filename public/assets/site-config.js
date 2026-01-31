@@ -5,7 +5,7 @@ window.SITE_CONFIG = {
   SUPPORT_EMAIL: "support@wintergator.com",
   DEMO_URL: "/demo/",
   START_URL: "/start",
-  X_PROFILE_URL: "https://x.com/{{YOUR_X_HANDLE}}",
+  X_PROFILE_URL: "https://x.com/WinterGator_app",
   FREE_SLOTS: 10,
   DISCOUNT_SLOTS: 30,
 };
