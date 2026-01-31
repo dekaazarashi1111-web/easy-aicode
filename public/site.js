@@ -85,6 +85,28 @@ const updateSeoUrls = () => {
 
 updateSeoUrls();
 
+const updateXProfileLinks = () => {
+  if (!SITE_CONFIG.X_PROFILE_URL) return;
+  const links = document.querySelectorAll(
+    'a[data-x-profile], a[href*="{{YOUR_X_HANDLE}}"], a[href*="%7B%7BYOUR_X_HANDLE%7D%7D"]'
+  );
+  links.forEach((link) => {
+    link.setAttribute("href", SITE_CONFIG.X_PROFILE_URL);
+    link.setAttribute("target", "_blank");
+    link.setAttribute("rel", "noopener noreferrer");
+  });
+
+  const handleMatch = SITE_CONFIG.X_PROFILE_URL.match(/x\\.com\\/([^/?#]+)/i);
+  const handle = handleMatch ? `@${handleMatch[1]}` : null;
+  if (!handle) return;
+  const twitterSite = document.querySelector('meta[name="twitter:site"]');
+  if (twitterSite) twitterSite.setAttribute("content", handle);
+  const twitterCreator = document.querySelector('meta[name="twitter:creator"]');
+  if (twitterCreator) twitterCreator.setAttribute("content", handle);
+};
+
+updateXProfileLinks();
+
 const formatDate = (value) => {
   if (!value) return "";
   const date = new Date(value);
