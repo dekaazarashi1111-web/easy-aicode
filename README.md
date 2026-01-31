@@ -1,4 +1,4 @@
-# Winter Gator | Gator Companion LP
+# Winter Gator | イチメAI（日本語AIコーディング入門）LP
 
 - Cloudflare Pages の出力は `public/`（Build output directory = `public`）。
 - ビルド不要。静的ファイルのみで動作します。
@@ -7,10 +7,16 @@
 ## サイト設定
 `public/assets/site-config.js` を編集すると主要な設定を一括で変更できます。
 
-- `APP_NAME` : アプリ名
+- `PRODUCT_NAME_LONG` : 製品正式名
+- `PRODUCT_NAME_SHORT` : 製品短縮名
+- `PRODUCT_PLATFORM` : 対応OS表記
+- `PUBLISHER` : 運営/提供
+- `SUPPORT_EMAIL` : サポートメール
+- `NOTE_UNOFFICIAL` : 非公式の注意文言
+- `NOTE_WINDOWS_BETA` : OS注意文言
+- `APP_NAME` : アプリ名（後方互換）
 - `PRICE_JPY` : 価格（JPY）
 - `BUY_URL` : Stripe Payment Link（購入リンク。未設定時は `/start#buy` を使用）
-- `SUPPORT_EMAIL` : サポートメール
 - `DEMO_URL` : デモURL
 - `START_URL` : はじめるページ
 - `X_PROFILE_URL` : XプロフィールURL

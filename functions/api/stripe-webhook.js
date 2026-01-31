@@ -192,7 +192,7 @@ export async function onRequest(context) {
     env.FROM_EMAIL || env.SUPPORT_EMAIL || "support@wintergator.com";
 
   if (provider && email) {
-    const subject = "Gator Companion ダウンロードのご案内";
+    const subject = "イチメAI（日本語AIコーディング入門）ダウンロードのご案内";
     const text = `ご購入ありがとうございます。\n\nダウンロードはこちら:\n${dlUrl}\n\n有効期限: ${ttl}秒\n\nサポート: ${env.SUPPORT_EMAIL || "support@wintergator.com"}`;
     const sent = await sendMail({
       provider,
