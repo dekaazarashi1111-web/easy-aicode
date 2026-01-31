@@ -117,9 +117,17 @@
     <main class="card">
       <h1>公開通知の受付</h1>
       <p>公開準備が整い次第、メールでご案内します。</p>
-      <form id="notifyForm">
+      <form
+        id="notifyForm"
+        action="https://formsubmit.co/support@wintergator.com"
+        method="POST"
+      >
         <label for="email">メールアドレス</label>
         <input id="email" name="email" type="email" placeholder="you@example.com" required />
+        <input type="text" name="_honey" style="display:none" tabindex="-1" autocomplete="off" />
+        <input type="hidden" name="_subject" value="デモ公開通知の申し込み" />
+        <input type="hidden" name="_template" value="table" />
+        <input type="hidden" name="_next" value="/demo/notify.html?sent=1" />
         <button type="submit">通知を受け取る</button>
       </form>
       <div class="actions">
@@ -130,11 +138,11 @@
     <script>
       const form = document.getElementById("notifyForm");
       const resultText = document.getElementById("resultText");
-      if (form && resultText) {
-        form.addEventListener("submit", (event) => {
-          event.preventDefault();
-          resultText.textContent = "送信を受け付けました（デモ表示）。";
-        });
+      if (resultText) {
+        const params = new URLSearchParams(window.location.search);
+        if (params.get("sent") === "1") {
+          resultText.textContent = "送信を受け付けました。通知が必要な場合は再度入力してください。";
+        }
       }
     </script>
   </body>
