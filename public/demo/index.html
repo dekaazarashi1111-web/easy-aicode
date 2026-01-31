@@ -3,18 +3,20 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <title>Codex Companion デモ</title>
+    <title>Gator Companion デモ</title>
     <meta
       name="description"
       content="本体と同じUI/導線で体験できるダミーデモ（ブラウザ版）。"
     />
-    <meta property="og:title" content="Codex Companion デモ" />
+    <meta property="og:title" content="Gator Companion デモ" />
     <meta
       property="og:description"
       content="本体と同じUI/導線で体験できるダミーデモ（ブラウザ版）。"
     />
     <meta property="og:url" content="/demo/" />
     <meta name="robots" content="noindex" />
+    <script src="/assets/site-config.js"></script>
+    <script src="/site.js" defer></script>
     <style>
 @import url('https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&family=Space+Grotesk:wght@400;500;600;700&display=swap');
 
@@ -42,6 +44,7 @@
 
 :root {
   --demo-disclaimer-height: 0px;
+  --demo-cta-height: 0px;
 }
 
 .sr {
@@ -4738,7 +4741,7 @@ code {
 }
 
 .demo-app.chat-app {
-  height: calc(100vh - var(--demo-disclaimer-height));
+  height: calc(100vh - var(--demo-disclaimer-height) - var(--demo-cta-height));
   padding-top: 0;
 }
 
@@ -4876,19 +4879,31 @@ code {
   pointer-events: none;
 }
 
-.demo-control-panel {
-  position: fixed;
-  top: 18px;
-  right: 18px;
-  z-index: 2100;
-  display: flex;
-  gap: 8px;
-  align-items: center;
+.demo-cta {
+  position: sticky;
+  top: var(--demo-disclaimer-height);
+  z-index: 120;
+  background: rgba(248, 250, 252, 0.96);
+  border-bottom: 1px solid rgba(15, 23, 42, 0.08);
+  backdrop-filter: blur(6px);
 }
 
-.demo-control-panel .btn {
-  padding: 8px 14px;
-  font-size: 0.82rem;
+.demo-cta-inner {
+  max-width: 980px;
+  margin: 0 auto;
+  padding: 8px 24px;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 12px;
+  justify-content: space-between;
+}
+
+.demo-cta-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  align-items: center;
 }
 
 button[disabled],
@@ -4917,14 +4932,10 @@ button[disabled],
 
   .demo-app.chat-app {
     height: auto;
-    min-height: calc(100svh - var(--demo-disclaimer-height));
-    min-height: calc(100dvh - var(--demo-disclaimer-height));
+    min-height: calc(100svh - var(--demo-disclaimer-height) - var(--demo-cta-height));
+    min-height: calc(100dvh - var(--demo-disclaimer-height) - var(--demo-cta-height));
   }
 
-  .demo-control-panel {
-    top: calc(var(--demo-disclaimer-height) + 12px);
-    right: 12px;
-  }
 }
 
     </style>
@@ -4932,9 +4943,20 @@ button[disabled],
   <body>
     <div class="demo-disclaimer" role="note" aria-label="誤解防止の注意事項">
       <div class="demo-disclaimer-inner">
-        <div><strong>これはブラウザ上のデモです。</strong> 実際のファイル変更・Codex実行は行いません。</div>
+        <div><strong>これはブラウザ上のデモです。</strong> 実際のファイル変更・OpenAI Codexの実行は行いません。</div>
         <div>本番はWindowsアプリで、ログイン→準備が自動→日本語UI一本道で作成できます。</div>
         <div>OpenAI公式ではなく非公式の支援アプリです。</div>
+      </div>
+    </div>
+
+    <div class="demo-cta" role="region" aria-label="次のアクション">
+      <div class="demo-cta-inner">
+        <span class="micro">デモを試したら、次へ。</span>
+        <div class="demo-cta-actions">
+          <a class="btn ghost small" href="/">ホーム</a>
+          <a class="btn ghost small" data-stripe="buy" href="/start#buy">購入</a>
+          <a class="btn primary small" href="/start">はじめる</a>
+        </div>
       </div>
     </div>
 
@@ -4942,7 +4964,7 @@ button[disabled],
       <div class="demo-start-flow" id="demoStartFlow">
       <header class="hero start-flow-hero">
         <div>
-          <h1>Codex Companion</h1>
+          <h1>Gator Companion</h1>
         </div>
         <div class="start-flow-actions">
           <div class="status-badge status-connected" id="demoConnectionBadge">
@@ -4991,7 +5013,7 @@ button[disabled],
               <div class="brand">
                 <div class="logo">CC</div>
                 <div class="brandText">
-                  <div class="name">CODEX COMPANION</div>
+                  <div class="name">GATOR COMPANION</div>
                 </div>
               </div>
               <button class="btn small ghost demo-frozen" type="button" aria-label="ホームに戻る" disabled>
@@ -5040,7 +5062,7 @@ button[disabled],
             <div class="sbBottom">
               <div class="sbUsage">
                 <div class="sbUsageTop">
-                  <span class="sbUsageTitle">Codex プラン</span>
+                  <span class="sbUsageTitle">Companion プラン</span>
                   <span class="sbUsagePlan">Plus</span>
                 </div>
                 <div class="sbUsageRow">
@@ -5265,7 +5287,7 @@ button[disabled],
             </section>
             <div class="composer" aria-label="相談入力欄">
               <p class="micro attachmentHint">
-                添付したファイルはこのプロジェクトに保存され、Codexが読めるようになります。
+                添付したファイルはこのプロジェクトに保存され、OpenAI Codexが読めるようになります。
               </p>
               <div class="plannerQuick">
                 <button class="btn small primary" type="button">のこりは全部おまかせで</button>
@@ -5306,7 +5328,7 @@ button[disabled],
             </section>
             <div class="composer" aria-label="入力欄">
               <p class="micro attachmentHint">
-                添付したファイルはこのプロジェクトに保存され、Codexが読めるようになります。
+                添付したファイルはこのプロジェクトに保存され、OpenAI Codexが読めるようになります。
               </p>
               <div class="composerQuick">
                 <button class="btn ghost small" type="button">次に何をすればいい？</button>
@@ -5348,7 +5370,7 @@ button[disabled],
               </button>
             </div>
             <div class="demo-preview-body">
-              <iframe id="demoPreviewFrame" title="UIテンプレートプレビュー"></iframe>
+              <iframe id="demoPreviewFrame" title="UIサンプルプレビュー"></iframe>
             </div>
           </div>
         </div>
@@ -5356,14 +5378,10 @@ button[disabled],
     </div>
     <div class="demo-cursor" id="demoCursor" aria-hidden="true"></div>
     <div class="demo-cursor-ring" id="demoCursorRing" aria-hidden="true"></div>
-    <div class="demo-control-panel" id="demoControlPanel" aria-label="デモ制御">
-      <a class="btn ghost" href="/">ホームに戻る</a>
-    </div>
-
     <script>
-      const APP_READY = false;
-      const START_URL = "/start";
-      const NOTIFY_URL = "/demo/notify.html";
+      const SITE_CONFIG = window.SITE_CONFIG || {};
+      const APP_NAME = SITE_CONFIG.APP_NAME || "Gator Companion";
+      const START_URL = SITE_CONFIG.START_URL || "/start";
       const TRACK_ENDPOINT = "";
       const AUTO_FLOW = true;
 
@@ -5382,6 +5400,7 @@ button[disabled],
       const demoCursor = document.getElementById("demoCursor");
       const demoCursorRing = document.getElementById("demoCursorRing");
       const demoDisclaimer = document.querySelector(".demo-disclaimer");
+      const demoCta = document.querySelector(".demo-cta");
       const demoPlannerPanel = document.getElementById("demoPlannerPanel");
       const demoBuilderPanel = document.getElementById("demoBuilderPanel");
       const demoPlannerMessagesInner = document.getElementById("demoPlannerMessagesInner");
@@ -5398,13 +5417,15 @@ button[disabled],
         return plannerQuickTemplate.cloneNode(true);
       };
 
-      const updateDisclaimerHeight = () => {
-        const height = demoDisclaimer ? demoDisclaimer.offsetHeight : 0;
-        document.documentElement.style.setProperty("--demo-disclaimer-height", `${height}px`);
+      const updateHeaderHeights = () => {
+        const disclaimerHeight = demoDisclaimer ? demoDisclaimer.offsetHeight : 0;
+        const ctaHeight = demoCta ? demoCta.offsetHeight : 0;
+        document.documentElement.style.setProperty("--demo-disclaimer-height", `${disclaimerHeight}px`);
+        document.documentElement.style.setProperty("--demo-cta-height", `${ctaHeight}px`);
       };
 
-      updateDisclaimerHeight();
-      window.addEventListener("resize", updateDisclaimerHeight);
+      updateHeaderHeights();
+      window.addEventListener("resize", updateHeaderHeights);
 
       const storageKeys = {
         session: "demoSessionId",
@@ -5701,7 +5722,7 @@ button[disabled],
             <summary>詳細を選ぶ（テンプレ / 見た目 / レイアウト）</summary>
             <div class="start-flow-details-body">
               <div class="start-flow-block">
-                <h4 class="start-flow-subtitle">テンプレート</h4>
+                <h4 class="start-flow-subtitle">サンプルUI</h4>
                 <div class="start-flow-grid">
                   <button class="start-flow-choice is-selected" type="button">
                     <div class="start-flow-choice-header">
@@ -5737,14 +5758,14 @@ button[disabled],
                 </div>
               </div>
               <div class="start-flow-block">
-                <h4 class="start-flow-subtitle">UIテンプレート（プレビュー）</h4>
+                <h4 class="start-flow-subtitle">UIサンプル（プレビュー）</h4>
                 <div class="ui-template-preview">
                   <div class="ui-template-preview-header">
                     <span class="ui-template-preview-title">プレビュー</span>
                     <span class="pill pill-ok">テーマ: Warm</span>
                   </div>
                   <div class="ui-template-preview-frame">
-                    <iframe title="UIテンプレートプレビュー" src="${PREVIEW_URL}"></iframe>
+                    <iframe title="UIサンプルプレビュー" src="${PREVIEW_URL}"></iframe>
                   </div>
                 </div>
               </div>
@@ -5789,17 +5810,14 @@ button[disabled],
             </div>
           </div>
         `,
-        complete: () => {
-          const label = APP_READY ? "Windowsアプリで続ける" : "公開通知を受け取る";
-          return `
+        complete: () => `
             <div class="start-flow-block">
               <h3 class="start-flow-title">完了</h3>
-              <p class="start-flow-text">デモはここまでです。次の一手を選んでください。</p>
-              <button class="btn primary start-flow-primary" type="button" data-action="final-cta">${label}</button>
-              <p class="micro">${APP_READY ? "インストール後、ログインから一本道で進められます。" : "公開準備が整い次第、ご案内します。"}</p>
+              <p class="start-flow-text">デモはここまでです。次の一手を開始ページにまとめました。</p>
+              <button class="btn primary start-flow-primary" type="button" data-action="final-cta">次へ：はじめる</button>
+              <p class="micro">${APP_NAME} の購入・配布枠・案内をまとめています。</p>
             </div>
-          `;
-        },
+          `,
         settings: () => `
           <div class="start-flow-alert" role="alert">
             <div class="start-flow-alert-title">設定（デモ）</div>
@@ -6058,7 +6076,7 @@ button[disabled],
         }
         const meta = document.createElement("div");
         meta.className = "meta";
-        meta.textContent = role === "assistant" ? "Codex • いま" : "あなた • いま";
+        meta.textContent = role === "assistant" ? "Companion • いま" : "あなた • いま";
         bubble.appendChild(meta);
         wrapper.appendChild(bubble);
         container.appendChild(wrapper);
@@ -6177,7 +6195,7 @@ button[disabled],
         bubble.appendChild(card);
         const meta = document.createElement("div");
         meta.className = "meta";
-        meta.textContent = "Codex • いま";
+        meta.textContent = "Companion • いま";
         bubble.appendChild(meta);
         wrapper.appendChild(avatar);
         wrapper.appendChild(bubble);
@@ -6215,7 +6233,7 @@ button[disabled],
         }
         const meta = document.createElement("div");
         meta.className = "meta";
-        meta.textContent = "Codex • いま";
+        meta.textContent = "Companion • いま";
         bubble.appendChild(meta);
         wrapper.appendChild(avatar);
         wrapper.appendChild(bubble);
@@ -6564,12 +6582,8 @@ button[disabled],
             setView("complete");
             break;
           case "final-cta":
-            track("cta_click", { target: APP_READY ? "start" : "notify" });
-            if (APP_READY) {
-              window.location.href = START_URL;
-            } else {
-              window.open(NOTIFY_URL, "_blank", "noopener");
-            }
+            track("cta_click", { target: "start" });
+            window.location.href = START_URL;
             break;
           case "menu-login":
             setView("login");
@@ -6658,7 +6672,7 @@ ${logLines[logIndex]}`;
 
       const isAllowedInteraction = (target) => {
         if (!(target instanceof Element)) return false;
-        if (target.closest(".demo-control-panel")) return true;
+        if (target.closest(".demo-cta")) return true;
         if (target.closest('[data-action="final-cta"]')) return true;
         return false;
       };

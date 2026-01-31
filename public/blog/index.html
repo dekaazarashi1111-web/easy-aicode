@@ -4,7 +4,7 @@
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>Winter Gator | ブログ</title>
-  <meta name="description" content="Winter Gator のブログ。更新情報や運用のコツをまとめます。" />
+  <meta name="description" content="Gator Companion の更新情報、不具合対応、運用のヒントをまとめます。" />
   <link rel="canonical" href="https://wintergator.com/blog/" />
   <link rel="alternate" hreflang="ja" href="https://wintergator.com/blog/" />
   <link rel="icon" href="/favicon.png" />
@@ -14,7 +14,7 @@
   <meta name="theme-color" content="#6366f1" />
   <meta property="og:site_name" content="Winter Gator" />
   <meta property="og:title" content="Winter Gator | ブログ" />
-  <meta property="og:description" content="Winter Gator のブログ。更新情報や運用のコツをまとめます。" />
+  <meta property="og:description" content="Gator Companion の更新情報、不具合対応、運用のヒントをまとめます。" />
   <meta property="og:type" content="website" />
   <meta property="og:url" content="https://wintergator.com/blog/" />
   <meta property="og:locale" content="ja_JP" />
@@ -27,12 +27,13 @@
   <meta name="twitter:site" content="@REPLACE_ME_TWITTER" />
   <meta name="twitter:creator" content="@REPLACE_ME_TWITTER" />
   <meta name="twitter:title" content="Winter Gator | ブログ" />
-  <meta name="twitter:description" content="Winter Gator のブログ。更新情報や運用のコツをまとめます。" />
+  <meta name="twitter:description" content="Gator Companion の更新情報、不具合対応、運用のヒントをまとめます。" />
   <meta name="twitter:image" content="https://wintergator.com/assets/og-default.png" />
   <meta name="twitter:image:alt" content="Winter Gator | ブログ のOG画像" />
   <meta name="twitter:url" content="https://wintergator.com/blog/" />
   <link rel="alternate" type="application/rss+xml" title="Winter Gator Blog" href="https://wintergator.com/blog/feed.xml" />
   <link rel="stylesheet" href="/style.css" />
+  <script src="/assets/site-config.js"></script>
   <script src="/site.js" defer></script>
   <script type="application/ld+json">
     {
@@ -40,7 +41,7 @@
       "@type": "Blog",
       "name": "Winter Gator Blog",
       "url": "https://wintergator.com/blog/",
-      "description": "Winter Gator のブログ。更新情報や運用のコツをまとめます。",
+      "description": "Gator Companion の更新情報、不具合対応、運用のヒントをまとめます。",
       "publisher": {
         "@type": "Organization",
         "name": "Winter Gator",
@@ -82,12 +83,6 @@
       "position": 1,
       "name": "はじめての更新",
       "url": "https://wintergator.com/blog/posts/first-update.html"
-    },
-    {
-      "@type": "ListItem",
-      "position": 2,
-      "name": "テスト更新",
-      "url": "https://wintergator.com/blog/posts/test-update.html"
     }
   ]
 }
@@ -111,14 +106,13 @@
     <a class="nav__brand" href="/">Winter Gator</a>
 
     <div class="nav__links">
-      <a class="nav__link" href="/products.html">製品</a>
+      <a class="nav__link" href="/products.html">製品詳細</a>
       <a class="nav__link" aria-current="page" href="/blog/">ブログ</a>
       <a class="nav__link" href="/demo/">デモ</a>
+      <a class="nav__link" href="/start">はじめる</a>
       <a class="nav__link" href="/support.html">サポート</a>
-      <a class="nav__link" href="/terms.html">利用規約</a>
-      <a class="nav__link" href="/tokusho">特商法</a>
       <a class="btn btn--secondary btn--sm" href="/privacy.html">プライバシー</a>
-      <a class="btn btn--primary btn--sm" href="/products.html#pricing">購入</a>
+      <a class="btn btn--primary btn--sm" data-stripe="buy" href="/start#buy">購入</a>
     </div>
   </div>
 </nav>
@@ -129,23 +123,22 @@
       <div class="stack stack--lg">
         <div class="stack">
           <p class="kicker">ブログ</p>
-          <h1 class="h1">更新情報と運用ガイド</h1>
-          <p class="lead">テンプレートの使い方や、運用をスムーズにするヒントをまとめます。</p>
+          <h1 class="h1">更新情報と運用メモ</h1>
+          <p class="lead">Gator Companion の更新情報、不具合対応、運用のヒントをまとめます。</p>
         </div>
         <div class="cluster">
-          <a class="btn btn--primary" href="/products.html">製品を見る</a>
-          <a class="btn btn--ghost" href="/support.html">サポートへ</a>
+          <a class="btn btn--primary" href="/demo/">デモを見る</a>
+          <a class="btn btn--ghost" href="/start">はじめる</a>
         </div>
 
         <div class="tag-filter" data-blog-tags>
           <!-- TAG_FILTER_START -->
           <div class="tag-filter__title">タグで絞り込む</div>
           <div class="tag-filter__list">
-            <button class="tag-filter__btn" type="button" data-tag="all" aria-pressed="true">全て <span class="tag-filter__count">2</span></button>
-            <button class="tag-filter__btn" type="button" data-tag="更新" aria-pressed="false">更新 <span class="tag-filter__count">2</span></button>
-            <button class="tag-filter__btn" type="button" data-tag="運用" aria-pressed="false">運用 <span class="tag-filter__count">2</span></button>
-            <button class="tag-filter__btn" type="button" data-tag="テスト" aria-pressed="false">テスト <span class="tag-filter__count">1</span></button>
-            <button class="tag-filter__btn" type="button" data-tag="テンプレート" aria-pressed="false">テンプレート <span class="tag-filter__count">1</span></button>
+            <button class="tag-filter__btn" type="button" data-tag="all" aria-pressed="true">全て <span class="tag-filter__count">1</span></button>
+            <button class="tag-filter__btn" type="button" data-tag="更新" aria-pressed="false">更新 <span class="tag-filter__count">1</span></button>
+            <button class="tag-filter__btn" type="button" data-tag="リリース" aria-pressed="false">リリース <span class="tag-filter__count">1</span></button>
+            <button class="tag-filter__btn" type="button" data-tag="使い方" aria-pressed="false">使い方 <span class="tag-filter__count">1</span></button>
           </div>
           <!-- TAG_FILTER_END -->
         </div>
@@ -153,7 +146,7 @@
 
       <div class="card blog-hero">
         <img class="blog-hero__image" src="/blog/assets/blog-hero.svg" alt="更新情報をまとめたヘッダー画像" />
-        <p class="note" style="margin-top: 0;">最新の更新やTipsを週次で掲載予定です。</p>
+        <p class="note" style="margin-top: 0;">更新情報は短いメモ形式で掲載します。</p>
       </div>
     </div>
   </section>
@@ -167,41 +160,25 @@
 
       <div class="grid blog-grid" data-blog-list data-posts-url="/blog/posts.json">
         <!-- BLOG_LIST_START -->
-        <article class="card blog-card" data-tags="運用,テンプレート,更新">
+        <article class="card blog-card" data-tags="更新,リリース,使い方">
           <a class="blog-card__link" href="/blog/posts/first-update.html">
             <div class="blog-card__media">
               <img class="blog-card__image" src="/blog/assets/blog-hero.svg" alt="はじめての更新のヘッダー画像" loading="lazy" />
             </div>
             <div class="stack">
               <div class="blog-card__meta">
-                <span>2026-01-27</span>
+                <span>2026-01-31</span>
                 <span class="pill">記事</span>
               </div>
               <h3 class="blog-card__title">はじめての更新</h3>
-              <p class="muted">ブログの使い方と更新方針を紹介します。</p>
-              <span class="btn btn--ghost btn--sm blog-card__cta">続きを読む</span>
-            </div>
-          </a>
-        </article>
-        <article class="card blog-card" data-tags="運用,テスト,更新">
-          <a class="blog-card__link" href="/blog/posts/test-update.html">
-            <div class="blog-card__media">
-              <img class="blog-card__image" src="/blog/assets/blog-hero.svg" alt="テスト更新のヘッダー画像" loading="lazy" />
-            </div>
-            <div class="stack">
-              <div class="blog-card__meta">
-                <span>2026-01-27</span>
-                <span class="pill">記事</span>
-              </div>
-              <h3 class="blog-card__title">テスト更新</h3>
-              <p class="muted">Cloudflare Pages 確認用のテスト記事です。</p>
+              <p class="muted">Gator Companion の更新方針とデモの位置づけを紹介します。</p>
               <span class="btn btn--ghost btn--sm blog-card__cta">続きを読む</span>
             </div>
           </a>
         </article>
         <!-- BLOG_LIST_END -->
       </div>
-      <p class="note" data-blog-empty hidden>記事の準備中です。</p>
+      <p class="muted" data-blog-empty hidden></p>
     </div>
   </section>
 </main>
@@ -210,10 +187,11 @@
   <div class="container footer__inner">
     <p class="muted">© Winter Gator</p>
     <div class="footer__links">
-      <a href="/products.html">製品</a>
-      <a href="/blog/">ブログ</a>
+      <a href="/products.html">製品詳細</a>
       <a href="/demo/">デモ</a>
+      <a href="/start">はじめる</a>
       <a href="/support.html">サポート</a>
+      <a href="/blog/">ブログ</a>
       <a href="/terms.html">利用規約</a>
       <a href="/tokusho">特商法</a>
       <a href="/privacy.html">プライバシー</a>

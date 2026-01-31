@@ -2,61 +2,61 @@
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
   <url>
     <loc>https://wintergator.com/</loc>
-    <lastmod>2026-01-27</lastmod>
+    <lastmod>2026-01-31</lastmod>
     <changefreq>weekly</changefreq>
     <priority>1.0</priority>
   </url>
   <url>
     <loc>https://wintergator.com/products.html</loc>
-    <lastmod>2026-01-27</lastmod>
+    <lastmod>2026-01-31</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://wintergator.com/start</loc>
+    <lastmod>2026-01-31</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
     <loc>https://wintergator.com/support.html</loc>
-    <lastmod>2026-01-27</lastmod>
+    <lastmod>2026-01-31</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.6</priority>
   </url>
   <url>
     <loc>https://wintergator.com/terms.html</loc>
-    <lastmod>2026-01-27</lastmod>
+    <lastmod>2026-01-31</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.4</priority>
   </url>
   <url>
     <loc>https://wintergator.com/privacy.html</loc>
-    <lastmod>2026-01-27</lastmod>
+    <lastmod>2026-01-31</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.4</priority>
   </url>
   <url>
     <loc>https://wintergator.com/refund.html</loc>
-    <lastmod>2026-01-27</lastmod>
+    <lastmod>2026-01-31</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.4</priority>
   </url>
   <url>
     <loc>https://wintergator.com/blog/</loc>
-    <lastmod>2026-01-27</lastmod>
+    <lastmod>2026-01-31</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.7</priority>
   </url>
   <url>
     <loc>https://wintergator.com/tokusho</loc>
-    <lastmod>2026-01-27</lastmod>
-    <changefreq>weekly</changefreq>
+    <lastmod>2026-01-31</lastmod>
+    <changefreq>monthly</changefreq>
     <priority>0.4</priority>
   </url>
   <url>
     <loc>https://wintergator.com/blog/posts/first-update.html</loc>
-    <lastmod>2026-01-27</lastmod>
-    <changefreq>monthly</changefreq>
-    <priority>0.6</priority>
-  </url>
-  <url>
-    <loc>https://wintergator.com/blog/posts/test-update.html</loc>
-    <lastmod>2026-01-27</lastmod>
+    <lastmod>2026-01-31</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.6</priority>
   </url>

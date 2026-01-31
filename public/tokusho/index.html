@@ -32,6 +32,7 @@
   <meta name="twitter:image:alt" content="Winter Gator | 特定商取引法に基づく表記 のOG画像" />
   <meta name="twitter:url" content="https://wintergator.com/tokusho" />
   <link rel="stylesheet" href="/style.css" />
+  <script src="/assets/site-config.js"></script>
   <script src="/site.js" defer></script>
   <script type="application/ld+json">
     {
@@ -86,14 +87,13 @@
     <a class="nav__brand" href="/">Winter Gator</a>
 
     <div class="nav__links">
-      <a class="nav__link" href="/products.html">製品</a>
-      <a class="nav__link" href="/blog/">ブログ</a>
+      <a class="nav__link" href="/products.html">製品詳細</a>
       <a class="nav__link" href="/demo/">デモ</a>
+      <a class="nav__link" href="/start">はじめる</a>
       <a class="nav__link" href="/support.html">サポート</a>
-      <a class="nav__link" href="/terms.html">利用規約</a>
-      <a class="nav__link" aria-current="page" href="/tokusho">特商法</a>
+      <a class="nav__link" href="/blog/">ブログ</a>
       <a class="btn btn--secondary btn--sm" href="/privacy.html">プライバシー</a>
-      <a class="btn btn--primary btn--sm" href="/products.html#pricing">購入</a>
+      <a class="btn btn--primary btn--sm" data-stripe="buy" href="/start#buy">購入</a>
     </div>
   </div>
 </nav>
@@ -134,18 +134,18 @@
           <h2>提供・引渡</h2>
           <ul>
             <li><strong>引渡時期</strong>：決済確認後、原則24時間以内にメールでご案内します（手動対応）。</li>
-            <li><strong>提供形態</strong>：デジタル商品（テンプレート／設定ファイル等）として提供します。</li>
+            <li><strong>提供形態</strong>：Windowsアプリ（インストーラ/zip）およびガイドのデジタル提供です。</li>
           </ul>
 
           <h2>返品・返金</h2>
           <p>返金条件の詳細は <a href="/refund.html">返金ポリシー</a> をご確認ください。</p>
 
           <h2>動作環境</h2>
-          <p>対応OSや必要要件は <a href="/products.html">商品ページ</a> に記載します。</p>
+          <p>Windows 10 / 11（β）のみ対応です。</p>
         </div>
       </article>
 
-      <p class="muted">最終更新日：2026-01-25</p>
+      <p class="muted">最終更新日：2026-01-31</p>
     </div>
   </section>
 </main>
@@ -154,10 +154,11 @@
   <div class="container footer__inner">
     <p class="muted">© Winter Gator</p>
     <div class="footer__links">
-      <a href="/products.html">製品</a>
-      <a href="/blog/">ブログ</a>
+      <a href="/products.html">製品詳細</a>
       <a href="/demo/">デモ</a>
+      <a href="/start">はじめる</a>
       <a href="/support.html">サポート</a>
+      <a href="/blog/">ブログ</a>
       <a href="/terms.html">利用規約</a>
       <a href="/tokusho">特商法</a>
       <a href="/privacy.html">プライバシー</a>

@@ -3,8 +3,8 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Winter Gator | CODEX COMPANION</title>
-  <meta name="description" content="Winter Gator の CODEX COMPANION。作業手順を整理し、編集をスムーズに進めるためのツールです。" />
+  <title>Winter Gator | Gator Companion</title>
+  <meta name="description" content="ChatGPTは使ってる。でもCodexは触ってない。OpenAI Codex対応の非公式Windowsアプリで、1分で雰囲気コーディングを始められます。" />
   <link rel="canonical" href="https://wintergator.com/" />
   <link rel="alternate" hreflang="ja" href="https://wintergator.com/" />
   <link rel="icon" href="/favicon.png" />
@@ -13,25 +13,26 @@
   <meta name="author" content="Winter Gator" />
   <meta name="theme-color" content="#6366f1" />
   <meta property="og:site_name" content="Winter Gator" />
-  <meta property="og:title" content="Winter Gator | CODEX COMPANION" />
-  <meta property="og:description" content="Winter Gator の CODEX COMPANION。作業手順を整理し、編集をスムーズに進めるためのツールです。" />
+  <meta property="og:title" content="Winter Gator | Gator Companion" />
+  <meta property="og:description" content="ChatGPTは使ってる。でもCodexは触ってない。OpenAI Codex対応の非公式Windowsアプリで、1分で雰囲気コーディングを始められます。" />
   <meta property="og:type" content="website" />
   <meta property="og:url" content="https://wintergator.com/" />
   <meta property="og:locale" content="ja_JP" />
   <meta property="og:image" content="https://wintergator.com/assets/og-default.png" />
   <meta property="og:image:secure_url" content="https://wintergator.com/assets/og-default.png" />
-  <meta property="og:image:alt" content="Winter Gator | CODEX COMPANION のOG画像" />
+  <meta property="og:image:alt" content="Winter Gator | Gator Companion のOG画像" />
   <meta property="og:image:width" content="1200" />
   <meta property="og:image:height" content="630" />
   <meta name="twitter:card" content="summary_large_image" />
   <meta name="twitter:site" content="@REPLACE_ME_TWITTER" />
   <meta name="twitter:creator" content="@REPLACE_ME_TWITTER" />
-  <meta name="twitter:title" content="Winter Gator | CODEX COMPANION" />
-  <meta name="twitter:description" content="Winter Gator の CODEX COMPANION。作業手順を整理し、編集をスムーズに進めるためのツールです。" />
+  <meta name="twitter:title" content="Winter Gator | Gator Companion" />
+  <meta name="twitter:description" content="ChatGPTは使ってる。でもCodexは触ってない。OpenAI Codex対応の非公式Windowsアプリで、1分で雰囲気コーディングを始められます。" />
   <meta name="twitter:image" content="https://wintergator.com/assets/og-default.png" />
-  <meta name="twitter:image:alt" content="Winter Gator | CODEX COMPANION のOG画像" />
+  <meta name="twitter:image:alt" content="Winter Gator | Gator Companion のOG画像" />
   <meta name="twitter:url" content="https://wintergator.com/" />
   <link rel="stylesheet" href="/style.css" />
+  <script src="/assets/site-config.js"></script>
   <script src="/site.js" defer></script>
   <script type="application/ld+json">
     {
@@ -62,7 +63,7 @@
       "@type": "WebSite",
       "name": "Winter Gator",
       "url": "https://wintergator.com/",
-      "description": "Winter Gator の CODEX COMPANION。作業手順を整理し、編集をスムーズに進めるためのツールです。",
+      "description": "OpenAI Codex対応の非公式Windows支援アプリを提供しています。",
       "inLanguage": "ja",
       "publisher": {
         "@type": "Organization",
@@ -82,39 +83,23 @@
           "name": "対応OSは？",
           "acceptedAnswer": {
             "@type": "Answer",
-            "text": "Windows / macOS / Linux（WSL含む）に対応予定です。"
+            "text": "Windows 10 / 11 のみ（β）です。"
           }
         },
         {
           "@type": "Question",
-          "name": "何ができるツールですか？",
+          "name": "必要なものは？",
           "acceptedAnswer": {
             "@type": "Answer",
-            "text": "編集手順の整理、販売導線の配置、必要情報の整備ができます。"
+            "text": "インターネット接続とOpenAIアカウントが必要です。"
           }
         },
         {
           "@type": "Question",
-          "name": "納品方法は？",
+          "name": "デモは本番と同じですか？",
           "acceptedAnswer": {
             "@type": "Answer",
-            "text": "決済確認後にメールで案内します（手動対応）。"
-          }
-        },
-        {
-          "@type": "Question",
-          "name": "サポート範囲は？",
-          "acceptedAnswer": {
-            "@type": "Answer",
-            "text": "メールサポートのみです。目安48時間以内に返信します。"
-          }
-        },
-        {
-          "@type": "Question",
-          "name": "返金条件は？",
-          "acceptedAnswer": {
-            "@type": "Answer",
-            "text": "提供前のキャンセルや不具合時などに対応します。詳細は返金ページをご確認ください。"
+            "text": "いいえ。ブラウザ上のダミーデモで、実際の処理やファイル変更は行いません。"
           }
         },
         {
@@ -122,7 +107,23 @@
           "name": "OpenAI公式製品ですか？",
           "acceptedAnswer": {
             "@type": "Answer",
-            "text": "いいえ。Winter Gator が独立して開発する非公式ツールです。"
+            "text": "いいえ。Winter Gator が独立して提供する非公式アプリです。"
+          }
+        },
+        {
+          "@type": "Question",
+          "name": "納品方法は？",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "決済確認後、メールでご案内します（手動対応）。"
+          }
+        },
+        {
+          "@type": "Question",
+          "name": "返金条件は？",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "提供前のキャンセルや重大な不具合時に対応します。"
           }
         }
       ]
@@ -146,14 +147,13 @@
     <a class="nav__brand" href="/">Winter Gator</a>
 
     <div class="nav__links">
-      <a class="nav__link" href="/products.html">製品</a>
-      <a class="nav__link" href="/blog/">ブログ</a>
+      <a class="nav__link" href="/products.html">製品詳細</a>
       <a class="nav__link" href="/demo/">デモ</a>
+      <a class="nav__link" href="/start">はじめる</a>
       <a class="nav__link" href="/support.html">サポート</a>
-      <a class="nav__link" href="/terms.html">利用規約</a>
-      <a class="nav__link" href="/tokusho">特商法</a>
+      <a class="nav__link" href="/blog/">ブログ</a>
       <a class="btn btn--secondary btn--sm" href="/privacy.html">プライバシー</a>
-      <a class="btn btn--primary btn--sm" href="/products.html#pricing">購入</a>
+      <a class="btn btn--primary btn--sm" data-stripe="buy" href="/start#buy">購入</a>
     </div>
   </div>
 </nav>
@@ -161,30 +161,88 @@
 <main id="main">
   <section class="section">
     <div class="container stack stack--lg">
-      <p class="kicker">Winter Gator</p>
-      <h1 class="h1">CODEX COMPANION</h1>
-      <p class="lead">短い手順で編集を進めるための、実務向けテンプレートとガイドです。</p>
+      <p class="kicker">Windows向け / 非公式Codex支援</p>
+      <h1 class="h1">ChatGPTは使ってる。<br>でもCodexは触ってない。</h1>
+      <p class="lead">OpenAI Codex対応の非公式Windowsアプリ「Gator Companion」。1分で雰囲気コーディングを始めるための入口です。</p>
 
       <div class="cluster">
-        <a class="btn btn--primary" data-stripe="buy" data-enabled-text="購入する" data-disabled-text="販売準備中" href="/products.html#pricing">購入する</a>
-        <a class="btn btn--ghost" href="/support.html">サポートを見る</a>
+        <a class="btn btn--primary" href="/demo/">デモを見る</a>
+        <a class="btn btn--secondary" data-stripe="buy" href="/start#buy">購入する</a>
       </div>
+      <p class="note">β版 / Windowsのみ。OpenAI公式ではありません。</p>
+    </div>
+  </section>
 
-      <hr />
+  <section class="section section--alt">
+    <div class="container stack">
+      <h2 class="h2">こういう人に</h2>
+      <ul class="list">
+        <li>ChatGPTは使っているが、Codexはまだ触っていない</li>
+        <li>細かい設定より、雰囲気コーディングを早く始めたい</li>
+        <li>Windows環境でサクッと動かしたい</li>
+        <li>いきなりCLIや複雑な構成に行きたくない</li>
+      </ul>
+    </div>
+  </section>
 
+  <section class="section">
+    <div class="container stack">
+      <h2 class="h2">できること</h2>
       <div class="grid">
         <article class="card card--interactive">
-          <h3 class="card__title">編集フローを短縮</h3>
-          <p class="card__body">必要な情報だけを整理し、迷わず進める構成です。</p>
+          <h3 class="card__title">最短の導線で起動</h3>
+          <p class="card__body">セットアップを最小化し、起動までの迷いを減らします。</p>
         </article>
         <article class="card card--interactive">
-          <h3 class="card__title">小さく速く更新</h3>
-          <p class="card__body">既存デザインを崩さずに差分だけ反映します。</p>
+          <h3 class="card__title">OpenAI Codex対応</h3>
+          <p class="card__body">雰囲気コーディングを試すための基本導線を整えます。</p>
         </article>
         <article class="card card--interactive">
-          <h3 class="card__title">実運用を想定</h3>
-          <p class="card__body">販売導線と最低限の情報を揃えた状態で提供します。</p>
+          <h3 class="card__title">必要最低限のガイド付き</h3>
+          <p class="card__body">起動から一通りの流れまでを短い手順で案内します。</p>
         </article>
+      </div>
+    </div>
+  </section>
+
+  <section class="section section--alt">
+    <div class="container stack">
+      <h2 class="h2">3ステップで開始</h2>
+      <div class="grid">
+        <article class="card">
+          <p class="kicker">Step 1</p>
+          <h3 class="card__title">デモで導線を確認</h3>
+          <p class="card__body">ブラウザで動線だけ体験できます。</p>
+        </article>
+        <article class="card">
+          <p class="kicker">Step 2</p>
+          <h3 class="card__title">購入・案内受け取り</h3>
+          <p class="card__body">決済後にメールで案内（手動対応）。</p>
+        </article>
+        <article class="card">
+          <p class="kicker">Step 3</p>
+          <h3 class="card__title">Windowsで起動</h3>
+          <p class="card__body">アプリを開いてすぐに開始できます。</p>
+        </article>
+      </div>
+    </div>
+  </section>
+
+  <section class="section">
+    <div class="container stack">
+      <h2 class="h2">画面イメージ</h2>
+      <p class="muted">スクリーンショットは準備中です。</p>
+      <div class="grid" style="--grid-min: 260px;">
+        <div class="card" style="text-align:center;">
+          <div style="border:1px dashed var(--border); border-radius: 14px; padding: 32px;">
+            <p class="muted">準備中のためプレースホルダーを表示しています</p>
+          </div>
+        </div>
+        <div class="card" style="text-align:center;">
+          <div style="border:1px dashed var(--border); border-radius: 14px; padding: 32px;">
+            <p class="muted">GIF・動画も後日追加予定</p>
+          </div>
+        </div>
       </div>
     </div>
   </section>
@@ -193,35 +251,35 @@
     <div class="container stack">
       <div class="center stack">
         <p class="kicker">価格</p>
-        <h2 class="h2">買い切りプラン</h2>
-        <p class="lead" style="margin-inline:auto;">ベータ価格のため、今後内容と価格は変更される場合があります。</p>
+        <h2 class="h2">買い切り（β）</h2>
+        <p class="lead" style="margin-inline:auto;">今後の内容変更に伴い価格が変わる場合があります。</p>
       </div>
 
       <div class="grid">
         <div class="card">
-          <span class="pill">利用可能</span>
-          <h3 class="h2" style="margin-top: 0.75rem;">CODEX COMPANION</h3>
+          <span class="pill">提供中</span>
+          <h3 class="h2" style="margin-top: 0.75rem;">Gator Companion</h3>
 
           <div class="price">
-            <span class="price__amount">¥9,800</span>
+            <span class="price__amount">¥2,980</span>
             <span class="price__period">買い切り</span>
           </div>
 
           <ul class="list">
-            <li>テンプレート一式</li>
-            <li>実運用向けの導線整理</li>
-            <li>メールサポート（48時間以内）</li>
+            <li>Windowsアプリ（β）</li>
+            <li>初期導入ガイド</li>
+            <li>メールサポート</li>
           </ul>
 
           <div class="spacer"></div>
-          <a class="btn btn--primary btn--wide" data-stripe="buy" data-enabled-text="購入する" data-disabled-text="販売準備中" href="/products.html#pricing">購入する</a>
+          <a class="btn btn--primary btn--wide" data-stripe="buy" href="/start#buy">購入する</a>
         </div>
 
         <div class="card">
-          <h3 class="h2">カスタム相談</h3>
-          <p class="muted">法人向けの調整や追加要望はサポート窓口で受付中です。</p>
+          <h3 class="h2">迷ったら</h3>
+          <p class="muted">先にデモで導線を確認してから購入できます。</p>
           <div class="spacer"></div>
-          <a class="btn btn--secondary btn--wide" href="/support.html">お問い合わせ</a>
+          <a class="btn btn--secondary btn--wide" href="/demo/">デモを見る</a>
         </div>
       </div>
     </div>
@@ -235,45 +293,52 @@
         <details class="faq">
           <summary>対応OSは？</summary>
           <div class="prose">
-            <p>Windows / macOS / Linux（WSL含む）に対応予定です。</p>
+            <p>Windows 10 / 11 のみ（β）です。</p>
           </div>
         </details>
 
         <details class="faq">
-          <summary>何ができるツールですか？</summary>
+          <summary>必要なものは？</summary>
           <div class="prose">
-            <p>編集手順の整理、販売導線の配置、必要情報の整備ができます。</p>
+            <p>インターネット接続とOpenAIアカウントが必要です。</p>
           </div>
         </details>
 
         <details class="faq">
-          <summary>納品方法は？</summary>
+          <summary>デモは本番と同じですか？</summary>
           <div class="prose">
-            <p>決済確認後にメールで案内します（手動対応）。</p>
-          </div>
-        </details>
-
-        <details class="faq">
-          <summary>サポート範囲は？</summary>
-          <div class="prose">
-            <p>メールサポートのみです。目安48時間以内に返信します。</p>
-          </div>
-        </details>
-
-        <details class="faq">
-          <summary>返金条件は？</summary>
-          <div class="prose">
-            <p>提供前のキャンセルや不具合時などに対応します。詳細は返金ページをご確認ください。</p>
+            <p>いいえ。ブラウザ上のダミーデモで、実際の処理やファイル変更は行いません。</p>
           </div>
         </details>
 
         <details class="faq">
           <summary>OpenAI公式製品ですか？</summary>
           <div class="prose">
-            <p>いいえ。Winter Gator が独立して開発する非公式ツールです。</p>
+            <p>いいえ。Winter Gator が独立して提供する非公式アプリです。</p>
+          </div>
+        </details>
+
+        <details class="faq">
+          <summary>納品方法は？</summary>
+          <div class="prose">
+            <p>決済確認後、メールでご案内します（手動対応）。</p>
+          </div>
+        </details>
+
+        <details class="faq">
+          <summary>返金条件は？</summary>
+          <div class="prose">
+            <p>提供前のキャンセルや重大な不具合時に対応します。詳細は返金ページをご確認ください。</p>
           </div>
         </details>
       </div>
+    </div>
+  </section>
+
+  <section class="section section--alt">
+    <div class="container stack">
+      <h2 class="h2">免責</h2>
+      <p class="muted">本アプリはOpenAI公式製品ではなく、β版として提供します。機能や仕様は予告なく変更される場合があります。</p>
     </div>
   </section>
 </main>
@@ -282,10 +347,11 @@
   <div class="container footer__inner">
     <p class="muted">© Winter Gator</p>
     <div class="footer__links">
-      <a href="/products.html">製品</a>
-      <a href="/blog/">ブログ</a>
+      <a href="/products.html">製品詳細</a>
       <a href="/demo/">デモ</a>
+      <a href="/start">はじめる</a>
       <a href="/support.html">サポート</a>
+      <a href="/blog/">ブログ</a>
       <a href="/terms.html">利用規約</a>
       <a href="/tokusho">特商法</a>
       <a href="/privacy.html">プライバシー</a>

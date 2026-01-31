@@ -2,3 +2,5 @@
 /blog /blog/ 301
 /blog/index.html /blog/ 301
 /tokusho/index.html /tokusho 301
+/start /start/ 301
+/start/index.html /start/ 301

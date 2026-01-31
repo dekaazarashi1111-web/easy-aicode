@@ -4,7 +4,7 @@
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>Winter Gator | サポート</title>
-  <meta name="description" content="Winter Gator のサポート窓口と返信目安をご案内します。" />
+  <meta name="description" content="Gator Companion のサポート窓口と返信目安をご案内します。" />
   <link rel="canonical" href="https://wintergator.com/support.html" />
   <link rel="alternate" hreflang="ja" href="https://wintergator.com/support.html" />
   <link rel="icon" href="/favicon.png" />
@@ -14,7 +14,7 @@
   <meta name="theme-color" content="#6366f1" />
   <meta property="og:site_name" content="Winter Gator" />
   <meta property="og:title" content="Winter Gator | サポート" />
-  <meta property="og:description" content="Winter Gator のサポート窓口と返信目安をご案内します。" />
+  <meta property="og:description" content="Gator Companion のサポート窓口と返信目安をご案内します。" />
   <meta property="og:type" content="website" />
   <meta property="og:url" content="https://wintergator.com/support.html" />
   <meta property="og:locale" content="ja_JP" />
@@ -27,11 +27,12 @@
   <meta name="twitter:site" content="@REPLACE_ME_TWITTER" />
   <meta name="twitter:creator" content="@REPLACE_ME_TWITTER" />
   <meta name="twitter:title" content="Winter Gator | サポート" />
-  <meta name="twitter:description" content="Winter Gator のサポート窓口と返信目安をご案内します。" />
+  <meta name="twitter:description" content="Gator Companion のサポート窓口と返信目安をご案内します。" />
   <meta name="twitter:image" content="https://wintergator.com/assets/og-default.png" />
   <meta name="twitter:image:alt" content="Winter Gator | サポート のOG画像" />
   <meta name="twitter:url" content="https://wintergator.com/support.html" />
   <link rel="stylesheet" href="/style.css" />
+  <script src="/assets/site-config.js"></script>
   <script src="/site.js" defer></script>
   <script type="application/ld+json">
     {
@@ -51,7 +52,7 @@
           "name": "OpenAI公式サービスですか？",
           "acceptedAnswer": {
             "@type": "Answer",
-            "text": "いいえ。Winter Gator が独立して提供するサービスです。"
+            "text": "いいえ。Winter Gator が独立して提供する非公式アプリです。"
           }
         }
       ]
@@ -95,14 +96,13 @@
     <a class="nav__brand" href="/">Winter Gator</a>
 
     <div class="nav__links">
-      <a class="nav__link" href="/products.html">製品</a>
-      <a class="nav__link" href="/blog/">ブログ</a>
+      <a class="nav__link" href="/products.html">製品詳細</a>
       <a class="nav__link" href="/demo/">デモ</a>
+      <a class="nav__link" href="/start">はじめる</a>
       <a class="nav__link" aria-current="page" href="/support.html">サポート</a>
-      <a class="nav__link" href="/terms.html">利用規約</a>
-      <a class="nav__link" href="/tokusho">特商法</a>
+      <a class="nav__link" href="/blog/">ブログ</a>
       <a class="btn btn--secondary btn--sm" href="/privacy.html">プライバシー</a>
-      <a class="btn btn--primary btn--sm" href="/products.html#pricing">購入</a>
+      <a class="btn btn--primary btn--sm" data-stripe="buy" href="/start#buy">購入</a>
     </div>
   </div>
 </nav>
@@ -113,8 +113,8 @@
       <div class="stack stack--lg">
         <div class="stack">
           <p class="kicker">サポート</p>
-          <h1 class="h1">サポート</h1>
-          <p class="lead">メールでのサポートのみ対応しています。内容を簡潔に記載してください。</p>
+          <h1 class="h1">サポート窓口</h1>
+          <p class="lead">Gator Companion の購入・導入・動作の相談をメールで受け付けています。</p>
         </div>
 
         <div class="card stack">
@@ -128,9 +128,9 @@
         <div class="card stack">
           <h2 class="h2">対応範囲</h2>
           <ul class="list">
-            <li>導入方法の案内</li>
-            <li>基本的な操作の質問</li>
-            <li>表示崩れなどの軽微な不具合</li>
+            <li>購入後の案内・導入方法</li>
+            <li>起動時のつまずきや基本操作</li>
+            <li>軽微な表示崩れ・接続の相談</li>
           </ul>
         </div>
       </div>
@@ -138,7 +138,7 @@
       <aside class="stack">
         <div class="card">
           <h2 class="h2">サポート概要</h2>
-          <p class="muted">必要な情報（購入日・利用環境）を添えてご連絡ください。</p>
+          <p class="muted">購入日や利用環境を添えてご連絡ください。</p>
           <div class="divider"></div>
           <div class="stack">
             <p><strong>受付</strong><br><span class="muted">メールのみ</span></p>
@@ -157,7 +157,7 @@
           <details class="faq">
             <summary>OpenAI公式サービスですか？</summary>
             <div class="prose">
-              <p>いいえ。Winter Gator が独立して提供するサービスです。</p>
+              <p>いいえ。Winter Gator が独立して提供する非公式アプリです。</p>
             </div>
           </details>
         </div>
@@ -170,10 +170,11 @@
   <div class="container footer__inner">
     <p class="muted">© Winter Gator</p>
     <div class="footer__links">
-      <a href="/products.html">製品</a>
-      <a href="/blog/">ブログ</a>
+      <a href="/products.html">製品詳細</a>
       <a href="/demo/">デモ</a>
+      <a href="/start">はじめる</a>
       <a href="/support.html">サポート</a>
+      <a href="/blog/">ブログ</a>
       <a href="/terms.html">利用規約</a>
       <a href="/tokusho">特商法</a>
       <a href="/privacy.html">プライバシー</a>
