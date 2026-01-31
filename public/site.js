@@ -18,13 +18,15 @@ const setText = (link, text) => {
   }
 };
 
+const shouldOpenInNewTab = (url) => /^https?:\/\//i.test(url) || /\{\{.+\}\}/.test(url);
+
 const enableStripe = (url) => {
   buyLinks.forEach((link) => {
     link.setAttribute("href", url);
     link.removeAttribute("aria-disabled");
     link.classList.remove("btn--disabled");
     setText(link, getEnabledText(link));
-    if (/^https?:\/\//i.test(url)) {
+    if (shouldOpenInNewTab(url)) {
       link.setAttribute("target", "_blank");
       link.setAttribute("rel", "noopener noreferrer");
     } else {

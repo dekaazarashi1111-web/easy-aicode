@@ -24,8 +24,8 @@
   <meta property="og:image:width" content="1200" />
   <meta property="og:image:height" content="630" />
   <meta name="twitter:card" content="summary_large_image" />
-  <meta name="twitter:site" content="@REPLACE_ME_TWITTER" />
-  <meta name="twitter:creator" content="@REPLACE_ME_TWITTER" />
+  <meta name="twitter:site" content="@{{YOUR_X_HANDLE}}" />
+  <meta name="twitter:creator" content="@{{YOUR_X_HANDLE}}" />
   <meta name="twitter:title" content="Winter Gator | はじめる" />
   <meta name="twitter:description" content="Gator Companion を始めるための購入・配布枠・案内をまとめたページです。" />
   <meta name="twitter:image" content="https://wintergator.com/assets/og-default.png" />
@@ -110,7 +110,7 @@
       <div class="grid" id="buy">
         <article class="card">
           <h2 class="card__title">1. 購入する</h2>
-          <p class="muted">買い切り（β）です。購入後にメールでご案内します。</p>
+          <p class="muted">買い切り（β）です。決済確認後、原則24時間以内にメールでご案内します（手動対応）。</p>
           <div class="price">
             <span class="price__amount">¥2,980</span>
             <span class="price__period">買い切り</span>
@@ -121,15 +121,21 @@
 
         <article class="card">
           <h2 class="card__title">2. 先着の無料/割引枠</h2>
+          <ul class="list">
+            <li>無料枠：先着<span data-free-slots>10</span>名（フィードバック必須）</li>
+            <li>500円枠：先着<span data-discount-slots>30</span>名</li>
+          </ul>
           <p class="muted">XのDMで「Gator Companion 無料枠希望」と送ってください。</p>
-          <div class="spacer"></div>
-          <a class="btn btn--secondary btn--wide" href="https://x.com/REPLACE_ME" target="_blank" rel="noopener noreferrer">XでDMする</a>
+          <div class="cluster">
+            <a class="btn btn--secondary" id="xProfileLink" href="https://x.com/{{YOUR_X_HANDLE}}" target="_blank" rel="noopener noreferrer">XでDMする</a>
+            <a class="btn btn--ghost" id="mailFallback" href="mailto:support@wintergator.com?subject=Gator%20Companion%20無料枠希望">メールで応募</a>
+          </div>
         </article>
 
         <article class="card">
           <h2 class="card__title">3. 購入後の流れ</h2>
           <ul class="list">
-            <li>決済確認後にメールでご案内（手動対応）</li>
+            <li>決済確認後、原則24時間以内にメールでご案内（手動対応）</li>
             <li>インストーラまたはzip形式で提供</li>
             <li>初期導入ガイドで起動まで案内</li>
           </ul>
@@ -180,5 +186,25 @@
     <p class="note">本製品はOpenAI等の公式製品ではなく、独立して開発されています。</p>
   </div>
 </footer>
+<script>
+  const siteConfig = window.SITE_CONFIG || {};
+  const freeSlots = document.querySelector("[data-free-slots]");
+  const discountSlots = document.querySelector("[data-discount-slots]");
+  if (freeSlots && siteConfig.FREE_SLOTS != null) {
+    freeSlots.textContent = siteConfig.FREE_SLOTS;
+  }
+  if (discountSlots && siteConfig.DISCOUNT_SLOTS != null) {
+    discountSlots.textContent = siteConfig.DISCOUNT_SLOTS;
+  }
+  const xProfileLink = document.getElementById("xProfileLink");
+  if (xProfileLink && siteConfig.X_PROFILE_URL) {
+    xProfileLink.href = siteConfig.X_PROFILE_URL;
+  }
+  const mailFallback = document.getElementById("mailFallback");
+  if (mailFallback && siteConfig.SUPPORT_EMAIL) {
+    const subject = encodeURIComponent("Gator Companion 無料枠希望");
+    mailFallback.href = `mailto:${siteConfig.SUPPORT_EMAIL}?subject=${subject}`;
+  }
+</script>
 </body>
 </html>

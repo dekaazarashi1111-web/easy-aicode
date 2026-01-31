@@ -13,6 +13,9 @@
 - `SUPPORT_EMAIL` : サポートメール
 - `DEMO_URL` : デモURL
 - `START_URL` : はじめるページ
+- `X_PROFILE_URL` : XプロフィールURL
+- `FREE_SLOTS` : 無料枠の先着数
+- `DISCOUNT_SLOTS` : 割引枠の先着数
 
 ## ブログ
 - ブログ一覧は `public/blog/index.html` です。
@@ -25,7 +28,7 @@
 - ロゴ: `public/assets/logo.png`
 - ファビコン: `public/favicon.png`
 - `_redirects` に canonical へ統一するためのリダイレクトを設定しています。
-- SNSのURLはHTML内の `REPLACE_ME` を置き換えてください。
+- SNSのURLは `public/assets/site-config.js` の設定に合わせて更新します。
 
 ## デプロイ
 Git に push するだけでデプロイ可能です（ビルド手順なし）。
