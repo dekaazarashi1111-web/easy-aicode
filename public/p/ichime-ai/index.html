@@ -163,12 +163,28 @@
         </article>
         <article class="card">
           <h3 class="card__title">3. ログインして指示</h3>
-          <p class="card__body">OpenAIアカウントでログインし、やりたいことを1文で入力。</p>
+          <p class="card__body">ChatGPT公式ログイン画面で認証し、やりたいことを1文で入力。</p>
         </article>
       </div>
       <div class="cluster">
         <a class="btn btn--primary" href="/start">詳しい手順を見る</a>
         <a class="btn btn--ghost" href="/install">インストール手順</a>
+      </div>
+    </div>
+  </section>
+
+  <section class="section section--alt" id="login-example">
+    <div class="container grid" style="--grid-min: 320px; align-items: center;">
+      <div class="stack">
+        <h2 class="h2">ログイン時にこの画面が出ます（正常です）</h2>
+        <p class="lead">ログインはChatGPTの公式画面で行います。Google/Apple/Microsoft/電話番号/メール等の選択が表示されます。</p>
+        <p class="muted">当アプリや当サイトがパスワードや2FAコードを受け取ることはありません。</p>
+      </div>
+      <div class="media-placeholder" aria-label="ChatGPTのログイン/サインアップ画面（Google/Apple/Microsoft/電話番号/メール）">
+        <div class="media-placeholder__inner">
+          <strong>ログイン画面のスクショ</strong>
+          <span>TODO: ChatGPT公式ログイン/サインアップ画面のスクショを差し替える</span>
+        </div>
       </div>
     </div>
   </section>
@@ -181,11 +197,12 @@
       </div>
       <div class="grid">
         <article class="card">
-          <h3 class="card__title">OpenAI側の条件</h3>
+          <h3 class="card__title">ログインとプラン要件</h3>
           <ul class="list">
-            <li>OpenAIアカウントでログインできることが前提です。</li>
+            <li>ログインはChatGPTの公式ログイン画面で行います（Google/Apple/Microsoft/電話番号/メール等）。</li>
+            <li>Codexが使えるのは <strong>ChatGPT Plus / Pro / Business / Edu / Enterprise</strong> です。</li>
+            <li>上記プランでログインできない場合、利用できない可能性があります。</li>
             <li>Codexの提供状況や契約条件はOpenAI側で変更される可能性があります。</li>
-            <li>必要に応じて有料プランや追加課金が発生する場合があります（OpenAIの最新情報に従ってください）。</li>
           </ul>
         </article>
         <article class="card">
@@ -207,7 +224,8 @@
         <article class="card">
           <h3 class="card__title">データ/キーの扱い</h3>
           <ul class="list">
-            <li>APIキーの手入力は不要（OpenAIのログイン画面で認証）。</li>
+            <li><strong>APIキー方式は非対応</strong>（入力欄なし）。</li>
+            <li>パスワードや2FAコードは公式ログイン画面でのみ入力します。</li>
             <li>入力内容はOpenAI側へ送信されます。</li>
             <li>ログの保存範囲は端末環境や設定により異なります。機微情報の入力は避けてください。</li>
           </ul>
@@ -243,12 +261,16 @@
       </div>
       <div class="grid">
         <article class="card">
-          <h3 class="card__title">購入後すぐ使えますか？</h3>
-          <p class="card__body">はい。/thanks からダウンロードし、インストール後にログインすればすぐ始められます。</p>
+          <h3 class="card__title">どのプランが必要？</h3>
+          <p class="card__body">Codexが含まれるのは <strong>Plus / Pro / Business / Edu / Enterprise</strong> です。該当プランでログインできない場合は利用できない可能性があります。</p>
         </article>
         <article class="card">
-          <h3 class="card__title">追加費用はありますか？</h3>
-          <p class="card__body">アプリの買い切り料金以外に、OpenAI側のプラン/課金が必要になる場合があります。</p>
+          <h3 class="card__title">ログイン画面が出るけど安全？</h3>
+          <p class="card__body">ログインはChatGPTの公式画面で行い、当アプリはパスワード等を扱いません。表示されるのは正常です。</p>
+        </article>
+        <article class="card">
+          <h3 class="card__title">APIキーは使える？</h3>
+          <p class="card__body">非対応です（入力欄なし）。ChatGPTログインで認証する設計です。</p>
         </article>
         <article class="card">
           <h3 class="card__title">返金はできますか？</h3>
