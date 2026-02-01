@@ -5440,6 +5440,7 @@ button[disabled],
       const demoMenu = document.getElementById("demoMenu");
       const demoConnectionBadge = document.getElementById("demoConnectionBadge");
       const demoConnectionLabel = document.getElementById("demoConnectionLabel");
+      const demoMessages = document.getElementById("demoMessages");
       const demoMessagesInner = document.getElementById("demoMessagesInner");
       const demoComposerInput = document.getElementById("demoComposerInput");
       const demoCursor = document.getElementById("demoCursor");
@@ -5448,6 +5449,7 @@ button[disabled],
       const demoCta = document.querySelector(".demo-cta");
       const demoPlannerPanel = document.getElementById("demoPlannerPanel");
       const demoBuilderPanel = document.getElementById("demoBuilderPanel");
+      const demoPlannerMessages = document.getElementById("demoPlannerMessages");
       const demoPlannerMessagesInner = document.getElementById("demoPlannerMessagesInner");
       const demoPlannerCard = document.getElementById("demoPlannerCard");
       const demoPlannerInput = document.getElementById("demoPlannerInput");
@@ -5471,6 +5473,29 @@ button[disabled],
 
       updateHeaderHeights();
       window.addEventListener("resize", updateHeaderHeights);
+
+      const scrollWithinContainer = (container, target, mode = "end") => {
+        if (!container) return;
+        if (mode === "center" && target) {
+          const top = target.offsetTop - container.clientHeight / 2;
+          container.scrollTop = Math.max(0, top);
+          return;
+        }
+        container.scrollTop = container.scrollHeight;
+      };
+
+      const scrollIntoViewSafe = (target, options = {}) => {
+        if (!target) return;
+        if (DEMO_EMBED) {
+          const container =
+            target.closest(".messages") ||
+            (target === demoMessagesInner ? demoMessages : demoPlannerMessages);
+          const mode = options.block === "center" ? "center" : "end";
+          scrollWithinContainer(container, target, mode);
+          return;
+        }
+        target.scrollIntoView(options);
+      };
 
       const storageKeys = {
         session: "demoSessionId",
@@ -6053,12 +6078,12 @@ button[disabled],
 
       const scrollMessagesToBottom = () => {
         if (!demoMessagesInner) return;
-        demoMessagesInner.scrollIntoView({ block: "end", behavior: "smooth" });
+        scrollIntoViewSafe(demoMessagesInner, { block: "end", behavior: "smooth" });
       };
 
       const scrollPlannerMessagesToBottom = () => {
         if (!demoPlannerMessagesInner) return;
-        demoPlannerMessagesInner.scrollIntoView({ block: "end", behavior: "smooth" });
+        scrollIntoViewSafe(demoPlannerMessagesInner, { block: "end", behavior: "smooth" });
       };
 
       const appendMessageTo = (container, role, text, options = {}) => {
@@ -6379,7 +6404,7 @@ button[disabled],
           done();
           return;
         }
-        fillBtn.scrollIntoView({ block: "center", behavior: "smooth" });
+        scrollIntoViewSafe(fillBtn, { block: "center", behavior: "smooth" });
         moveCursorTo(fillBtn);
         clearTimeout(plannerAutofillTimer);
         plannerAutofillTimer = setTimeout(() => {
