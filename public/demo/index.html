@@ -5657,6 +5657,7 @@ button[disabled],
       let demoPaused = false;
       let plannerChatContinue = null;
       let chatDemoContinue = null;
+      let loopTimer = null;
 
       const AUTO_FLOW_STEPS = [
         { view: "login", delay: 1200 },
@@ -5743,6 +5744,10 @@ button[disabled],
           } else if (view === "complete") {
             autoFlowActive = false;
           }
+        }
+        if (view === "complete" && DEMO_EMBED) {
+          clearTimeout(loopTimer);
+          loopTimer = setTimeout(restartDemoLoop, 2000);
         }
       };
 
@@ -5997,6 +6002,18 @@ button[disabled],
         clearTimeout(previewOpenTimer);
         clearInterval(typingTimer);
         clearInterval(progressTimer);
+        clearTimeout(loopTimer);
+      };
+
+      const restartDemoLoop = () => {
+        if (!DEMO_EMBED) return;
+        clearDemoTimers();
+        demoPaused = false;
+        updateDemoControls();
+        autoFlowActive = false;
+        autoFlowIndex = 0;
+        currentView = "login";
+        startAutoFlow();
       };
 
       const updateDemoControls = () => {
