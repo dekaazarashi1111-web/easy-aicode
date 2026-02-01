@@ -7,3 +7,7 @@
 /install /install/ 301
 /install/index.html /install/ 301
 /thanks.html /thanks/ 301
+/about /about/ 301
+/about/index.html /about/ 301
+/contact /contact/ 301
+/contact/index.html /contact/ 301
