@@ -639,6 +639,31 @@ a.card {
   color: inherit;
 }
 
+.media-placeholder,
+.video-placeholder {
+  width: 100%;
+  aspect-ratio: 16 / 9;
+  border-radius: var(--radius-2);
+  border: var(--border-w) dashed color-mix(in srgb, var(--border) 80%, transparent);
+  background: color-mix(in srgb, var(--surface-2) 80%, transparent);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: var(--space-5);
+  text-align: center;
+  color: var(--text-muted);
+}
+
+.media-placeholder__inner {
+  display: grid;
+  gap: var(--space-2);
+}
+
+.media-placeholder__inner strong {
+  color: var(--text);
+  font-size: var(--text-md);
+}
+
 .pill {
   display: inline-flex;
   align-items: center;

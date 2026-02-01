@@ -1,4 +1,5 @@
-/index.html / 301
+/ /p/ichime-ai/ 302
+/index.html /p/ichime-ai/ 302
 /blog /blog/ 301
 /blog/index.html /blog/ 301
 /tokusho/index.html /tokusho 301
@@ -11,3 +12,9 @@
 /about/index.html /about/ 301
 /contact /contact/ 301
 /contact/index.html /contact/ 301
+/products.html /p/ichime-ai/ 301
+/products /p/ichime-ai/ 301
+/products/index.html /products/ 301
+/p/ichime-ai /p/ichime-ai/ 301
+/tester /tester/ 301
+/tester/index.html /tester/ 301

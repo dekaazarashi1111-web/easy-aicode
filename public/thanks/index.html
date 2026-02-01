@@ -53,7 +53,7 @@
     <a class="nav__brand" href="/">Winter Gator</a>
 
     <div class="nav__links">
-      <a class="nav__link" href="/products.html">製品詳細</a>
+      <a class="nav__link" href="/products/">製品一覧</a>
       <a class="nav__link" href="/demo/">デモ</a>
       <a class="nav__link" href="/start">はじめる</a>
       <a class="nav__link" href="/support.html">サポート</a>
@@ -73,6 +73,7 @@
             <p class="kicker">購入完了</p>
             <h1 class="h1">イチメAI（日本語AIコーディング入門）をご購入ありがとうございます</h1>
             <p class="lead">決済後すぐにダウンロードできます（この画面）。うまくいかない場合は再確認を押してください。</p>
+            <p class="muted">決済完了URLには <strong>session_id</strong> が含まれます。見当たらない場合は購入完了メールのリンクからアクセスしてください。</p>
             <p class="muted">メール案内は必要時のみ（バックアップ）です。</p>
           </div>
 
@@ -107,7 +108,8 @@
   <div class="container footer__inner">
     <p class="muted">© Winter Gator</p>
     <div class="footer__links">
-      <a href="/products.html">製品詳細</a>
+      <a href="/products/">製品一覧</a>
+      <a href="/p/ichime-ai/">イチメAI</a>
       <a href="/demo/">デモ</a>
       <a href="/start">はじめる</a>
       <a href="/support.html">サポート</a>
@@ -155,11 +157,43 @@
     if (waitingSection) waitingSection.hidden = false;
   };
 
+  const pickDownloadUrl = (data) => {
+    if (!data) return null;
+    if (Array.isArray(data.download) && data.download.length > 0) {
+      return data.download[0].url;
+    }
+    return data.dlUrl || null;
+  };
+
   const checkStatus = async () => {
     if (!sessionId) {
       setError("session_id が見つかりません。決済完了URLからアクセスしてください。");
       return;
     }
+    try {
+      const response = await fetch(`/api/verify?session_id=${encodeURIComponent(sessionId)}`);
+      if (response.ok) {
+        const data = await response.json();
+        if (data.ok) {
+          const dlUrl = pickDownloadUrl(data);
+          if (dlUrl) {
+            setReady(dlUrl);
+            return;
+          }
+          setError("ダウンロードURLの取得に失敗しました。");
+          return;
+        }
+        if (data.reason === "not_paid" || data.reason === "pending") {
+          setWaiting();
+          return;
+        }
+        setError("購入確認ができませんでした。サポートへご連絡ください。");
+        return;
+      }
+    } catch (error) {
+      // fall through to legacy check
+    }
+
     try {
       const response = await fetch(`/api/order-status?session_id=${encodeURIComponent(sessionId)}`);
       if (!response.ok) {

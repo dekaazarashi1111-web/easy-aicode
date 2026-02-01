@@ -45,14 +45,19 @@ Git に push するだけでデプロイ可能です（ビルド手順なし）�
 
 Pages:
 - index.html
-- products.html
+- p/ichime-ai/index.html
+- products/index.html
+- tester/index.html
 - start/index.html
 - support.html
 - thanks.html
+- thanks/index.html
 - terms.html
 - privacy.html
 - refund.html
 - blog/index.html
+- about/index.html
+- contact/index.html
 
 ## Cloudflare Pages Functions
 ### Bindings
@@ -61,7 +66,8 @@ Pages:
 
 ### Secrets / Variables
 - `STRIPE_WEBHOOK_SECRET` (必須)
-- `STRIPE_API_KEY` (任意)
+- `STRIPE_API_KEY` (任意: 互換用)
+- `STRIPE_SECRET_KEY` (任意: /api/verify で使用。未設定時は STRIPE_API_KEY を利用)
 - `DOWNLOAD_R2_KEY` (必須: R2内のオブジェクトキー)
 - `TOKEN_TTL_SECONDS` (任意: デフォルト 259200)
 - `MAX_DOWNLOADS` (任意: デフォルト 3)
@@ -77,3 +83,4 @@ Pages:
 ### 動作概要
 - Stripe決済完了 → KVにDLトークン保存 → `/dl?token=...` でR2から配布
 - `/api/order-status?session_id=...` で準備状況を返す（/thanks から参照）
+- `/api/verify?session_id=...` でStripe決済を直接確認してDLを返す（/thanks から参照）

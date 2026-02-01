@@ -4983,7 +4983,7 @@ button[disabled],
       <div class="demo-cta-inner">
         <span class="micro">デモを試したら、次へ進んでください。</span>
         <div class="demo-cta-actions">
-          <a class="btn ghost small" href="/">ホーム</a>
+          <a class="btn ghost small" href="/p/ichime-ai/">製品LP</a>
           <a class="btn ghost small" data-stripe="buy" href="https://buy.stripe.com/cNicN59Tk84Ee6M8A414401" target="_blank" rel="noopener noreferrer">購入</a>
           <a class="btn primary small" href="/start">次へ：はじめる</a>
         </div>
@@ -5043,7 +5043,7 @@ button[disabled],
               <div class="brand">
                 <div class="logo">CC</div>
                 <div class="brandText">
-                  <div class="name">GATOR COMPANION</div>
+                  <div class="name">イチメAI デモ</div>
                 </div>
               </div>
               <button class="btn small ghost demo-frozen" type="button" aria-label="ホームに戻る" disabled>
@@ -5092,8 +5092,8 @@ button[disabled],
             <div class="sbBottom">
               <div class="sbUsage">
                 <div class="sbUsageTop">
-                  <span class="sbUsageTitle">Companion プラン</span>
-                  <span class="sbUsagePlan">Plus</span>
+                  <span class="sbUsageTitle">デモプラン</span>
+                  <span class="sbUsagePlan">テスト</span>
                 </div>
                 <div class="sbUsageRow">
                   <span class="sbUsageLabel">5h 残量</span>
@@ -5749,7 +5749,7 @@ button[disabled],
             <p class="micro start-flow-meta">
               <span class="meta-label">保存先</span>
               <span class="meta-value">
-                <button class="project-folder-link" type="button" data-action="open-folder" title="C:\\Users\\user\\Companion Projects">
+                <button class="project-folder-link" type="button" data-action="open-folder" title="C:\\Users\\user\\IchimeAI Demo Projects">
                   プロジェクトフォルダ
                 </button>
               </span>
@@ -6131,7 +6131,7 @@ button[disabled],
         }
         const meta = document.createElement("div");
         meta.className = "meta";
-        meta.textContent = role === "assistant" ? "Companion • いま" : "あなた • いま";
+        meta.textContent = role === "assistant" ? "デモ • いま" : "あなた • いま";
         bubble.appendChild(meta);
         wrapper.appendChild(bubble);
         container.appendChild(wrapper);
@@ -6250,7 +6250,7 @@ button[disabled],
         bubble.appendChild(card);
         const meta = document.createElement("div");
         meta.className = "meta";
-        meta.textContent = "Companion • いま";
+        meta.textContent = "デモ • いま";
         bubble.appendChild(meta);
         wrapper.appendChild(avatar);
         wrapper.appendChild(bubble);
@@ -6288,7 +6288,7 @@ button[disabled],
         }
         const meta = document.createElement("div");
         meta.className = "meta";
-        meta.textContent = "Companion • いま";
+        meta.textContent = "デモ • いま";
         bubble.appendChild(meta);
         wrapper.appendChild(avatar);
         wrapper.appendChild(bubble);
@@ -6627,7 +6627,7 @@ button[disabled],
             break;
           case "open-folder":
             track("cta_click", { target: "folder" });
-            alert("デモでは実際のフォルダは開きません。\nC:\\Users\\user\\Companion Projects");
+            alert("デモでは実際のフォルダは開きません。\nC:\\Users\\user\\IchimeAI Demo Projects");
             break;
           case "create-project":
             ensureDemoStarted();
