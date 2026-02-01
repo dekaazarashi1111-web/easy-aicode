@@ -1,0 +1,2 @@
+IchimeAI-Setup.exe  SHA256=TBD
+IchimeAI.zip  SHA256=TBD

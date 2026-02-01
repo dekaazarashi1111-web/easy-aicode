@@ -40,6 +40,18 @@
 - ads.txt は `public/ads.txt` を配信します。
 - デプロイ後に `https://wintergator.com/ads.txt` で内容確認してください。
 
+## 配布ファイルとチェックサム（SHA-256）
+- 一覧ファイル: `public/checksums.txt`（配布時に更新）
+- 表示ページ: `/install/`（チェックサムの表示と検証手順）
+
+更新手順（リリース前）:
+1) 配布ファイルを用意（例: `IchimeAI-Setup.exe`, `IchimeAI.zip`）
+2) PowerShellでSHA-256を計算:
+   - `Get-FileHash -Algorithm SHA256 "C:\path\to\IchimeAI-Setup.exe"`
+   - `Get-FileHash -Algorithm SHA256 "C:\path\to\IchimeAI.zip"`
+3) `public/checksums.txt` の `SHA256=TBD` を計算結果に置き換え
+4) ファイル名が変わる場合は `/install/` の表示も更新してデプロイ
+
 ## デプロイ
 Git に push するだけでデプロイ可能です（ビルド手順なし）。
 
