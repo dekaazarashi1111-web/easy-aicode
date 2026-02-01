@@ -4967,6 +4967,14 @@ button[disabled],
 
 }
 
+    .demo-embed-mode,
+    .demo-embed-mode body {
+      overscroll-behavior: none;
+    }
+
+    .demo-embed-mode body {
+      overflow: hidden;
+    }
     </style>
     <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-7932116761740840" crossorigin="anonymous"></script>
 </head>
@@ -5410,6 +5418,17 @@ button[disabled],
     <div class="demo-cursor-ring" id="demoCursorRing" aria-hidden="true"></div>
     <script>
       const SITE_CONFIG = window.SITE_CONFIG || {};
+      const DEMO_EMBED = (() => {
+        try {
+          const params = new URLSearchParams(window.location.search);
+          return params.get("embed") === "1" || window.self !== window.top;
+        } catch (error) {
+          return false;
+        }
+      })();
+      if (DEMO_EMBED) {
+        document.documentElement.classList.add("demo-embed-mode");
+      }
       const APP_NAME = SITE_CONFIG.PRODUCT_NAME_SHORT || SITE_CONFIG.APP_NAME || "イチメAI";
       const START_URL = SITE_CONFIG.START_URL || "/start";
       const TRACK_ENDPOINT = "";
@@ -6038,12 +6057,16 @@ button[disabled],
 
       const scrollMessagesToBottom = () => {
         if (!demoMessagesInner) return;
-        demoMessagesInner.scrollIntoView({ block: "end", behavior: "smooth" });
+        if (!DEMO_EMBED) {
+          demoMessagesInner.scrollIntoView({ block: "end", behavior: "smooth" });
+        }
       };
 
       const scrollPlannerMessagesToBottom = () => {
         if (!demoPlannerMessagesInner) return;
-        demoPlannerMessagesInner.scrollIntoView({ block: "end", behavior: "smooth" });
+        if (!DEMO_EMBED) {
+          demoPlannerMessagesInner.scrollIntoView({ block: "end", behavior: "smooth" });
+        }
       };
 
       const appendMessageTo = (container, role, text, options = {}) => {
@@ -6364,7 +6387,9 @@ button[disabled],
           done();
           return;
         }
-        fillBtn.scrollIntoView({ block: "center", behavior: "smooth" });
+        if (!DEMO_EMBED) {
+          fillBtn.scrollIntoView({ block: "center", behavior: "smooth" });
+        }
         moveCursorTo(fillBtn);
         clearTimeout(plannerAutofillTimer);
         plannerAutofillTimer = setTimeout(() => {
