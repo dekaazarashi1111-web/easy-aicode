@@ -667,7 +667,7 @@ a.card {
 .demo-embed {
   position: relative;
   width: 100%;
-  aspect-ratio: 16 / 9;
+  height: clamp(360px, 70vh, 760px);
   border-radius: var(--radius-2);
   border: var(--border-w) solid var(--border);
   overflow: hidden;
@@ -676,10 +676,13 @@ a.card {
 }
 
 .demo-embed__frame {
-  width: 100%;
-  height: 100%;
+  --demo-scale: 0.82;
+  width: calc(100% / var(--demo-scale));
+  height: calc(100% / var(--demo-scale));
   border: 0;
   display: block;
+  transform: scale(var(--demo-scale));
+  transform-origin: top left;
 }
 
 .demo-embed__overlay {
@@ -700,6 +703,10 @@ a.card {
   padding: 0.4rem 0.8rem;
   border-radius: 999px;
   font-size: var(--text-sm);
+}
+
+.demo-embed--hero {
+  height: clamp(420px, 78vh, 880px);
 }
 
 .pill {
