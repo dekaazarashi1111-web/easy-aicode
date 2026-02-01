@@ -36,6 +36,10 @@
 - `_redirects` に canonical へ統一するためのリダイレクトを設定しています。
 - SNSのURLは `public/assets/site-config.js` の設定に合わせて更新します。
 
+## AdSense（所有権確認用）
+- ads.txt は `public/ads.txt` を配信します。
+- デプロイ後に `https://wintergator.com/ads.txt` で内容確認してください。
+
 ## デプロイ
 Git に push するだけでデプロイ可能です（ビルド手順なし）。
 
