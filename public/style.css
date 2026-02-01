@@ -683,6 +683,7 @@ a.card {
   display: block;
   transform: scale(var(--demo-scale));
   transform-origin: top left;
+  pointer-events: none;
 }
 
 .demo-embed__overlay {
