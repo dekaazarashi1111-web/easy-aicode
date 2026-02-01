@@ -46,7 +46,7 @@ export async function onRequest(context) {
     return jsonResponse({
       ok: true,
       token: existing.token,
-      download: [{ url: dlUrl, filename: "Gator-Companion-Setup.exe" }],
+      download: [{ url: dlUrl, filename: "IchimeAI-Setup.exe" }],
     });
   }
 
@@ -98,6 +98,6 @@ export async function onRequest(context) {
   return jsonResponse({
     ok: true,
     token,
-    download: [{ url: dlUrl, filename: "Gator-Companion-Setup.exe" }],
+    download: [{ url: dlUrl, filename: "IchimeAI-Setup.exe" }],
   });
 }

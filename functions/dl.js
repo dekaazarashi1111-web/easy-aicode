@@ -63,7 +63,7 @@ export async function onRequest(context) {
   return new Response(object.body, {
     headers: {
       "Content-Type": "application/octet-stream",
-      "Content-Disposition": 'attachment; filename="Gator-Companion-Setup.exe"',
+      "Content-Disposition": 'attachment; filename="IchimeAI-Setup.exe"',
       "Cache-Control": "no-store",
     },
   });
