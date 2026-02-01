@@ -1121,6 +1121,32 @@ body {
   display: none;
 }
 
+.app.chat-app .attachBtn {
+  border-color: #e6e6e6;
+  background: #fff;
+  color: #a3a3a3;
+}
+
+.app.chat-app .attachBtn:hover {
+  background: #fafafa;
+  color: #666;
+}
+
+.app.chat-app .attachBtn:active {
+  background: #f2f2f2;
+}
+
+.app.chat-app .attachBtn:focus-visible {
+  outline: 2px solid rgba(253, 186, 116, 0.9);
+  outline-offset: 2px;
+}
+
+.app.chat-app .attachIcon {
+  width: 20px;
+  height: 20px;
+  display: block;
+}
+
 .app.chat-app .composerInner {
   max-width: 860px;
   margin: 0 auto;
@@ -5338,8 +5364,16 @@ button[disabled],
                   placeholder="相談内容を入力…"
                 ></textarea>
                 <div class="composerActions">
-                  <button class="btn icon ghost" type="button" aria-label="ファイルを添付">
-                    🖇️
+                  <button class="btn icon ghost attachBtn" type="button" aria-label="ファイルを添付" title="添付">
+                    <svg class="attachIcon" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+                      <path
+                        d="M21.44 11.05l-8.49 8.49a6 6 0 01-8.49-8.49l9.19-9.19a4 4 0 015.66 5.66l-9.19 9.19a2 2 0 11-2.83-2.83l8.49-8.49"
+                        stroke="currentColor"
+                        strokeWidth="1.8"
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                      />
+                    </svg>
                   </button>
                   <div class="attachmentCounter" aria-live="polite">添付なし</div>
                   <button class="btn primary" type="button">送信</button>
@@ -5375,8 +5409,16 @@ button[disabled],
                   placeholder="メッセージを入力…（Enterで送信 / Shift+Enterで改行）"
                 ></textarea>
                 <div class="composerActions">
-                  <button class="btn icon ghost" type="button" aria-label="ファイルを添付">
-                    🖇️
+                  <button class="btn icon ghost attachBtn" type="button" aria-label="ファイルを添付" title="添付">
+                    <svg class="attachIcon" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+                      <path
+                        d="M21.44 11.05l-8.49 8.49a6 6 0 01-8.49-8.49l9.19-9.19a4 4 0 015.66 5.66l-9.19 9.19a2 2 0 11-2.83-2.83l8.49-8.49"
+                        stroke="currentColor"
+                        strokeWidth="1.8"
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                      />
+                    </svg>
                   </button>
                   <div class="attachmentCounter" aria-live="polite">添付なし</div>
                   <button class="btn primary" type="button">送信</button>
