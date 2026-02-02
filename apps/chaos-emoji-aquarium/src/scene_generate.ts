@@ -151,15 +151,11 @@ export const generateScene = (settings: SceneSettings): Scene => {
     creatures.push(buildCreature(generator.id, created));
   };
 
-  let heroCenter = { x: settings.width * 0.55, y: settings.height * 0.42 };
-  let heroAngle = randRange(rng, -0.4, 0.4) + (rng() < 0.5 ? Math.PI : 0);
+  const heroCenter = { x: settings.width * 0.52, y: settings.height * 0.42 };
+  const heroAngle = (rng() < 0.5 ? 0 : Math.PI) + randRange(rng, -0.08, 0.08);
 
   if (heroGenerator) {
-    const heroSize = randRange(rng, 38, 52);
-    heroCenter = {
-      x: settings.width * randRange(rng, 0.46, 0.62),
-      y: settings.height * randRange(rng, 0.32, 0.48),
-    };
+    const heroSize = randRange(rng, 44, 58);
     const heroPlacements = heroGenerator.fn({
       rng,
       x: heroCenter.x,
@@ -170,7 +166,7 @@ export const generateScene = (settings: SceneSettings): Scene => {
     });
     addLayerOffset(heroPlacements, 2);
     creatures.push(buildCreature(heroGenerator.id, heroPlacements));
-    occupied.push({ x: heroCenter.x, y: heroCenter.y, r: heroSize * 4.5 });
+    occupied.push({ x: heroCenter.x, y: heroCenter.y, r: heroSize * 5.6 });
   }
 
   for (let i = 0; i < bigCount; i += 1) {

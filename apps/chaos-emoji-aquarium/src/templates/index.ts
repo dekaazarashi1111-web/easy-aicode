@@ -160,11 +160,11 @@ export const mosaicGiant = (input: GeneratorInput): Placement[] => {
   placeFan(placements, tail.x, tail.y, angle + Math.PI, 0.9, 10, size * 1.2, finEmoji, "fin", 7, rng);
   placeFan(placements, head.x, head.y, angle - Math.PI / 2, 0.6, 5, size * 0.9, finEmoji, "fin", 7, rng);
 
-  addEye(placements, head.x + perpX * size * 0.9, head.y + perpY * size * 0.35, size * 1.4, eyeEmoji, 8);
+  addEye(placements, head.x + perpX * size * 1.1, head.y + perpY * size * 0.4, size * 1.7, eyeEmoji, 8);
   placements.push({
-    x: head.x + perpX * size * 1.6,
-    y: head.y + perpY * size * 0.1,
-    scale: size * 3.1,
+    x: head.x + perpX * size * 2.2,
+    y: head.y + perpY * size * 0.15,
+    scale: size * 4.4,
     rotation: angle * 0.2,
     layer: 9,
     emoji: headEmoji,
