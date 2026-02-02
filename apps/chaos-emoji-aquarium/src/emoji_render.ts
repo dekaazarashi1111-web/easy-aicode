@@ -27,7 +27,7 @@ const loadImage = (emoji: string) => {
 
 export const preloadTwemoji = async (emojis: string[]) => {
   const unique = Array.from(new Set(emojis));
-  await Promise.all(unique.map((emoji) => loadImage(emoji)));
+  await Promise.allSettled(unique.map((emoji) => loadImage(emoji)));
 };
 
 export const drawEmoji = async (
@@ -42,17 +42,26 @@ export const drawEmoji = async (
     ctx.globalAlpha = placement.opacity;
   }
 
-  if (mode === "native") {
+  const drawNative = () => {
     ctx.font = `${placement.scale}px "Apple Color Emoji", "Segoe UI Emoji", "Noto Color Emoji"`;
     ctx.textAlign = "center";
     ctx.textBaseline = "middle";
     ctx.fillText(placement.emoji, 0, 0);
+  };
+
+  if (mode === "native") {
+    drawNative();
     ctx.restore();
     return;
   }
 
-  const img = await loadImage(placement.emoji);
-  const size = placement.scale;
-  ctx.drawImage(img, -size / 2, -size / 2, size, size);
+  try {
+    const img = await loadImage(placement.emoji);
+    const size = placement.scale;
+    ctx.drawImage(img, -size / 2, -size / 2, size, size);
+  } catch (error) {
+    console.warn("[twemoji] fallback to native", placement.emoji, error);
+    drawNative();
+  }
   ctx.restore();
 };
