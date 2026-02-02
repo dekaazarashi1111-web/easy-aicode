@@ -18,6 +18,30 @@ const randomSeedString = () => {
   return `${buf[0].toString(16)}-${buf[1].toString(16)}`;
 };
 
+const emojiPool = [
+  "🖐️", "✋", "🤚", "🫱", "🫲", "🧿", "👁️", "👀",
+  "🐟", "🐠", "🐡", "🦈", "🐙", "🪼", "🦐", "🦀", "🦑", "🪸",
+  "🫧", "💦", "✨", "⭐", "🌟", "💫", "❇️", "✳️",
+  "🪨", "🗿", "⚓", "🏺", "🪦", "💎", "👟", "🥽",
+  "🪵", "🪝", "🧊", "🧰", "🧯", "📦", "🔱", "⚠️", "❗", "❕",
+  "🌀", "🌈", "🔵", "🟦", "🟢", "🟥", "🟡", "🟣", "⚫", "⚪",
+  "🥳", "😀", "😺", "😈", "👻", "🤖", "👽",
+];
+
+const shuffle = (list: string[]) => {
+  const copy = [...list];
+  for (let i = copy.length - 1; i > 0; i -= 1) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [copy[i], copy[j]] = [copy[j], copy[i]];
+  }
+  return copy;
+};
+
+const pickRandomEmojis = () => {
+  const count = Math.floor(Math.random() * 8) + 8;
+  return shuffle(emojiPool).slice(0, count).join(" ");
+};
+
 const boolFromParam = (value: string | null, fallback: boolean) => {
   if (value === null) return fallback;
   return value === "1" || value === "true";
@@ -26,6 +50,7 @@ const boolFromParam = (value: string | null, fallback: boolean) => {
 export const initApp = () => {
   const emojiInput = document.getElementById("emojiInput") as HTMLTextAreaElement;
   const emojiCount = document.getElementById("emojiCount") as HTMLSpanElement;
+  const randomEmoji = document.getElementById("randomEmoji") as HTMLButtonElement;
   const seedInput = document.getElementById("seedInput") as HTMLInputElement;
   const randomSeed = document.getElementById("randomSeed") as HTMLButtonElement;
   const aspectSelect = document.getElementById("aspectSelect") as HTMLSelectElement;
@@ -267,6 +292,10 @@ export const initApp = () => {
   chaosRange.addEventListener("input", updateSliderValues);
   randomSeed.addEventListener("click", () => {
     seedInput.value = randomSeedString();
+  });
+  randomEmoji.addEventListener("click", () => {
+    emojiInput.value = pickRandomEmojis();
+    updateCounts();
   });
 
   generateBtn.addEventListener("click", generate);
