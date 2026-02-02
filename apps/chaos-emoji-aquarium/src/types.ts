@@ -13,6 +13,16 @@ export interface Placement {
   opacity?: number;
 }
 
+export interface Creature {
+  id: string;
+  placements: Placement[];
+  bounds: { minX: number; minY: number; maxX: number; maxY: number };
+  center: { x: number; y: number };
+  layer: number;
+  motionSeed: number;
+  static?: boolean;
+}
+
 export interface RockShape {
   x: number;
   y: number;
@@ -32,7 +42,8 @@ export interface Scene {
   seabedY: number;
   seabedWave: SeabedWave[];
   rocks: RockShape[];
-  placements: Placement[];
+  staticPlacements: Placement[];
+  creatures: Creature[];
 }
 
 export interface AspectPreset {
@@ -53,4 +64,5 @@ export interface SceneSettings {
   chaosAddon: boolean;
   twemoji: boolean;
   frame: boolean;
+  animate: boolean;
 }

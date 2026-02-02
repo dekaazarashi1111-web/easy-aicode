@@ -1,6 +1,6 @@
 import { parseEmojis } from "./emoji_parse";
 import { generateScene } from "./scene_generate";
-import { renderScene } from "./render";
+import { prepareScene, renderFrame, renderScene, PreparedScene } from "./render";
 import { AspectPreset, Scene, SceneSettings } from "./types";
 
 const presets: AspectPreset[] = [
@@ -37,6 +37,7 @@ export const initApp = () => {
   const chaosAddonToggle = document.getElementById("chaosAddonToggle") as HTMLInputElement;
   const twemojiToggle = document.getElementById("twemojiToggle") as HTMLInputElement;
   const frameToggle = document.getElementById("frameToggle") as HTMLInputElement;
+  const animationToggle = document.getElementById("animationToggle") as HTMLInputElement;
   const generateBtn = document.getElementById("generateBtn") as HTMLButtonElement;
   const downloadBtn = document.getElementById("downloadBtn") as HTMLButtonElement;
   const shareBtn = document.getElementById("shareBtn") as HTMLButtonElement;
@@ -49,6 +50,9 @@ export const initApp = () => {
 
   let lastScene: Scene | null = null;
   let lastSettings: SceneSettings | null = null;
+  let prepared: PreparedScene | null = null;
+  let rafId = 0;
+  let lastTime = 0;
 
   const updateCounts = () => {
     const emojis = parseEmojis(emojiInput.value);
@@ -76,6 +80,7 @@ export const initApp = () => {
       chaosAddon: chaosAddonToggle.checked,
       twemoji: twemojiToggle.checked,
       frame: frameToggle.checked,
+      animate: animationToggle.checked,
     };
   };
 
@@ -86,6 +91,41 @@ export const initApp = () => {
     } else {
       loadingOverlay.classList.remove("is-visible");
     }
+  };
+
+  const stopAnimation = () => {
+    if (rafId) {
+      cancelAnimationFrame(rafId);
+      rafId = 0;
+    }
+  };
+
+  const startAnimation = () => {
+    if (!prepared) return;
+    stopAnimation();
+    const loop = (time: number) => {
+      lastTime = time / 1000;
+      renderFrame(canvas, prepared, {
+        mode: prepared.mode,
+        scale: prepared.scale,
+        frame: lastSettings?.frame ?? true,
+      }, lastTime);
+      if (animationToggle.checked && !document.hidden) {
+        rafId = requestAnimationFrame(loop);
+      } else {
+        rafId = 0;
+      }
+    };
+    rafId = requestAnimationFrame(loop);
+  };
+
+  const renderStill = () => {
+    if (!prepared) return;
+    renderFrame(canvas, prepared, {
+      mode: prepared.mode,
+      scale: prepared.scale,
+      frame: lastSettings?.frame ?? true,
+    }, 0);
   };
 
   const generate = async () => {
@@ -99,15 +139,24 @@ export const initApp = () => {
     setLoading(true);
     try {
       const scene = generateScene(settings);
-      await renderScene(canvas, scene, {
-        mode: settings.twemoji ? "twemoji" : "native",
-        scale: window.devicePixelRatio || 1,
-        frame: settings.frame,
-      });
       lastScene = scene;
       lastSettings = settings;
+      const scale = window.devicePixelRatio || 1;
+      prepared = await prepareScene(scene, {
+        mode: settings.twemoji ? "twemoji" : "native",
+        scale,
+        frame: settings.frame,
+      });
+      if (settings.animate) {
+        startAnimation();
+      } else {
+        renderStill();
+      }
       statusLabel.textContent = "生成完了";
-      statusMeta.textContent = `配置 ${scene.placements.length} / ${settings.emojis.length} 絵文字`;
+      const placementCount =
+        scene.staticPlacements.length +
+        scene.creatures.reduce((sum, creature) => sum + creature.placements.length, 0);
+      statusMeta.textContent = `配置 ${placementCount} / ${settings.emojis.length} 絵文字`;
       sizeLabel.textContent = `${settings.width} x ${settings.height}px`;
       const shareUrl = buildShareUrl(settings);
       shareOutput.value = shareUrl;
@@ -130,6 +179,7 @@ export const initApp = () => {
     url.searchParams.set("addon", settings.chaosAddon ? "1" : "0");
     url.searchParams.set("tw", settings.twemoji ? "1" : "0");
     url.searchParams.set("frame", settings.frame ? "1" : "0");
+    url.searchParams.set("anim", settings.animate ? "1" : "0");
     return url.toString();
   };
 
@@ -144,6 +194,7 @@ export const initApp = () => {
     const addon = params.get("addon");
     const tw = params.get("tw");
     const frame = params.get("frame");
+    const anim = params.get("anim");
 
     if (seed) seedInput.value = seed;
     if (emojis) emojiInput.value = emojis;
@@ -156,6 +207,7 @@ export const initApp = () => {
     chaosAddonToggle.checked = boolFromParam(addon, false);
     twemojiToggle.checked = boolFromParam(tw, true);
     frameToggle.checked = boolFromParam(frame, true);
+    animationToggle.checked = boolFromParam(anim, true);
   };
 
   const handleShare = async () => {
@@ -182,11 +234,16 @@ export const initApp = () => {
   const handleDownload = async () => {
     if (!lastScene || !lastSettings) return;
     const exportCanvas = document.createElement("canvas");
-    await renderScene(exportCanvas, lastScene, {
+    const exportPrepared = await prepareScene(lastScene, {
       mode: lastSettings.twemoji ? "twemoji" : "native",
       scale: 1,
       frame: lastSettings.frame,
     });
+    renderFrame(exportCanvas, exportPrepared, {
+      mode: exportPrepared.mode,
+      scale: exportPrepared.scale,
+      frame: lastSettings.frame,
+    }, lastSettings.animate ? lastTime : 0);
     exportCanvas.toBlob((blob) => {
       if (!blob) return;
       const url = URL.createObjectURL(blob);
@@ -215,6 +272,22 @@ export const initApp = () => {
   generateBtn.addEventListener("click", generate);
   shareBtn.addEventListener("click", handleShare);
   downloadBtn.addEventListener("click", handleDownload);
+  animationToggle.addEventListener("change", () => {
+    if (animationToggle.checked) {
+      startAnimation();
+    } else {
+      stopAnimation();
+      renderStill();
+    }
+  });
+
+  document.addEventListener("visibilitychange", () => {
+    if (document.hidden) {
+      stopAnimation();
+    } else if (animationToggle.checked) {
+      startAnimation();
+    }
+  });
 
   generate();
 };

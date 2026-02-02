@@ -1,4 +1,4 @@
-import { Scene, SceneSettings, Placement, RockShape } from "./types";
+import { Scene, SceneSettings, Placement, RockShape, Creature } from "./types";
 import { createEmojiPicker } from "./emoji_pool";
 import { hashStringToUint32, mulberry32, randInt, randRange, pickOne } from "./prng";
 import { creatureGenerators } from "./templates";
@@ -22,7 +22,8 @@ export const generateScene = (settings: SceneSettings): Scene => {
     chaosAddon: settings.chaosAddon,
   }, rng);
 
-  const placements: Placement[] = [];
+  const staticPlacements: Placement[] = [];
+  const creatures: Creature[] = [];
   const occupied: { x: number; y: number; r: number }[] = [];
   const seabedY = settings.height * 0.82;
 
@@ -41,7 +42,7 @@ export const generateScene = (settings: SceneSettings): Scene => {
 
   const bubbleCount = Math.max(6, Math.round(settings.width * settings.height / 180000) + Math.round(settings.chaos / 12));
   for (let i = 0; i < bubbleCount; i += 1) {
-    placements.push({
+    staticPlacements.push({
       x: randRange(rng, 40, settings.width - 40),
       y: randRange(rng, 30, seabedY - 40),
       scale: randRange(rng, 12, 28),
@@ -56,7 +57,7 @@ export const generateScene = (settings: SceneSettings): Scene => {
   const propCount = Math.max(2, Math.round(settings.chaos / 8));
   for (let i = 0; i < propCount; i += 1) {
     const size = randRange(rng, 24, 64);
-    placements.push({
+    staticPlacements.push({
       x: randRange(rng, 40, settings.width - 40),
       y: randRange(rng, seabedY - 30, settings.height - 40),
       scale: size,
@@ -68,7 +69,7 @@ export const generateScene = (settings: SceneSettings): Scene => {
   }
 
   if (settings.chaos > 60 && rng() < 0.7) {
-    placements.push({
+    staticPlacements.push({
       x: randRange(rng, settings.width * 0.2, settings.width * 0.8),
       y: randRange(rng, seabedY - 40, settings.height - 80),
       scale: randRange(rng, 90, 130),
@@ -105,6 +106,32 @@ export const generateScene = (settings: SceneSettings): Scene => {
     return fallback;
   };
 
+  const buildCreature = (id: string, created: Placement[], isStatic = false): Creature => {
+    let minX = Number.POSITIVE_INFINITY;
+    let minY = Number.POSITIVE_INFINITY;
+    let maxX = Number.NEGATIVE_INFINITY;
+    let maxY = Number.NEGATIVE_INFINITY;
+    let minLayer = Number.POSITIVE_INFINITY;
+    created.forEach((placement) => {
+      const half = placement.scale * 0.6;
+      minX = Math.min(minX, placement.x - half);
+      maxX = Math.max(maxX, placement.x + half);
+      minY = Math.min(minY, placement.y - half);
+      maxY = Math.max(maxY, placement.y + half);
+      minLayer = Math.min(minLayer, placement.layer);
+    });
+    const center = { x: (minX + maxX) / 2, y: (minY + maxY) / 2 };
+    return {
+      id,
+      placements: created,
+      bounds: { minX, minY, maxX, maxY },
+      center,
+      layer: minLayer === Number.POSITIVE_INFINITY ? 5 : minLayer,
+      motionSeed: randInt(rng, 0, 0xffffffff),
+      static: isStatic,
+    };
+  };
+
   const addCreature = (size: number, yMin: number, yMax: number, layerOffset: number) => {
     const generator = pickOne(rng, swimmingGenerators);
     const radius = size * 3.2;
@@ -119,7 +146,7 @@ export const generateScene = (settings: SceneSettings): Scene => {
       pickEmoji: picker.pick,
     });
     addLayerOffset(created, layerOffset);
-    placements.push(...created);
+    creatures.push(buildCreature(generator.id, created));
   };
 
   for (let i = 0; i < bigCount; i += 1) {
@@ -147,12 +174,12 @@ export const generateScene = (settings: SceneSettings): Scene => {
         pickEmoji: picker.pick,
       });
       addLayerOffset(created, 4);
-      placements.push(...created);
+      creatures.push(buildCreature(coralGenerator.id, created, true));
     }
   }
 
-  if (!placements.some((placement) => placement.partTag === "bubble")) {
-    placements.push({
+  if (!staticPlacements.some((placement) => placement.partTag === "bubble")) {
+    staticPlacements.push({
       x: settings.width * 0.2,
       y: settings.height * 0.3,
       scale: 18,
@@ -163,8 +190,8 @@ export const generateScene = (settings: SceneSettings): Scene => {
     });
   }
 
-  if (!placements.some((placement) => placement.partTag === "prop")) {
-    placements.push({
+  if (!staticPlacements.some((placement) => placement.partTag === "prop")) {
+    staticPlacements.push({
       x: settings.width * 0.8,
       y: seabedY + 20,
       scale: 60,
@@ -176,8 +203,8 @@ export const generateScene = (settings: SceneSettings): Scene => {
   }
 
   const ensureTag = (tag: "accent" | "fin" | "eye", x: number, y: number, size: number, layer: number) => {
-    if (placements.some((placement) => placement.partTag === tag)) return;
-    placements.push({
+    if (staticPlacements.some((placement) => placement.partTag === tag)) return;
+    staticPlacements.push({
       x,
       y,
       scale: size,
@@ -198,6 +225,7 @@ export const generateScene = (settings: SceneSettings): Scene => {
     seabedY,
     seabedWave,
     rocks,
-    placements,
+    staticPlacements,
+    creatures,
   };
 };
