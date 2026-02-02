@@ -80,12 +80,14 @@ export const generateScene = (settings: SceneSettings): Scene => {
     });
   }
 
-  const swimmingGenerators = creatureGenerators.filter((entry) => entry.id !== "coral_cluster");
+  const swimmingGenerators = creatureGenerators.filter((entry) => entry.id !== "coral_cluster" && entry.id !== "mosaic_giant");
   const coralGenerator = creatureGenerators.find((entry) => entry.id === "coral_cluster");
+  const heroGenerator = creatureGenerators.find((entry) => entry.id === "mosaic_giant");
+  const schoolGenerator = creatureGenerators.find((entry) => entry.id === "school_of_fish");
 
   const total = Math.max(5, settings.density);
-  const bigCount = Math.max(1, Math.round(total * 0.2));
-  const midCount = Math.max(1, Math.round(total * 0.45));
+  const bigCount = Math.max(1, Math.round(total * 0.18));
+  const midCount = Math.max(1, Math.round(total * 0.4));
   const smallCount = Math.max(0, total - bigCount - midCount);
 
   const tryPlace = (radius: number, yMin: number, yMax: number) => {
@@ -149,6 +151,28 @@ export const generateScene = (settings: SceneSettings): Scene => {
     creatures.push(buildCreature(generator.id, created));
   };
 
+  let heroCenter = { x: settings.width * 0.55, y: settings.height * 0.42 };
+  let heroAngle = randRange(rng, -0.4, 0.4) + (rng() < 0.5 ? Math.PI : 0);
+
+  if (heroGenerator) {
+    const heroSize = randRange(rng, 38, 52);
+    heroCenter = {
+      x: settings.width * randRange(rng, 0.46, 0.62),
+      y: settings.height * randRange(rng, 0.32, 0.48),
+    };
+    const heroPlacements = heroGenerator.fn({
+      rng,
+      x: heroCenter.x,
+      y: heroCenter.y,
+      size: heroSize,
+      angle: heroAngle,
+      pickEmoji: picker.pick,
+    });
+    addLayerOffset(heroPlacements, 2);
+    creatures.push(buildCreature(heroGenerator.id, heroPlacements));
+    occupied.push({ x: heroCenter.x, y: heroCenter.y, r: heroSize * 4.5 });
+  }
+
   for (let i = 0; i < bigCount; i += 1) {
     addCreature(randRange(rng, 26, 36), settings.height * 0.25, seabedY - 80, 1);
   }
@@ -161,10 +185,29 @@ export const generateScene = (settings: SceneSettings): Scene => {
     addCreature(randRange(rng, 14, 20), settings.height * 0.15, seabedY - 30, 3);
   }
 
+  if (schoolGenerator) {
+    const clusterCount = randInt(rng, 1, 2);
+    for (let i = 0; i < clusterCount; i += 1) {
+      const clusterAngle = heroAngle + (rng() < 0.5 ? 0.6 : -0.6);
+      const offsetX = Math.cos(clusterAngle) * randRange(rng, 80, 140);
+      const offsetY = Math.sin(clusterAngle) * randRange(rng, 40, 90);
+      const schoolPlacements = schoolGenerator.fn({
+        rng,
+        x: heroCenter.x + offsetX,
+        y: heroCenter.y + offsetY,
+        size: randRange(rng, 16, 20),
+        angle: clusterAngle,
+        pickEmoji: picker.pick,
+      });
+      addLayerOffset(schoolPlacements, 3);
+      creatures.push(buildCreature(schoolGenerator.id, schoolPlacements));
+    }
+  }
+
   if (coralGenerator) {
     const coralCount = randInt(rng, 1, 3);
     for (let i = 0; i < coralCount; i += 1) {
-      const posX = randRange(rng, 80, settings.width - 80);
+      const posX = i === 0 ? randRange(rng, 80, settings.width * 0.35) : randRange(rng, settings.width * 0.65, settings.width - 80);
       const created = coralGenerator.fn({
         rng,
         x: posX,
@@ -176,6 +219,46 @@ export const generateScene = (settings: SceneSettings): Scene => {
       addLayerOffset(created, 4);
       creatures.push(buildCreature(coralGenerator.id, created, true));
     }
+  }
+
+  const foregroundProps = randInt(rng, 2, 3);
+  for (let i = 0; i < foregroundProps; i += 1) {
+    staticPlacements.push({
+      x: randRange(rng, 60, settings.width - 60),
+      y: randRange(rng, seabedY + 20, settings.height - 40),
+      scale: randRange(rng, 80, 140),
+      rotation: randRange(rng, -0.4, 0.4),
+      layer: 9,
+      emoji: picker.pick("prop"),
+      partTag: "prop",
+    });
+  }
+
+  if (rng() < 0.65) {
+    staticPlacements.push({
+      x: settings.width * randRange(rng, 0.86, 1.05),
+      y: settings.height * randRange(rng, 0.45, 0.62),
+      scale: randRange(rng, 180, 280),
+      rotation: randRange(rng, -0.2, 0.2),
+      layer: 0,
+      emoji: picker.pick("prop"),
+      partTag: "prop",
+      opacity: randRange(rng, 0.18, 0.32),
+    });
+  }
+
+  const sparkleCount = randInt(rng, 5, 9);
+  for (let i = 0; i < sparkleCount; i += 1) {
+    staticPlacements.push({
+      x: randRange(rng, 40, settings.width - 40),
+      y: randRange(rng, 30, settings.height * 0.35),
+      scale: randRange(rng, 10, 18),
+      rotation: randRange(rng, -0.6, 0.6),
+      layer: 2,
+      emoji: picker.pick("accent"),
+      partTag: "accent",
+      opacity: randRange(rng, 0.6, 0.9),
+    });
   }
 
   if (!staticPlacements.some((placement) => placement.partTag === "bubble")) {

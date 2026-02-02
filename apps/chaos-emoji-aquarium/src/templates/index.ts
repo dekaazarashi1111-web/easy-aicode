@@ -38,9 +38,9 @@ export const fishLong = (input: GeneratorInput): Placement[] => {
   const eyeEmoji = pickEmoji("eye");
   const accentEmoji = pickEmoji("accent");
 
-  const length = size * randRange(rng, 5.5, 7.8);
-  const thickness = size * randRange(rng, 1.4, 2.2);
-  const spine = createSpine(rng, x, y, length, angle, 18);
+  const length = size * randRange(rng, 5.8, 7.6);
+  const thickness = size * randRange(rng, 1.5, 2.3);
+  const spine = createSpine(rng, x, y, length, angle, 20);
   const perpX = Math.cos(angle + Math.PI / 2);
   const perpY = Math.sin(angle + Math.PI / 2);
   const placements: Placement[] = [];
@@ -54,7 +54,7 @@ export const fishLong = (input: GeneratorInput): Placement[] => {
       perpX,
       perpY,
       thickness * taper,
-      size * randRange(rng, 0.8, 1.05),
+      size * randRange(rng, 0.75, 1.0),
       bodyEmoji,
       "body",
       angle,
@@ -112,6 +112,73 @@ export const fishRound = (input: GeneratorInput): Placement[] => {
       scale: size * 0.6,
       rotation: theta,
       layer: 7,
+      emoji: accentEmoji,
+      partTag: "accent",
+    });
+  }
+
+  return placements;
+};
+
+export const mosaicGiant = (input: GeneratorInput): Placement[] => {
+  const { rng, x, y, size, angle, pickEmoji } = input;
+  const bodyEmoji = pickEmoji("body");
+  const finEmoji = pickEmoji("fin");
+  const eyeEmoji = pickEmoji("eye");
+  const accentEmoji = pickEmoji("accent");
+  const headEmoji = rng() < 0.6 ? accentEmoji : eyeEmoji;
+
+  const length = size * randRange(rng, 9.5, 12.5);
+  const thickness = size * randRange(rng, 3.1, 4.4);
+  const spine = createSpine(rng, x, y, length, angle, 30);
+  const perpX = Math.cos(angle + Math.PI / 2);
+  const perpY = Math.sin(angle + Math.PI / 2);
+  const placements: Placement[] = [];
+  const tile = size * randRange(rng, 0.45, 0.6);
+
+  spine.forEach((point) => {
+    const taper = Math.sin(Math.PI * point.t);
+    placeRow(
+      placements,
+      point.x,
+      point.y,
+      perpX,
+      perpY,
+      thickness * taper,
+      tile,
+      bodyEmoji,
+      "body",
+      angle,
+      6,
+      rng
+    );
+  });
+
+  const head = spine[Math.floor(spine.length * 0.12)];
+  const tail = spine[spine.length - 1];
+
+  placeFan(placements, tail.x, tail.y, angle + Math.PI, 0.9, 10, size * 1.2, finEmoji, "fin", 7, rng);
+  placeFan(placements, head.x, head.y, angle - Math.PI / 2, 0.6, 5, size * 0.9, finEmoji, "fin", 7, rng);
+
+  addEye(placements, head.x + perpX * size * 0.9, head.y + perpY * size * 0.35, size * 1.4, eyeEmoji, 8);
+  placements.push({
+    x: head.x + perpX * size * 1.6,
+    y: head.y + perpY * size * 0.1,
+    scale: size * 3.1,
+    rotation: angle * 0.2,
+    layer: 9,
+    emoji: headEmoji,
+    partTag: "accent",
+  });
+
+  for (let i = 0; i < 6; i += 1) {
+    const accentPoint = spine[Math.floor(spine.length * randRange(rng, 0.25, 0.8))];
+    placements.push({
+      x: accentPoint.x + perpX * size * randRange(rng, -1.6, 1.6),
+      y: accentPoint.y + perpY * size * randRange(rng, -1.6, 1.6),
+      scale: size * randRange(rng, 0.7, 1.1),
+      rotation: randRange(rng, -1, 1),
+      layer: 8,
       emoji: accentEmoji,
       partTag: "accent",
     });
@@ -353,8 +420,22 @@ export const coralCluster = (input: GeneratorInput): Placement[] => {
   const { rng, x, y, size, pickEmoji } = input;
   const propEmoji = pickEmoji("prop");
   const accentEmoji = pickEmoji("accent");
+  const altEmoji = pickEmoji(rng() < 0.5 ? "accent" : "prop");
   const placements: Placement[] = [];
-  const branches = randInt(rng, 3, 6);
+  const baseCount = randInt(rng, 10, 18);
+  for (let i = 0; i < baseCount; i += 1) {
+    placements.push({
+      x: x + randRange(rng, -size * 2.2, size * 2.2),
+      y: y + randRange(rng, -size * 0.4, size * 0.8),
+      scale: size * randRange(rng, 0.7, 1.2),
+      rotation: randRange(rng, -0.8, 0.8),
+      layer: 7,
+      emoji: rng() < 0.6 ? propEmoji : altEmoji,
+      partTag: "prop",
+    });
+  }
+
+  const branches = randInt(rng, 4, 7);
   for (let i = 0; i < branches; i += 1) {
     const baseX = x + randRange(rng, -size * 1.8, size * 1.8);
     const height = size * randRange(rng, 2.4, 4.6);
@@ -366,7 +447,7 @@ export const coralCluster = (input: GeneratorInput): Placement[] => {
         scale: size * randRange(rng, 0.7, 1.05),
         rotation: randRange(rng, -0.6, 0.6),
         layer: 7,
-        emoji: propEmoji,
+        emoji: rng() < 0.7 ? propEmoji : altEmoji,
         partTag: "prop",
       });
     });
@@ -377,7 +458,7 @@ export const coralCluster = (input: GeneratorInput): Placement[] => {
       scale: size * 0.6,
       rotation: randRange(rng, -0.6, 0.6),
       layer: 8,
-      emoji: accentEmoji,
+      emoji: rng() < 0.5 ? accentEmoji : altEmoji,
       partTag: "accent",
     });
   }
@@ -456,6 +537,7 @@ export const seahorse = (input: GeneratorInput): Placement[] => {
 };
 
 export const creatureGenerators = [
+  { id: "mosaic_giant", fn: mosaicGiant },
   { id: "fish_long", fn: fishLong },
   { id: "fish_round", fn: fishRound },
   { id: "eel", fn: eelWorm },

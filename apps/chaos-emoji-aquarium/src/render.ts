@@ -35,9 +35,9 @@ export interface PreparedScene {
 
 const drawBackground = (ctx: CanvasRenderingContext2D, scene: Scene) => {
   const gradient = ctx.createLinearGradient(0, 0, 0, scene.height);
-  gradient.addColorStop(0, "#082357");
-  gradient.addColorStop(0.55, "#0b4a85");
-  gradient.addColorStop(1, "#0d7cb0");
+  gradient.addColorStop(0, "#0a2b66");
+  gradient.addColorStop(0.5, "#0b5f97");
+  gradient.addColorStop(1, "#1082b6");
   ctx.fillStyle = gradient;
   ctx.fillRect(0, 0, scene.width, scene.height);
 
@@ -53,6 +53,11 @@ const drawBackground = (ctx: CanvasRenderingContext2D, scene: Scene) => {
   vignette.addColorStop(1, "rgba(4, 8, 20, 0.6)");
   ctx.fillStyle = vignette;
   ctx.fillRect(0, 0, scene.width, scene.height);
+
+  ctx.fillStyle = "rgba(255, 255, 255, 0.08)";
+  ctx.beginPath();
+  ctx.ellipse(scene.width * 0.65, scene.height * 0.2, scene.width * 0.4, scene.height * 0.15, 0, 0, Math.PI * 2);
+  ctx.fill();
 
   ctx.beginPath();
   ctx.moveTo(0, scene.seabedY + 10);
