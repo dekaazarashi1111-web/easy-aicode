@@ -189,11 +189,11 @@ export async function onRequest(context) {
   const provider = env.MAIL_PROVIDER;
   const mailKey = env.MAIL_API_KEY || "";
   const from =
-    env.FROM_EMAIL || env.SUPPORT_EMAIL || "support@wintergator.com";
+    env.FROM_EMAIL || env.SUPPORT_EMAIL || "mizuki.takahashi@wintergator.com";
 
   if (provider && email) {
     const subject = "イチメAI（日本語AIコーディング入門）ダウンロードのご案内";
-    const text = `ご購入ありがとうございます。\n\nダウンロードはこちら:\n${dlUrl}\n\n有効期限: ${ttl}秒\n\nサポート: ${env.SUPPORT_EMAIL || "support@wintergator.com"}`;
+    const text = `ご購入ありがとうございます。\n\nダウンロードはこちら:\n${dlUrl}\n\n有効期限: ${ttl}秒\n\nサポート: ${env.SUPPORT_EMAIL || "mizuki.takahashi@wintergator.com"}`;
     const sent = await sendMail({
       provider,
       apiKey: mailKey,
