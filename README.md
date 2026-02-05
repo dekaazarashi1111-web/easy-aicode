@@ -16,3 +16,15 @@
 - 設定: `public/assets/site-config.js`
 - ルーティング: `public/_redirects`
 - サイトマップ: `public/sitemap.xml`
+
+## 配信停止URL（/unsubscribe/<token>）
+このサイトは Cloudflare Pages の Functions を使って、`/unsubscribe/<token>` をメーラー（Flask）の
+`/unsubscribe/<token>` にプロキシし、配信停止処理を行います。
+
+- 実装: `functions/unsubscribe/[token].ts`
+- Pages 側の環境変数: `MAILER_BACKEND_BASE_URL`
+  - 例: `https://<Flaskを公開しているホスト>`
+  - 未設定だと 500 になります
+
+補足:
+- メール本文に載せるURLのベースは、メーラー側で `UNSUBSCRIBE_BASE_URL=https://wintergator.com` を設定します。
