@@ -2,6 +2,8 @@
 
 このリポジトリは静的サイト（Cloudflare Pages想定）です。`public/` 以下がそのまま配信されます。
 
+編集テスト: README の更新を実施しました。
+
 ## 主要ページ
 - トップ: `public/index.html` → `/`
 - サービス: `public/outbound/index.html` → `/outbound/`
