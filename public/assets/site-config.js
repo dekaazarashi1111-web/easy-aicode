@@ -1,5 +1,5 @@
 window.SITE_CONFIG = {
-  BRAND_NAME: "Winter Gator",
-  CONTACT_EMAIL: "mizuki.takahashi@wintergator.com",
-  X_PROFILE_URL: "https://x.com/WinterGator_app"
+  BRAND_NAME: "Media Canvas",
+  CONTACT_EMAIL: "",
+  X_PROFILE_URL: ""
 };
