@@ -97,52 +97,74 @@ const sanitizeHref = (href) => {
   return href;
 };
 
-const normalizeSearchValue = (value) =>
-  (value || "")
-    .toString()
-    .toLowerCase()
-    .replace(/\u3000/g, " ")
-    .replace(/\s+/g, " ")
-    .trim();
-
-const splitSearchTokens = (value) =>
-  normalizeSearchValue(value)
-    .split(" ")
-    .map((token) => token.trim())
-    .filter(Boolean);
-
-const splitSearchList = (value) =>
-  (value || "")
-    .toString()
-    .split(",")
-    .map((item) => normalizeSearchValue(item))
-    .filter(Boolean);
-
 const updateQueryParams = (params) => {
-  const url = new URL(window.location.href);
-  url.search = params.toString();
-  const nextUrl = `${url.pathname}${url.search ? `?${params.toString()}` : ""}${url.hash}`;
+  const nextUrl = `${window.location.pathname}${params.toString() ? `?${params.toString()}` : ""}${window.location.hash}`;
   window.history.replaceState({}, "", nextUrl);
+};
+
+const toFilterUrl = ({ query = "", mode = "and", type = "", tag = "" } = {}) => {
+  const params = new URLSearchParams();
+  if (query) params.set("q", query);
+  if (mode === "or") params.set("mode", "or");
+  if (type) params.append("type", type);
+  if (tag) params.append("tag", tag);
+  return `/articles/${params.toString() ? `?${params.toString()}` : ""}`;
+};
+
+const createFilterBadge = (label, href) => {
+  const badge = document.createElement(href ? "a" : "span");
+  badge.className = "tag";
+  badge.textContent = label;
+  if (href) badge.setAttribute("href", href);
+  return badge;
+};
+
+const initArticleDetailMeta = () => {
+  const root = document.querySelector("[data-article-detail]");
+  const slug = root?.dataset.articleSlug;
+  const api = window.ArticleSearch;
+  const articles = Array.isArray(window.ARTICLE_INDEX) ? window.ARTICLE_INDEX : [];
+  if (!root || !slug || !api || !articles.length) return;
+
+  const article = api.decorateArticles(articles).find((item) => item.slug === slug);
+  if (!article) return;
+
+  const tagContainer = root.querySelector("[data-article-meta-tags]");
+  if (!tagContainer) return;
+
+  tagContainer.textContent = "";
+  tagContainer.appendChild(createFilterBadge(article.type, toFilterUrl({ type: article.type })));
+  article.tags.forEach((tag) => {
+    tagContainer.appendChild(createFilterBadge(tag, toFilterUrl({ tag })));
+  });
+  tagContainer.appendChild(createFilterBadge(article.publishedAt));
 };
 
 const initArticleSearch = () => {
   const root = document.querySelector("[data-article-search]");
   const results = document.querySelector("[data-search-results]");
-  if (!root || !results) return;
+  const api = window.ArticleSearch;
+  const articles = Array.isArray(window.ARTICLE_INDEX) ? window.ARTICLE_INDEX : [];
+  if (!root || !results || !api || !articles.length) return;
 
   const queryInput = root.querySelector("[data-search-query]");
   const modeButtons = Array.from(root.querySelectorAll("[data-search-mode]"));
-  const filterButtons = Array.from(root.querySelectorAll("[data-search-filter]"));
+  const typeOptionsRoot = root.querySelector("[data-search-type-options]");
+  const tagOptionsRoot = root.querySelector("[data-search-tag-options]");
   const clearButton = root.querySelector("[data-search-clear]");
   const status = root.querySelector("[data-search-status]");
   const empty = document.querySelector("[data-search-empty]");
-  const items = Array.from(results.querySelectorAll("[data-search-item]"));
-  if (!queryInput || !modeButtons.length || !items.length) return;
+  if (!queryInput || !modeButtons.length || !typeOptionsRoot || !tagOptionsRoot) return;
+
+  const decoratedArticles = api.decorateArticles(articles);
+  const filterOptions = api.collectFilterOptions(decoratedArticles);
 
   let mode = "and";
 
+  const getFilterButtons = () => Array.from(root.querySelectorAll("[data-search-filter]"));
+
   const getSelectedValues = (group) =>
-    filterButtons
+    getFilterButtons()
       .filter(
         (button) =>
           button.dataset.filterGroup === group && button.getAttribute("aria-pressed") === "true"
@@ -161,20 +183,55 @@ const initArticleSearch = () => {
     button.setAttribute("aria-pressed", String(nextValue));
   };
 
-  const evaluateTextMatch = (tokens, haystack) => {
-    if (!tokens.length) return null;
-    return mode === "and"
-      ? tokens.every((token) => haystack.includes(token))
-      : tokens.some((token) => haystack.includes(token));
+  const renderOptionButtons = (container, options, group) => {
+    container.textContent = "";
+    options.forEach((option) => {
+      const button = document.createElement("button");
+      const label = document.createElement("span");
+      const count = document.createElement("span");
+      button.className = "tag-filter__btn";
+      button.type = "button";
+      button.dataset.searchFilter = "";
+      button.dataset.filterGroup = group;
+      button.dataset.filterValue = option.value;
+      button.setAttribute("aria-pressed", "false");
+
+      label.textContent = option.value;
+      count.className = "tag-filter__count";
+      count.textContent = String(option.count);
+
+      button.append(label, count);
+      container.appendChild(button);
+    });
   };
 
-  const evaluateListMatch = (selectedValues, itemValues) => {
-    if (!selectedValues.length) return null;
-    const normalizedItemValues = new Set(itemValues.map((value) => normalizeSearchValue(value)));
-    const normalizedSelectedValues = selectedValues.map((value) => normalizeSearchValue(value));
-    return mode === "and"
-      ? normalizedSelectedValues.every((value) => normalizedItemValues.has(value))
-      : normalizedSelectedValues.some((value) => normalizedItemValues.has(value));
+  const renderArticles = (items) => {
+    results.textContent = "";
+
+    items.forEach((article) => {
+      const card = document.createElement("a");
+      const tagList = document.createElement("div");
+      const title = document.createElement("h2");
+      const summary = document.createElement("p");
+
+      card.className = "card card--interactive stack";
+      card.href = article.url;
+
+      tagList.className = "tag-list";
+      tagList.appendChild(createFilterBadge(article.type));
+      article.tags.slice(0, 4).forEach((tag) => {
+        tagList.appendChild(createFilterBadge(tag));
+      });
+
+      title.className = "h2";
+      title.textContent = article.title;
+
+      summary.className = "muted";
+      summary.textContent = article.summary;
+
+      card.append(tagList, title, summary);
+      results.appendChild(card);
+    });
   };
 
   const syncUrlFromState = () => {
@@ -203,44 +260,23 @@ const initArticleSearch = () => {
     const conditionText = fragments.length
       ? `条件 ${mode.toUpperCase()} 検索`
       : "条件なし";
-    status.textContent = `${conditionText} | 全${items.length}件中 ${visibleCount}件を表示`;
+    status.textContent = `${conditionText} | 全${decoratedArticles.length}件中 ${visibleCount}件を表示`;
   };
 
   const applyFilters = ({ syncUrl = true } = {}) => {
-    const queryTokens = splitSearchTokens(queryInput.value);
     const selectedTypes = getSelectedValues("type");
     const selectedTags = getSelectedValues("tag");
-    let visibleCount = 0;
-
-    items.forEach((item) => {
-      const title = item.dataset.title || "";
-      const summary = item.dataset.summary || "";
-      const keywords = item.dataset.keywords || "";
-      const type = item.dataset.type || "";
-      const tags = splitSearchList(item.dataset.tags || "");
-      const haystack = normalizeSearchValue([title, summary, keywords, type, tags.join(" ")].join(" "));
-
-      const activeMatches = [];
-      const textMatch = evaluateTextMatch(queryTokens, haystack);
-      const typeMatch = evaluateListMatch(selectedTypes, [type]);
-      const tagMatch = evaluateListMatch(selectedTags, tags);
-
-      if (textMatch !== null) activeMatches.push(textMatch);
-      if (typeMatch !== null) activeMatches.push(typeMatch);
-      if (tagMatch !== null) activeMatches.push(tagMatch);
-
-      const isVisible = !activeMatches.length
-        ? true
-        : mode === "and"
-          ? activeMatches.every(Boolean)
-          : activeMatches.some(Boolean);
-
-      item.hidden = !isVisible;
-      if (isVisible) visibleCount += 1;
+    const filtered = api.filterArticles({
+      articles: decoratedArticles,
+      query: queryInput.value,
+      mode,
+      selectedTypes,
+      selectedTags,
     });
 
-    if (empty) empty.hidden = visibleCount !== 0;
-    updateStatus(visibleCount);
+    renderArticles(filtered);
+    if (empty) empty.hidden = filtered.length !== 0;
+    updateStatus(filtered.length);
     if (syncUrl) syncUrlFromState();
   };
 
@@ -248,16 +284,16 @@ const initArticleSearch = () => {
     const params = new URLSearchParams(window.location.search);
     const query = params.get("q");
     const nextMode = params.get("mode");
-    const selectedTypes = params.getAll("type").map((value) => normalizeSearchValue(value));
-    const selectedTags = params.getAll("tag").map((value) => normalizeSearchValue(value));
+    const selectedTypes = params.getAll("type").map((value) => api.normalizeSearchValue(value));
+    const selectedTags = params.getAll("tag").map((value) => api.normalizeSearchValue(value));
 
     if (query) queryInput.value = query;
     if (nextMode === "or") mode = "or";
     syncModeButtons();
 
-    filterButtons.forEach((button) => {
+    getFilterButtons().forEach((button) => {
       const group = button.dataset.filterGroup;
-      const value = normalizeSearchValue(button.dataset.filterValue || "");
+      const value = api.normalizeSearchValue(button.dataset.filterValue || "");
       const selectedValues = group === "type" ? selectedTypes : selectedTags;
       setPressed(button, selectedValues.includes(value));
     });
@@ -271,13 +307,15 @@ const initArticleSearch = () => {
     });
   });
 
-  filterButtons.forEach((button) => {
-    button.addEventListener("click", () => {
-      const nextValue = button.getAttribute("aria-pressed") !== "true";
-      setPressed(button, nextValue);
-      applyFilters();
+  const bindFilterButtons = () => {
+    getFilterButtons().forEach((button) => {
+      button.addEventListener("click", () => {
+        const nextValue = button.getAttribute("aria-pressed") !== "true";
+        setPressed(button, nextValue);
+        applyFilters();
+      });
     });
-  });
+  };
 
   queryInput.addEventListener("input", () => {
     applyFilters();
@@ -288,16 +326,20 @@ const initArticleSearch = () => {
       queryInput.value = "";
       mode = "and";
       syncModeButtons();
-      filterButtons.forEach((button) => setPressed(button, false));
+      getFilterButtons().forEach((button) => setPressed(button, false));
       applyFilters();
       queryInput.focus();
     });
   }
 
+  renderOptionButtons(typeOptionsRoot, filterOptions.types, "type");
+  renderOptionButtons(tagOptionsRoot, filterOptions.tags, "tag");
+  bindFilterButtons();
   restoreFromUrl();
   applyFilters({ syncUrl: false });
 };
 
+initArticleDetailMeta();
 initArticleSearch();
 
 document.addEventListener("click", (event) => {

@@ -29,6 +29,8 @@
   <meta name="twitter:image:alt" content="比較記事ページの組み方のOG画像" />
   <link rel="stylesheet" href="/style.css" />
   <script src="/assets/site-config.js"></script>
+  <script src="/assets/article-search.js"></script>
+  <script src="/assets/articles.js"></script>
   <script src="/site.js" defer></script>
 </head>
 <body>
@@ -49,19 +51,12 @@
 
 <main id="main">
   <section class="section">
-    <div class="container stack stack--lg">
+    <div class="container stack stack--lg" data-article-detail data-article-slug="comparison-template">
       <div class="stack" style="max-width: 760px;">
         <p class="kicker">比較記事サンプル</p>
         <h1 class="h1">比較記事ページの組み方</h1>
         <p class="lead">結論を先に出しつつ、比較軸、対象読者、広告導線まで整理するための見本記事です。</p>
-        <div class="tag-list">
-          <a class="tag" href="/articles/?type=%E6%AF%94%E8%BC%83%E8%A8%98%E4%BA%8B">比較記事</a>
-          <a class="tag" href="/articles/?tag=%E6%A7%8B%E6%88%90">構成</a>
-          <a class="tag" href="/articles/?tag=%E5%BA%83%E5%91%8A%E8%A1%A8%E8%A8%98">広告表記</a>
-          <a class="tag" href="/articles/?tag=%E6%AF%94%E8%BC%83%E8%A1%A8">比較表</a>
-          <a class="tag" href="/articles/?tag=CTA">CTA</a>
-          <span class="tag">2026-03-23</span>
-        </div>
+        <div class="tag-list" data-article-meta-tags></div>
       </div>
 
       <div class="card stack" style="max-width: 760px;">

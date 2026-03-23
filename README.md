@@ -6,6 +6,7 @@
 - トップ: `public/index.html` → `/`
 - 記事一覧: `public/articles/index.html` → `/articles/`
 - 比較記事サンプル: `public/articles/comparison-template/index.html` → `/articles/comparison-template/`
+- 記事設計ガイドサンプル: `public/articles/content-planning-checklist/index.html` → `/articles/content-planning-checklist/`
 - レビュー記事サンプル: `public/articles/review-structure/index.html` → `/articles/review-structure/`
 - 運営者情報: `public/about/index.html` → `/about/`
 - お問い合わせ: `public/contact/index.html` → `/contact/`
@@ -16,12 +17,15 @@
 - CSS: `public/style.css`
 - JS: `public/site.js`
 - 設定: `public/assets/site-config.js`
+- 記事メタデータ: `public/assets/articles.js`
+- 検索ロジック: `public/assets/article-search.js`
 - ルーティング: `public/_redirects`
 - サイトマップ: `public/sitemap.xml`
 
 ## 使い方
 - ブランド名、説明文、問い合わせ先を差し替えて公開します。
 - 記事サンプルを実案件の記事に置き換えて運用します。
+- 記事追加時は、記事ページ本体に加えて `public/assets/articles.js` にメタデータを追加します。
 - アフィリエイト導線を設置する場合は、`public/disclaimer.html` と各記事の広告表記を実態に合わせて更新します。
 
 ## 補足
