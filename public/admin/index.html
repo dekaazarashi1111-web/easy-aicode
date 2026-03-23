@@ -1,0 +1,392 @@
+<!doctype html>
+<html lang="ja">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>管理画面 | Media Canvas</title>
+  <meta
+    name="description"
+    content="作品、タグ、ログ、サイトプロファイルをまとめて扱うための管理画面です。ローカル保存ベースのMVP土台として動作します。"
+  />
+  <link rel="canonical" href="/admin/" />
+  <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
+  <link rel="apple-touch-icon" href="/assets/logo.png" />
+  <meta name="robots" content="noindex,nofollow" />
+  <meta name="author" content="Media Canvas" />
+  <meta name="theme-color" content="#6366f1" />
+  <meta property="og:site_name" content="Media Canvas" />
+  <meta property="og:title" content="管理画面 | Media Canvas" />
+  <meta
+    property="og:description"
+    content="作品、タグ、ログ、サイトプロファイルをまとめて扱うための管理画面です。"
+  />
+  <meta property="og:type" content="website" />
+  <meta property="og:url" content="/admin/" />
+  <meta property="og:locale" content="ja_JP" />
+  <meta property="og:image" content="/assets/og-default.png" />
+  <meta property="og:image:secure_url" content="/assets/og-default.png" />
+  <meta property="og:image:alt" content="Media Canvas 管理画面のOG画像" />
+  <meta property="og:image:width" content="1200" />
+  <meta property="og:image:height" content="630" />
+  <meta name="twitter:card" content="summary_large_image" />
+  <meta name="twitter:title" content="管理画面 | Media Canvas" />
+  <meta
+    name="twitter:description"
+    content="作品、タグ、ログ、サイトプロファイルをまとめて扱うための管理画面です。"
+  />
+  <meta name="twitter:image" content="/assets/og-default.png" />
+  <meta name="twitter:image:alt" content="Media Canvas 管理画面のOG画像" />
+  <link rel="stylesheet" href="/style.css" />
+  <script src="/assets/site-config.js"></script>
+  <script src="/assets/finder-seed.js"></script>
+  <script src="/assets/finder-core.js"></script>
+  <script src="/assets/finder-store.js"></script>
+  <script src="/assets/finder-admin.js" defer></script>
+  <script src="/site.js" defer></script>
+</head>
+<body>
+<a class="skip-link" href="#main">本文へスキップ</a>
+
+<nav class="nav">
+  <div class="container nav__inner">
+    <a class="nav__brand" href="/">Media Canvas</a>
+
+    <div class="nav__links">
+      <a class="nav__link" href="/">ホーム</a>
+      <a class="nav__link" href="/finder/">作品検索</a>
+      <a class="nav__link" href="/collections/">特集</a>
+      <a class="nav__link" href="/articles/">ガイド</a>
+      <a class="nav__link" href="/admin/" aria-current="page">管理画面</a>
+    </div>
+  </div>
+</nav>
+
+<main id="main">
+  <section class="section">
+    <div class="container stack stack--lg" data-admin-app>
+      <div class="stack">
+        <p class="kicker">管理画面</p>
+        <h1 class="h1">作品探索基盤の運用コンソール</h1>
+        <p class="lead">
+          作品、タグ、検索ログ、サイトプロファイルを同じ状態で扱うための最小構成です。現時点ではブラウザのローカル保存で動作します。
+        </p>
+      </div>
+
+      <div class="grid admin-stats" data-admin-stats></div>
+
+      <div class="admin-nav">
+        <a class="tag" href="#admin-works">作品管理</a>
+        <a class="tag" href="#admin-tags">タグ管理</a>
+        <a class="tag" href="#admin-logs">ログ</a>
+        <a class="tag" href="#admin-settings">サイト設定</a>
+      </div>
+
+      <section id="admin-works" class="card stack stack--lg">
+        <div class="stack">
+          <h2 class="h2">作品管理</h2>
+          <p class="help">
+            新規登録、編集、公開状態変更、一括タグ付け、一括状態変更をここで行います。ローカル保存なので export も併用してください。
+          </p>
+        </div>
+
+        <div class="grid">
+          <div class="field">
+            <label class="label" for="admin-work-search">作品検索</label>
+            <input id="admin-work-search" class="input" type="search" data-admin-work-search />
+          </div>
+          <div class="field">
+            <label class="label" for="admin-work-status-filter">公開状態</label>
+            <select id="admin-work-status-filter" class="select" data-admin-work-status-filter>
+              <option value="">すべて</option>
+              <option value="published">公開</option>
+              <option value="draft">下書き</option>
+              <option value="hold">保留</option>
+              <option value="excluded">除外</option>
+            </select>
+          </div>
+          <div class="field">
+            <label class="label" for="admin-work-profile-filter">サイトプロファイル</label>
+            <select id="admin-work-profile-filter" class="select" data-admin-work-profile-filter></select>
+          </div>
+        </div>
+
+        <div class="cluster">
+          <button class="btn btn--secondary btn--sm" type="button" data-admin-select-all-visible>表示中を全選択</button>
+          <button class="btn btn--secondary btn--sm" type="button" data-admin-clear-selection>選択解除</button>
+          <button class="btn btn--primary btn--sm" type="button" data-admin-work-new>新規作品を作る</button>
+          <p class="help" data-admin-works-count>0件表示 / 選択 0件</p>
+        </div>
+
+        <div class="grid">
+          <div class="field">
+            <label class="label" for="admin-bulk-status">一括状態変更</label>
+            <select id="admin-bulk-status" class="select" data-admin-bulk-status>
+              <option value="">状態を選択</option>
+              <option value="published">公開にする</option>
+              <option value="draft">下書きにする</option>
+              <option value="hold">保留にする</option>
+              <option value="excluded">除外にする</option>
+            </select>
+          </div>
+          <div class="field">
+            <label class="label" for="admin-bulk-tag">一括タグ操作</label>
+            <select id="admin-bulk-tag" class="select" data-admin-bulk-tag></select>
+          </div>
+        </div>
+
+        <div class="cluster">
+          <button class="btn btn--secondary btn--sm" type="button" data-admin-apply-bulk-status>状態を反映</button>
+          <button class="btn btn--secondary btn--sm" type="button" data-admin-apply-bulk-tag-add>タグを追加</button>
+          <button class="btn btn--secondary btn--sm" type="button" data-admin-apply-bulk-tag-remove>タグを削除</button>
+        </div>
+
+        <p class="help" data-admin-duplicate-summary>重複候補は見つかっていません。</p>
+
+        <div class="table-wrap">
+          <table class="table">
+            <thead>
+              <tr>
+                <th>選択</th>
+                <th>作品名</th>
+                <th>状態</th>
+                <th>プロファイル</th>
+                <th>タグ</th>
+                <th>操作</th>
+              </tr>
+            </thead>
+            <tbody data-admin-works-body></tbody>
+          </table>
+        </div>
+
+        <form class="form" data-admin-work-form>
+          <input type="hidden" name="id" />
+          <div class="grid">
+            <div class="field">
+              <label class="label" for="work-title">作品名</label>
+              <input id="work-title" class="input" type="text" name="title" required />
+            </div>
+            <div class="field">
+              <label class="label" for="work-slug">slug</label>
+              <input id="work-slug" class="input" type="text" name="slug" />
+            </div>
+            <div class="field">
+              <label class="label" for="work-status">公開状態</label>
+              <select id="work-status" class="select" name="status">
+                <option value="draft">下書き</option>
+                <option value="published">公開</option>
+                <option value="hold">保留</option>
+                <option value="excluded">除外</option>
+              </select>
+            </div>
+          </div>
+
+          <div class="grid">
+            <div class="field">
+              <label class="label" for="work-released-at">公開日</label>
+              <input id="work-released-at" class="input" type="date" name="releasedAt" />
+            </div>
+            <div class="field">
+              <label class="label" for="work-priority">表示優先度</label>
+              <input id="work-priority" class="input" type="number" name="priority" min="1" />
+            </div>
+          </div>
+
+          <div class="field">
+            <span class="label">掲載先プロファイル</span>
+            <div class="choice-grid" data-admin-work-profile-checks></div>
+          </div>
+
+          <div class="field">
+            <span class="label">タグ</span>
+            <div class="choice-grid" data-admin-work-tag-checks></div>
+          </div>
+
+          <div class="field">
+            <label class="label" for="work-short-description">一言説明</label>
+            <textarea id="work-short-description" class="textarea" name="shortDescription"></textarea>
+          </div>
+
+          <div class="field">
+            <label class="label" for="work-public-note">公開メモ</label>
+            <textarea id="work-public-note" class="textarea" name="publicNote"></textarea>
+          </div>
+
+          <div class="field">
+            <label class="label" for="work-internal-note">内部メモ</label>
+            <textarea id="work-internal-note" class="textarea" name="internalNote"></textarea>
+          </div>
+
+          <div class="grid">
+            <div class="field">
+              <label class="label" for="work-external-label">外部リンク文言</label>
+              <input id="work-external-label" class="input" type="text" name="externalLabel" />
+            </div>
+            <div class="field">
+              <label class="label" for="work-external-partner">提携先名</label>
+              <input id="work-external-partner" class="input" type="text" name="externalPartner" />
+            </div>
+          </div>
+
+          <div class="field">
+            <label class="label" for="work-external-url">外部URL</label>
+            <input id="work-external-url" class="input" type="url" name="externalUrl" />
+          </div>
+
+          <div class="cluster">
+            <button class="btn btn--primary" type="submit">保存する</button>
+            <p class="help" data-admin-work-message>新規作品を入力します。</p>
+          </div>
+        </form>
+      </section>
+
+      <section id="admin-tags" class="card stack stack--lg">
+        <div class="stack">
+          <h2 class="h2">タグ管理</h2>
+          <p class="help">既存タグ資産の流用と拡張を前提に、公開可否と同義語を持たせています。</p>
+        </div>
+
+        <div class="table-wrap">
+          <table class="table">
+            <thead>
+              <tr>
+                <th>タグ</th>
+                <th>グループ</th>
+                <th>公開</th>
+                <th>使用数</th>
+                <th>操作</th>
+              </tr>
+            </thead>
+            <tbody data-admin-tags-body></tbody>
+          </table>
+        </div>
+
+        <form class="form" data-admin-tag-form>
+          <input type="hidden" name="id" />
+          <div class="grid">
+            <div class="field">
+              <label class="label" for="admin-tag-label">タグ名</label>
+              <input id="admin-tag-label" class="input" type="text" name="label" required />
+            </div>
+            <div class="field">
+              <label class="label" for="admin-tag-group">グループ</label>
+              <select id="admin-tag-group" class="select" name="groupId" data-admin-tag-group></select>
+            </div>
+          </div>
+
+          <div class="field">
+            <label class="label" for="admin-tag-synonyms">同義語</label>
+            <input id="admin-tag-synonyms" class="input" type="text" name="synonyms" placeholder="カンマ区切り" />
+          </div>
+
+          <label class="choice">
+            <input type="checkbox" name="isPublic" checked />
+            <span>公開検索で使う</span>
+          </label>
+
+          <div class="cluster">
+            <button class="btn btn--primary" type="submit">タグを保存</button>
+            <button class="btn btn--secondary" type="button" data-admin-tag-delete>削除</button>
+            <p class="help" data-admin-tag-message>タグを追加または編集します。</p>
+          </div>
+        </form>
+      </section>
+
+      <section id="admin-logs" class="card stack stack--lg">
+        <div class="stack">
+          <h2 class="h2">ログ</h2>
+          <p class="help">検索条件ログ、0件検索、詳細閲覧、外部リンククリックをここで確認します。</p>
+        </div>
+
+        <div class="grid">
+          <div class="card stack">
+            <h3>よく使われる条件</h3>
+            <ul class="list" data-admin-top-searches></ul>
+          </div>
+          <div class="card stack">
+            <h3>最近のイベント</h3>
+            <ul class="list" data-admin-recent-events></ul>
+          </div>
+        </div>
+
+        <div class="cluster">
+          <button class="btn btn--secondary btn--sm" type="button" data-admin-clear-logs>ログをクリア</button>
+        </div>
+      </section>
+
+      <section id="admin-settings" class="card stack stack--lg">
+        <div class="stack">
+          <h2 class="h2">サイト設定</h2>
+          <p class="help">
+            今後の別ニッチ展開に備え、サイトプロファイルごとにヒーロー文と表示タググループを切り替えられる形にしています。
+          </p>
+        </div>
+
+        <div class="field">
+          <label class="label" for="admin-active-profile">現在のプロファイル</label>
+          <select id="admin-active-profile" class="select" data-admin-active-profile></select>
+        </div>
+
+        <form class="form" data-admin-settings-form>
+          <input type="hidden" name="id" />
+          <div class="grid">
+            <div class="field">
+              <label class="label" for="admin-profile-slug">slug</label>
+              <input id="admin-profile-slug" class="input" type="text" name="slug" />
+            </div>
+            <div class="field">
+              <label class="label" for="admin-profile-name">サイト名</label>
+              <input id="admin-profile-name" class="input" type="text" name="name" />
+            </div>
+            <div class="field">
+              <label class="label" for="admin-profile-short-name">短縮名</label>
+              <input id="admin-profile-short-name" class="input" type="text" name="shortName" />
+            </div>
+          </div>
+
+          <div class="field">
+            <label class="label" for="admin-profile-hero-title">ヒーロー見出し</label>
+            <input id="admin-profile-hero-title" class="input" type="text" name="heroTitle" />
+          </div>
+
+          <div class="field">
+            <label class="label" for="admin-profile-hero-description">ヒーロー説明</label>
+            <textarea id="admin-profile-hero-description" class="textarea" name="heroDescription"></textarea>
+          </div>
+
+          <div class="field">
+            <label class="label" for="admin-profile-search-placeholder">検索プレースホルダー</label>
+            <input id="admin-profile-search-placeholder" class="input" type="text" name="searchPlaceholder" />
+          </div>
+
+          <div class="field">
+            <span class="label">表示するタググループ</span>
+            <div class="choice-grid" data-admin-settings-groups></div>
+          </div>
+
+          <div class="cluster">
+            <button class="btn btn--primary" type="submit">設定を保存</button>
+            <button class="btn btn--secondary" type="button" data-admin-export>JSONを書き出す</button>
+            <button class="btn btn--secondary" type="button" data-admin-reset>初期状態へ戻す</button>
+          </div>
+        </form>
+      </section>
+    </div>
+  </section>
+</main>
+
+<footer class="footer">
+  <div class="container footer__inner">
+    <p class="muted">© Media Canvas</p>
+    <div class="footer__links">
+      <a href="/">ホーム</a>
+      <a href="/finder/">作品検索</a>
+      <a href="/collections/">特集</a>
+      <a href="/articles/">ガイド</a>
+      <a href="/admin/">管理画面</a>
+      <a href="/privacy.html">プライバシー</a>
+      <a href="/disclaimer.html">免責事項</a>
+    </div>
+  </div>
+</footer>
+</body>
+</html>

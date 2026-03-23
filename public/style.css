@@ -1033,6 +1033,109 @@ details.faq > :not(summary) :where(p) {
   color: var(--text-muted);
 }
 
+.finder-group {
+  display: grid;
+  gap: var(--space-2);
+}
+
+.choice-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+  gap: var(--space-2);
+}
+
+.choice {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.6rem;
+  padding: 0.7rem 0.85rem;
+  border-radius: 12px;
+  border: var(--border-w) solid var(--border);
+  background: color-mix(in srgb, var(--surface) 92%, transparent);
+  color: var(--text);
+}
+
+.choice input {
+  accent-color: color-mix(in srgb, var(--accent) 80%, white);
+}
+
+.table-wrap {
+  overflow-x: auto;
+  border-radius: var(--radius-2);
+  border: var(--border-w) solid var(--border);
+  background: color-mix(in srgb, var(--surface) 96%, transparent);
+}
+
+.table {
+  width: 100%;
+  border-collapse: collapse;
+  min-width: 720px;
+}
+
+.table th,
+.table td {
+  padding: 0.9rem 1rem;
+  border-bottom: var(--border-w) solid var(--border);
+  vertical-align: top;
+  text-align: left;
+}
+
+.table th {
+  font-size: var(--text-sm);
+  color: var(--text);
+  background: color-mix(in srgb, var(--surface-2) 72%, transparent);
+}
+
+.table tbody tr:hover {
+  background: color-mix(in srgb, var(--surface-2) 48%, transparent);
+}
+
+.status-badge {
+  display: inline-flex;
+  align-items: center;
+  padding: 0.35rem 0.65rem;
+  border-radius: 999px;
+  font-size: var(--text-xs);
+  font-weight: 800;
+  border: var(--border-w) solid var(--border);
+}
+
+.status-badge--published {
+  background: color-mix(in srgb, #0ea5e9 18%, transparent);
+  border-color: color-mix(in srgb, #0ea5e9 38%, var(--border));
+}
+
+.status-badge--draft {
+  background: color-mix(in srgb, #94a3b8 18%, transparent);
+  border-color: color-mix(in srgb, #94a3b8 38%, var(--border));
+}
+
+.status-badge--hold {
+  background: color-mix(in srgb, #f59e0b 18%, transparent);
+  border-color: color-mix(in srgb, #f59e0b 38%, var(--border));
+}
+
+.status-badge--excluded {
+  background: color-mix(in srgb, #ef4444 18%, transparent);
+  border-color: color-mix(in srgb, #ef4444 38%, var(--border));
+}
+
+.admin-nav {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-2);
+}
+
+.admin-stats {
+  --grid-min: 180px;
+}
+
+.admin-stat__value {
+  font-size: clamp(1.8rem, 3vw, 2.4rem);
+  font-weight: 900;
+  letter-spacing: -0.04em;
+}
+
 /* ------------------------------
    Footer
 ------------------------------ */

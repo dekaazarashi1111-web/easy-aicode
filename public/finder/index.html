@@ -1,0 +1,153 @@
+<!doctype html>
+<html lang="ja">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>作品検索 | Media Canvas</title>
+  <meta
+    name="description"
+    content="曖昧な好みを細かい条件に変換して作品を探すための検索ページです。含める条件と除外条件を組み合わせて候補を絞れます。"
+  />
+  <link rel="canonical" href="/finder/" />
+  <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
+  <link rel="apple-touch-icon" href="/assets/logo.png" />
+  <meta name="robots" content="noindex,follow" />
+  <meta name="author" content="Media Canvas" />
+  <meta name="theme-color" content="#6366f1" />
+  <meta property="og:site_name" content="Media Canvas" />
+  <meta property="og:title" content="作品検索 | Media Canvas" />
+  <meta
+    property="og:description"
+    content="含める条件と除外条件を組み合わせて、ニッチな好みに合う作品を探すための検索ページです。"
+  />
+  <meta property="og:type" content="website" />
+  <meta property="og:url" content="/finder/" />
+  <meta property="og:locale" content="ja_JP" />
+  <meta property="og:image" content="/assets/og-default.png" />
+  <meta property="og:image:secure_url" content="/assets/og-default.png" />
+  <meta property="og:image:alt" content="Media Canvas 作品検索のOG画像" />
+  <meta property="og:image:width" content="1200" />
+  <meta property="og:image:height" content="630" />
+  <meta name="twitter:card" content="summary_large_image" />
+  <meta name="twitter:title" content="作品検索 | Media Canvas" />
+  <meta
+    name="twitter:description"
+    content="含める条件と除外条件を組み合わせて、ニッチな好みに合う作品を探すための検索ページです。"
+  />
+  <meta name="twitter:image" content="/assets/og-default.png" />
+  <meta name="twitter:image:alt" content="Media Canvas 作品検索のOG画像" />
+  <link rel="stylesheet" href="/style.css" />
+  <script src="/assets/site-config.js"></script>
+  <script src="/assets/finder-seed.js"></script>
+  <script src="/assets/finder-core.js"></script>
+  <script src="/assets/finder-store.js"></script>
+  <script src="/assets/finder-public.js" defer></script>
+  <script src="/site.js" defer></script>
+</head>
+<body>
+<a class="skip-link" href="#main">本文へスキップ</a>
+
+<nav class="nav">
+  <div class="container nav__inner">
+    <a class="nav__brand" href="/">Media Canvas</a>
+
+    <div class="nav__links">
+      <a class="nav__link" href="/">ホーム</a>
+      <a class="nav__link" href="/finder/" aria-current="page">作品検索</a>
+      <a class="nav__link" href="/collections/">特集</a>
+      <a class="nav__link" href="/articles/">ガイド</a>
+      <a class="nav__link" href="/admin/">管理画面</a>
+    </div>
+  </div>
+</nav>
+
+<main id="main">
+  <section class="section">
+    <div class="container stack stack--lg" data-finder-app>
+      <div class="stack">
+        <p class="kicker">作品検索</p>
+        <h1 class="h1" data-profile-hero-title>曖昧な好みを、細かい条件に変えて作品を探す</h1>
+        <p class="lead" data-profile-hero-description>
+          粗いストア検索では埋もれやすい条件を、含める条件と除外条件の両方で扱える検索画面です。
+        </p>
+      </div>
+
+      <div class="card stack">
+        <div class="grid">
+          <div class="field">
+            <label class="label" for="finder-query">キーワード</label>
+            <input
+              id="finder-query"
+              class="input"
+              type="search"
+              autocomplete="off"
+              placeholder="雰囲気、関係性、見どころで検索"
+              data-finder-query
+            />
+          </div>
+
+          <div class="field">
+            <label class="label" for="finder-sort">並び替え</label>
+            <select id="finder-sort" class="select" data-finder-sort>
+              <option value="recommended">おすすめ順</option>
+              <option value="latest">公開日順</option>
+              <option value="updated">更新日順</option>
+              <option value="title">タイトル順</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="stack">
+          <div class="stack">
+            <h2 class="h2">含める条件</h2>
+            <p class="help">この条件は入っていてほしい、という要素を複数指定します。</p>
+          </div>
+          <div class="stack" data-finder-include-groups></div>
+        </div>
+
+        <div class="stack">
+          <div class="stack">
+            <h2 class="h2">除外する条件</h2>
+            <p class="help">苦手な要素や避けたい条件を入れて、候補から外します。</p>
+          </div>
+          <div class="stack" data-finder-exclude-groups></div>
+        </div>
+
+        <div class="cluster">
+          <button class="btn btn--secondary btn--sm" type="button" data-finder-clear>条件をクリア</button>
+          <p class="help" data-finder-status aria-live="polite">条件なし | 0件</p>
+        </div>
+
+        <div class="tag-list" data-finder-active></div>
+      </div>
+
+      <div class="grid" data-finder-results></div>
+
+      <div class="card stack center" data-finder-empty hidden>
+        <h2 class="h2">一致する作品が見つかりません</h2>
+        <p class="muted">条件を減らすか、除外条件を一度外して再検索してください。</p>
+        <div class="cluster">
+          <a class="btn btn--secondary" href="/collections/">特集ページを見る</a>
+          <a class="btn btn--secondary" href="/articles/">ガイドを見る</a>
+        </div>
+      </div>
+    </div>
+  </section>
+</main>
+
+<footer class="footer">
+  <div class="container footer__inner">
+    <p class="muted">© Media Canvas</p>
+    <div class="footer__links">
+      <a href="/">ホーム</a>
+      <a href="/finder/">作品検索</a>
+      <a href="/collections/">特集</a>
+      <a href="/articles/">ガイド</a>
+      <a href="/admin/">管理画面</a>
+      <a href="/privacy.html">プライバシー</a>
+      <a href="/disclaimer.html">免責事項</a>
+    </div>
+  </div>
+</footer>
+</body>
+</html>

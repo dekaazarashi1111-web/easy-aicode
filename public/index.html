@@ -3,8 +3,11 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>記事メディアのスターター | Media Canvas</title>
-  <meta name="description" content="レビュー、比較、使い方、体験談などを整理して公開するための静的メディアの土台ページです。" />
+  <title>作品ファインダーのスターター | Media Canvas</title>
+  <meta
+    name="description"
+    content="ニッチな条件で作品を探しやすくする、作品ファインダー / 発見サイトの土台ページです。公開側と管理側を同じ基盤で扱えます。"
+  />
   <link rel="canonical" href="/" />
   <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
   <link rel="apple-touch-icon" href="/assets/logo.png" />
@@ -12,8 +15,11 @@
   <meta name="author" content="Media Canvas" />
   <meta name="theme-color" content="#6366f1" />
   <meta property="og:site_name" content="Media Canvas" />
-  <meta property="og:title" content="記事メディアのスターター | Media Canvas" />
-  <meta property="og:description" content="レビュー、比較、使い方、体験談などを整理して公開するための静的メディアの土台ページです。" />
+  <meta property="og:title" content="作品ファインダーのスターター | Media Canvas" />
+  <meta
+    property="og:description"
+    content="ニッチな条件で作品を探しやすくする、作品ファインダー / 発見サイトの土台ページです。"
+  />
   <meta property="og:type" content="website" />
   <meta property="og:url" content="/" />
   <meta property="og:locale" content="ja_JP" />
@@ -23,8 +29,11 @@
   <meta property="og:image:width" content="1200" />
   <meta property="og:image:height" content="630" />
   <meta name="twitter:card" content="summary_large_image" />
-  <meta name="twitter:title" content="記事メディアのスターター | Media Canvas" />
-  <meta name="twitter:description" content="レビュー、比較、使い方、体験談などを整理して公開するための静的メディアの土台ページです。" />
+  <meta name="twitter:title" content="作品ファインダーのスターター | Media Canvas" />
+  <meta
+    name="twitter:description"
+    content="ニッチな条件で作品を探しやすくする、作品ファインダー / 発見サイトの土台ページです。"
+  />
   <meta name="twitter:image" content="/assets/og-default.png" />
   <meta name="twitter:image:alt" content="Media Canvas のOG画像" />
   <link rel="stylesheet" href="/style.css" />
@@ -40,9 +49,10 @@
 
     <div class="nav__links">
       <a class="nav__link" href="/" aria-current="page">ホーム</a>
-      <a class="nav__link" href="/articles/">記事一覧</a>
-      <a class="nav__link" href="/about/">運営者情報</a>
-      <a class="nav__link" href="/contact/">お問い合わせ</a>
+      <a class="nav__link" href="/finder/">作品検索</a>
+      <a class="nav__link" href="/collections/">特集</a>
+      <a class="nav__link" href="/articles/">ガイド</a>
+      <a class="nav__link" href="/admin/">管理画面</a>
     </div>
   </div>
 </nav>
@@ -51,36 +61,38 @@
   <section class="section">
     <div class="container stack stack--lg">
       <div class="stack">
-        <p class="kicker">記事メディア用スターター</p>
-        <h1 class="h1">比較・レビュー・解説を載せるための土台</h1>
-        <p class="lead">ブランド名、記事、問い合わせ先、ポリシーを差し替えれば、そのまま情報サイトやアフィリエイトサイトの入れ物として使えます。</p>
+        <p class="kicker">作品探索基盤スターター</p>
+        <h1 class="h1">細かい条件で作品を探せるサイトの土台</h1>
+        <p class="lead">
+          単なる作品一覧ではなく、含める条件と除外条件で探せる公開フロントと、手動キュレーション前提の管理画面をまとめて持つ入れ物です。
+        </p>
       </div>
 
       <div class="cluster">
-        <a class="btn btn--primary" href="/articles/">記事一覧を見る</a>
-        <a class="btn btn--secondary" href="/about/">このサイトについて</a>
+        <a class="btn btn--primary" href="/finder/">作品検索を見る</a>
+        <a class="btn btn--secondary" href="/admin/">管理画面を見る</a>
       </div>
     </div>
   </section>
 
   <section class="section section--alt">
     <div class="container stack">
-      <h2 class="h2">この土台で置きやすいコンテンツ</h2>
+      <h2 class="h2">この土台の中心機能</h2>
       <div class="grid">
         <div class="card stack">
-          <p class="pill">比較記事</p>
-          <h3>候補を並べて選び方を整理する</h3>
-          <p class="muted">料金、機能、サポート、向いている人を軸に比較しやすい構成です。</p>
+          <p class="pill">公開フロント</p>
+          <h3>含める条件と除外条件で探せる</h3>
+          <p class="muted">タグを細かく持ちつつ、ユーザーには迷わない検索画面として見せる前提です。</p>
         </div>
         <div class="card stack">
-          <p class="pill">レビュー記事</p>
-          <h3>体験ベースで長所と注意点を書く</h3>
-          <p class="muted">使ってみた感想、向いている人、避けたいケースまで載せる想定です。</p>
+          <p class="pill">管理画面</p>
+          <h3>作品登録、タグ付け、公開状態管理をまとめる</h3>
+          <p class="muted">作品ごとの内部メモ、重複確認、一括操作、ログ確認を同じ管理画面で扱います。</p>
         </div>
         <div class="card stack">
-          <p class="pill">使い方ガイド</p>
-          <h3>初回設定や手順を丁寧にまとめる</h3>
-          <p class="muted">初心者向けの手順記事、導入ガイド、チェックリスト記事にも流用できます。</p>
+          <p class="pill">共通基盤</p>
+          <h3>サイトプロファイルを差し替えて横展開する</h3>
+          <p class="muted">同じエンジンのまま、ニッチテーマごとに見せ方や対象条件だけを切り替える想定です。</p>
         </div>
       </div>
     </div>
@@ -88,23 +100,23 @@
 
   <section class="section">
     <div class="container stack">
-      <h2 class="h2">サンプル記事</h2>
+      <h2 class="h2">初期画面</h2>
       <div class="grid">
-        <a class="card card--interactive stack" href="/articles/comparison-template/">
+        <a class="card card--interactive stack" href="/finder/">
           <div class="tag-list">
-            <span class="tag">サンプル</span>
-            <span class="tag">比較記事</span>
+            <span class="tag">公開フロント</span>
+            <span class="tag">条件検索</span>
           </div>
-          <h3>比較記事ページの組み方</h3>
-          <p class="muted">結論、比較軸、候補の絞り込み、CTA までをどこに置くかの見本です。</p>
+          <h3>作品検索ページ</h3>
+          <p class="muted">キーワード、含める条件、除外条件、特集URLを組み合わせて候補を絞り込む画面です。</p>
         </a>
-        <a class="card card--interactive stack" href="/articles/review-structure/">
+        <a class="card card--interactive stack" href="/admin/">
           <div class="tag-list">
-            <span class="tag">サンプル</span>
-            <span class="tag">レビュー記事</span>
+            <span class="tag">運営画面</span>
+            <span class="tag">CRUD</span>
           </div>
-          <h3>レビュー記事で抜けやすい確認項目</h3>
-          <p class="muted">メリットだけに寄りすぎないための観点と、広告表記の入れ方を整理しています。</p>
+          <h3>管理画面</h3>
+          <p class="muted">作品、タグ、ログ、サイトプロファイルを同じ状態で扱う最小実装です。</p>
         </a>
       </div>
     </div>
@@ -112,19 +124,19 @@
 
   <section class="section section--alt">
     <div class="container stack">
-      <h2 class="h2">公開前に差し替えるとよい項目</h2>
+      <h2 class="h2">今ある土台で活かしているもの</h2>
       <div class="card stack">
         <ul class="list">
-          <li>サイト名、ファビコン、説明文</li>
-          <li>問い合わせ先と運営者情報</li>
-          <li>プライバシーポリシーと免責事項の実態反映</li>
-          <li>記事本文内の広告表記と案件リンク</li>
-          <li>記事一覧とサイトマップの更新</li>
+          <li>共通レイアウト、カード、タグ、フォーム UI</li>
+          <li>URL 状態反映とクリック計測の仕組み</li>
+          <li>記事ガイド群を運営向け導線として再利用</li>
+          <li>静的配信でも回るローカル保存型の運用基盤</li>
+          <li>将来 API / DB に差し替えやすいデータ分離</li>
         </ul>
       </div>
       <div class="cluster">
-        <a class="btn btn--primary" href="/articles/">記事一覧へ</a>
-        <a class="btn btn--secondary" href="/disclaimer.html">免責事項を見る</a>
+        <a class="btn btn--primary" href="/collections/">特集一覧へ</a>
+        <a class="btn btn--secondary" href="/articles/">ガイドを見る</a>
       </div>
     </div>
   </section>
@@ -135,9 +147,10 @@
     <p class="muted">© Media Canvas</p>
     <div class="footer__links">
       <a href="/">ホーム</a>
-      <a href="/articles/">記事一覧</a>
-      <a href="/about/">運営者情報</a>
-      <a href="/contact/">お問い合わせ</a>
+      <a href="/finder/">作品検索</a>
+      <a href="/collections/">特集</a>
+      <a href="/articles/">ガイド</a>
+      <a href="/admin/">管理画面</a>
       <a href="/privacy.html">プライバシー</a>
       <a href="/disclaimer.html">免責事項</a>
     </div>

@@ -1,0 +1,120 @@
+<!doctype html>
+<html lang="ja">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>作品詳細 | Media Canvas</title>
+  <meta
+    name="description"
+    content="作品の一言説明、タグ、なぜ条件に合うか、外部リンクを確認するための詳細ページです。"
+  />
+  <link rel="canonical" href="/work/" />
+  <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
+  <link rel="apple-touch-icon" href="/assets/logo.png" />
+  <meta name="robots" content="noindex,follow" />
+  <meta name="author" content="Media Canvas" />
+  <meta name="theme-color" content="#6366f1" />
+  <meta property="og:site_name" content="Media Canvas" />
+  <meta property="og:title" content="作品詳細 | Media Canvas" />
+  <meta
+    property="og:description"
+    content="作品の一言説明、タグ、なぜ条件に合うか、外部リンクを確認するための詳細ページです。"
+  />
+  <meta property="og:type" content="website" />
+  <meta property="og:url" content="/work/" />
+  <meta property="og:locale" content="ja_JP" />
+  <meta property="og:image" content="/assets/og-default.png" />
+  <meta property="og:image:secure_url" content="/assets/og-default.png" />
+  <meta property="og:image:alt" content="Media Canvas 作品詳細のOG画像" />
+  <meta property="og:image:width" content="1200" />
+  <meta property="og:image:height" content="630" />
+  <meta name="twitter:card" content="summary_large_image" />
+  <meta name="twitter:title" content="作品詳細 | Media Canvas" />
+  <meta
+    name="twitter:description"
+    content="作品の一言説明、タグ、なぜ条件に合うか、外部リンクを確認するための詳細ページです。"
+  />
+  <meta name="twitter:image" content="/assets/og-default.png" />
+  <meta name="twitter:image:alt" content="Media Canvas 作品詳細のOG画像" />
+  <link rel="stylesheet" href="/style.css" />
+  <script src="/assets/site-config.js"></script>
+  <script src="/assets/finder-seed.js"></script>
+  <script src="/assets/finder-core.js"></script>
+  <script src="/assets/finder-store.js"></script>
+  <script src="/assets/finder-public.js" defer></script>
+  <script src="/site.js" defer></script>
+</head>
+<body>
+<a class="skip-link" href="#main">本文へスキップ</a>
+
+<nav class="nav">
+  <div class="container nav__inner">
+    <a class="nav__brand" href="/">Media Canvas</a>
+
+    <div class="nav__links">
+      <a class="nav__link" href="/">ホーム</a>
+      <a class="nav__link" href="/finder/">作品検索</a>
+      <a class="nav__link" href="/collections/">特集</a>
+      <a class="nav__link" href="/articles/">ガイド</a>
+      <a class="nav__link" href="/admin/">管理画面</a>
+    </div>
+  </div>
+</nav>
+
+<main id="main">
+  <section class="section">
+    <div class="container stack stack--lg" data-work-page>
+      <div class="card stack center" data-work-not-found hidden>
+        <h1 class="h1">作品が見つかりません</h1>
+        <p class="muted">作品IDまたは公開状態を確認してください。</p>
+        <div class="cluster">
+          <a class="btn btn--primary" href="/finder/">作品検索へ戻る</a>
+          <a class="btn btn--secondary" href="/collections/">特集を見る</a>
+        </div>
+      </div>
+
+      <div class="stack stack--lg" data-work-content>
+        <div class="stack">
+          <p class="kicker">作品詳細</p>
+          <h1 class="h1" data-work-title>作品名</h1>
+          <p class="lead" data-work-summary>作品の一言説明</p>
+          <div class="tag-list" data-work-tags></div>
+        </div>
+
+        <div class="card stack">
+          <h2 class="h2">この作品が条件に合いやすい理由</h2>
+          <p class="muted" data-work-note></p>
+        </div>
+
+        <div class="card stack">
+          <h2 class="h2">関連特集</h2>
+          <div class="tag-list" data-work-collections></div>
+        </div>
+
+        <div class="cluster" data-work-links></div>
+
+        <div class="stack">
+          <h2 class="h2">近い条件で探しやすい作品</h2>
+          <div class="grid" data-work-similar></div>
+        </div>
+      </div>
+    </div>
+  </section>
+</main>
+
+<footer class="footer">
+  <div class="container footer__inner">
+    <p class="muted">© Media Canvas</p>
+    <div class="footer__links">
+      <a href="/">ホーム</a>
+      <a href="/finder/">作品検索</a>
+      <a href="/collections/">特集</a>
+      <a href="/articles/">ガイド</a>
+      <a href="/admin/">管理画面</a>
+      <a href="/privacy.html">プライバシー</a>
+      <a href="/disclaimer.html">免責事項</a>
+    </div>
+  </div>
+</footer>
+</body>
+</html>
