@@ -839,6 +839,16 @@ a.card {
   border: var(--border-w) solid color-mix(in srgb, var(--accent) 18%, var(--border));
   background: color-mix(in srgb, var(--accent) 12%, transparent);
   color: var(--text);
+  text-decoration: none;
+  transition:
+    background var(--dur-2) var(--ease-out),
+    border-color var(--dur-2) var(--ease-out),
+    color var(--dur-2) var(--ease-out);
+}
+
+.tag:hover {
+  background: color-mix(in srgb, var(--accent) 18%, transparent);
+  border-color: color-mix(in srgb, var(--accent) 36%, var(--border));
 }
 
 .tag-filter {

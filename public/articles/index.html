@@ -53,27 +53,110 @@
       <div class="stack">
         <p class="kicker">記事一覧</p>
         <h1 class="h1">比較・レビュー記事のサンプル一覧</h1>
-        <p class="lead">このページは、記事メディアの土台として使えるサンプル記事を並べた一覧です。実運用ではジャンルごとの記事へ差し替えてください。</p>
+        <p class="lead">このページは、記事メディアの土台として使えるサンプル記事を並べた一覧です。キーワード、記事タイプ、タグを組み合わせて絞り込めます。</p>
       </div>
 
-      <div class="grid">
-        <a class="card card--interactive stack" href="/articles/comparison-template/">
+      <div class="card stack" data-article-search>
+        <div class="stack">
+          <h2 class="h2">条件で探す</h2>
+          <p class="help">記事名、要約、キーワード、記事タイプ、タグで絞り込めます。AND はすべて一致、OR はどれか一致です。</p>
+        </div>
+
+        <div class="grid">
+          <div class="field">
+            <label class="label" for="article-search-query">キーワード</label>
+            <input
+              id="article-search-query"
+              class="input"
+              type="search"
+              placeholder="記事名、要約、キーワードで検索"
+              autocomplete="off"
+              data-search-query
+            />
+          </div>
+
+          <div class="field">
+            <span class="label">検索モード</span>
+            <div class="tag-filter__list" role="group" aria-label="検索モード">
+              <button class="tag-filter__btn" type="button" data-search-mode="and" aria-pressed="true">AND検索</button>
+              <button class="tag-filter__btn" type="button" data-search-mode="or" aria-pressed="false">OR検索</button>
+            </div>
+          </div>
+        </div>
+
+        <div class="grid">
+          <div class="field">
+            <span class="label">記事タイプ</span>
+            <div class="tag-filter__list" role="group" aria-label="記事タイプ">
+              <button class="tag-filter__btn" type="button" data-search-filter data-filter-group="type" data-filter-value="比較記事" aria-pressed="false">比較記事</button>
+              <button class="tag-filter__btn" type="button" data-search-filter data-filter-group="type" data-filter-value="レビュー記事" aria-pressed="false">レビュー記事</button>
+            </div>
+          </div>
+
+          <div class="field">
+            <span class="label">タグ</span>
+            <div class="tag-filter__list" role="group" aria-label="タグ">
+              <button class="tag-filter__btn" type="button" data-search-filter data-filter-group="tag" data-filter-value="構成" aria-pressed="false">構成</button>
+              <button class="tag-filter__btn" type="button" data-search-filter data-filter-group="tag" data-filter-value="広告表記" aria-pressed="false">広告表記</button>
+              <button class="tag-filter__btn" type="button" data-search-filter data-filter-group="tag" data-filter-value="比較表" aria-pressed="false">比較表</button>
+              <button class="tag-filter__btn" type="button" data-search-filter data-filter-group="tag" data-filter-value="CTA" aria-pressed="false">CTA</button>
+              <button class="tag-filter__btn" type="button" data-search-filter data-filter-group="tag" data-filter-value="注意点" aria-pressed="false">注意点</button>
+              <button class="tag-filter__btn" type="button" data-search-filter data-filter-group="tag" data-filter-value="体験談" aria-pressed="false">体験談</button>
+            </div>
+          </div>
+        </div>
+
+        <div class="cluster">
+          <button class="btn btn--secondary btn--sm" type="button" data-search-clear>条件をクリア</button>
+          <p class="help" data-search-status aria-live="polite">2件を表示中</p>
+        </div>
+      </div>
+
+      <div class="grid" data-search-results>
+        <a
+          class="card card--interactive stack"
+          href="/articles/comparison-template/"
+          data-search-item
+          data-title="比較記事ページの組み方"
+          data-summary="比較軸、結論、選び方、広告リンクの置き方を確認するための見本です。"
+          data-type="比較記事"
+          data-tags="比較記事,構成,広告表記,比較表,CTA"
+          data-keywords="比較記事 比較構成 比較軸 結論 選び方 案件リンク 比較表"
+        >
           <div class="tag-list">
             <span class="tag">比較記事</span>
-            <span class="tag">サンプル</span>
+            <span class="tag">構成</span>
+            <span class="tag">広告表記</span>
+            <span class="tag">比較表</span>
           </div>
           <h2 class="h2">比較記事ページの組み方</h2>
           <p class="muted">比較軸、結論、選び方、広告リンクの置き方を確認するための見本です。</p>
         </a>
 
-        <a class="card card--interactive stack" href="/articles/review-structure/">
+        <a
+          class="card card--interactive stack"
+          href="/articles/review-structure/"
+          data-search-item
+          data-title="レビュー記事で抜けやすい確認項目"
+          data-summary="メリットと注意点の両方を書ききるための骨組みを整理しています。"
+          data-type="レビュー記事"
+          data-tags="レビュー記事,構成,広告表記,注意点,体験談"
+          data-keywords="レビュー記事 体験談 注意点 メリット デメリット 広告表記 比較対象"
+        >
           <div class="tag-list">
             <span class="tag">レビュー記事</span>
-            <span class="tag">サンプル</span>
+            <span class="tag">構成</span>
+            <span class="tag">広告表記</span>
+            <span class="tag">注意点</span>
           </div>
           <h2 class="h2">レビュー記事で抜けやすい確認項目</h2>
           <p class="muted">メリットと注意点の両方を書ききるための骨組みを整理しています。</p>
         </a>
+      </div>
+
+      <div class="card stack center" data-search-empty hidden>
+        <h2 class="h2">一致する記事が見つかりません</h2>
+        <p class="muted">キーワードを短くするか、タグや記事タイプの条件を減らして試してください。</p>
       </div>
 
       <div class="card stack">

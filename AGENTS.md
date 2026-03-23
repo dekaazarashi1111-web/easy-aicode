@@ -1,0 +1,24 @@
+# AGENTS.md — 記事メディア用スターター運用メモ
+
+このワークスペースは、記事メディア / アフィリエイトサイト用の静的スターターを編集するための作業場所です。
+`public/` がそのまま配信されます。
+
+## 主要ページ
+- `/` : `public/index.html`
+- `/articles/` : `public/articles/index.html`
+- `/articles/comparison-template/` : `public/articles/comparison-template/index.html`
+- `/articles/review-structure/` : `public/articles/review-structure/index.html`
+- `/about/` : `public/about/index.html`
+- `/contact/` : `public/contact/index.html`
+- `/privacy.html` : `public/privacy.html`
+- `/disclaimer.html` : `public/disclaimer.html`
+
+## 反映ポイント
+- ルーティング: `public/_redirects`
+- サイトマップ: `public/sitemap.xml`
+
+## 方針
+- すべて日本語で記述します。
+- 文言は汎用的な土台として保ち、公開前にブランド名・問い合わせ先・ポリシーを差し替えやすい状態を優先します。
+- ユーザーから停止指示がない限り、作業完了ごとに変更を GitHub へ同期します。
+- GitHub 同期が必要な作業では、コミット後に `origin/main` へ push して反映状態を確認します。
