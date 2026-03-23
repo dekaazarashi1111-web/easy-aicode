@@ -11,7 +11,6 @@
 - 作品詳細: `public/work/index.html` → `/work/?slug=...`
 - 特集一覧: `public/collections/index.html` → `/collections/`
 - 特集詳細: `public/collection/index.html` → `/collection/?slug=...`
-- 管理画面: `public/admin/index.html` → `/admin/`
 - ガイド一覧: `public/articles/index.html` → `/articles/`
 - 運営方針: `public/about/index.html` → `/about/`
 - お問い合わせ: `public/contact/index.html` → `/contact/`
@@ -26,16 +25,15 @@
 - 検索 / 集計ロジック: `public/assets/finder-core.js`
 - 状態管理: `public/assets/finder-store.js`
 - 公開フロント初期化: `public/assets/finder-public.js`
-- 管理画面初期化: `public/assets/finder-admin.js`
 - ルーティング: `public/_redirects`
 - サイトマップ: `public/sitemap.xml`
 
 ## 使い方
 - サイト名、ドメイン、問い合わせ窓口、DMM/FANZA の実リンクを差し替えて公開します。
 - 作品データは `public/assets/finder-seed.js` の `works / tags / collections / siteProfiles` を起点に増やします。
+- ガイド記事を追加する時は、`public/assets/articles.js` に 1 件追加し、対応ページを `public/articles/<slug>/index.html` として作成します。
 - 公開検索では `published` の作品だけが表示されます。
 - 特集は `collections` に追加し、作品詳細と検索導線の両方に接続します。
-- 管理画面はブラウザの `localStorage` を使います。将来的な API / DB 差し替えを前提に、公開ロジックと状態管理を分離しています。
 
 ## 補足
 - 現在のシードデータは仮データです。実データ公開前に差し替えてください。

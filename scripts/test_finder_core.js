@@ -108,7 +108,7 @@ store.upsertWork({
   tagIds: ["aftercare-clear"],
   primaryTagIds: ["aftercare-clear"],
   collectionIds: ["test-collection"],
-  shortDescription: "管理画面保存のテスト作品です。",
+  shortDescription: "手動投入のテスト作品です。",
   publicNote: "まだ非公開です。",
   matchSummary: "安心感タグの動作確認用。",
   internalNote: "後で公開へ切り替える想定。",
