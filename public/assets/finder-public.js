@@ -146,6 +146,67 @@
     return card;
   };
 
+  const createCollectionCard = ({ collection, layout = "list" }) => {
+    const card = document.createElement("a");
+    const body = document.createElement("div");
+    const header = document.createElement("div");
+    const title = document.createElement("h3");
+    const description = document.createElement("p");
+    const tagList = document.createElement("div");
+    const side = document.createElement("div");
+    const count = document.createElement("span");
+    const cta = document.createElement("span");
+
+    card.href = `/collection/?slug=${encodeURIComponent(collection.slug)}`;
+    card.className = `card card--interactive collection-card ${
+      layout === "compact" ? "collection-card--compact" : "collection-card--list"
+    }`;
+
+    header.className = "collection-card__meta";
+    header.append(
+      createText("span", "pill", "Collection"),
+      createText("span", "help", "固定導線")
+    );
+
+    title.className = layout === "compact" ? "h3" : "h2";
+    title.textContent = collection.title;
+
+    description.className = "muted";
+    description.textContent = collection.description;
+
+    tagList.className = "tag-list";
+    collection.tagObjects.slice(0, 4).forEach((tag) => {
+      tagList.appendChild(createTagChip({ label: tag.label }));
+    });
+
+    body.className = "collection-card__body";
+    body.append(
+      header,
+      title,
+      description,
+      tagList,
+      createText("p", "help", collection.lead || "入口導線として使う固定特集です。")
+    );
+
+    if (layout === "compact") {
+      body.append(
+        createText("p", "help", `${collection.workObjects.length}件を起点に探索`)
+      );
+      card.append(body);
+      return card;
+    }
+
+    count.className = "collection-card__count";
+    count.textContent = `${collection.workObjects.length}件`;
+    cta.className = "btn btn--primary btn--sm";
+    cta.textContent = "特集を見る";
+    side.className = "collection-card__side";
+    side.append(count, cta);
+
+    card.append(body, side);
+    return card;
+  };
+
   const setMeta = ({ title = "", description = "", canonical = "" }) => {
     let canonicalUrl = canonical;
     if (canonical) {
@@ -235,23 +296,9 @@
       createText("li", "", item)
     );
 
-    fillTextList(root.querySelector("[data-home-featured-collections]"), featuredCollections, (collection) => {
-      const card = document.createElement("a");
-      card.className = "card card--interactive stack";
-      card.href = `/collection/?slug=${encodeURIComponent(collection.slug)}`;
-      card.append(
-        createText("p", "kicker", "Featured Collection"),
-        createText("h3", "h2", collection.title),
-        createText("p", "muted", collection.description),
-      );
-      const tagList = document.createElement("div");
-      tagList.className = "tag-list";
-      collection.tagObjects.slice(0, 4).forEach((tag) => {
-        tagList.appendChild(createTagChip({ label: tag.label }));
-      });
-      card.append(tagList, createText("p", "help", `${collection.workObjects.length}件を起点に探索`));
-      return card;
-    });
+    fillTextList(root.querySelector("[data-home-featured-collections]"), featuredCollections, (collection) =>
+      createCollectionCard({ collection, layout: "compact" })
+    );
 
     fillTextList(root.querySelector("[data-home-featured-works]"), featuredWorks, (work) =>
       createWorkCard({
@@ -840,24 +887,7 @@
       .getProfileCollections(state, profile?.id, { publicOnly: true })
       .map((collection) => core.decorateCollection(collection, state))
       .forEach((collection) => {
-        const card = document.createElement("a");
-        const tagList = document.createElement("div");
-        card.className = "card card--interactive stack";
-        card.href = `/collection/?slug=${encodeURIComponent(collection.slug)}`;
-        tagList.className = "tag-list";
-
-        collection.tagObjects.slice(0, 4).forEach((tag) => {
-          tagList.appendChild(createTagChip({ label: tag.label }));
-        });
-
-        card.append(
-          createText("p", "kicker", "Collection"),
-          createText("h2", "h2", collection.title),
-          createText("p", "muted", collection.description),
-          tagList,
-          createText("p", "help", `${collection.workObjects.length}件を起点に探索`),
-        );
-        listRoot.appendChild(card);
+        listRoot.appendChild(createCollectionCard({ collection, layout: "list" }));
       });
   };
 

@@ -13,7 +13,7 @@
   <link rel="apple-touch-icon" href="/assets/logo.png" />
   <meta name="robots" content="index,follow,max-image-preview:large" />
   <meta name="author" content="Media Canvas" />
-  <meta name="theme-color" content="#0f766e" />
+  <meta name="theme-color" content="#006ce4" />
   <meta property="og:site_name" content="Media Canvas" />
   <meta property="og:title" content="特集詳細 | ケモホモ作品ファインダー" />
   <meta
@@ -62,7 +62,7 @@
 </nav>
 
 <main id="main">
-  <section class="section section--hero">
+  <section class="section section--tight">
     <div class="container stack stack--lg" data-collection-page>
       <div class="card stack center" data-collection-not-found hidden>
         <h1 class="h1">特集が見つかりません</h1>
@@ -73,42 +73,45 @@
         </div>
       </div>
 
-      <div class="stack stack--lg" data-collection-content>
-        <div class="hero-panel stack">
-          <p class="kicker">Collection Detail</p>
-          <h1 class="h1" data-collection-title>特集名</h1>
-          <p class="lead" data-collection-description>特集の説明</p>
-          <div class="tag-list" data-collection-tags></div>
-        </div>
-
-        <div class="grid">
-          <div class="card stack">
-            <h2 class="h2">この特集の意図</h2>
-            <p class="muted" data-collection-lead></p>
+      <div class="booking-detail-page" data-collection-content>
+        <div class="booking-detail-main stack stack--lg">
+          <div class="card booking-detail-header stack">
+            <p class="kicker">Collection Detail</p>
+            <h1 class="h1" data-collection-title>特集名</h1>
+            <p class="lead" data-collection-description>特集の説明</p>
+            <div class="tag-list" data-collection-tags></div>
           </div>
-          <div class="card stack">
-            <h2 class="h2">この特集で探す</h2>
-            <p class="muted">特集の中からさらに絞り込みたい場合は、検索ページへ戻って条件を追加します。</p>
-            <div class="cluster">
-              <a class="btn btn--primary" data-collection-finder-link href="/finder/">この特集で検索する</a>
+
+          <div class="booking-detail-info-grid">
+            <div class="card stack">
+              <h2 class="h3">この特集の意図</h2>
+              <p class="muted" data-collection-lead></p>
+            </div>
+            <div class="card stack">
+              <h2 class="h3">見方のポイント</h2>
+              <ul class="list" data-collection-points></ul>
             </div>
           </div>
+
+          <div class="stack">
+            <h2 class="h3">この特集に含まれる作品</h2>
+            <div class="booking-feature-grid" data-collection-works></div>
+          </div>
         </div>
 
-        <div class="card stack">
-          <h2 class="h2">見方のポイント</h2>
-          <ul class="list" data-collection-points></ul>
-        </div>
-
-        <div class="stack">
-          <h2 class="h2">この特集に含まれる作品</h2>
-          <div class="grid" data-collection-works></div>
-        </div>
-
-        <div class="card stack">
-          <h2 class="h2">ほかの特集へ</h2>
-          <div class="tag-list" data-collection-related></div>
-        </div>
+        <aside class="booking-detail-side">
+          <div class="card booking-sticky-card stack">
+            <p class="kicker">Explore This Collection</p>
+            <h2 class="h3">この特集で検索する</h2>
+            <p class="muted">この特集の中からさらに条件を足して絞り込みたい場合は、検索ページへ戻ります。</p>
+            <a class="btn btn--primary" data-collection-finder-link href="/finder/">この特集で検索する</a>
+            <div class="divider"></div>
+            <div class="stack">
+              <h3 class="h3">ほかの特集へ</h3>
+              <div class="tag-list" data-collection-related></div>
+            </div>
+          </div>
+        </aside>
       </div>
     </div>
   </section>

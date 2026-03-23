@@ -13,7 +13,7 @@
   <link rel="apple-touch-icon" href="/assets/logo.png" />
   <meta name="robots" content="noindex,nofollow" />
   <meta name="author" content="Media Canvas" />
-  <meta name="theme-color" content="#0f766e" />
+  <meta name="theme-color" content="#006ce4" />
   <meta property="og:site_name" content="Media Canvas" />
   <meta property="og:title" content="管理画面 | ケモホモ作品ファインダー" />
   <meta
@@ -62,40 +62,41 @@
 </nav>
 
 <main id="main">
-  <section class="section section--hero">
+  <section class="section section--tight">
     <div class="container stack stack--lg" data-admin-app>
-      <div class="hero-grid">
-        <div class="hero-panel stack">
-          <p class="kicker">Operations Console</p>
-          <h1 class="h1">ケモホモ作品ファインダーの運用基盤</h1>
-          <p class="lead">
-            作品、タグ、特集、検索ログ、サイトプロファイルを同じ状態で扱うための土台です。現時点ではブラウザのローカル保存で動作します。
-          </p>
-          <div class="cluster">
-            <a class="btn btn--secondary" href="/finder/">公開検索を見る</a>
-            <a class="btn btn--secondary" href="/collections/">特集を見る</a>
-          </div>
-        </div>
-
-        <div class="hero-panel hero-panel--accent stack">
-          <p class="kicker">Operation Notes</p>
-          <h2 class="h2">検索価値を支えるのは、裏側の粒度</h2>
-          <ul class="list list--compact">
-            <li>作品ごとに合う理由を短く持つ</li>
-            <li>タグはユーザー語彙と作品属性を混ぜて管理する</li>
-            <li>0件検索を次の投入候補として拾う</li>
-          </ul>
+      <div class="card booking-page-header stack">
+        <p class="kicker">Operations Console</p>
+        <h1 class="h1">ケモホモ作品ファインダーの運用基盤</h1>
+        <p class="lead">
+          作品、タグ、特集、検索ログ、サイトプロファイルを同じ状態で扱うための管理画面です。今はローカル保存で動き、後から API や DB に差し替えやすい構造を保っています。
+        </p>
+        <div class="cluster">
+          <a class="btn btn--secondary" href="/finder/">公開検索を見る</a>
+          <a class="btn btn--secondary" href="/collections/">特集を見る</a>
         </div>
       </div>
 
-      <div class="grid admin-stats" data-admin-stats></div>
+      <div class="booking-two-column">
+        <div class="grid admin-stats" data-admin-stats></div>
 
-      <div class="admin-nav">
-        <a class="tag" href="#admin-works">作品管理</a>
-        <a class="tag" href="#admin-tags">タグ管理</a>
-        <a class="tag" href="#admin-collections">特集管理</a>
-        <a class="tag" href="#admin-logs">ログ</a>
-        <a class="tag" href="#admin-settings">サイト設定</a>
+        <aside class="booking-aside">
+          <div class="card booking-sticky-card stack">
+            <p class="kicker">Operation Notes</p>
+            <h2 class="h3">運用で先に見る項目</h2>
+            <ul class="list list--compact">
+              <li>作品ごとに「なぜ合うか」を短く持つ</li>
+              <li>タグは作品属性とユーザー語彙の両方で管理する</li>
+              <li>0件検索を次の投入候補として拾う</li>
+            </ul>
+            <div class="admin-nav">
+              <a class="tag" href="#admin-works">作品管理</a>
+              <a class="tag" href="#admin-tags">タグ管理</a>
+              <a class="tag" href="#admin-collections">特集管理</a>
+              <a class="tag" href="#admin-logs">ログ</a>
+              <a class="tag" href="#admin-settings">サイト設定</a>
+            </div>
+          </div>
+        </aside>
       </div>
 
       <section id="admin-works" class="card stack stack--lg">

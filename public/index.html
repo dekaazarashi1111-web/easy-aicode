@@ -13,7 +13,7 @@
   <link rel="apple-touch-icon" href="/assets/logo.png" />
   <meta name="robots" content="index,follow,max-image-preview:large" />
   <meta name="author" content="Media Canvas" />
-  <meta name="theme-color" content="#0f766e" />
+  <meta name="theme-color" content="#006ce4" />
   <meta property="og:site_name" content="Media Canvas" />
   <meta property="og:title" content="ケモホモ作品ファインダー | 探索サイトの土台" />
   <meta
@@ -63,58 +63,66 @@
 </nav>
 
 <main id="main" data-home-page>
-  <section class="section section--hero">
-    <div class="container stack stack--lg">
-      <div class="hero-grid">
-        <div class="hero-panel stack">
-          <p class="kicker" data-home-kicker>Kemo Finder Starter</p>
-          <h1 class="h1" data-home-title>ケモホモ作品を、条件と除外条件で探しやすくする</h1>
-          <p class="lead" data-home-description>
-            DMM 側の分類だけでは拾いにくい語彙を、入口タグ、TF、媒体、除外条件に翻訳して探すための土台です。
-          </p>
+  <section class="landing-hero">
+    <div class="container landing-hero__inner">
+      <div class="landing-hero__content">
+        <p class="landing-hero__eyebrow" data-home-kicker>Kemo Finder Starter</p>
+        <h1 class="landing-hero__title" data-home-title>ケモホモ作品を、条件と除外条件で探しやすくする</h1>
+        <p class="landing-hero__lead" data-home-description>
+          DMM 側の分類だけでは拾いにくい語彙を、入口タグ、TF、媒体、除外条件に翻訳して探すための土台です。
+        </p>
+        <p class="landing-hero__sub" data-home-audience-note>
+          まずは「何から見ればいいか分からない」人を迷わせず、その後で TF や媒体別の枝へ落とします。
+        </p>
+      </div>
 
-          <div class="cluster">
-            <a class="btn btn--primary" href="/finder/">条件から探す</a>
-            <a class="btn btn--secondary" href="/collections/">特集から入る</a>
+      <form class="landing-search" action="/finder/" method="get">
+        <div class="landing-search__row">
+          <div class="landing-search__field">
+            <label class="label" for="home-search-query">キーワード</label>
+            <input id="home-search-query" class="input landing-search__input" type="search" name="q" placeholder="オスケモ寄り / TFは軽め / 入口向け" />
           </div>
-
-          <div class="hero-metrics">
-            <div class="hero-metric">
-              <strong>入口は広く</strong>
-              <span>ケモホモを入口語にしつつ、あとから深い枝へ送る</span>
-            </div>
-            <div class="hero-metric">
-              <strong>検索は細かく</strong>
-              <span>含める条件と除外条件を同じ画面で扱う</span>
-            </div>
-            <div class="hero-metric">
-              <strong>運用は手動で強く</strong>
-              <span>特集、タグ、公開状態、ログを同じ基盤で回す</span>
-            </div>
-          </div>
+          <button class="btn btn--primary landing-search__submit" type="submit">作品を探す</button>
         </div>
+        <div class="landing-search__chips">
+          <a class="tag" href="/finder/?collection=start-here">まずここから</a>
+          <a class="tag" href="/finder/?include=tf-present">TFあり</a>
+          <a class="tag" href="/finder/?include=format-comic">漫画</a>
+          <a class="tag" href="/finder/?include=no-ntr">NTRなし</a>
+        </div>
+      </form>
+    </div>
+  </section>
 
-        <div class="hero-panel hero-panel--accent stack">
-          <p class="kicker">Launch Direction</p>
-          <h2 class="h2">作品数より、最初の探索導線を先に作る</h2>
-          <p class="muted" data-home-audience-note>
-            まずは「何から見ればいいか分からない」人を迷わせず、その後で TF や媒体別の枝へ落とします。
-          </p>
-          <ul class="list list--compact" data-home-search-tips></ul>
+  <section class="section section--tight">
+    <div class="container">
+      <div class="trust-strip">
+        <div class="trust-strip__item">
+          <strong>入口は広く</strong>
+          <span>ケモホモを入口語にして、あとから深い枝へ送る</span>
+        </div>
+        <div class="trust-strip__item">
+          <strong>検索は細かく</strong>
+          <span>含める条件と除外条件を同じ画面で扱う</span>
+        </div>
+        <div class="trust-strip__item">
+          <strong>運用は手動で強く</strong>
+          <span>特集、タグ、公開状態、ログを同じ基盤で回す</span>
         </div>
       </div>
     </div>
   </section>
 
-  <section class="section section--alt">
-    <div class="container stack">
+  <section class="section">
+    <div class="container stack stack--lg">
       <div class="section-head">
         <div class="stack">
           <p class="kicker">Start Here</p>
-          <h2 class="h2">この土台で優先する価値</h2>
+          <h2 class="h2">最初に見るべき入口</h2>
         </div>
+        <a class="btn btn--secondary btn--sm" href="/finder/">検索ページへ</a>
       </div>
-      <div class="grid">
+      <div class="booking-info-grid">
         <div class="card stack">
           <p class="pill">探索価値</p>
           <h3>語彙のズレを埋める</h3>
@@ -138,33 +146,32 @@
     </div>
   </section>
 
-  <section class="section">
-    <div class="container stack">
+  <section class="section section--alt">
+    <div class="container stack stack--lg">
       <div class="section-head">
         <div class="stack">
           <p class="kicker">Collections</p>
-          <h2 class="h2">最初に見せる固定特集</h2>
+          <h2 class="h2">固定特集から探す</h2>
         </div>
         <a class="btn btn--secondary btn--sm" href="/collections/">特集一覧へ</a>
       </div>
-      <div class="grid" data-home-featured-collections></div>
-    </div>
-  </section>
-
-  <section class="section section--alt">
-    <div class="container stack">
-      <div class="section-head">
-        <div class="stack">
-          <p class="kicker">Featured Works</p>
-          <h2 class="h2">入口導線で使う代表的な作品カード</h2>
-        </div>
-        <a class="btn btn--secondary btn--sm" href="/finder/">検索ページへ</a>
-      </div>
-      <div class="grid" data-home-featured-works></div>
+      <div class="result-list result-list--cards" data-home-featured-collections></div>
     </div>
   </section>
 
   <section class="section">
+    <div class="container stack stack--lg">
+      <div class="section-head">
+        <div class="stack">
+          <p class="kicker">Featured Works</p>
+          <h2 class="h2">入口導線で使う代表的な作品</h2>
+        </div>
+      </div>
+      <div class="booking-feature-grid" data-home-featured-works></div>
+    </div>
+  </section>
+
+  <section class="section section--tight">
     <div class="container stack">
       <div class="section-head">
         <div class="stack">
@@ -172,7 +179,7 @@
           <h2 class="h2">最初に使うタググループ</h2>
         </div>
       </div>
-      <div class="grid" data-home-tag-groups></div>
+      <div class="booking-info-grid" data-home-tag-groups></div>
     </div>
   </section>
 </main>
