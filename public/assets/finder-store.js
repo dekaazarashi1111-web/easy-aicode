@@ -40,6 +40,22 @@
     next.collections = core.ensureArray(next.collections);
     next.logs = next.logs && typeof next.logs === "object" ? next.logs : {};
     next.logs.events = core.ensureArray(next.logs.events);
+    next.ui = next.ui && typeof next.ui === "object" ? next.ui : {};
+    next.ui.compareWorkIds = core.unique(next.ui.compareWorkIds);
+    next.ui.favoriteWorkIds = core.unique(next.ui.favoriteWorkIds);
+    next.ui.recentWorkIds = core.unique(next.ui.recentWorkIds);
+    next.ui.savedSearches = core.ensureArray(next.ui.savedSearches).map((item) => ({
+      id: item.id || `search-${Date.now()}`,
+      label: (item.label || "").trim(),
+      query: (item.query || "").trim(),
+      creatorQuery: (item.creatorQuery || "").trim(),
+      sort: item.sort || "recommended",
+      collectionId: item.collectionId || "",
+      matchMode: item.matchMode === "or" ? "or" : "and",
+      includeTagIds: core.unique(item.includeTagIds),
+      excludeTagIds: core.unique(item.excludeTagIds),
+      createdAt: item.createdAt || nowIso(),
+    }));
     return next;
   };
 
@@ -267,10 +283,62 @@
       state.logs.events = [];
     });
 
+  const toggleListItem = (values, id, { limit = 0 } = {}) => {
+    const items = core.ensureArray(values).filter((value) => value !== id);
+    if (core.ensureArray(values).includes(id)) {
+      return items;
+    }
+    const nextItems = [id, ...items];
+    return limit > 0 ? nextItems.slice(0, limit) : nextItems;
+  };
+
+  const toggleCompareWork = (workId) =>
+    mutate((state) => {
+      state.ui.compareWorkIds = toggleListItem(state.ui.compareWorkIds, workId, { limit: 4 });
+    });
+
+  const toggleFavoriteWork = (workId) =>
+    mutate((state) => {
+      state.ui.favoriteWorkIds = toggleListItem(state.ui.favoriteWorkIds, workId);
+    });
+
+  const touchRecentWork = (workId) =>
+    mutate((state) => {
+      state.ui.recentWorkIds = [workId, ...core.ensureArray(state.ui.recentWorkIds).filter((id) => id !== workId)].slice(0, 8);
+    });
+
+  const upsertSavedSearch = (input) =>
+    mutate((state) => {
+      const nextSearch = {
+        id: input.id || `search-${Date.now()}`,
+        label: (input.label || "").trim(),
+        query: (input.query || "").trim(),
+        creatorQuery: (input.creatorQuery || "").trim(),
+        sort: input.sort || "recommended",
+        collectionId: input.collectionId || "",
+        matchMode: input.matchMode === "or" ? "or" : "and",
+        includeTagIds: core.unique(input.includeTagIds),
+        excludeTagIds: core.unique(input.excludeTagIds),
+        createdAt: input.createdAt || nowIso(),
+      };
+      const index = state.ui.savedSearches.findIndex((item) => item.id === nextSearch.id);
+      if (index === -1) {
+        state.ui.savedSearches = [nextSearch, ...state.ui.savedSearches].slice(0, 10);
+      } else {
+        state.ui.savedSearches[index] = { ...state.ui.savedSearches[index], ...nextSearch };
+      }
+    });
+
+  const deleteSavedSearch = (searchId) =>
+    mutate((state) => {
+      state.ui.savedSearches = state.ui.savedSearches.filter((item) => item.id !== searchId);
+    });
+
   return {
     STORAGE_KEY,
     bulkUpdateWorks,
     clearLogs,
+    deleteSavedSearch,
     deleteCollection,
     deleteTag,
     exportState,
@@ -279,6 +347,10 @@
     resetState,
     saveState,
     setActiveProfile,
+    toggleCompareWork,
+    toggleFavoriteWork,
+    touchRecentWork,
+    upsertSavedSearch,
     upsertCollection,
     upsertSiteProfile,
     upsertTag,

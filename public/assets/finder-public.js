@@ -3,6 +3,25 @@
 })(typeof globalThis !== "undefined" ? globalThis : this, function (store, core) {
   if (!store || !core) return {};
 
+  const SORT_META = {
+    recommended: {
+      label: "厳密一致順",
+      description: "一致タグと表示優先度を重視します。",
+    },
+    latest: {
+      label: "新着順",
+      description: "公開日が新しい順に並べます。",
+    },
+    updated: {
+      label: "更新順",
+      description: "更新日が新しい順に並べます。",
+    },
+    title: {
+      label: "タイトル順",
+      description: "タイトルの五十音順に並べます。",
+    },
+  };
+
   const createText = (tagName, className, text) => {
     const element = document.createElement(tagName);
     if (className) element.className = className;
@@ -18,8 +37,37 @@
     return element;
   };
 
+  const createButton = ({
+    label,
+    className = "",
+    dataset = {},
+    pressed = null,
+    disabled = false,
+    type = "button",
+  }) => {
+    const button = document.createElement("button");
+    button.type = type;
+    button.className = className;
+    button.textContent = label;
+    Object.entries(dataset).forEach(([key, value]) => {
+      button.dataset[key] = value;
+    });
+    if (pressed !== null) button.setAttribute("aria-pressed", String(pressed));
+    button.disabled = disabled;
+    return button;
+  };
+
+  const emptyState = (root, message) => {
+    if (!root) return;
+    root.textContent = "";
+    root.appendChild(createText("p", "help", message));
+  };
+
+  const unique = (values) => core.unique(values);
+
   const toFinderUrl = ({
     query = "",
+    creatorQuery = "",
     sort = "recommended",
     collectionId = "",
     includeTagIds = [],
@@ -28,11 +76,12 @@
   }) => {
     const params = new URLSearchParams();
     if (query) params.set("q", query);
+    if (creatorQuery) params.set("creator", creatorQuery);
     if (sort && sort !== "recommended") params.set("sort", sort);
     if (collectionId) params.set("collection", collectionId);
     if (matchMode === "or") params.set("mode", "or");
-    core.unique(includeTagIds).forEach((tagId) => params.append("include", tagId));
-    core.unique(excludeTagIds).forEach((tagId) => params.append("exclude", tagId));
+    unique(includeTagIds).forEach((tagId) => params.append("include", tagId));
+    unique(excludeTagIds).forEach((tagId) => params.append("exclude", tagId));
     return `/finder/${params.toString() ? `?${params.toString()}` : ""}`;
   };
 
@@ -42,63 +91,114 @@
     window.history.replaceState({}, "", nextUrl);
   };
 
-  const createTagButton = ({ kind, tag, selected, count = 0 }) => {
-    const button = document.createElement("button");
-    const label = document.createElement("span");
-    const countBadge = document.createElement("span");
-    button.type = "button";
-    button.className = "tag-filter__btn tag-filter__btn--row";
-    button.dataset.filterKind = kind;
-    button.dataset.tagId = tag.id;
-    button.setAttribute("aria-pressed", String(selected));
-    label.className = "tag-filter__label";
-    label.textContent = tag.label;
-    countBadge.className = "tag-filter__count";
-    countBadge.textContent = String(count);
-    button.append(label, countBadge);
-    return button;
+  const loadDecoratedWorks = (state, profileId) =>
+    core.filterWorks({
+      state,
+      profileId,
+      query: "",
+      creatorQuery: "",
+      includeTagIds: [],
+      excludeTagIds: [],
+      sort: "recommended",
+      matchMode: "and",
+    });
+
+  const getUiState = (state) => state?.ui || {};
+
+  const getWorkMap = (state, profileId) =>
+    new Map(loadDecoratedWorks(state, profileId).map((work) => [work.id, work]));
+
+  const getSortMeta = (sort) => SORT_META[sort] || SORT_META.recommended;
+
+  const getSearchSummaryLabel = (search, tagMap) => {
+    const parts = [];
+    if (search.query) parts.push(`作品: ${search.query}`);
+    if (search.creatorQuery) parts.push(`作者: ${search.creatorQuery}`);
+    if (core.ensureArray(search.includeTagIds).length) {
+      parts.push(
+        `含める: ${search.includeTagIds
+          .map((tagId) => tagMap.get(tagId)?.label || tagId)
+          .join(" / ")}`
+      );
+    }
+    if (core.ensureArray(search.excludeTagIds).length) {
+      parts.push(
+        `除外: ${search.excludeTagIds
+          .map((tagId) => tagMap.get(tagId)?.label || tagId)
+          .join(" / ")}`
+      );
+    }
+    if (search.collectionId) parts.push("特集検索");
+    if (search.matchMode === "or") parts.push("いずれか一致");
+    return parts.join(" | ") || "条件なし";
   };
 
-  const createActiveChip = (label, kind, value) => {
-    const button = document.createElement("button");
-    button.type = "button";
-    button.className = "tag-filter__btn";
-    button.dataset.removeKind = kind;
-    button.dataset.removeValue = value;
-    button.textContent = label;
-    return button;
+  const createFinderLink = ({ label, href, meta = "", className = "finder-mini-link" }) => {
+    const link = document.createElement("a");
+    const content = document.createElement("div");
+    link.href = href;
+    link.className = className;
+    content.className = "finder-mini-link__body";
+    content.append(createText("strong", "", label));
+    if (meta) content.append(createText("span", "help", meta));
+    link.append(content);
+    return link;
   };
 
-  const createWorkCard = ({ work, profileId, reason = "", layout = "list" }) => {
-    const card = document.createElement("a");
-    const eyebrow = document.createElement("div");
-    const title = document.createElement("h3");
+  const createWorkActionButton = ({ kind, workId, active }) => {
+    const labels = {
+      favorite: active ? "保存済み" : "保存",
+      compare: active ? "比較中" : "比較",
+    };
+    return createButton({
+      label: labels[kind],
+      className: `work-action-chip work-action-chip--${kind}`,
+      dataset: { workAction: kind, workId },
+      pressed: active,
+    });
+  };
+
+  const createWorkCard = ({
+    work,
+    profileId,
+    reason = "",
+    layout = "list",
+    uiState = {},
+    showActions = layout === "list",
+  }) => {
+    const article = document.createElement("article");
+    const header = document.createElement("div");
+    const content = document.createElement("div");
+    const titleLink = document.createElement("a");
     const summary = document.createElement("p");
     const reasonText = document.createElement("p");
     const tagList = document.createElement("div");
-    const media = document.createElement("div");
-    const body = document.createElement("div");
-    const side = document.createElement("div");
-    const cta = document.createElement("span");
-    const sideMeta = document.createElement("p");
+    const meta = document.createElement("div");
+    const footer = document.createElement("div");
+    const actionCluster = document.createElement("div");
+    const detailLink = document.createElement("a");
+    const compareSet = new Set(core.ensureArray(uiState.compareWorkIds));
+    const favoriteSet = new Set(core.ensureArray(uiState.favoriteWorkIds));
 
-    card.className = `card card--interactive result-card ${layout === "compact" ? "result-card--compact stack" : "result-card--list"}`;
-    card.href = `/work/?slug=${encodeURIComponent(work.slug)}`;
-    card.dataset.workId = work.id;
+    article.className = `card work-card work-card--${layout}`;
+    article.dataset.workId = work.id;
 
-    eyebrow.className = "result-meta";
-    eyebrow.append(
+    header.className = "work-card__header";
+    header.append(
       createText("span", "pill", work.format || "作品"),
-      createText("span", "help", work.creator || "サンプル作者"),
+      createText("span", "help", work.creator || "サンプル作者")
     );
 
-    title.className = layout === "compact" ? "h3" : "result-card__title";
-    title.textContent = work.title;
+    titleLink.className = "work-card__title";
+    titleLink.href = `/work/?slug=${encodeURIComponent(work.slug)}`;
+    titleLink.dataset.workLink = "true";
+    titleLink.dataset.workId = work.id;
+    titleLink.textContent = work.title;
 
     summary.className = "muted";
     summary.textContent = work.shortDescription;
 
-    reasonText.className = "help result-reason";
+    reasonText.className = "work-card__reason";
     reasonText.textContent =
       reason || work.matchContext?.summary || work.matchSummary || work.publicNote || "";
 
@@ -112,55 +212,68 @@
       );
     });
 
-    if (layout === "compact") {
-      card.append(eyebrow, title, summary, reasonText, tagList);
-      if (profileId) {
-        card.append(
-          createText(
-            "p",
-            "help",
-            [work.format || "作品", work.releasedAt || ""].filter(Boolean).join(" / ")
-          )
-        );
-      }
-      return card;
-    }
-
-    media.className = "result-card__media";
-    media.append(
-      createText("span", "result-card__media-type", work.format || "作品"),
-      createText("strong", "result-card__media-title", work.creator || "サンプル作者")
+    meta.className = "work-card__meta";
+    meta.append(
+      createText("span", "help", work.releasedAt || "公開日未設定"),
+      createText("span", "help", work.highlightPoints?.[0] || "条件要約あり")
     );
 
-    body.className = "result-card__body";
-    body.append(eyebrow, title, summary, reasonText, tagList);
+    actionCluster.className = "work-card__actions";
+    actionCluster.append(
+      createWorkActionButton({
+        kind: "favorite",
+        workId: work.id,
+        active: favoriteSet.has(work.id),
+      }),
+      createWorkActionButton({
+        kind: "compare",
+        workId: work.id,
+        active: compareSet.has(work.id),
+      })
+    );
 
-    side.className = "result-card__side";
-    sideMeta.className = "help result-card__side-meta";
-    sideMeta.textContent = [work.releasedAt || "", work.highlightPoints?.[0] || ""].filter(Boolean).join(" / ");
-    cta.className = "btn btn--primary btn--sm";
-    cta.textContent = "詳細を見る";
-    side.append(sideMeta, cta);
+    detailLink.className = "btn btn--primary btn--sm";
+    detailLink.href = `/work/?slug=${encodeURIComponent(work.slug)}`;
+    detailLink.dataset.workLink = "true";
+    detailLink.dataset.workId = work.id;
+    detailLink.textContent = layout === "compact" ? "詳細" : "詳細を見る";
 
-    card.append(media, body, side);
-    return card;
+    footer.className = showActions ? "work-card__footer" : "work-card__footer work-card__footer--solo";
+    if (showActions) {
+      footer.append(actionCluster, detailLink);
+    } else {
+      footer.append(detailLink);
+    }
+
+    content.className = "work-card__body";
+    content.append(header, titleLink, summary, reasonText, tagList, meta, footer);
+    article.append(content);
+
+    if (profileId && layout === "compact") {
+      article.append(
+        createText(
+          "p",
+          "help work-card__footnote",
+          [work.format || "作品", work.releasedAt || ""].filter(Boolean).join(" / ")
+        )
+      );
+    }
+
+    return article;
   };
 
   const createCollectionCard = ({ collection, layout = "list" }) => {
-    const card = document.createElement("a");
+    const article = document.createElement("article");
     const body = document.createElement("div");
     const header = document.createElement("div");
-    const title = document.createElement("h3");
+    const titleLink = document.createElement("a");
     const description = document.createElement("p");
     const tagList = document.createElement("div");
-    const side = document.createElement("div");
+    const footer = document.createElement("div");
     const count = document.createElement("span");
-    const cta = document.createElement("span");
+    const detailLink = document.createElement("a");
 
-    card.href = `/collection/?slug=${encodeURIComponent(collection.slug)}`;
-    card.className = `card card--interactive collection-card ${
-      layout === "compact" ? "collection-card--compact" : "collection-card--list"
-    }`;
+    article.className = `card collection-card collection-card--${layout}`;
 
     header.className = "collection-card__meta";
     header.append(
@@ -168,8 +281,9 @@
       createText("span", "help", "固定導線")
     );
 
-    title.className = layout === "compact" ? "h3" : "h2";
-    title.textContent = collection.title;
+    titleLink.className = layout === "compact" ? "h3 collection-card__title" : "h2 collection-card__title";
+    titleLink.href = `/collection/?slug=${encodeURIComponent(collection.slug)}`;
+    titleLink.textContent = collection.title;
 
     description.className = "muted";
     description.textContent = collection.description;
@@ -182,29 +296,24 @@
     body.className = "collection-card__body";
     body.append(
       header,
-      title,
+      titleLink,
       description,
       tagList,
       createText("p", "help", collection.lead || "入口導線として使う固定特集です。")
     );
 
-    if (layout === "compact") {
-      body.append(
-        createText("p", "help", `${collection.workObjects.length}件を起点に探索`)
-      );
-      card.append(body);
-      return card;
-    }
-
     count.className = "collection-card__count";
     count.textContent = `${collection.workObjects.length}件`;
-    cta.className = "btn btn--primary btn--sm";
-    cta.textContent = "特集を見る";
-    side.className = "collection-card__side";
-    side.append(count, cta);
+    detailLink.className = "btn btn--secondary btn--sm";
+    detailLink.href = `/collection/?slug=${encodeURIComponent(collection.slug)}`;
+    detailLink.textContent = "特集を見る";
 
-    card.append(body, side);
-    return card;
+    footer.className = "collection-card__footer";
+    footer.append(count, detailLink);
+    body.append(footer);
+    article.append(body);
+
+    return article;
   };
 
   const setMeta = ({ title = "", description = "", canonical = "" }) => {
@@ -249,6 +358,73 @@
     });
   };
 
+  const renderSavedSearchLinks = (root, searches, tagMap, { editable = false } = {}) => {
+    if (!root) return;
+    root.textContent = "";
+    if (!searches.length) {
+      emptyState(root, "まだ保存した検索はありません。");
+      return;
+    }
+    searches.forEach((search) => {
+      const item = document.createElement("div");
+      item.className = "finder-mini-link finder-mini-link--saved";
+      item.appendChild(
+        createFinderLink({
+          label: search.label || getSearchSummaryLabel(search, tagMap),
+          href: toFinderUrl(search),
+          meta: getSearchSummaryLabel(search, tagMap),
+          className: "finder-mini-link finder-mini-link--button",
+        })
+      );
+      if (editable) {
+        item.appendChild(
+          createButton({
+            label: "削除",
+            className: "btn btn--ghost btn--sm",
+            dataset: { savedSearchDelete: search.id },
+          })
+        );
+      }
+      root.appendChild(item);
+    });
+  };
+
+  const renderRecentWorkLinks = (root, works) => {
+    if (!root) return;
+    root.textContent = "";
+    if (!works.length) {
+      emptyState(root, "まだ閲覧履歴はありません。");
+      return;
+    }
+    works.forEach((work) => {
+      root.appendChild(
+        createFinderLink({
+          label: work.title,
+          href: `/work/?slug=${encodeURIComponent(work.slug)}`,
+          meta: [work.format, work.creator].filter(Boolean).join(" / "),
+        })
+      );
+    });
+  };
+
+  const renderPopularSearchLinks = (root, searches, tagMap) => {
+    if (!root) return;
+    root.textContent = "";
+    if (!searches.length) {
+      emptyState(root, "まだ検索ログが少ないため、人気条件はこれから表示されます。");
+      return;
+    }
+    searches.forEach((search) => {
+      root.appendChild(
+        createTagChip({
+          label: search.label || getSearchSummaryLabel(search, tagMap),
+          href: toFinderUrl(search),
+          className: "tag tag--search-shortcut",
+        })
+      );
+    });
+  };
+
   const renderHomePage = () => {
     const root = document.querySelector("[data-home-page]");
     if (!root) return;
@@ -257,26 +433,43 @@
     const profile = core.getActiveProfile(state);
     if (!profile) return;
 
+    const tagMap = core.getTagMap(state);
+    const summary = core.aggregateLogs(state);
+    const uiState = getUiState(state);
+    const workMap = getWorkMap(state, profile.id);
     const featuredCollections = core
       .getProfileCollections(state, profile.id, { publicOnly: true })
       .filter((collection) => core.ensureArray(profile.featuredCollectionIds).includes(collection.id))
       .map((collection) => core.decorateCollection(collection, state));
-
     const featuredWorks = core
       .getProfileWorks(state, profile.id, { publicOnly: true })
       .filter((work) => core.ensureArray(profile.featuredWorkIds).includes(work.id))
-      .map((work) => {
-        const decorated = core.filterWorks({
-          state,
-          profileId: profile.id,
-          query: "",
-          includeTagIds: [],
-          excludeTagIds: [],
-        }).find((item) => item.id === work.id);
-        return decorated || work;
-      });
-
+      .map((work) => workMap.get(work.id))
+      .filter(Boolean);
+    const recentWorks = core.ensureArray(uiState.recentWorkIds)
+      .map((workId) => workMap.get(workId))
+      .filter(Boolean)
+      .slice(0, 4);
+    const favoriteWorks = core.ensureArray(uiState.favoriteWorkIds)
+      .map((workId) => workMap.get(workId))
+      .filter(Boolean)
+      .slice(0, 4);
     const groupedTags = core.groupTags(core.getVisibleTags(state, profile.id), state.tagGroups);
+    const popularSearches = summary.topSearches.length
+      ? summary.topSearches
+      : core
+          .getProfileCollections(state, profile.id, { publicOnly: true })
+          .slice(0, 3)
+          .map((collection) => ({
+            label: collection.title,
+            query: "",
+            creatorQuery: "",
+            includeTagIds: [],
+            excludeTagIds: [],
+            collectionId: collection.id,
+            matchMode: "and",
+            sort: "recommended",
+          }));
 
     const setText = (selector, value) => {
       const element = root.querySelector(selector);
@@ -292,10 +485,6 @@
       createText("li", "", item)
     );
 
-    fillTextList(root.querySelector("[data-home-search-tips]"), profile.searchTips, (item) =>
-      createText("li", "", item)
-    );
-
     fillTextList(root.querySelector("[data-home-featured-collections]"), featuredCollections, (collection) =>
       createCollectionCard({ collection, layout: "compact" })
     );
@@ -306,6 +495,8 @@
         profileId: profile.id,
         reason: work.matchSummary || work.publicNote,
         layout: "compact",
+        uiState,
+        showActions: false,
       })
     );
 
@@ -329,6 +520,35 @@
       );
       return card;
     });
+
+    renderSavedSearchLinks(
+      root.querySelector("[data-home-saved-searches]"),
+      core.ensureArray(uiState.savedSearches).slice(0, 4),
+      tagMap
+    );
+    renderRecentWorkLinks(root.querySelector("[data-home-recent-works]"), recentWorks);
+    renderPopularSearchLinks(root.querySelector("[data-home-popular-searches]"), popularSearches, tagMap);
+
+    const favoriteRoot = root.querySelector("[data-home-favorite-works]");
+    if (favoriteRoot) {
+      favoriteRoot.textContent = "";
+      if (!favoriteWorks.length) {
+        favoriteRoot.appendChild(createText("p", "help", "まだ保存した作品はありません。検索結果や作品詳細から保存できます。"));
+      } else {
+        favoriteWorks.forEach((work) => {
+          favoriteRoot.appendChild(
+            createWorkCard({
+              work,
+              profileId: profile.id,
+              reason: work.matchSummary || work.publicNote,
+              layout: "compact",
+              uiState,
+              showActions: false,
+            })
+          );
+        });
+      }
+    }
   };
 
   const renderFinderPage = () => {
@@ -336,42 +556,54 @@
     if (!root) return;
 
     const queryInput = root.querySelector("[data-finder-query]");
+    const creatorInput = root.querySelector("[data-finder-creator]");
     const sortSelect = root.querySelector("[data-finder-sort]");
-    const includeRoot = root.querySelector("[data-finder-include-groups]");
-    const excludeRoot = root.querySelector("[data-finder-exclude-groups]");
+    const sortNoteRoot = root.querySelector("[data-finder-sort-note]");
+    const groupsRoot = root.querySelector("[data-finder-groups]");
     const resultsRoot = root.querySelector("[data-finder-results]");
     const activeRoot = root.querySelector("[data-finder-active]");
     const emptyRoot = root.querySelector("[data-finder-empty]");
     const statusRoot = root.querySelector("[data-finder-status]");
     const clearButton = root.querySelector("[data-finder-clear]");
     const copyButton = root.querySelector("[data-finder-copy]");
+    const saveButton = root.querySelector("[data-finder-save-search]");
     const titleRoot = root.querySelector("[data-profile-hero-title]");
     const descriptionRoot = root.querySelector("[data-profile-hero-description]");
     const tipsRoot = root.querySelector("[data-profile-search-tips]");
     const presetsRoot = root.querySelector("[data-finder-presets]");
+    const popularSearchRoot = root.querySelector("[data-finder-popular-searches]");
+    const savedSearchRoot = root.querySelector("[data-finder-saved-searches]");
+    const recentRoot = root.querySelector("[data-finder-recent]");
     const suggestionsRoot = root.querySelector("[data-finder-suggestions]");
     const suggestionsWrap = root.querySelector("[data-finder-suggestions-wrap]");
+    const rescueRoot = root.querySelector("[data-finder-rescue]");
+    const compareRoot = root.querySelector("[data-finder-compare]");
+    const compareItemsRoot = root.querySelector("[data-compare-items]");
+    const compareGridRoot = root.querySelector("[data-compare-grid]");
+    const compareClearButton = root.querySelector("[data-compare-clear]");
     const modeButtons = Array.from(root.querySelectorAll("[data-finder-mode]"));
-    if (!queryInput || !sortSelect || !includeRoot || !excludeRoot || !resultsRoot || !activeRoot) return;
+    if (
+      !queryInput ||
+      !creatorInput ||
+      !sortSelect ||
+      !groupsRoot ||
+      !resultsRoot ||
+      !activeRoot
+    ) {
+      return;
+    }
 
     let state = store.loadState();
     const profile = core.getActiveProfile(state);
     const visibleTags = core.getVisibleTags(state, profile?.id);
     const groupedTags = core.groupTags(visibleTags, state.tagGroups);
     const tagMap = core.getTagMap(state);
-    const tagCountMap = core
-      .getProfileWorks(state, profile?.id, { publicOnly: true })
-      .reduce((map, work) => {
-        core.ensureArray(work.tagIds).forEach((tagId) => {
-          map.set(tagId, (map.get(tagId) || 0) + 1);
-        });
-        return map;
-      }, new Map());
     let logTimer = null;
     let lastLogSignature = "";
 
     const pageState = {
       query: "",
+      creatorQuery: "",
       includeTagIds: [],
       excludeTagIds: [],
       sort: "recommended",
@@ -382,83 +614,153 @@
     const readUrlState = () => {
       const params = new URLSearchParams(window.location.search);
       pageState.query = params.get("q") || "";
+      pageState.creatorQuery = params.get("creator") || "";
       pageState.sort = params.get("sort") || "recommended";
       pageState.collectionId = params.get("collection") || "";
       pageState.matchMode = params.get("mode") === "or" ? "or" : "and";
-      pageState.includeTagIds = core.unique(params.getAll("include"));
-      pageState.excludeTagIds = core.unique(params.getAll("exclude"));
+      pageState.includeTagIds = unique(params.getAll("include"));
+      pageState.excludeTagIds = unique(params.getAll("exclude"));
     };
+
+    const getTagState = (tagId) => {
+      if (pageState.includeTagIds.includes(tagId)) return "include";
+      if (pageState.excludeTagIds.includes(tagId)) return "exclude";
+      return "ignore";
+    };
+
+    const getUiStateFromStore = () => getUiState(store.loadState());
 
     const syncControls = () => {
       queryInput.value = pageState.query;
+      creatorInput.value = pageState.creatorQuery;
       queryInput.placeholder = profile?.searchPlaceholder || queryInput.placeholder;
       sortSelect.value = pageState.sort;
+      if (sortNoteRoot) sortNoteRoot.textContent = getSortMeta(pageState.sort).description;
       modeButtons.forEach((button) => {
         const isActive = button.dataset.finderMode === pageState.matchMode;
         button.setAttribute("aria-pressed", String(isActive));
       });
-      root.querySelectorAll("[data-filter-kind]").forEach((button) => {
-        const kind = button.dataset.filterKind;
-        const tagId = button.dataset.tagId;
-        const selectedIds = kind === "include" ? pageState.includeTagIds : pageState.excludeTagIds;
-        button.setAttribute("aria-pressed", String(selectedIds.includes(tagId)));
-      });
     };
 
-    const renderTagGroups = (container, kind) => {
-      container.textContent = "";
+    const renderTagGroups = () => {
+      groupsRoot.textContent = "";
       groupedTags.forEach((group) => {
-        const block = document.createElement("div");
-        const title = document.createElement("div");
-        const name = document.createElement("p");
-        const description = document.createElement("p");
-        const list = document.createElement("div");
-        block.className = "finder-group stack";
-        title.className = "stack";
-        name.className = "label";
-        name.textContent = group.label;
-        description.className = "help";
-        description.textContent = group.description || "";
-        list.className = "tag-filter__list";
+        const block = document.createElement("section");
+        block.className = "finder-group-v2 stack";
+
+        block.append(
+          createText("p", "label", group.label),
+          createText("p", "help", group.description || "")
+        );
+
         group.tags.forEach((tag) => {
-          const selectedIds = kind === "include" ? pageState.includeTagIds : pageState.excludeTagIds;
-          list.appendChild(
-            createTagButton({
-              kind,
-              tag,
-              selected: selectedIds.includes(tag.id),
-              count: tagCountMap.get(tag.id) || 0,
+          const row = document.createElement("div");
+          const info = document.createElement("div");
+          const controls = document.createElement("div");
+          const includeCount = core.filterWorks({
+            state,
+            profileId: profile?.id,
+            query: pageState.query,
+            creatorQuery: pageState.creatorQuery,
+            includeTagIds: unique([...pageState.includeTagIds.filter((id) => id !== tag.id), tag.id]),
+            excludeTagIds: pageState.excludeTagIds.filter((id) => id !== tag.id),
+            sort: "recommended",
+            collectionId: pageState.collectionId,
+            matchMode: pageState.matchMode,
+          }).length;
+          const tagState = getTagState(tag.id);
+
+          row.className = `finder-tag-row finder-tag-row--${tagState}`;
+          info.className = "finder-tag-row__info";
+          info.append(
+            createText("strong", "", tag.label),
+            createText(
+              "span",
+              "help",
+              includeCount > 0 ? `含めると ${includeCount}件` : "この条件では候補なし"
+            )
+          );
+
+          controls.className = "finder-tag-row__controls";
+          controls.append(
+            createButton({
+              label: "無視",
+              className: "finder-state-btn",
+              dataset: { filterTagId: tag.id, filterState: "ignore" },
+              pressed: tagState === "ignore",
+            }),
+            createButton({
+              label: "含める",
+              className: "finder-state-btn finder-state-btn--include",
+              dataset: { filterTagId: tag.id, filterState: "include" },
+              pressed: tagState === "include",
+              disabled: includeCount === 0 && tagState !== "include",
+            }),
+            createButton({
+              label: "除外",
+              className: "finder-state-btn finder-state-btn--exclude",
+              dataset: { filterTagId: tag.id, filterState: "exclude" },
+              pressed: tagState === "exclude",
             })
           );
+
+          row.append(info, controls);
+          block.append(row);
         });
-        title.append(name, description);
-        block.append(title, list);
-        container.appendChild(block);
+
+        groupsRoot.appendChild(block);
       });
     };
 
     const renderActiveConditions = () => {
       activeRoot.textContent = "";
       if (pageState.query) {
-        activeRoot.appendChild(createActiveChip(`キーワード: ${pageState.query}`, "query", pageState.query));
+        activeRoot.appendChild(createButton({
+          label: `作品: ${pageState.query}`,
+          className: "tag-filter__btn",
+          dataset: { removeKind: "query", removeValue: pageState.query },
+        }));
+      }
+      if (pageState.creatorQuery) {
+        activeRoot.appendChild(createButton({
+          label: `作者: ${pageState.creatorQuery}`,
+          className: "tag-filter__btn",
+          dataset: { removeKind: "creatorQuery", removeValue: pageState.creatorQuery },
+        }));
       }
       if (pageState.matchMode === "or") {
-        activeRoot.appendChild(createActiveChip("条件: いずれか一致", "mode", "or"));
+        activeRoot.appendChild(createButton({
+          label: "条件: いずれか一致",
+          className: "tag-filter__btn",
+          dataset: { removeKind: "mode", removeValue: "or" },
+        }));
       }
       pageState.includeTagIds.forEach((tagId) => {
         const tag = tagMap.get(tagId);
         if (!tag) return;
-        activeRoot.appendChild(createActiveChip(`含める: ${tag.label}`, "include", tagId));
+        activeRoot.appendChild(createButton({
+          label: `含める: ${tag.label}`,
+          className: "tag-filter__btn",
+          dataset: { removeKind: "include", removeValue: tagId },
+        }));
       });
       pageState.excludeTagIds.forEach((tagId) => {
         const tag = tagMap.get(tagId);
         if (!tag) return;
-        activeRoot.appendChild(createActiveChip(`除外: ${tag.label}`, "exclude", tagId));
+        activeRoot.appendChild(createButton({
+          label: `除外: ${tag.label}`,
+          className: "tag-filter__btn",
+          dataset: { removeKind: "exclude", removeValue: tagId },
+        }));
       });
       if (pageState.collectionId) {
         const collection = core.getCollection(state, pageState.collectionId);
         if (collection) {
-          activeRoot.appendChild(createActiveChip(`特集: ${collection.title}`, "collection", collection.id));
+          activeRoot.appendChild(createButton({
+            label: `特集: ${collection.title}`,
+            className: "tag-filter__btn",
+            dataset: { removeKind: "collection", removeValue: collection.id },
+          }));
         }
       }
     };
@@ -466,6 +768,7 @@
     const scheduleLog = (resultCount) => {
       const shouldLog =
         pageState.query ||
+        pageState.creatorQuery ||
         pageState.includeTagIds.length ||
         pageState.excludeTagIds.length ||
         pageState.collectionId ||
@@ -474,6 +777,7 @@
 
       const signature = JSON.stringify({
         query: pageState.query,
+        creatorQuery: pageState.creatorQuery,
         include: pageState.includeTagIds.slice().sort(),
         exclude: pageState.excludeTagIds.slice().sort(),
         collection: pageState.collectionId,
@@ -488,6 +792,7 @@
         store.logEvent("search", {
           profileId: profile?.id || "",
           query: pageState.query,
+          creatorQuery: pageState.creatorQuery,
           includeTagIds: pageState.includeTagIds,
           excludeTagIds: pageState.excludeTagIds,
           collectionId: pageState.collectionId,
@@ -498,12 +803,105 @@
       }, 350);
     };
 
+    const renderSavedSearches = () => {
+      state = store.loadState();
+      renderSavedSearchLinks(savedSearchRoot, core.ensureArray(state.ui?.savedSearches), tagMap, {
+        editable: true,
+      });
+    };
+
+    const renderPopularSearches = () => {
+      state = store.loadState();
+      const summary = core.aggregateLogs(state);
+      const popularSearches = summary.topSearches.length
+        ? summary.topSearches
+        : core
+            .getProfileCollections(state, profile?.id, { publicOnly: true })
+            .slice(0, 3)
+            .map((collection) => ({
+              label: collection.title,
+              query: "",
+              creatorQuery: "",
+              includeTagIds: [],
+              excludeTagIds: [],
+              collectionId: collection.id,
+              matchMode: "and",
+              sort: "recommended",
+            }));
+      renderPopularSearchLinks(popularSearchRoot, popularSearches, tagMap);
+    };
+
+    const renderRecentWorks = () => {
+      state = store.loadState();
+      const uiState = getUiState(state);
+      const workMap = getWorkMap(state, profile?.id);
+      const recentWorks = core.ensureArray(uiState.recentWorkIds)
+        .map((workId) => workMap.get(workId))
+        .filter(Boolean)
+        .slice(0, 5);
+      renderRecentWorkLinks(recentRoot, recentWorks);
+    };
+
+    const renderCompare = () => {
+      if (!compareRoot || !compareItemsRoot || !compareGridRoot) return;
+      state = store.loadState();
+      const uiState = getUiState(state);
+      const workMap = getWorkMap(state, profile?.id);
+      const compareWorks = core.ensureArray(uiState.compareWorkIds)
+        .map((workId) => workMap.get(workId))
+        .filter(Boolean);
+
+      compareItemsRoot.textContent = "";
+      compareGridRoot.textContent = "";
+      compareRoot.hidden = compareWorks.length === 0;
+      if (!compareWorks.length) return;
+
+      compareWorks.forEach((work) => {
+        const item = document.createElement("div");
+        item.className = "compare-pill";
+        item.append(
+          createText("strong", "", work.title),
+          createText("span", "help", [work.format, work.creator].filter(Boolean).join(" / ")),
+          createButton({
+            label: "外す",
+            className: "btn btn--ghost btn--sm",
+            dataset: { workAction: "compare", workId: work.id },
+          })
+        );
+        compareItemsRoot.appendChild(item);
+      });
+
+      if (compareWorks.length === 1) {
+        compareGridRoot.appendChild(createText("p", "help", "比較するには、もう1件候補を追加してください。"));
+        return;
+      }
+
+      compareWorks.forEach((work) => {
+        const column = document.createElement("article");
+        const tags = document.createElement("div");
+        column.className = "card compare-column stack";
+        tags.className = "tag-list";
+        work.primaryTagObjects.forEach((tag) => tags.appendChild(createTagChip({ label: tag.label })));
+        column.append(
+          createText("h3", "h3", work.title),
+          createText("p", "help", [work.format, work.creator].filter(Boolean).join(" / ")),
+          createText("p", "muted", work.shortDescription),
+          createText("p", "work-card__reason", work.matchSummary || work.publicNote),
+          tags,
+          createText("p", "help", `公開: ${work.releasedAt || "未設定"}`),
+          createText("p", "help", `特集: ${core.ensureArray(work.collectionObjects).map((collection) => collection.title).join(" / ") || "なし"}`)
+        );
+        compareGridRoot.appendChild(column);
+      });
+    };
+
     const renderSuggestions = (filtered) => {
       if (!suggestionsRoot) return;
       suggestionsRoot.textContent = "";
       if (suggestionsWrap) suggestionsWrap.hidden = filtered.length !== 0;
       if (filtered.length) return;
 
+      const uiState = getUiState(state);
       const suggestions = core.suggestWorks({
         state,
         profileId: profile?.id,
@@ -524,6 +922,7 @@
                     .join(" / ")}`
                 : work.matchSummary,
             layout: "list",
+            uiState,
           })
         );
       });
@@ -532,25 +931,58 @@
       }
     };
 
+    const renderRescue = () => {
+      if (!rescueRoot) return;
+      rescueRoot.textContent = "";
+      const relaxations = core.buildRelaxationSuggestions({
+        state,
+        profileId: profile?.id,
+        query: pageState.query,
+        creatorQuery: pageState.creatorQuery,
+        includeTagIds: pageState.includeTagIds,
+        excludeTagIds: pageState.excludeTagIds,
+        sort: pageState.sort,
+        collectionId: pageState.collectionId,
+        matchMode: pageState.matchMode,
+        limit: 5,
+      });
+
+      if (!relaxations.length) {
+        rescueRoot.appendChild(createText("p", "help", "緩和候補はまだありません。特集や近い候補から探してください。"));
+        return;
+      }
+
+      relaxations.forEach((suggestion, index) => {
+        const button = createButton({
+          label: `${suggestion.label} (${suggestion.resultCount}件)`,
+          className: "finder-relax-btn",
+          dataset: {
+            rescueIndex: String(index),
+            rescueState: JSON.stringify(suggestion.nextState),
+          },
+        });
+        const wrapper = document.createElement("div");
+        wrapper.className = "finder-relax-item";
+        wrapper.append(button, createText("p", "help", suggestion.description));
+        rescueRoot.appendChild(wrapper);
+      });
+    };
+
     const renderResults = () => {
       state = store.loadState();
       const collection = pageState.collectionId ? core.getCollection(state, pageState.collectionId) : null;
+      const uiState = getUiState(state);
       const filtered = core.filterWorks({
         state,
         profileId: profile?.id,
         query: pageState.query,
+        creatorQuery: pageState.creatorQuery,
         includeTagIds: pageState.includeTagIds,
         excludeTagIds: pageState.excludeTagIds,
         sort: pageState.sort,
         collectionId: pageState.collectionId,
         matchMode: pageState.matchMode,
       });
-      const filteredCountMap = filtered.reduce((map, work) => {
-        core.ensureArray(work.tagIds).forEach((tagId) => {
-          map.set(tagId, (map.get(tagId) || 0) + 1);
-        });
-        return map;
-      }, new Map());
 
       resultsRoot.textContent = "";
       filtered.forEach((work) => {
@@ -560,24 +992,20 @@
             profileId: profile?.id,
             reason: work.matchContext?.summary || work.matchSummary,
             layout: "list",
+            uiState,
           })
         );
       });
 
-      root.querySelectorAll("[data-filter-kind]").forEach((button) => {
-        const countBadge = button.querySelector(".tag-filter__count");
-        const tagId = button.dataset.tagId;
-        if (!countBadge || !tagId) return;
-        countBadge.textContent = String(filteredCountMap.get(tagId) || 0);
-      });
-
       if (emptyRoot) emptyRoot.hidden = filtered.length !== 0;
       renderSuggestions(filtered);
+      renderRescue();
 
       if (statusRoot) {
         const fragments = [];
-        if (pageState.query) fragments.push(`キーワード: ${pageState.query}`);
-        if (pageState.matchMode === "or") fragments.push("条件: いずれか一致");
+        if (pageState.query) fragments.push(`作品: ${pageState.query}`);
+        if (pageState.creatorQuery) fragments.push(`作者: ${pageState.creatorQuery}`);
+        if (pageState.matchMode === "or") fragments.push("いずれか一致");
         if (pageState.includeTagIds.length) {
           fragments.push(
             `含める: ${pageState.includeTagIds
@@ -593,16 +1021,21 @@
           );
         }
         if (collection) fragments.push(`特集: ${collection.title}`);
-        statusRoot.textContent = `${fragments.length ? fragments.join(" | ") : "条件なし"} | ${filtered.length}件`;
+        statusRoot.textContent = `${filtered.length}件 | ${getSortMeta(pageState.sort).label} | ${fragments.length ? fragments.join(" | ") : "条件なし"}`;
       }
 
       renderActiveConditions();
+      renderCompare();
+      renderSavedSearches();
+      renderPopularSearches();
+      renderRecentWorks();
       scheduleLog(filtered.length);
     };
 
     const applyAndRender = () => {
       syncControls();
       updateUrl(pageState);
+      renderTagGroups();
       renderResults();
     };
 
@@ -627,8 +1060,6 @@
       fillTextList(tipsRoot, profile?.searchTips, (item) => createText("li", "", item));
     };
 
-    renderTagGroups(includeRoot, "include");
-    renderTagGroups(excludeRoot, "exclude");
     readUrlState();
     if (titleRoot && profile?.heroTitle) titleRoot.textContent = profile.heroTitle;
     if (descriptionRoot && profile?.heroDescription) descriptionRoot.textContent = profile.heroDescription;
@@ -637,23 +1068,14 @@
     applyAndRender();
 
     root.addEventListener("click", (event) => {
-      const filterButton = event.target.closest("[data-filter-kind]");
+      const filterButton = event.target.closest("[data-filter-tag-id]");
       if (filterButton) {
-        const tagId = filterButton.dataset.tagId;
-        const kind = filterButton.dataset.filterKind;
-        const selectedIds = kind === "include" ? pageState.includeTagIds : pageState.excludeTagIds;
-        const nextSelected = selectedIds.includes(tagId)
-          ? selectedIds.filter((value) => value !== tagId)
-          : [...selectedIds, tagId];
-        if (kind === "include") {
-          pageState.includeTagIds = core.unique(nextSelected).filter(
-            (value) => !pageState.excludeTagIds.includes(value)
-          );
-        } else {
-          pageState.excludeTagIds = core.unique(nextSelected).filter(
-            (value) => !pageState.includeTagIds.includes(value)
-          );
-        }
+        const tagId = filterButton.dataset.filterTagId;
+        const nextState = filterButton.dataset.filterState;
+        pageState.includeTagIds = pageState.includeTagIds.filter((value) => value !== tagId);
+        pageState.excludeTagIds = pageState.excludeTagIds.filter((value) => value !== tagId);
+        if (nextState === "include") pageState.includeTagIds = unique([...pageState.includeTagIds, tagId]);
+        if (nextState === "exclude") pageState.excludeTagIds = unique([...pageState.excludeTagIds, tagId]);
         applyAndRender();
         return;
       }
@@ -663,6 +1085,7 @@
         const kind = removeButton.dataset.removeKind;
         const value = removeButton.dataset.removeValue;
         if (kind === "query") pageState.query = "";
+        if (kind === "creatorQuery") pageState.creatorQuery = "";
         if (kind === "mode") pageState.matchMode = "and";
         if (kind === "include") pageState.includeTagIds = pageState.includeTagIds.filter((id) => id !== value);
         if (kind === "exclude") pageState.excludeTagIds = pageState.excludeTagIds.filter((id) => id !== value);
@@ -678,22 +1101,71 @@
         return;
       }
 
-      const card = event.target.closest("[data-work-id]");
-      if (card) {
+      const actionButton = event.target.closest("[data-work-action]");
+      if (actionButton) {
+        const workId = actionButton.dataset.workId;
+        const action = actionButton.dataset.workAction;
+        if (!workId || !action) return;
+        if (action === "favorite") store.toggleFavoriteWork(workId);
+        if (action === "compare") store.toggleCompareWork(workId);
+        renderResults();
+        return;
+      }
+
+      const link = event.target.closest("[data-work-link]");
+      if (link) {
         store.logEvent("result_click", {
           profileId: profile?.id || "",
-          workId: card.dataset.workId,
+          workId: link.dataset.workId || "",
           query: pageState.query,
+          creatorQuery: pageState.creatorQuery,
           includeTagIds: pageState.includeTagIds,
           excludeTagIds: pageState.excludeTagIds,
           collectionId: pageState.collectionId,
           matchMode: pageState.matchMode,
         });
+        return;
+      }
+
+      const deleteSavedSearchButton = event.target.closest("[data-saved-search-delete]");
+      if (deleteSavedSearchButton) {
+        store.deleteSavedSearch(deleteSavedSearchButton.dataset.savedSearchDelete || "");
+        renderSavedSearches();
+        return;
+      }
+
+      const rescueButton = event.target.closest("[data-rescue-state]");
+      if (rescueButton) {
+        try {
+          const nextState = JSON.parse(rescueButton.dataset.rescueState || "{}");
+          pageState.query = nextState.query || "";
+          pageState.creatorQuery = nextState.creatorQuery || "";
+          pageState.includeTagIds = unique(nextState.includeTagIds);
+          pageState.excludeTagIds = unique(nextState.excludeTagIds);
+          pageState.collectionId = nextState.collectionId || "";
+          pageState.matchMode = nextState.matchMode === "or" ? "or" : "and";
+          pageState.sort = nextState.sort || pageState.sort;
+          applyAndRender();
+        } catch (error) {
+          // ignore malformed state payloads
+        }
+        return;
+      }
+
+      if (event.target.closest("[data-compare-clear]")) {
+        const compareIds = core.ensureArray(store.loadState().ui?.compareWorkIds);
+        compareIds.forEach((workId) => store.toggleCompareWork(workId));
+        renderResults();
       }
     });
 
     queryInput.addEventListener("input", () => {
       pageState.query = queryInput.value.trim();
+      applyAndRender();
+    });
+
+    creatorInput.addEventListener("input", () => {
+      pageState.creatorQuery = creatorInput.value.trim();
       applyAndRender();
     });
 
@@ -705,12 +1177,32 @@
     if (clearButton) {
       clearButton.addEventListener("click", () => {
         pageState.query = "";
+        pageState.creatorQuery = "";
         pageState.includeTagIds = [];
         pageState.excludeTagIds = [];
         pageState.sort = "recommended";
         pageState.collectionId = "";
         pageState.matchMode = "and";
         applyAndRender();
+      });
+    }
+
+    if (saveButton) {
+      saveButton.addEventListener("click", () => {
+        const defaultLabel = getSearchSummaryLabel(pageState, tagMap);
+        const label = window.prompt("保存する検索名", defaultLabel === "条件なし" ? "マイ検索" : defaultLabel);
+        if (label === null) return;
+        store.upsertSavedSearch({
+          label,
+          query: pageState.query,
+          creatorQuery: pageState.creatorQuery,
+          includeTagIds: pageState.includeTagIds,
+          excludeTagIds: pageState.excludeTagIds,
+          collectionId: pageState.collectionId,
+          matchMode: pageState.matchMode,
+          sort: pageState.sort,
+        });
+        renderSavedSearches();
       });
     }
 
@@ -738,7 +1230,7 @@
 
     const params = new URLSearchParams(window.location.search);
     const slug = params.get("slug") || "";
-    const state = store.loadState();
+    let state = store.loadState();
     const profile = core.getActiveProfile(state);
     const work = core
       .getProfileWorks(state, profile?.id, { publicOnly: true })
@@ -751,10 +1243,14 @@
       return;
     }
 
+    store.touchRecentWork(work.id);
+    state = store.loadState();
+
     const decoratedWork = core.filterWorks({
       state,
       profileId: profile?.id,
       query: "",
+      creatorQuery: "",
       includeTagIds: [],
       excludeTagIds: [],
       sort: "recommended",
@@ -765,6 +1261,7 @@
     const noteRoot = root.querySelector("[data-work-note]");
     const tagRoot = root.querySelector("[data-work-tags]");
     const linksRoot = root.querySelector("[data-work-links]");
+    const actionsRoot = root.querySelector("[data-work-actions]");
     const similarRoot = root.querySelector("[data-work-similar]");
     const collectionRoot = root.querySelector("[data-work-collections]");
     const creatorRoot = root.querySelector("[data-work-creator]");
@@ -772,6 +1269,9 @@
     const reasonRoot = root.querySelector("[data-work-reason]");
     const cautionRoot = root.querySelector("[data-work-caution]");
     const pointsRoot = root.querySelector("[data-work-points]");
+    const breadcrumbRoot = root.querySelector("[data-work-breadcrumb]");
+    const releaseRoot = root.querySelector("[data-work-release]");
+    const tagCountRoot = root.querySelector("[data-work-tag-count]");
 
     if (titleRoot) titleRoot.textContent = work.title;
     if (summaryRoot) summaryRoot.textContent = work.shortDescription;
@@ -780,6 +1280,11 @@
     if (formatRoot) formatRoot.textContent = work.format || "作品";
     if (reasonRoot) reasonRoot.textContent = work.matchSummary || work.publicNote;
     if (cautionRoot) cautionRoot.textContent = work.cautionNote || "強い注意点はまだ登録されていません。";
+    if (breadcrumbRoot) breadcrumbRoot.textContent = `ホーム / 作品検索 / ${work.title}`;
+    if (releaseRoot) releaseRoot.textContent = `公開: ${work.releasedAt || "未設定"}`;
+    if (tagCountRoot) {
+      tagCountRoot.textContent = `主要タグ: ${core.ensureArray(decoratedWork?.primaryTagObjects).length}件`;
+    }
 
     if (pointsRoot) {
       fillTextList(pointsRoot, work.highlightPoints, (item) => createText("li", "", item));
@@ -787,7 +1292,7 @@
 
     if (tagRoot) {
       tagRoot.textContent = "";
-      (decoratedWork?.primaryTagObjects || []).forEach((tag) => {
+      core.ensureArray(decoratedWork?.primaryTagObjects).forEach((tag) => {
         tagRoot.appendChild(
           createTagChip({
             label: tag.label,
@@ -796,6 +1301,31 @@
         );
       });
     }
+
+    const renderWorkActions = () => {
+      if (!actionsRoot) return;
+      const currentUiState = getUiState(store.loadState());
+      actionsRoot.textContent = "";
+      actionsRoot.append(
+        createWorkActionButton({
+          kind: "favorite",
+          workId: work.id,
+          active: core.ensureArray(currentUiState.favoriteWorkIds).includes(work.id),
+        }),
+        createWorkActionButton({
+          kind: "compare",
+          workId: work.id,
+          active: core.ensureArray(currentUiState.compareWorkIds).includes(work.id),
+        }),
+        createText(
+          "p",
+          "help",
+          `比較トレイ: ${core.ensureArray(currentUiState.compareWorkIds).length}件`
+        )
+      );
+    };
+
+    renderWorkActions();
 
     if (linksRoot) {
       linksRoot.textContent = "";
@@ -837,6 +1367,7 @@
             profileId: profile?.id,
             reason: sharedLabels ? `近い条件: ${sharedLabels}` : item.matchSummary,
             layout: "compact",
+            showActions: false,
           })
         );
       });
@@ -857,15 +1388,29 @@
       slug: work.slug,
     });
 
-    root.addEventListener("click", (event) => {
-      const link = event.target.closest("[data-outbound-work-id]");
-      if (!link) return;
-      store.logEvent("outbound_click", {
-        profileId: profile?.id || "",
-        workId: link.dataset.outboundWorkId,
-        href: link.getAttribute("href") || "",
+    if (!root.dataset.workEventsBound) {
+      root.addEventListener("click", (event) => {
+        const link = event.target.closest("[data-outbound-work-id]");
+        if (link) {
+          store.logEvent("outbound_click", {
+            profileId: profile?.id || "",
+            workId: link.dataset.outboundWorkId,
+            href: link.getAttribute("href") || "",
+          });
+          return;
+        }
+
+        const actionButton = event.target.closest("[data-work-action]");
+        if (!actionButton) return;
+        const workId = actionButton.dataset.workId;
+        const action = actionButton.dataset.workAction;
+        if (!workId || !action) return;
+        if (action === "favorite") store.toggleFavoriteWork(workId);
+        if (action === "compare") store.toggleCompareWork(workId);
+        renderWorkActions();
       });
-    });
+      root.dataset.workEventsBound = "true";
+    }
   };
 
   const renderCollectionsPage = () => {
@@ -876,6 +1421,7 @@
     const profile = core.getActiveProfile(state);
     const listRoot = root.querySelector("[data-collections-list]");
     const introRoot = root.querySelector("[data-collections-intro]");
+    const recentRoot = root.querySelector("[data-collections-recent]");
     if (!listRoot) return;
 
     if (introRoot && profile?.valueProps) {
@@ -889,6 +1435,15 @@
       .forEach((collection) => {
         listRoot.appendChild(createCollectionCard({ collection, layout: "list" }));
       });
+
+    if (recentRoot) {
+      const workMap = getWorkMap(state, profile?.id);
+      const recentWorks = core.ensureArray(state.ui?.recentWorkIds)
+        .map((workId) => workMap.get(workId))
+        .filter(Boolean)
+        .slice(0, 4);
+      renderRecentWorkLinks(recentRoot, recentWorks);
+    }
   };
 
   const renderCollectionPage = () => {
@@ -918,6 +1473,7 @@
       collectionId: collection.id,
       sort: "recommended",
     });
+    const uiState = getUiState(state);
 
     const setText = (selector, value) => {
       const element = root.querySelector(selector);
@@ -955,6 +1511,8 @@
             profileId: profile?.id,
             reason: work.matchSummary || work.publicNote,
             layout: "compact",
+            uiState,
+            showActions: false,
           })
         );
       });
@@ -977,6 +1535,16 @@
         });
     }
 
+    const recentRoot = root.querySelector("[data-collection-recent]");
+    if (recentRoot) {
+      const workMap = getWorkMap(state, profile?.id);
+      const recentWorks = core.ensureArray(state.ui?.recentWorkIds)
+        .map((workId) => workMap.get(workId))
+        .filter(Boolean)
+        .slice(0, 4);
+      renderRecentWorkLinks(recentRoot, recentWorks);
+    }
+
     const finderLink = root.querySelector("[data-collection-finder-link]");
     if (finderLink) {
       finderLink.href = toFinderUrl({ collectionId: collection.id });
@@ -989,7 +1557,33 @@
     });
   };
 
+  const bindGlobalInteractions = () => {
+    if (typeof document === "undefined" || document.body?.dataset.finderGlobalBound) return;
+
+    document.body.addEventListener("click", (event) => {
+      const link = event.target.closest("[data-work-link]");
+      if (!link || link.closest("[data-finder-app]")) return;
+
+      const state = store.loadState();
+      const profile = core.getActiveProfile(state);
+      store.logEvent("result_click", {
+        profileId: profile?.id || "",
+        workId: link.dataset.workId || "",
+        query: "",
+        creatorQuery: "",
+        includeTagIds: [],
+        excludeTagIds: [],
+        collectionId: "",
+        matchMode: "and",
+        sourcePath: window.location.pathname,
+      });
+    });
+
+    document.body.dataset.finderGlobalBound = "true";
+  };
+
   const init = () => {
+    bindGlobalInteractions();
     renderHomePage();
     renderFinderPage();
     renderWorkPage();

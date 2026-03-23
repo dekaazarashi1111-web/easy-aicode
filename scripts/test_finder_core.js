@@ -65,6 +65,19 @@ assert.deepEqual(
 
 assert.deepEqual(
   core
+    .filterWorks({
+      state,
+      profileId: "kemohomo-main",
+      creatorQuery: "夜道",
+      sort: "recommended",
+    })
+    .map((work) => work.slug),
+  ["rain-hoodie-shelter"],
+  "creator query should filter by creator or circle name"
+);
+
+assert.deepEqual(
+  core
     .getCollectionWorks({
       state,
       profileId: "kemohomo-main",
@@ -143,6 +156,20 @@ assert.equal(
   core.getCollection(state, "test-collection")?.title,
   "テスト特集",
   "saved collection should be retrievable"
+);
+
+const relaxations = core.buildRelaxationSuggestions({
+  state,
+  profileId: "kemohomo-main",
+  query: "存在しない条件",
+  includeTagIds: ["osu-kemo"],
+  matchMode: "and",
+});
+
+assert.equal(
+  relaxations.some((suggestion) => suggestion.label === "キーワードを外す"),
+  true,
+  "zero-result searches should suggest removing an impossible keyword"
 );
 
 store.logEvent("search", {

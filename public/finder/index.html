@@ -63,19 +63,19 @@
 
 <main id="main">
   <section class="section section--tight">
-    <div class="container stack stack--lg search-page" data-finder-app>
-      <div class="card search-hero">
-        <div class="search-hero__intro stack">
-          <p class="kicker">Search Finder</p>
-          <h1 class="h2" data-profile-hero-title>ケモホモ作品を、条件と除外条件で探す</h1>
-          <p class="muted" data-profile-hero-description>
-            DMM 側の分類だけでは見つけづらい作品を、入口語と除外条件の両方から絞り込みます。
+    <div class="container finder-experience stack stack--lg" data-finder-app>
+      <section class="finder-command card">
+        <div class="finder-command__copy stack">
+          <p class="kicker">Advanced Finder</p>
+          <h1 class="h1" data-profile-hero-title>ケモホモ作品を、条件と除外条件で探す</h1>
+          <p class="lead" data-profile-hero-description>
+            DMM 側の分類だけでは見つけづらい作品を、入口語、作者、媒体、除外条件まで整理して探します。
           </p>
         </div>
 
-        <div class="search-toolbar">
-          <div class="field search-toolbar__query">
-            <label class="label" for="finder-query">キーワード</label>
+        <div class="finder-command__grid">
+          <div class="field finder-command__field finder-command__field--wide">
+            <label class="label" for="finder-query">作品キーワード</label>
             <input
               id="finder-query"
               class="input"
@@ -86,93 +86,134 @@
             />
           </div>
 
-          <div class="field search-toolbar__sort">
-            <label class="label" for="finder-sort">並び替え</label>
-            <select id="finder-sort" class="select" data-finder-sort>
-              <option value="recommended">おすすめ順</option>
-              <option value="latest">公開日順</option>
-              <option value="updated">更新日順</option>
-              <option value="title">タイトル順</option>
-            </select>
+          <div class="field finder-command__field">
+            <label class="label" for="finder-creator">作者・サークル</label>
+            <input
+              id="finder-creator"
+              class="input"
+              type="search"
+              autocomplete="off"
+              placeholder="作者名やサークル名"
+              data-finder-creator
+            />
           </div>
 
-          <div class="field search-toolbar__mode">
+          <div class="field finder-command__field">
+            <label class="label" for="finder-sort">並び替え</label>
+            <select id="finder-sort" class="select" data-finder-sort>
+              <option value="recommended">厳密一致順</option>
+              <option value="latest">新着順</option>
+              <option value="updated">更新順</option>
+              <option value="title">タイトル順</option>
+            </select>
+            <p class="help" data-finder-sort-note>一致タグと優先度を重視します。</p>
+          </div>
+
+          <div class="field finder-command__field">
             <span class="label">一致条件</span>
-            <div class="segmented-control">
+            <div class="segmented-control segmented-control--finder">
               <button class="segmented-control__btn" type="button" data-finder-mode="and" aria-pressed="true">すべて一致</button>
               <button class="segmented-control__btn" type="button" data-finder-mode="or" aria-pressed="false">いずれか一致</button>
             </div>
           </div>
-
-          <div class="search-toolbar__actions">
-            <button class="btn btn--secondary btn--sm" type="button" data-finder-copy>検索URLをコピー</button>
-            <button class="btn btn--ghost btn--sm" type="button" data-finder-clear>条件をクリア</button>
-          </div>
         </div>
 
-        <div class="tag-list" data-finder-presets></div>
-      </div>
+        <div class="finder-command__actions">
+          <button class="btn btn--primary btn--sm" type="button" data-finder-save-search>条件を保存</button>
+          <button class="btn btn--secondary btn--sm" type="button" data-finder-copy>検索URLをコピー</button>
+          <button class="btn btn--ghost btn--sm" type="button" data-finder-clear>条件をクリア</button>
+        </div>
 
-      <div class="finder-shell finder-shell--reference">
-        <aside class="finder-sidebar finder-sidebar--left">
-          <div class="card finder-filter-card stack">
+        <div class="finder-preset-strip">
+          <div class="finder-preset-strip__block stack">
+            <p class="label">入口特集</p>
+            <div class="tag-list" data-finder-presets></div>
+          </div>
+          <div class="finder-preset-strip__block stack">
+            <p class="label">よく使われる検索</p>
+            <div class="tag-list" data-finder-popular-searches></div>
+          </div>
+        </div>
+      </section>
+
+      <div class="finder-layout-v2">
+        <aside class="finder-sidebar-v2">
+          <div class="card finder-panel-v2 stack">
             <div class="stack">
-              <h2 class="h3">含める条件</h2>
-              <p class="help">欲しい要素や入口タグを選びます。</p>
+              <h2 class="h3">条件フィルタ</h2>
+              <p class="help">各タグを「含める / 除外 / 無視」の3状態で切り替えます。</p>
             </div>
-            <div class="stack" data-finder-include-groups></div>
+            <div class="stack" data-finder-groups></div>
           </div>
 
-          <div class="card finder-filter-card stack">
+          <div class="card finder-panel-v2 stack">
             <div class="stack">
-              <h2 class="h3">除外する条件</h2>
-              <p class="help">苦手な要素や避けたい条件を外します。</p>
+              <h2 class="h3">保存した検索</h2>
+              <p class="help">よく使う条件を残して再訪しやすくします。</p>
             </div>
-            <div class="stack" data-finder-exclude-groups></div>
+            <div class="finder-mini-list" data-finder-saved-searches></div>
           </div>
 
-          <div class="card finder-filter-card stack">
+          <div class="card finder-panel-v2 stack">
+            <div class="stack">
+              <h2 class="h3">最近見た作品</h2>
+              <p class="help">比較候補を見失わないための履歴です。</p>
+            </div>
+            <div class="finder-mini-list" data-finder-recent></div>
+          </div>
+
+          <div class="card finder-panel-v2 stack">
             <h2 class="h3">検索のコツ</h2>
             <ul class="list list--compact" data-profile-search-tips></ul>
           </div>
         </aside>
 
-        <div class="finder-main">
-          <div class="card results-head">
-            <div class="results-head__main">
-              <p class="kicker">Search Results</p>
+        <section class="finder-results-v2">
+          <div class="card finder-summary-bar">
+            <div class="finder-summary-bar__main stack">
+              <p class="kicker">Search Session</p>
               <h2 class="h3">検索結果</h2>
               <p class="help" data-finder-status aria-live="polite">条件なし | 0件</p>
             </div>
-            <div class="results-head__links">
-              <a class="btn btn--secondary btn--sm" href="/collections/">特集を見る</a>
-              <a class="btn btn--secondary btn--sm" href="/articles/">ガイドを見る</a>
+            <div class="finder-summary-bar__aside stack">
+              <div class="tag-list active-filter-list" data-finder-active></div>
+              <div class="cluster">
+                <a class="btn btn--secondary btn--sm" href="/collections/">特集を見る</a>
+                <a class="btn btn--secondary btn--sm" href="/articles/">ガイドを見る</a>
+              </div>
             </div>
           </div>
 
-          <div class="tag-list active-filter-list" data-finder-active></div>
+          <section class="card compare-dock stack" data-finder-compare hidden>
+            <div class="section-head">
+              <div class="stack">
+                <p class="kicker">Compare Tray</p>
+                <h2 class="h3">候補を並べて比較する</h2>
+              </div>
+              <button class="btn btn--ghost btn--sm" type="button" data-compare-clear>比較をクリア</button>
+            </div>
+            <div class="finder-compare-items" data-compare-items></div>
+            <div class="finder-compare-grid" data-compare-grid></div>
+          </section>
 
-          <div class="result-list" data-finder-results></div>
-
-          <div class="card stack center" data-finder-empty hidden>
+          <div class="card finder-empty-state stack" data-finder-empty hidden>
             <h2 class="h3">一致する作品が見つかりません</h2>
-            <p class="muted">条件を減らすか、OR 検索へ切り替えるか、特集から探し始めてください。</p>
-            <div class="cluster">
-              <a class="btn btn--secondary" href="/collections/">特集ページを見る</a>
-              <a class="btn btn--secondary" href="/articles/">ガイドを見る</a>
-            </div>
+            <p class="muted">条件を完全一致で縛りすぎている可能性があります。下の緩和案か、近い候補から探し直してください。</p>
+            <div class="finder-relax-list" data-finder-rescue></div>
           </div>
+
+          <div class="result-list result-list--finder" data-finder-results></div>
 
           <section class="stack" data-finder-suggestions-wrap hidden>
             <div class="section-head">
               <div class="stack">
-                <p class="kicker">Suggestions</p>
+                <p class="kicker">Near Matches</p>
                 <h2 class="h3">近い条件の候補</h2>
               </div>
             </div>
-            <div class="result-list" data-finder-suggestions></div>
+            <div class="result-list result-list--finder" data-finder-suggestions></div>
           </section>
-        </div>
+        </section>
       </div>
     </div>
   </section>

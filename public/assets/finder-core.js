@@ -162,6 +162,7 @@
       primaryTagObjects: primaryTagObjects.length ? primaryTagObjects : tagObjects.slice(0, 4),
       collectionObjects,
       _searchText: getSearchText(work, tagMap),
+      _creatorText: normalizeText(work.creator),
     };
   };
 
@@ -237,6 +238,7 @@
     state,
     profileId,
     query = "",
+    creatorQuery = "",
     includeTagIds = [],
     excludeTagIds = [],
     sort = "recommended",
@@ -247,6 +249,7 @@
     const includeIds = unique(includeTagIds);
     const excludeIds = unique(excludeTagIds);
     const queryTokens = splitTokens(query);
+    const creatorTokens = splitTokens(creatorQuery);
     const works = getProfileWorks(state, profileId, { publicOnly: true }).map((work) =>
       decorateWork(work, state)
     );
@@ -256,6 +259,7 @@
         const tagIds = ensureArray(work.tagIds);
         if (collection && !ensureArray(collection.workIds).includes(work.id)) return false;
         if (!matchesTokens(work._searchText, queryTokens, matchMode)) return false;
+        if (!matchesTokens(work._creatorText, creatorTokens, matchMode)) return false;
         if (!matchesIncludeTags(tagIds, includeIds, matchMode)) return false;
         if (excludeIds.length && excludeIds.some((tagId) => tagIds.includes(tagId))) return false;
         return true;
@@ -265,6 +269,136 @@
         matchContext: getMatchContext({ work, state, query, includeTagIds: includeIds }),
       }))
       .sort((left, right) => compareBySort(left, right, sort));
+  };
+
+  const buildRelaxationSuggestions = ({
+    state,
+    profileId,
+    query = "",
+    creatorQuery = "",
+    includeTagIds = [],
+    excludeTagIds = [],
+    sort = "recommended",
+    collectionId = "",
+    matchMode = "and",
+    limit = 5,
+  }) => {
+    const suggestions = [];
+    const suggestionKeys = new Set();
+    const tagMap = getTagMap(state);
+
+    const pushSuggestion = (label, description, nextState) => {
+      const key = JSON.stringify({
+        label,
+        query: nextState.query || "",
+        creatorQuery: nextState.creatorQuery || "",
+        includeTagIds: ensureArray(nextState.includeTagIds).slice().sort(),
+        excludeTagIds: ensureArray(nextState.excludeTagIds).slice().sort(),
+        collectionId: nextState.collectionId || "",
+        matchMode: nextState.matchMode || "and",
+      });
+      if (suggestionKeys.has(key)) return;
+      const resultCount = filterWorks({
+        state,
+        profileId,
+        query: nextState.query || "",
+        creatorQuery: nextState.creatorQuery || "",
+        includeTagIds: nextState.includeTagIds || [],
+        excludeTagIds: nextState.excludeTagIds || [],
+        sort,
+        collectionId: nextState.collectionId || "",
+        matchMode: nextState.matchMode || "and",
+      }).length;
+      if (resultCount <= 0) return;
+      suggestionKeys.add(key);
+      suggestions.push({
+        label,
+        description,
+        resultCount,
+        nextState: {
+          query: nextState.query || "",
+          creatorQuery: nextState.creatorQuery || "",
+          includeTagIds: unique(nextState.includeTagIds),
+          excludeTagIds: unique(nextState.excludeTagIds),
+          collectionId: nextState.collectionId || "",
+          matchMode: nextState.matchMode === "or" ? "or" : "and",
+          sort,
+        },
+      });
+    };
+
+    if (matchMode === "and" && (splitTokens(query).length > 1 || includeTagIds.length > 1 || splitTokens(creatorQuery).length > 1)) {
+      pushSuggestion("いずれか一致に広げる", "AND 条件を OR 条件へ緩めます。", {
+        query,
+        creatorQuery,
+        includeTagIds,
+        excludeTagIds,
+        collectionId,
+        matchMode: "or",
+      });
+    }
+
+    if (excludeTagIds.length) {
+      pushSuggestion("除外条件を外す", "除外しているタグを一度外します。", {
+        query,
+        creatorQuery,
+        includeTagIds,
+        excludeTagIds: [],
+        collectionId,
+        matchMode,
+      });
+    }
+
+    if (query) {
+      pushSuggestion("キーワードを外す", "フリーワードを外してタグ条件だけで探します。", {
+        query: "",
+        creatorQuery,
+        includeTagIds,
+        excludeTagIds,
+        collectionId,
+        matchMode,
+      });
+    }
+
+    if (creatorQuery) {
+      pushSuggestion("作者条件を外す", "作者・サークル名の条件を外して探します。", {
+        query,
+        creatorQuery: "",
+        includeTagIds,
+        excludeTagIds,
+        collectionId,
+        matchMode,
+      });
+    }
+
+    if (collectionId) {
+      pushSuggestion("特集条件を外す", "特集縛りを外して全体から探します。", {
+        query,
+        creatorQuery,
+        includeTagIds,
+        excludeTagIds,
+        collectionId: "",
+        matchMode,
+      });
+    }
+
+    unique(includeTagIds).forEach((tagId) => {
+      pushSuggestion(`${tagMap.get(tagId)?.label || tagId} を外す`, "含める条件を1つ減らして候補を広げます。", {
+        query,
+        creatorQuery,
+        includeTagIds: includeTagIds.filter((value) => value !== tagId),
+        excludeTagIds,
+        collectionId,
+        matchMode,
+      });
+    });
+
+    return suggestions
+      .sort((left, right) => {
+        if (right.resultCount !== left.resultCount) return right.resultCount - left.resultCount;
+        return left.label.localeCompare(right.label, "ja");
+      })
+      .slice(0, limit);
   };
 
   const getCollectionWorks = ({ state, profileId, collectionId, sort = "recommended" }) => {
@@ -470,6 +604,7 @@
     ensureArray,
     filterWorks,
     findSimilarWorks,
+    buildRelaxationSuggestions,
     getActiveProfile,
     getCollection,
     getCollectionMap,

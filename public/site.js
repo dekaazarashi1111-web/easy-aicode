@@ -1,7 +1,7 @@
 const SITE_CONFIG = window.SITE_CONFIG || {};
 
 if (typeof document !== "undefined" && !document.documentElement.hasAttribute("data-theme")) {
-  document.documentElement.setAttribute("data-theme", "light");
+  document.documentElement.setAttribute("data-theme", "dark");
 }
 
 const sendAnalyticsEvent = (name, params = {}) => {
