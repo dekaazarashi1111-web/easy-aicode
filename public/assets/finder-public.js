@@ -60,6 +60,7 @@
     const emptyRoot = root.querySelector("[data-finder-empty]");
     const statusRoot = root.querySelector("[data-finder-status]");
     const clearButton = root.querySelector("[data-finder-clear]");
+    const copyButton = root.querySelector("[data-finder-copy]");
     const titleRoot = root.querySelector("[data-profile-hero-title]");
     const descriptionRoot = root.querySelector("[data-profile-hero-description]");
     if (!queryInput || !sortSelect || !includeRoot || !excludeRoot || !resultsRoot || !activeRoot) return;
@@ -320,6 +321,23 @@
         pageState.sort = "recommended";
         pageState.collectionId = "";
         applyAndRender();
+      });
+    }
+
+    if (copyButton) {
+      copyButton.addEventListener("click", async () => {
+        try {
+          await navigator.clipboard.writeText(window.location.href);
+          copyButton.textContent = "コピー済み";
+          window.setTimeout(() => {
+            copyButton.textContent = "検索URLをコピー";
+          }, 1400);
+        } catch (error) {
+          copyButton.textContent = "コピー失敗";
+          window.setTimeout(() => {
+            copyButton.textContent = "検索URLをコピー";
+          }, 1400);
+        }
       });
     }
   };

@@ -62,14 +62,44 @@
 </nav>
 
 <main id="main">
-  <section class="section">
+  <section class="section section--hero">
     <div class="container stack stack--lg" data-admin-app>
-      <div class="stack">
-        <p class="kicker">管理画面</p>
-        <h1 class="h1">作品探索基盤の運用コンソール</h1>
-        <p class="lead">
-          作品、タグ、検索ログ、サイトプロファイルを同じ状態で扱うための最小構成です。現時点ではブラウザのローカル保存で動作します。
-        </p>
+      <div class="hero-grid">
+        <div class="hero-panel stack">
+          <p class="kicker">管理画面</p>
+          <h1 class="h1">作品探索基盤の運用コンソール</h1>
+          <p class="lead">
+            作品、タグ、検索ログ、サイトプロファイルを同じ状態で扱うための最小構成です。現時点ではブラウザのローカル保存で動作します。
+          </p>
+          <div class="cluster">
+            <a class="btn btn--secondary" href="/finder/">公開検索を見る</a>
+            <a class="btn btn--secondary" href="/collections/">特集を見る</a>
+          </div>
+          <div class="hero-metrics">
+            <div class="hero-metric">
+              <strong>作品管理</strong>
+              <span>状態変更、一括操作、内部メモ、外部URLを同時に管理</span>
+            </div>
+            <div class="hero-metric">
+              <strong>タグ運用</strong>
+              <span>公開可否と同義語を持つタグを横展開前提で維持</span>
+            </div>
+            <div class="hero-metric">
+              <strong>ログ確認</strong>
+              <span>検索条件、0件、詳細閲覧、送客クリックを確認</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="hero-panel hero-panel--accent stack">
+          <p class="kicker">運用メモ</p>
+          <h2 class="h2">現段階ではローカル保存だが、責務は分けてある</h2>
+          <ul class="list list--compact">
+            <li>公開ロジックと状態管理を分離済み</li>
+            <li>JSON 書き出しで手動バックアップ可能</li>
+            <li>次段階で API / DB へ差し替えやすい構造</li>
+          </ul>
+        </div>
       </div>
 
       <div class="grid admin-stats" data-admin-stats></div>
