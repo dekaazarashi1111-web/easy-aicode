@@ -65,6 +65,11 @@ const updateSeoUrls = () => {
 
 updateSeoUrls();
 
+const themeColorMeta = document.querySelector('meta[name="theme-color"]');
+if (themeColorMeta) {
+  themeColorMeta.setAttribute("content", "#09111d");
+}
+
 const updateXProfileLinks = () => {
   if (!SITE_CONFIG.X_PROFILE_URL) return;
   const links = document.querySelectorAll(
@@ -124,6 +129,220 @@ const updateBrandCopy = () => {
 
 updateBrandCopy();
 
+const BRAND_NAME = SITE_CONFIG.BRAND_NAME || "Media Canvas";
+
+const normalizePathname = (pathname) => {
+  if (!pathname) return "/";
+  let nextPath = pathname;
+  if (nextPath !== "/" && nextPath.endsWith("/index.html")) {
+    nextPath = nextPath.slice(0, -"index.html".length);
+  }
+  if (nextPath.endsWith(".html")) return nextPath;
+  return nextPath.endsWith("/") ? nextPath : `${nextPath}/`;
+};
+
+const getCurrentSection = (pathname = window.location.pathname) => {
+  const normalized = normalizePathname(pathname);
+  if (normalized === "/") return "home";
+  if (normalized.startsWith("/finder/") || normalized.startsWith("/work/")) return "finder";
+  if (normalized.startsWith("/collections/") || normalized.startsWith("/collection/")) {
+    return "collections";
+  }
+  if (normalized.startsWith("/articles/")) return "articles";
+  if (normalized.startsWith("/about/")) return "about";
+  if (normalized.startsWith("/contact/")) return "contact";
+  return "";
+};
+
+const NAV_ITEMS = [
+  { href: "/", label: "ホーム", section: "home" },
+  { href: "/finder/", label: "作品検索", section: "finder" },
+  { href: "/collections/", label: "特集", section: "collections" },
+  { href: "/articles/", label: "ガイド", section: "articles" },
+  { href: "/about/", label: "運営方針", section: "about" },
+  { href: "/contact/", label: "お問い合わせ", section: "contact" },
+];
+
+const FOOTER_GROUPS = [
+  {
+    title: "探す",
+    links: [
+      { href: "/finder/", label: "作品検索" },
+      { href: "/collections/", label: "特集一覧" },
+      { href: "/articles/", label: "ガイド一覧" },
+    ],
+  },
+  {
+    title: "案内",
+    links: [
+      { href: "/about/", label: "運営方針" },
+      { href: "/contact/", label: "お問い合わせ" },
+      { href: "/404.html", label: "404ページ" },
+    ],
+  },
+  {
+    title: "法務",
+    links: [
+      { href: "/privacy.html", label: "プライバシー" },
+      { href: "/disclaimer.html", label: "免責事項" },
+    ],
+  },
+];
+
+const createChromeLink = ({ href, label, className = "", current = false }) => {
+  const link = document.createElement("a");
+  link.href = href;
+  link.textContent = label;
+  if (className) link.className = className;
+  if (current) link.setAttribute("aria-current", "page");
+  return link;
+};
+
+const renderSiteChrome = () => {
+  const currentSection = getCurrentSection();
+
+  document.querySelectorAll(".nav").forEach((nav) => {
+    const inner = nav.querySelector(".nav__inner");
+    if (!inner) return;
+
+    let brand = inner.querySelector(".nav__brand");
+    if (!brand) {
+      brand = document.createElement("a");
+      brand.className = "nav__brand";
+      inner.prepend(brand);
+    }
+    brand.href = "/";
+    brand.textContent = BRAND_NAME;
+
+    let linksRoot = inner.querySelector(".nav__links");
+    if (!linksRoot) {
+      linksRoot = document.createElement("div");
+      linksRoot.className = "nav__links";
+      inner.appendChild(linksRoot);
+    }
+    linksRoot.textContent = "";
+    NAV_ITEMS.forEach((item) => {
+      linksRoot.appendChild(
+        createChromeLink({
+          href: item.href,
+          label: item.label,
+          className: "nav__link",
+          current: item.section === currentSection,
+        })
+      );
+    });
+
+    let utility = inner.querySelector(".nav__utility");
+    if (!utility) {
+      utility = document.createElement("div");
+      utility.className = "nav__utility";
+      inner.appendChild(utility);
+    }
+    utility.textContent = "";
+    utility.append(
+      createChromeLink({
+        href: "/collections/",
+        label: "特集から始める",
+        className: "nav__cta nav__cta--secondary",
+      }),
+      createChromeLink({
+        href: "/finder/",
+        label: "条件から探す",
+        className: "nav__cta nav__cta--primary",
+      })
+    );
+  });
+
+  document.querySelectorAll(".footer").forEach((footer) => {
+    const inner = footer.querySelector(".footer__inner");
+    if (!inner) return;
+
+    inner.textContent = "";
+
+    const lead = document.createElement("div");
+    const leadTop = document.createElement("div");
+    const leadText = document.createElement("p");
+    const leadLinks = document.createElement("div");
+    const grid = document.createElement("div");
+    const bottom = document.createElement("div");
+    const copyright = document.createElement("p");
+    const note = document.createElement("p");
+
+    lead.className = "footer__lead";
+    leadTop.className = "stack";
+    leadLinks.className = "footer__lead-actions";
+    grid.className = "footer__grid";
+    bottom.className = "footer__bottom";
+
+    leadTop.append(
+      Object.assign(document.createElement("p"), {
+        className: "footer__eyebrow",
+        textContent: "Finder Base",
+      }),
+      Object.assign(document.createElement("h2"), {
+        className: "h3",
+        textContent: BRAND_NAME,
+      })
+    );
+
+    leadText.className = "muted";
+    leadText.textContent =
+      "条件検索、固定特集、ガイド導線を一つの体験として揃え、どのページから入っても迷わず次の行動へ進めるようにします。";
+
+    leadLinks.append(
+      createChromeLink({
+        href: "/finder/",
+        label: "作品検索へ",
+        className: "btn btn--primary btn--sm",
+      }),
+      createChromeLink({
+        href: "/contact/",
+        label: "お問い合わせ",
+        className: "btn btn--secondary btn--sm",
+      })
+    );
+
+    lead.append(leadTop, leadText, leadLinks);
+
+    FOOTER_GROUPS.forEach((group) => {
+      const column = document.createElement("div");
+      const title = document.createElement("h3");
+      const list = document.createElement("div");
+
+      column.className = "footer__column";
+      title.className = "footer__column-title";
+      title.textContent = group.title;
+      list.className = "footer__column-links";
+
+      group.links.forEach((item) => {
+        list.appendChild(
+          createChromeLink({
+            href: item.href,
+            label: item.label,
+          })
+        );
+      });
+
+      column.append(title, list);
+      grid.appendChild(column);
+    });
+
+    copyright.className = "muted";
+    copyright.setAttribute("data-site-copyright", "");
+    copyright.textContent = `© ${BRAND_NAME}`;
+
+    note.className = "help";
+    note.textContent =
+      "固定ページ、ガイド、検索結果で導線や表記を揃え、見た瞬間に役割が分かる構造を維持します。";
+
+    bottom.append(copyright, note);
+    inner.append(lead, grid, bottom);
+  });
+};
+
+renderSiteChrome();
+updateBrandCopy();
+
 const formatLabel = (value) =>
   (value || "")
     .toString()
@@ -179,6 +398,33 @@ const initArticleDetailMeta = () => {
     tagContainer.appendChild(createFilterBadge(tag, toFilterUrl({ tag })));
   });
   tagContainer.appendChild(createFilterBadge(article.publishedAt));
+
+  const typeRoot = root.querySelector("[data-article-type-label]");
+  if (typeRoot) typeRoot.textContent = article.type;
+
+  const publishedRoot = root.querySelector("[data-article-published]");
+  if (publishedRoot) publishedRoot.textContent = `公開: ${article.publishedAt}`;
+
+  const relatedRoot = root.querySelector("[data-guide-related]");
+  if (relatedRoot) {
+    relatedRoot.textContent = "";
+    api
+      .decorateArticles(articles)
+      .filter((item) => item.slug !== article.slug)
+      .slice(0, 3)
+      .forEach((item) => {
+        const link = document.createElement("a");
+        const title = document.createElement("strong");
+        const meta = document.createElement("span");
+        link.className = "guide-mini-link";
+        link.href = item.url;
+        title.textContent = item.title;
+        meta.className = "help";
+        meta.textContent = `${item.type} | ${item.publishedAt}`;
+        link.append(title, meta);
+        relatedRoot.appendChild(link);
+      });
+  }
 };
 
 const initArticleSearch = () => {

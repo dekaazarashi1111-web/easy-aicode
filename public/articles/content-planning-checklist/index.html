@@ -50,44 +50,70 @@
 </nav>
 
 <main id="main">
-  <section class="section">
-    <div class="container stack stack--lg" data-article-detail data-article-slug="content-planning-checklist">
-      <div class="stack" style="max-width: 760px;">
-        <p class="kicker">使い方ガイドサンプル</p>
-        <h1 class="h1">記事構成を先に決めるチェックリスト</h1>
-        <p class="lead">検索意図、見出し、内部リンク、CTA の置き場を先に決めるための見本記事です。</p>
-        <div class="tag-list" data-article-meta-tags></div>
+  <section class="section section--tight">
+    <div class="container guide-detail-layout" data-article-detail data-article-slug="content-planning-checklist">
+      <div class="guide-detail-main stack stack--lg">
+        <div class="card page-hero page-hero--article stack">
+          <div class="article-meta-strip">
+            <span class="pill" data-article-type-label>使い方ガイド</span>
+            <span class="help" data-article-published>公開日</span>
+          </div>
+          <p class="kicker">使い方ガイドサンプル</p>
+          <h1 class="h1">記事構成を先に決めるチェックリスト</h1>
+          <p class="lead">検索意図、見出し、内部リンク、CTA の置き場を先に決めるための見本記事です。</p>
+          <div class="tag-list" data-article-meta-tags></div>
+        </div>
+
+        <div class="card stack guide-callout">
+          <p class="muted">この記事は、記事設計を先に固めてから本文を書くためのチェックリスト雛形です。実運用ではジャンルに合わせて項目を差し替えてください。</p>
+        </div>
+
+        <article class="card prose guide-article-card">
+          <h2>1. 検索意図を一言で決める</h2>
+          <p>誰が、何に困っていて、何を知りたいのかを先に一言で決めておくと、見出しがぶれにくくなります。検索意図が曖昧だと、記事全体が情報の寄せ集めになりやすいです。</p>
+
+          <h2>2. 最初に結論を置くか決める</h2>
+          <p>比較記事やレビュー記事では結論先出しが有効ですが、手順記事では先に前提条件や準備物を示したほうが読みやすい場合があります。記事タイプごとに入口の形を決めます。</p>
+
+          <h2>3. 見出しの役割を分ける</h2>
+          <ul>
+            <li>導入で対象読者と結論を示す</li>
+            <li>本文で判断材料や手順を整理する</li>
+            <li>末尾で次の行動を明示する</li>
+          </ul>
+
+          <h2>4. 内部リンクの置き場を先に決める</h2>
+          <p>内部リンクは書き終わってから足すより、どの段落で補足記事へつなぐか先に決めておくと自然です。関連記事の役割も重複しにくくなります。</p>
+
+          <h2>5. CTA をどこに入れるか決める</h2>
+          <p>CTA は記事の結論直後、比較表直後、記事末尾のように、読者が判断しやすい地点へ置くのが基本です。数だけ増やすより、根拠の直後に置くほうが強くなります。</p>
+        </article>
+
+        <div class="card guide-action-row">
+          <a class="btn btn--primary" href="/articles/">記事一覧へ戻る</a>
+          <a class="btn btn--secondary" href="/articles/comparison-template/">比較記事サンプルを見る</a>
+        </div>
       </div>
 
-      <div class="card stack" style="max-width: 760px;">
-        <p class="muted">この記事は、記事設計を先に固めてから本文を書くためのチェックリスト雛形です。実運用ではジャンルに合わせて項目を差し替えてください。</p>
-      </div>
-
-      <article class="card prose" style="max-width: 760px;">
-        <h2>1. 検索意図を一言で決める</h2>
-        <p>誰が、何に困っていて、何を知りたいのかを先に一言で決めておくと、見出しがぶれにくくなります。検索意図が曖昧だと、記事全体が情報の寄せ集めになりやすいです。</p>
-
-        <h2>2. 最初に結論を置くか決める</h2>
-        <p>比較記事やレビュー記事では結論先出しが有効ですが、手順記事では先に前提条件や準備物を示したほうが読みやすい場合があります。記事タイプごとに入口の形を決めます。</p>
-
-        <h2>3. 見出しの役割を分ける</h2>
-        <ul>
-          <li>導入で対象読者と結論を示す</li>
-          <li>本文で判断材料や手順を整理する</li>
-          <li>末尾で次の行動を明示する</li>
-        </ul>
-
-        <h2>4. 内部リンクの置き場を先に決める</h2>
-        <p>内部リンクは書き終わってから足すより、どの段落で補足記事へつなぐか先に決めておくと自然です。関連記事の役割も重複しにくくなります。</p>
-
-        <h2>5. CTA をどこに入れるか決める</h2>
-        <p>CTA は記事の結論直後、比較表直後、記事末尾のように、読者が判断しやすい地点へ置くのが基本です。数だけ増やすより、根拠の直後に置くほうが強くなります。</p>
-      </article>
-
-      <div class="cluster" style="max-width: 760px;">
-        <a class="btn btn--primary" href="/articles/">記事一覧へ戻る</a>
-        <a class="btn btn--secondary" href="/articles/comparison-template/">比較記事サンプルを見る</a>
-      </div>
+      <aside class="guide-detail-aside">
+        <div class="card booking-sticky-card stack">
+          <p class="kicker">Guide Context</p>
+          <h2 class="h3">このガイドの位置づけ</h2>
+          <ul class="list list--compact">
+            <li>本文を書く前に骨組みを決めたい時の確認用</li>
+            <li>検索意図と見出し設計がぶれないようにする土台</li>
+            <li>比較記事やレビュー記事へ枝分かれする前の整理</li>
+          </ul>
+          <div class="divider"></div>
+          <h3 class="h3">関連ガイド</h3>
+          <div class="guide-related-list" data-guide-related></div>
+          <div class="divider"></div>
+          <h3 class="h3">サイト導線</h3>
+          <a class="btn btn--primary btn--sm" href="/articles/">ガイド一覧へ</a>
+          <a class="btn btn--secondary btn--sm" href="/finder/">作品検索へ</a>
+          <a class="btn btn--secondary btn--sm" href="/about/">運営方針へ</a>
+        </div>
+      </aside>
     </div>
   </section>
 </main>

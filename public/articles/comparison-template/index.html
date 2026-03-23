@@ -50,65 +50,91 @@
 </nav>
 
 <main id="main">
-  <section class="section">
-    <div class="container stack stack--lg" data-article-detail data-article-slug="comparison-template">
-      <div class="stack" style="max-width: 760px;">
-        <p class="kicker">比較記事サンプル</p>
-        <h1 class="h1">比較記事ページの組み方</h1>
-        <p class="lead">結論を先に出しつつ、比較軸、対象読者、広告導線まで整理するための見本記事です。</p>
-        <div class="tag-list" data-article-meta-tags></div>
-      </div>
+  <section class="section section--tight">
+    <div class="container guide-detail-layout" data-article-detail data-article-slug="comparison-template">
+      <div class="guide-detail-main stack stack--lg">
+        <div class="card page-hero page-hero--article stack">
+          <div class="article-meta-strip">
+            <span class="pill" data-article-type-label>比較記事</span>
+            <span class="help" data-article-published>公開日</span>
+          </div>
+          <p class="kicker">比較記事サンプル</p>
+          <h1 class="h1">比較記事ページの組み方</h1>
+          <p class="lead">結論を先に出しつつ、比較軸、対象読者、広告導線まで整理するための見本記事です。</p>
+          <div class="tag-list" data-article-meta-tags></div>
+        </div>
 
-      <div class="card stack" style="max-width: 760px;">
-        <p class="muted">このページは雛形です。公開時には、商品名・サービス名・価格・案件リンク・広告表記を実データへ差し替えてください。</p>
-        <div class="cluster">
-          <a class="btn btn--primary" href="#" aria-disabled="true">案件リンクをここに配置</a>
-          <a class="btn btn--secondary" href="/disclaimer.html">広告表記の考え方</a>
+        <div class="card stack guide-callout">
+          <p class="muted">このページは雛形です。公開時には、商品名・サービス名・価格・案件リンク・広告表記を実データへ差し替えてください。</p>
+          <div class="cluster">
+            <a class="btn btn--primary" href="#" aria-disabled="true">案件リンクをここに配置</a>
+            <a class="btn btn--secondary" href="/disclaimer.html">広告表記の考え方</a>
+          </div>
+        </div>
+
+        <article class="card prose guide-article-card">
+          <h2>結論ブロック</h2>
+          <p>比較記事では、最初に「誰にどれが向いているか」を一文で返すと離脱しにくくなります。読者は比較表より先に結論を見たがることが多いためです。</p>
+
+          <h2>比較軸の例</h2>
+          <ul>
+            <li>価格と初期費用</li>
+            <li>主な機能と使いやすさ</li>
+            <li>サポート体制と導入しやすさ</li>
+            <li>どんな人や会社に向いているか</li>
+          </ul>
+
+          <h2>候補の見せ方</h2>
+          <p>候補ごとに同じ順序で説明すると、読者が差分を追いやすくなります。価格、強み、注意点、向いている人の順にそろえると比較しやすい構成になります。</p>
+
+          <h2>広告導線の置き方</h2>
+          <p>比較表の直後と、各候補の紹介末尾に CTA を置くと自然です。ただし広告色が強すぎると信頼を落とすため、先に根拠となる比較軸と判断基準を提示します。</p>
+
+          <h2>記事末尾に入れる要素</h2>
+          <ul>
+            <li>比較の前提条件</li>
+            <li>価格や仕様の更新日時</li>
+            <li>広告を含む旨の表記</li>
+            <li>関連記事への導線</li>
+          </ul>
+        </article>
+
+        <div class="stack guide-faq-stack">
+          <details class="faq">
+            <summary>比較記事で案件リンクは何個まで置くべきですか？</summary>
+            <p>記事の長さと比較対象数によりますが、結論直後、比較表直後、各候補末尾のように、読む流れを壊さない配置に絞るのが無難です。</p>
+          </details>
+          <details class="faq">
+            <summary>比較表がなくても成り立ちますか？</summary>
+            <p>可能ですが、比較記事としての理解速度は落ちやすくなります。最低限、価格と主要な違いがひと目で分かる一覧はあると扱いやすいです。</p>
+          </details>
+        </div>
+
+        <div class="card guide-action-row">
+          <a class="btn btn--primary" href="/articles/">記事一覧へ戻る</a>
+          <a class="btn btn--secondary" href="/articles/review-structure/">レビュー記事サンプルを見る</a>
         </div>
       </div>
 
-      <article class="card prose" style="max-width: 760px;">
-        <h2>結論ブロック</h2>
-        <p>比較記事では、最初に「誰にどれが向いているか」を一文で返すと離脱しにくくなります。読者は比較表より先に結論を見たがることが多いためです。</p>
-
-        <h2>比較軸の例</h2>
-        <ul>
-          <li>価格と初期費用</li>
-          <li>主な機能と使いやすさ</li>
-          <li>サポート体制と導入しやすさ</li>
-          <li>どんな人や会社に向いているか</li>
-        </ul>
-
-        <h2>候補の見せ方</h2>
-        <p>候補ごとに同じ順序で説明すると、読者が差分を追いやすくなります。価格、強み、注意点、向いている人の順にそろえると比較しやすい構成になります。</p>
-
-        <h2>広告導線の置き方</h2>
-        <p>比較表の直後と、各候補の紹介末尾に CTA を置くと自然です。ただし広告色が強すぎると信頼を落とすため、先に根拠となる比較軸と判断基準を提示します。</p>
-
-        <h2>記事末尾に入れる要素</h2>
-        <ul>
-          <li>比較の前提条件</li>
-          <li>価格や仕様の更新日時</li>
-          <li>広告を含む旨の表記</li>
-          <li>関連記事への導線</li>
-        </ul>
-      </article>
-
-      <div class="stack" style="max-width: 760px;">
-        <details class="faq">
-          <summary>比較記事で案件リンクは何個まで置くべきですか？</summary>
-          <p>記事の長さと比較対象数によりますが、結論直後、比較表直後、各候補末尾のように、読む流れを壊さない配置に絞るのが無難です。</p>
-        </details>
-        <details class="faq">
-          <summary>比較表がなくても成り立ちますか？</summary>
-          <p>可能ですが、比較記事としての理解速度は落ちやすくなります。最低限、価格と主要な違いがひと目で分かる一覧はあると扱いやすいです。</p>
-        </details>
-      </div>
-
-      <div class="cluster" style="max-width: 760px;">
-        <a class="btn btn--primary" href="/articles/">記事一覧へ戻る</a>
-        <a class="btn btn--secondary" href="/articles/review-structure/">レビュー記事サンプルを見る</a>
-      </div>
+      <aside class="guide-detail-aside">
+        <div class="card booking-sticky-card stack">
+          <p class="kicker">Guide Context</p>
+          <h2 class="h3">このガイドの位置づけ</h2>
+          <ul class="list list--compact">
+            <li>比較記事の型を揃えたい時の土台</li>
+            <li>広告導線より先に判断基準を置く時の確認用</li>
+            <li>レビュー記事や使い方ガイドへ枝分かれする前提作り</li>
+          </ul>
+          <div class="divider"></div>
+          <h3 class="h3">関連ガイド</h3>
+          <div class="guide-related-list" data-guide-related></div>
+          <div class="divider"></div>
+          <h3 class="h3">サイト導線</h3>
+          <a class="btn btn--primary btn--sm" href="/finder/">作品検索へ</a>
+          <a class="btn btn--secondary btn--sm" href="/collections/">特集一覧へ</a>
+          <a class="btn btn--secondary btn--sm" href="/contact/">お問い合わせ</a>
+        </div>
+      </aside>
     </div>
   </section>
 </main>

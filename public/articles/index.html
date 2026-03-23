@@ -54,83 +54,122 @@
 <main id="main">
   <section class="section section--tight">
     <div class="container stack stack--lg">
-      <div class="card booking-page-header stack">
+      <div class="card page-hero page-hero--guide stack">
         <p class="kicker">Guides</p>
         <h1 class="h1">検索導線と特集設計のガイド一覧</h1>
-        <p class="lead">このページは、検索意図、特集導線、記事構成を整えるためのガイド記事を並べた一覧です。キーワード、記事タイプ、タグを組み合わせて絞り込めます。</p>
+        <p class="lead">検索意図、特集導線、記事構成、広告表記の置き方まで、探索サイト全体の質を揃えるためのガイドをまとめています。</p>
+        <div class="tag-list">
+          <a class="tag" href="/finder/">作品検索へ</a>
+          <a class="tag" href="/collections/">特集一覧へ</a>
+          <a class="tag" href="/about/">運営方針へ</a>
+        </div>
       </div>
 
-      <div class="card stack" data-article-search>
-        <div class="stack">
-          <h2 class="h2">条件で探す</h2>
-          <p class="help">記事名、要約、キーワード、記事タイプ、タグで絞り込めます。AND はすべて一致、OR はどれか一致です。記事やタグを追加した際も、一覧と検索条件は自動で増えます。</p>
-        </div>
+      <div class="page-layout page-layout--guide-hub">
+        <div class="page-main stack stack--lg">
+          <div class="card guide-search-panel stack" data-article-search>
+            <div class="stack">
+              <h2 class="h2">条件で探す</h2>
+              <p class="help">記事名、要約、キーワード、記事タイプ、タグで絞り込めます。AND はすべて一致、OR はどれか一致です。記事やタグを追加した際も、一覧と検索条件は自動で増えます。</p>
+            </div>
 
-        <div class="grid">
-          <div class="field">
-            <label class="label" for="article-search-query">キーワード</label>
-            <input
-              id="article-search-query"
-              class="input"
-              type="search"
-              placeholder="記事名、要約、キーワードで検索"
-              autocomplete="off"
-              data-search-query
-            />
-          </div>
+            <div class="grid">
+              <div class="field">
+                <label class="label" for="article-search-query">キーワード</label>
+                <input
+                  id="article-search-query"
+                  class="input"
+                  type="search"
+                  placeholder="記事名、要約、キーワードで検索"
+                  autocomplete="off"
+                  data-search-query
+                />
+              </div>
 
-          <div class="field">
-            <span class="label">検索モード</span>
-            <div class="tag-filter__list" role="group" aria-label="検索モード">
-              <button class="tag-filter__btn" type="button" data-search-mode="and" aria-pressed="true">AND検索</button>
-              <button class="tag-filter__btn" type="button" data-search-mode="or" aria-pressed="false">OR検索</button>
+              <div class="field">
+                <span class="label">検索モード</span>
+                <div class="tag-filter__list" role="group" aria-label="検索モード">
+                  <button class="tag-filter__btn" type="button" data-search-mode="and" aria-pressed="true">AND検索</button>
+                  <button class="tag-filter__btn" type="button" data-search-mode="or" aria-pressed="false">OR検索</button>
+                </div>
+              </div>
+            </div>
+
+            <div class="grid">
+              <div class="field">
+                <span class="label">記事タイプ</span>
+                <div class="tag-filter__list" role="group" aria-label="記事タイプ" data-search-type-options></div>
+              </div>
+
+              <div class="field">
+                <span class="label">タグ</span>
+                <div class="tag-filter__list" role="group" aria-label="タグ" data-search-tag-options></div>
+              </div>
+            </div>
+
+            <div class="cluster">
+              <button class="btn btn--secondary btn--sm" type="button" data-search-clear>条件をクリア</button>
+              <p class="help" data-search-status aria-live="polite">2件を表示中</p>
             </div>
           </div>
-        </div>
 
-        <div class="grid">
-          <div class="field">
-            <span class="label">記事タイプ</span>
-            <div class="tag-filter__list" role="group" aria-label="記事タイプ" data-search-type-options></div>
+          <div class="guide-results-grid" data-search-results></div>
+
+          <div class="card stack center" data-search-empty hidden>
+            <h2 class="h2">一致する記事が見つかりません</h2>
+            <p class="muted">キーワードを短くするか、タグや記事タイプの条件を減らして試してください。</p>
           </div>
 
-          <div class="field">
-            <span class="label">タグ</span>
-            <div class="tag-filter__list" role="group" aria-label="タグ" data-search-tag-options></div>
+          <noscript>
+            <div class="card stack">
+              <h2 class="h2">JavaScript が無効な場合</h2>
+              <ul class="list">
+                <li><a href="/articles/content-planning-checklist/">記事構成を先に決めるチェックリスト</a></li>
+                <li><a href="/articles/comparison-template/">比較記事ページの組み方</a></li>
+                <li><a href="/articles/review-structure/">レビュー記事で抜けやすい確認項目</a></li>
+              </ul>
+            </div>
+          </noscript>
+
+          <div class="card stack">
+            <h2 class="h2">一覧ページで管理するとよい項目</h2>
+            <ul class="list">
+              <li>記事タイトル、カテゴリ、公開日、更新日</li>
+              <li>検索意図に合った一文要約</li>
+              <li>案件導線の有無、比較対象数、監修有無</li>
+            </ul>
           </div>
         </div>
 
-        <div class="cluster">
-          <button class="btn btn--secondary btn--sm" type="button" data-search-clear>条件をクリア</button>
-          <p class="help" data-search-status aria-live="polite">2件を表示中</p>
-        </div>
-      </div>
+        <aside class="page-rail">
+          <div class="card rail-card stack">
+            <p class="kicker">Guide Map</p>
+            <h2 class="h3">ガイドの使い分け</h2>
+            <ul class="list list--compact">
+              <li>比較記事: 候補を並べて判断させたい時</li>
+              <li>レビュー記事: 単体の評価や注意点を見せたい時</li>
+              <li>使い方ガイド: 読み方や運用手順を整えたい時</li>
+            </ul>
+          </div>
 
-      <div class="grid" data-search-results></div>
+          <div class="card rail-card stack">
+            <p class="kicker">Site Links</p>
+            <h2 class="h3">本体サイトの主要導線</h2>
+            <a class="btn btn--primary btn--sm" href="/finder/">作品検索へ</a>
+            <a class="btn btn--secondary btn--sm" href="/collections/">特集一覧へ</a>
+            <a class="btn btn--secondary btn--sm" href="/about/">運営方針へ</a>
+          </div>
 
-      <div class="card stack center" data-search-empty hidden>
-        <h2 class="h2">一致する記事が見つかりません</h2>
-        <p class="muted">キーワードを短くするか、タグや記事タイプの条件を減らして試してください。</p>
-      </div>
-
-      <noscript>
-        <div class="card stack">
-          <h2 class="h2">JavaScript が無効な場合</h2>
-          <ul class="list">
-            <li><a href="/articles/content-planning-checklist/">記事構成を先に決めるチェックリスト</a></li>
-            <li><a href="/articles/comparison-template/">比較記事ページの組み方</a></li>
-            <li><a href="/articles/review-structure/">レビュー記事で抜けやすい確認項目</a></li>
-          </ul>
-        </div>
-      </noscript>
-
-      <div class="card stack">
-        <h2 class="h2">一覧ページで管理するとよい項目</h2>
-        <ul class="list">
-          <li>記事タイトル、カテゴリ、公開日、更新日</li>
-          <li>検索意図に合った一文要約</li>
-          <li>案件導線の有無、比較対象数、監修有無</li>
-        </ul>
+          <div class="card rail-card stack">
+            <p class="kicker">Quality Bar</p>
+            <h2 class="h3">ガイドで揃える基準</h2>
+            <ul class="list list--compact">
+              <li>結論と対象読者が冒頭で分かること</li>
+              <li>広告導線より先に判断材料があること</li>
+              <li>関連記事と法務ページへ自然に回遊できること</li>
+            </ul>
+          </div>
+        </aside>
       </div>
     </div>
   </section>

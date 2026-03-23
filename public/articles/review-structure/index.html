@@ -50,63 +50,89 @@
 </nav>
 
 <main id="main">
-  <section class="section">
-    <div class="container stack stack--lg" data-article-detail data-article-slug="review-structure">
-      <div class="stack" style="max-width: 760px;">
-        <p class="kicker">レビュー記事サンプル</p>
-        <h1 class="h1">レビュー記事で抜けやすい確認項目</h1>
-        <p class="lead">良い点だけで終わらないレビュー記事にするための観点と、広告表記の基本位置をまとめた見本です。</p>
-        <div class="tag-list" data-article-meta-tags></div>
-      </div>
+  <section class="section section--tight">
+    <div class="container guide-detail-layout" data-article-detail data-article-slug="review-structure">
+      <div class="guide-detail-main stack stack--lg">
+        <div class="card page-hero page-hero--article stack">
+          <div class="article-meta-strip">
+            <span class="pill" data-article-type-label>レビュー記事</span>
+            <span class="help" data-article-published>公開日</span>
+          </div>
+          <p class="kicker">レビュー記事サンプル</p>
+          <h1 class="h1">レビュー記事で抜けやすい確認項目</h1>
+          <p class="lead">良い点だけで終わらないレビュー記事にするための観点と、広告表記の基本位置をまとめた見本です。</p>
+          <div class="tag-list" data-article-meta-tags></div>
+        </div>
 
-      <div class="card stack" style="max-width: 760px;">
-        <p class="muted">レビュー記事では、「この記事には広告を含む場合があります」といった表記を、読者が本文を読む前に確認できる位置へ入れるのが無難です。</p>
-        <div class="cluster">
-          <a class="btn btn--primary" href="#" aria-disabled="true">レビュー案件リンクをここに配置</a>
-          <a class="btn btn--secondary" href="/disclaimer.html">免責事項を見る</a>
+        <div class="card stack guide-callout">
+          <p class="muted">レビュー記事では、「この記事には広告を含む場合があります」といった表記を、読者が本文を読む前に確認できる位置へ入れるのが無難です。</p>
+          <div class="cluster">
+            <a class="btn btn--primary" href="#" aria-disabled="true">レビュー案件リンクをここに配置</a>
+            <a class="btn btn--secondary" href="/disclaimer.html">免責事項を見る</a>
+          </div>
+        </div>
+
+        <article class="card prose guide-article-card">
+          <h2>最初に書くと読みやすい項目</h2>
+          <ul>
+            <li>どんな読者向けの記事か</li>
+            <li>実際に使った期間や条件</li>
+            <li>一番伝えたい結論</li>
+          </ul>
+
+          <h2>メリットだけで終わらせない</h2>
+          <p>レビュー記事は、良かった点だけを並べると広告色が強く見えます。使いづらかった点、合わない人、注意すべき場面まで書くことで、記事全体の信頼性が上がります。</p>
+
+          <h2>比較対象を一つは置く</h2>
+          <p>単体レビューでも、比較されやすい代替候補や選ぶ基準を一つ添えると、読者の判断に役立ちます。比較対象は同価格帯や同用途の候補が扱いやすいです。</p>
+
+          <h2>広告表記の位置</h2>
+          <p>記事冒頭、ボタンの近く、免責事項ページへの導線の三点をそろえると、広告であることを隠さずに導線を置けます。</p>
+
+          <h2>記事末尾で回収したいこと</h2>
+          <ul>
+            <li>向いている人 / 向いていない人</li>
+            <li>購入前に確認するチェックポイント</li>
+            <li>関連記事への内部リンク</li>
+          </ul>
+        </article>
+
+        <div class="stack guide-faq-stack">
+          <details class="faq">
+            <summary>レビュー記事に比較表は必要ですか？</summary>
+            <p>必須ではありませんが、比較されやすい商品やサービスを扱う場合は、簡単でも差分が分かる表や一覧を入れると理解しやすくなります。</p>
+          </details>
+          <details class="faq">
+            <summary>体験していない案件でもレビューできますか？</summary>
+            <p>可能ですが、その場合はレビューではなく情報整理記事として位置づけ、体験ベースの表現を避けるほうが安全です。</p>
+          </details>
+        </div>
+
+        <div class="card guide-action-row">
+          <a class="btn btn--primary" href="/articles/">記事一覧へ戻る</a>
+          <a class="btn btn--secondary" href="/articles/comparison-template/">比較記事サンプルを見る</a>
         </div>
       </div>
 
-      <article class="card prose" style="max-width: 760px;">
-        <h2>最初に書くと読みやすい項目</h2>
-        <ul>
-          <li>どんな読者向けの記事か</li>
-          <li>実際に使った期間や条件</li>
-          <li>一番伝えたい結論</li>
-        </ul>
-
-        <h2>メリットだけで終わらせない</h2>
-        <p>レビュー記事は、良かった点だけを並べると広告色が強く見えます。使いづらかった点、合わない人、注意すべき場面まで書くことで、記事全体の信頼性が上がります。</p>
-
-        <h2>比較対象を一つは置く</h2>
-        <p>単体レビューでも、比較されやすい代替候補や選ぶ基準を一つ添えると、読者の判断に役立ちます。比較対象は同価格帯や同用途の候補が扱いやすいです。</p>
-
-        <h2>広告表記の位置</h2>
-        <p>記事冒頭、ボタンの近く、免責事項ページへの導線の三点をそろえると、広告であることを隠さずに導線を置けます。</p>
-
-        <h2>記事末尾で回収したいこと</h2>
-        <ul>
-          <li>向いている人 / 向いていない人</li>
-          <li>購入前に確認するチェックポイント</li>
-          <li>関連記事への内部リンク</li>
-        </ul>
-      </article>
-
-      <div class="stack" style="max-width: 760px;">
-        <details class="faq">
-          <summary>レビュー記事に比較表は必要ですか？</summary>
-          <p>必須ではありませんが、比較されやすい商品やサービスを扱う場合は、簡単でも差分が分かる表や一覧を入れると理解しやすくなります。</p>
-        </details>
-        <details class="faq">
-          <summary>体験していない案件でもレビューできますか？</summary>
-          <p>可能ですが、その場合はレビューではなく情報整理記事として位置づけ、体験ベースの表現を避けるほうが安全です。</p>
-        </details>
-      </div>
-
-      <div class="cluster" style="max-width: 760px;">
-        <a class="btn btn--primary" href="/articles/">記事一覧へ戻る</a>
-        <a class="btn btn--secondary" href="/articles/comparison-template/">比較記事サンプルを見る</a>
-      </div>
+      <aside class="guide-detail-aside">
+        <div class="card booking-sticky-card stack">
+          <p class="kicker">Guide Context</p>
+          <h2 class="h3">このガイドの位置づけ</h2>
+          <ul class="list list--compact">
+            <li>レビュー導線の信頼性を整えたい時の確認用</li>
+            <li>良い点と注意点のバランスを崩さないための基準</li>
+            <li>比較記事へつなぐ前の単体評価テンプレート</li>
+          </ul>
+          <div class="divider"></div>
+          <h3 class="h3">関連ガイド</h3>
+          <div class="guide-related-list" data-guide-related></div>
+          <div class="divider"></div>
+          <h3 class="h3">サイト導線</h3>
+          <a class="btn btn--primary btn--sm" href="/articles/">ガイド一覧へ</a>
+          <a class="btn btn--secondary btn--sm" href="/finder/">作品検索へ</a>
+          <a class="btn btn--secondary btn--sm" href="/disclaimer.html">免責事項へ</a>
+        </div>
+      </aside>
     </div>
   </section>
 </main>
