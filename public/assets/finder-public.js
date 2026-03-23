@@ -42,14 +42,20 @@
     window.history.replaceState({}, "", nextUrl);
   };
 
-  const createTagButton = ({ kind, tag, selected }) => {
+  const createTagButton = ({ kind, tag, selected, count = 0 }) => {
     const button = document.createElement("button");
+    const label = document.createElement("span");
+    const countBadge = document.createElement("span");
     button.type = "button";
-    button.className = "tag-filter__btn";
+    button.className = "tag-filter__btn tag-filter__btn--row";
     button.dataset.filterKind = kind;
     button.dataset.tagId = tag.id;
     button.setAttribute("aria-pressed", String(selected));
-    button.textContent = tag.label;
+    label.className = "tag-filter__label";
+    label.textContent = tag.label;
+    countBadge.className = "tag-filter__count";
+    countBadge.textContent = String(count);
+    button.append(label, countBadge);
     return button;
   };
 
@@ -63,15 +69,20 @@
     return button;
   };
 
-  const createWorkCard = ({ work, profileId, reason = "" }) => {
+  const createWorkCard = ({ work, profileId, reason = "", layout = "list" }) => {
     const card = document.createElement("a");
     const eyebrow = document.createElement("div");
-    const title = document.createElement("h2");
+    const title = document.createElement("h3");
     const summary = document.createElement("p");
     const reasonText = document.createElement("p");
     const tagList = document.createElement("div");
+    const media = document.createElement("div");
+    const body = document.createElement("div");
+    const side = document.createElement("div");
+    const cta = document.createElement("span");
+    const sideMeta = document.createElement("p");
 
-    card.className = "card card--interactive stack result-card";
+    card.className = `card card--interactive result-card ${layout === "compact" ? "result-card--compact stack" : "result-card--list"}`;
     card.href = `/work/?slug=${encodeURIComponent(work.slug)}`;
     card.dataset.workId = work.id;
 
@@ -81,7 +92,7 @@
       createText("span", "help", work.creator || "サンプル作者"),
     );
 
-    title.className = "h2";
+    title.className = layout === "compact" ? "h3" : "result-card__title";
     title.textContent = work.title;
 
     summary.className = "muted";
@@ -101,18 +112,37 @@
       );
     });
 
-    if (profileId) {
-      const footer = document.createElement("div");
-      footer.className = "cluster cluster--spread";
-      footer.append(
-        createText("span", "help", "詳細へ"),
-        createText("span", "help", work.releasedAt || "")
-      );
-      card.append(eyebrow, title, summary, reasonText, tagList, footer);
-    } else {
+    if (layout === "compact") {
       card.append(eyebrow, title, summary, reasonText, tagList);
+      if (profileId) {
+        card.append(
+          createText(
+            "p",
+            "help",
+            [work.format || "作品", work.releasedAt || ""].filter(Boolean).join(" / ")
+          )
+        );
+      }
+      return card;
     }
 
+    media.className = "result-card__media";
+    media.append(
+      createText("span", "result-card__media-type", work.format || "作品"),
+      createText("strong", "result-card__media-title", work.creator || "サンプル作者")
+    );
+
+    body.className = "result-card__body";
+    body.append(eyebrow, title, summary, reasonText, tagList);
+
+    side.className = "result-card__side";
+    sideMeta.className = "help result-card__side-meta";
+    sideMeta.textContent = [work.releasedAt || "", work.highlightPoints?.[0] || ""].filter(Boolean).join(" / ");
+    cta.className = "btn btn--primary btn--sm";
+    cta.textContent = "詳細を見る";
+    side.append(sideMeta, cta);
+
+    card.append(media, body, side);
     return card;
   };
 
@@ -224,7 +254,12 @@
     });
 
     fillTextList(root.querySelector("[data-home-featured-works]"), featuredWorks, (work) =>
-      createWorkCard({ work, profileId: profile.id, reason: work.matchSummary || work.publicNote })
+      createWorkCard({
+        work,
+        profileId: profile.id,
+        reason: work.matchSummary || work.publicNote,
+        layout: "compact",
+      })
     );
 
     fillTextList(root.querySelector("[data-home-tag-groups]"), groupedTags.slice(0, 4), (group) => {
@@ -268,6 +303,7 @@
     const tipsRoot = root.querySelector("[data-profile-search-tips]");
     const presetsRoot = root.querySelector("[data-finder-presets]");
     const suggestionsRoot = root.querySelector("[data-finder-suggestions]");
+    const suggestionsWrap = root.querySelector("[data-finder-suggestions-wrap]");
     const modeButtons = Array.from(root.querySelectorAll("[data-finder-mode]"));
     if (!queryInput || !sortSelect || !includeRoot || !excludeRoot || !resultsRoot || !activeRoot) return;
 
@@ -276,6 +312,14 @@
     const visibleTags = core.getVisibleTags(state, profile?.id);
     const groupedTags = core.groupTags(visibleTags, state.tagGroups);
     const tagMap = core.getTagMap(state);
+    const tagCountMap = core
+      .getProfileWorks(state, profile?.id, { publicOnly: true })
+      .reduce((map, work) => {
+        core.ensureArray(work.tagIds).forEach((tagId) => {
+          map.set(tagId, (map.get(tagId) || 0) + 1);
+        });
+        return map;
+      }, new Map());
     let logTimer = null;
     let lastLogSignature = "";
 
@@ -331,7 +375,14 @@
         list.className = "tag-filter__list";
         group.tags.forEach((tag) => {
           const selectedIds = kind === "include" ? pageState.includeTagIds : pageState.excludeTagIds;
-          list.appendChild(createTagButton({ kind, tag, selected: selectedIds.includes(tag.id) }));
+          list.appendChild(
+            createTagButton({
+              kind,
+              tag,
+              selected: selectedIds.includes(tag.id),
+              count: tagCountMap.get(tag.id) || 0,
+            })
+          );
         });
         title.append(name, description);
         block.append(title, list);
@@ -403,6 +454,7 @@
     const renderSuggestions = (filtered) => {
       if (!suggestionsRoot) return;
       suggestionsRoot.textContent = "";
+      if (suggestionsWrap) suggestionsWrap.hidden = filtered.length !== 0;
       if (filtered.length) return;
 
       const suggestions = core.suggestWorks({
@@ -424,9 +476,13 @@
                     .map((tagId) => tagMap.get(tagId)?.label || tagId)
                     .join(" / ")}`
                 : work.matchSummary,
+            layout: "list",
           })
         );
       });
+      if (!suggestionsRoot.childElementCount && suggestionsWrap) {
+        suggestionsWrap.hidden = true;
+      }
     };
 
     const renderResults = () => {
@@ -442,6 +498,12 @@
         collectionId: pageState.collectionId,
         matchMode: pageState.matchMode,
       });
+      const filteredCountMap = filtered.reduce((map, work) => {
+        core.ensureArray(work.tagIds).forEach((tagId) => {
+          map.set(tagId, (map.get(tagId) || 0) + 1);
+        });
+        return map;
+      }, new Map());
 
       resultsRoot.textContent = "";
       filtered.forEach((work) => {
@@ -450,8 +512,16 @@
             work,
             profileId: profile?.id,
             reason: work.matchContext?.summary || work.matchSummary,
+            layout: "list",
           })
         );
+      });
+
+      root.querySelectorAll("[data-filter-kind]").forEach((button) => {
+        const countBadge = button.querySelector(".tag-filter__count");
+        const tagId = button.dataset.tagId;
+        if (!countBadge || !tagId) return;
+        countBadge.textContent = String(filteredCountMap.get(tagId) || 0);
       });
 
       if (emptyRoot) emptyRoot.hidden = filtered.length !== 0;
@@ -719,6 +789,7 @@
             work: item,
             profileId: profile?.id,
             reason: sharedLabels ? `近い条件: ${sharedLabels}` : item.matchSummary,
+            layout: "compact",
           })
         );
       });
@@ -853,6 +924,7 @@
             work,
             profileId: profile?.id,
             reason: work.matchSummary || work.publicNote,
+            layout: "compact",
           })
         );
       });
