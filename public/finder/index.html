@@ -3,39 +3,39 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>作品検索 | Media Canvas</title>
+  <title>作品検索 | ケモホモ作品ファインダー</title>
   <meta
     name="description"
-    content="曖昧な好みを細かい条件に変換して作品を探すための検索ページです。含める条件と除外条件を組み合わせて候補を絞れます。"
+    content="ケモホモ作品を、入口タグ、TF、媒体、除外条件、AND/OR 条件で探すための検索ページです。"
   />
   <link rel="canonical" href="/finder/" />
   <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
   <link rel="apple-touch-icon" href="/assets/logo.png" />
   <meta name="robots" content="noindex,follow" />
   <meta name="author" content="Media Canvas" />
-  <meta name="theme-color" content="#6366f1" />
+  <meta name="theme-color" content="#0f766e" />
   <meta property="og:site_name" content="Media Canvas" />
-  <meta property="og:title" content="作品検索 | Media Canvas" />
+  <meta property="og:title" content="作品検索 | ケモホモ作品ファインダー" />
   <meta
     property="og:description"
-    content="含める条件と除外条件を組み合わせて、ニッチな好みに合う作品を探すための検索ページです。"
+    content="含める条件、除外条件、AND/OR 切替で、ケモホモ作品を迷わず探すための検索画面です。"
   />
   <meta property="og:type" content="website" />
   <meta property="og:url" content="/finder/" />
   <meta property="og:locale" content="ja_JP" />
   <meta property="og:image" content="/assets/og-default.png" />
   <meta property="og:image:secure_url" content="/assets/og-default.png" />
-  <meta property="og:image:alt" content="Media Canvas 作品検索のOG画像" />
+  <meta property="og:image:alt" content="作品検索ページのOG画像" />
   <meta property="og:image:width" content="1200" />
   <meta property="og:image:height" content="630" />
   <meta name="twitter:card" content="summary_large_image" />
-  <meta name="twitter:title" content="作品検索 | Media Canvas" />
+  <meta name="twitter:title" content="作品検索 | ケモホモ作品ファインダー" />
   <meta
     name="twitter:description"
-    content="含める条件と除外条件を組み合わせて、ニッチな好みに合う作品を探すための検索ページです。"
+    content="入口タグ、TF、媒体、除外条件を組み合わせて作品を探す検索ページです。"
   />
   <meta name="twitter:image" content="/assets/og-default.png" />
-  <meta name="twitter:image:alt" content="Media Canvas 作品検索のOG画像" />
+  <meta name="twitter:image:alt" content="作品検索ページのOG画像" />
   <link rel="stylesheet" href="/style.css" />
   <script src="/assets/site-config.js"></script>
   <script src="/assets/finder-seed.js"></script>
@@ -49,7 +49,7 @@
 
 <nav class="nav">
   <div class="container nav__inner">
-    <a class="nav__brand" href="/">Media Canvas</a>
+    <a class="nav__brand" data-site-brand href="/">Media Canvas</a>
 
     <div class="nav__links">
       <a class="nav__link" href="/">ホーム</a>
@@ -66,39 +66,22 @@
     <div class="container stack stack--lg" data-finder-app>
       <div class="hero-grid">
         <div class="hero-panel stack">
-          <p class="kicker">作品検索</p>
-          <h1 class="h1" data-profile-hero-title>曖昧な好みを、細かい条件に変えて作品を探す</h1>
+          <p class="kicker">Finder</p>
+          <h1 class="h1" data-profile-hero-title>ケモホモ作品を、条件と除外条件で探す</h1>
           <p class="lead" data-profile-hero-description>
-            粗いストア検索では埋もれやすい条件を、含める条件と除外条件の両方で扱える検索画面です。
+            DMM 側の粗い分類だけでは見つけづらい作品を、入口語と除外条件の両方から絞り込む検索画面です。
           </p>
-          <div class="hero-metrics">
-            <div class="hero-metric">
-              <strong>含める条件</strong>
-              <span>欲しい要素を積み上げて候補を狭める</span>
-            </div>
-            <div class="hero-metric">
-              <strong>除外条件</strong>
-              <span>避けたい要素を先に外して迷いを減らす</span>
-            </div>
-            <div class="hero-metric">
-              <strong>URL共有</strong>
-              <span>検索条件をそのまま共有できる</span>
-            </div>
+          <div class="finder-mode">
+            <button class="btn btn--secondary btn--sm" type="button" data-finder-mode="and" aria-pressed="true">すべて一致</button>
+            <button class="btn btn--secondary btn--sm" type="button" data-finder-mode="or" aria-pressed="false">いずれか一致</button>
           </div>
         </div>
 
         <div class="hero-panel hero-panel--accent stack">
-          <p class="kicker">使い方</p>
-          <h2 class="h2">条件を増やしすぎず、先に除外条件を置く</h2>
-          <ul class="list list--compact">
-            <li>最初はキーワードか含める条件を1つだけ入れる</li>
-            <li>候補が広すぎるときだけ除外条件を足す</li>
-            <li>迷ったら特集ページから入って条件を微調整する</li>
-          </ul>
-          <div class="cluster">
-            <a class="btn btn--secondary" href="/collections/">特集を見る</a>
-            <a class="btn btn--secondary" href="/articles/">ガイドを見る</a>
-          </div>
+          <p class="kicker">Quick Start</p>
+          <h2 class="h2">先に入口タグを置き、必要なら除外条件を足す</h2>
+          <ul class="list list--compact" data-profile-search-tips></ul>
+          <div class="tag-list" data-finder-presets></div>
         </div>
       </div>
 
@@ -108,7 +91,7 @@
             <div class="section-head">
               <div class="stack">
                 <h2 class="h2">条件を組み立てる</h2>
-                <p class="help">キーワード、含める条件、除外条件、並び替えを同じ場所で調整できます。</p>
+                <p class="help">キーワード、含める条件、除外条件、並び替え、条件の一致方法を同じ場所で調整できます。</p>
               </div>
               <button class="btn btn--secondary btn--sm" type="button" data-finder-copy>検索URLをコピー</button>
             </div>
@@ -121,7 +104,7 @@
                   class="input"
                   type="search"
                   autocomplete="off"
-                  placeholder="雰囲気、関係性、見どころで検索"
+                  placeholder="オスケモ寄り / TF は軽め / 入口向け"
                   data-finder-query
                 />
               </div>
@@ -140,7 +123,7 @@
             <div class="stack">
               <div class="stack">
                 <h2 class="h2">含める条件</h2>
-                <p class="help">この条件は入っていてほしい、という要素を複数指定します。</p>
+                <p class="help">欲しい要素や入口タグを複数指定します。OR 検索に切り替えると、どれかに当てはまる候補も見られます。</p>
               </div>
               <div class="stack" data-finder-include-groups></div>
             </div>
@@ -148,7 +131,7 @@
             <div class="stack">
               <div class="stack">
                 <h2 class="h2">除外する条件</h2>
-                <p class="help">苦手な要素や避けたい条件を入れて、候補から外します。</p>
+                <p class="help">苦手な要素や先に避けたい条件を入れて、候補から外します。</p>
               </div>
               <div class="stack" data-finder-exclude-groups></div>
             </div>
@@ -166,30 +149,32 @@
 
           <div class="card stack center" data-finder-empty hidden>
             <h2 class="h2">一致する作品が見つかりません</h2>
-            <p class="muted">条件を減らすか、除外条件を一度外して再検索してください。</p>
+            <p class="muted">条件を減らすか、OR 検索へ切り替えるか、固定特集から入り直してください。</p>
             <div class="cluster">
               <a class="btn btn--secondary" href="/collections/">特集ページを見る</a>
               <a class="btn btn--secondary" href="/articles/">ガイドを見る</a>
             </div>
           </div>
+
+          <div class="stack" data-finder-suggestions></div>
         </div>
 
         <aside class="finder-sidebar">
           <div class="card finder-panel stack">
-            <h2 class="h2">検索のコツ</h2>
+            <h2 class="h2">検索の考え方</h2>
             <div class="surface-note">
-              <p class="muted">まずは「年上ヒロイン」や「NTRなし」のような軸を1つだけ入れて、候補が広いときだけ条件を増やします。</p>
+              <p class="muted">入口語を先に 1 つ置き、その後に媒体や TF、除外条件を足していくと迷いにくくなります。</p>
             </div>
             <ul class="list list--compact">
-              <li>除外条件は多くしすぎない</li>
-              <li>候補が少ないときはキーワードを外す</li>
-              <li>共有したいときは URL コピーを使う</li>
+              <li>入口タグは 1 つから始める</li>
+              <li>候補が広すぎるときだけ除外条件を足す</li>
+              <li>0件になったら OR 検索か特集へ戻る</li>
             </ul>
           </div>
 
           <div class="card stack">
             <h2 class="h2">固定導線</h2>
-            <p class="muted">検索で詰まった場合は、特集かガイドから条件を絞り込み直せます。</p>
+            <p class="muted">検索で詰まった場合は、特集ページかガイドから条件を組み立て直せます。</p>
             <div class="cluster">
               <a class="btn btn--secondary btn--sm" href="/collections/">特集一覧</a>
               <a class="btn btn--secondary btn--sm" href="/articles/">ガイド一覧</a>
@@ -203,13 +188,13 @@
 
 <footer class="footer">
   <div class="container footer__inner">
-    <p class="muted">© Media Canvas</p>
+    <p class="muted" data-site-copyright>© Media Canvas</p>
     <div class="footer__links">
       <a href="/">ホーム</a>
       <a href="/finder/">作品検索</a>
       <a href="/collections/">特集</a>
       <a href="/articles/">ガイド</a>
-      <a href="/admin/">管理画面</a>
+      <a href="/contact/">お問い合わせ</a>
       <a href="/privacy.html">プライバシー</a>
       <a href="/disclaimer.html">免責事項</a>
     </div>

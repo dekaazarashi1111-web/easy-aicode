@@ -39,6 +39,12 @@
     URL.revokeObjectURL(url);
   };
 
+  const toLines = (value) =>
+    (value || "")
+      .split(/\n+/)
+      .map((item) => item.trim())
+      .filter(Boolean);
+
   const init = () => {
     const root = document.querySelector("[data-admin-app]");
     if (!root) return;
@@ -60,16 +66,28 @@
     const workForm = root.querySelector("[data-admin-work-form]");
     const workTagChecks = root.querySelector("[data-admin-work-tag-checks]");
     const workProfileChecks = root.querySelector("[data-admin-work-profile-checks]");
+    const workCollectionChecks = root.querySelector("[data-admin-work-collection-checks]");
     const workMessage = root.querySelector("[data-admin-work-message]");
+
     const tagTableBody = root.querySelector("[data-admin-tags-body]");
     const tagForm = root.querySelector("[data-admin-tag-form]");
     const tagMessage = root.querySelector("[data-admin-tag-message]");
     const tagGroupSelect = root.querySelector("[data-admin-tag-group]");
+
+    const collectionTableBody = root.querySelector("[data-admin-collections-body]");
+    const collectionForm = root.querySelector("[data-admin-collection-form]");
+    const collectionProfileChecks = root.querySelector("[data-admin-collection-profile-checks]");
+    const collectionTagChecks = root.querySelector("[data-admin-collection-tag-checks]");
+    const collectionWorkChecks = root.querySelector("[data-admin-collection-work-checks]");
+    const collectionMessage = root.querySelector("[data-admin-collection-message]");
+
     const settingsForm = root.querySelector("[data-admin-settings-form]");
     const activeProfileSelect = root.querySelector("[data-admin-active-profile]");
     const settingsGroups = root.querySelector("[data-admin-settings-groups]");
     const statsRoot = root.querySelector("[data-admin-stats]");
     const topSearchesRoot = root.querySelector("[data-admin-top-searches]");
+    const topZeroRoot = root.querySelector("[data-admin-top-zero-searches]");
+    const topTagsRoot = root.querySelector("[data-admin-top-tags]");
     const recentEventsRoot = root.querySelector("[data-admin-recent-events]");
     const exportButton = root.querySelector("[data-admin-export]");
     const resetButton = root.querySelector("[data-admin-reset]");
@@ -77,6 +95,10 @@
 
     const selectedIds = new Set();
     let state = store.loadState();
+
+    const getTagLabel = (tagId) => state.tags.find((tag) => tag.id === tagId)?.label || tagId;
+    const getProfileLabel = (profileId) =>
+      state.siteProfiles.find((profile) => profile.id === profileId)?.shortName || profileId;
 
     const fillProfileOptions = () => {
       const profiles = core.ensureArray(state.siteProfiles);
@@ -154,6 +176,66 @@
           );
         });
       }
+
+      if (workCollectionChecks) {
+        workCollectionChecks.textContent = "";
+        state.collections.forEach((collection) => {
+          workCollectionChecks.appendChild(
+            createCheckbox({
+              id: collection.id,
+              label: collection.title,
+              checked: core.ensureArray(formData.collectionIds).includes(collection.id),
+              name: "collectionIds",
+            })
+          );
+        });
+      }
+    };
+
+    const renderCollectionChecks = (formData = {}) => {
+      if (collectionProfileChecks) {
+        collectionProfileChecks.textContent = "";
+        state.siteProfiles.forEach((profile) => {
+          collectionProfileChecks.appendChild(
+            createCheckbox({
+              id: profile.id,
+              label: profile.shortName || profile.name,
+              checked:
+                core.ensureArray(formData.siteProfileIds).includes(profile.id) ||
+                (!formData.id && profile.id === state.activeProfileId),
+              name: "siteProfileIds",
+            })
+          );
+        });
+      }
+
+      if (collectionTagChecks) {
+        collectionTagChecks.textContent = "";
+        state.tags.forEach((tag) => {
+          collectionTagChecks.appendChild(
+            createCheckbox({
+              id: tag.id,
+              label: tag.label,
+              checked: core.ensureArray(formData.tagIds).includes(tag.id),
+              name: "tagIds",
+            })
+          );
+        });
+      }
+
+      if (collectionWorkChecks) {
+        collectionWorkChecks.textContent = "";
+        state.works.forEach((work) => {
+          collectionWorkChecks.appendChild(
+            createCheckbox({
+              id: work.id,
+              label: work.title,
+              checked: core.ensureArray(formData.workIds).includes(work.id),
+              name: "workIds",
+            })
+          );
+        });
+      }
     };
 
     const getVisibleWorks = () => {
@@ -164,12 +246,18 @@
         if (status && work.status !== status) return false;
         if (profileId && !core.ensureArray(work.siteProfileIds).includes(profileId)) return false;
         if (!query) return true;
-        const tagLabels = core
-          .ensureArray(work.tagIds)
-          .map((tagId) => state.tags.find((tag) => tag.id === tagId)?.label || "")
-          .join(" ");
+        const tagLabels = core.ensureArray(work.tagIds).map((tagId) => getTagLabel(tagId)).join(" ");
         const haystack = core.normalizeText(
-          [work.title, work.shortDescription, work.publicNote, work.internalNote, tagLabels].join(" ")
+          [
+            work.title,
+            work.creator,
+            work.format,
+            work.shortDescription,
+            work.publicNote,
+            work.internalNote,
+            work.matchSummary,
+            tagLabels,
+          ].join(" ")
         );
         return haystack.includes(query);
       });
@@ -185,67 +273,86 @@
       const items = [
         { label: "公開作品", value: statusCounts.published || 0 },
         { label: "保留 / 下書き", value: (statusCounts.hold || 0) + (statusCounts.draft || 0) },
+        { label: "特集", value: state.collections.length },
         { label: "検索ログ", value: summary.counts.search },
         { label: "0件検索", value: summary.counts.zeroSearch },
-        { label: "詳細閲覧", value: summary.counts.detailView },
         { label: "外部クリック", value: summary.counts.outboundClick },
       ];
       statsRoot.textContent = "";
       items.forEach((item) => {
         const card = document.createElement("div");
-        const title = document.createElement("p");
-        const value = document.createElement("p");
         card.className = "card stack";
-        title.className = "help";
-        title.textContent = item.label;
-        value.className = "admin-stat__value";
-        value.textContent = String(item.value);
-        card.append(title, value);
+        card.append(
+          createText("p", "help", item.label),
+          createText("p", "admin-stat__value", String(item.value))
+        );
         statsRoot.appendChild(card);
       });
     };
 
     const renderLogs = () => {
       const summary = core.aggregateLogs(state);
-      if (topSearchesRoot) {
-        topSearchesRoot.textContent = "";
-        summary.topSearches.forEach((item) => {
-          const row = document.createElement("li");
+
+      const renderLogList = (target, items, formatItem, emptyText) => {
+        if (!target) return;
+        target.textContent = "";
+        items.forEach((item) => {
+          target.appendChild(createText("li", "", formatItem(item)));
+        });
+        if (!target.childElementCount) {
+          target.appendChild(createText("li", "", emptyText));
+        }
+      };
+
+      renderLogList(
+        topSearchesRoot,
+        summary.topSearches,
+        (item) => {
+          const parts = [];
+          if (item.query) parts.push(`キーワード: ${item.query}`);
+          if (item.matchMode === "or") parts.push("いずれか一致");
+          if (item.includeLabels.length) parts.push(`含める: ${item.includeLabels.join(" / ")}`);
+          if (item.excludeLabels.length) parts.push(`除外: ${item.excludeLabels.join(" / ")}`);
+          return `${parts.join(" | ") || "条件なし"} (${item.count}回)`;
+        },
+        "まだ検索ログはありません。"
+      );
+
+      renderLogList(
+        topZeroRoot,
+        summary.topZeroSearches,
+        (item) => {
           const parts = [];
           if (item.query) parts.push(`キーワード: ${item.query}`);
           if (item.includeLabels.length) parts.push(`含める: ${item.includeLabels.join(" / ")}`);
           if (item.excludeLabels.length) parts.push(`除外: ${item.excludeLabels.join(" / ")}`);
-          row.textContent = `${parts.join(" | ") || "条件なし"} (${item.count}回 / 0件 ${item.zeroCount}回)`;
-          topSearchesRoot.appendChild(row);
-        });
-        if (!topSearchesRoot.childElementCount) {
-          const row = document.createElement("li");
-          row.textContent = "まだログはありません。";
-          topSearchesRoot.appendChild(row);
-        }
-      }
+          return `${parts.join(" | ") || "条件なし"} (0件 ${item.zeroCount}回)`;
+        },
+        "まだ 0件 検索はありません。"
+      );
 
-      if (recentEventsRoot) {
-        recentEventsRoot.textContent = "";
-        summary.recentEvents.forEach((event) => {
-          const row = document.createElement("li");
+      renderLogList(
+        topTagsRoot,
+        summary.topTags,
+        (item) => `${item.label} (${item.count}回)`,
+        "まだ人気タグは集計できません。"
+      );
+
+      renderLogList(
+        recentEventsRoot,
+        summary.recentEvents,
+        (event) => {
           if (event.kind === "search") {
-            row.textContent = `${event.createdAt.slice(0, 16).replace("T", " ")} | search | ${
-              event.includeLabels.join(" / ") || event.query || "条件なし"
-            } | ${event.resultCount}件`;
-          } else {
-            row.textContent = `${event.createdAt.slice(0, 16).replace("T", " ")} | ${event.kind} | ${
-              event.workTitle || event.href || ""
-            }`;
+            const head = event.createdAt.slice(0, 16).replace("T", " ");
+            const body = event.includeLabels.join(" / ") || event.query || "条件なし";
+            return `${head} | search | ${body} | ${event.resultCount}件`;
           }
-          recentEventsRoot.appendChild(row);
-        });
-        if (!recentEventsRoot.childElementCount) {
-          const row = document.createElement("li");
-          row.textContent = "まだログはありません。";
-          recentEventsRoot.appendChild(row);
-        }
-      }
+          return `${event.createdAt.slice(0, 16).replace("T", " ")} | ${event.kind} | ${
+            event.workTitle || event.href || ""
+          }`;
+        },
+        "まだログはありません。"
+      );
     };
 
     const resetWorkForm = (work = null) => {
@@ -255,9 +362,14 @@
       workForm.elements.title.value = work?.title || "";
       workForm.elements.slug.value = work?.slug || "";
       workForm.elements.status.value = work?.status || "draft";
+      workForm.elements.creator.value = work?.creator || "";
+      workForm.elements.format.value = work?.format || "漫画";
       workForm.elements.shortDescription.value = work?.shortDescription || "";
       workForm.elements.publicNote.value = work?.publicNote || "";
       workForm.elements.internalNote.value = work?.internalNote || "";
+      workForm.elements.matchSummary.value = work?.matchSummary || "";
+      workForm.elements.cautionNote.value = work?.cautionNote || "";
+      workForm.elements.highlightPoints.value = core.ensureArray(work?.highlightPoints).join("\n");
       workForm.elements.releasedAt.value = work?.releasedAt || "";
       workForm.elements.priority.value = `${work?.priority ?? 999}`;
       workForm.elements.externalLabel.value = work?.externalLinks?.[0]?.label || "DMMで作品を見る";
@@ -265,6 +377,35 @@
       workForm.elements.externalUrl.value = work?.externalLinks?.[0]?.url || "";
       renderWorkChecks(work || {});
       if (workMessage) workMessage.textContent = work ? `編集中: ${work.title}` : "新規作品を入力します。";
+    };
+
+    const resetTagForm = (tag = null) => {
+      if (!tagForm) return;
+      tagForm.reset();
+      tagForm.elements.id.value = tag?.id || "";
+      tagForm.elements.label.value = tag?.label || "";
+      tagForm.elements.groupId.value = tag?.groupId || state.tagGroups[0]?.id || "";
+      tagForm.elements.synonyms.value = core.ensureArray(tag?.synonyms).join(", ");
+      tagForm.elements.isPublic.checked = tag ? tag.isPublic !== false : true;
+      if (tagMessage) tagMessage.textContent = tag ? `編集中: ${tag.label}` : "タグを追加または編集します。";
+    };
+
+    const resetCollectionForm = (collection = null) => {
+      if (!collectionForm) return;
+      collectionForm.reset();
+      collectionForm.elements.id.value = collection?.id || "";
+      collectionForm.elements.title.value = collection?.title || "";
+      collectionForm.elements.slug.value = collection?.slug || "";
+      collectionForm.elements.description.value = collection?.description || "";
+      collectionForm.elements.lead.value = collection?.lead || "";
+      collectionForm.elements.introPoints.value = core.ensureArray(collection?.introPoints).join("\n");
+      collectionForm.elements.isPublic.checked = collection ? collection.isPublic !== false : true;
+      renderCollectionChecks(collection || {});
+      if (collectionMessage) {
+        collectionMessage.textContent = collection
+          ? `編集中: ${collection.title}`
+          : "特集を追加または編集します。";
+      }
     };
 
     const renderWorks = () => {
@@ -291,11 +432,9 @@
         const title = document.createElement("strong");
         title.textContent = work.title;
         titleCell.appendChild(title);
+        titleCell.appendChild(createText("p", "help", `${work.format || "作品"} / ${work.creator || "作者未設定"}`));
         if (duplicateMap.has(work.id)) {
-          const note = document.createElement("p");
-          note.className = "help";
-          note.textContent = duplicateMap.get(work.id).join(" / ");
-          titleCell.appendChild(note);
+          titleCell.appendChild(createText("p", "help", duplicateMap.get(work.id).join(" / ")));
         }
 
         const statusBadge = document.createElement("span");
@@ -303,16 +442,8 @@
         statusBadge.textContent = statusLabels[work.status] || work.status;
         statusCell.appendChild(statusBadge);
 
-        profileCell.textContent = core
-          .ensureArray(work.siteProfileIds)
-          .map((profileId) => state.siteProfiles.find((profile) => profile.id === profileId)?.shortName || profileId)
-          .join(", ");
-
-        tagsCell.textContent = core
-          .ensureArray(work.tagIds)
-          .slice(0, 4)
-          .map((tagId) => state.tags.find((tag) => tag.id === tagId)?.label || tagId)
-          .join(", ");
+        profileCell.textContent = core.ensureArray(work.siteProfileIds).map(getProfileLabel).join(", ");
+        tagsCell.textContent = core.ensureArray(work.tagIds).slice(0, 4).map(getTagLabel).join(", ");
 
         editButton.type = "button";
         editButton.className = "btn btn--secondary btn--sm";
@@ -352,15 +483,20 @@
       });
     };
 
-    const resetTagForm = (tag = null) => {
-      if (!tagForm) return;
-      tagForm.reset();
-      tagForm.elements.id.value = tag?.id || "";
-      tagForm.elements.label.value = tag?.label || "";
-      tagForm.elements.groupId.value = tag?.groupId || state.tagGroups[0]?.id || "";
-      tagForm.elements.synonyms.value = core.ensureArray(tag?.synonyms).join(", ");
-      tagForm.elements.isPublic.checked = tag ? tag.isPublic !== false : true;
-      if (tagMessage) tagMessage.textContent = tag ? `編集中: ${tag.label}` : "タグを追加または編集します。";
+    const renderCollections = () => {
+      if (!collectionTableBody) return;
+      collectionTableBody.textContent = "";
+      state.collections.forEach((collection) => {
+        const row = document.createElement("tr");
+        row.innerHTML = `
+          <td>${collection.title}</td>
+          <td>${core.ensureArray(collection.siteProfileIds).map(getProfileLabel).join(", ")}</td>
+          <td>${collection.isPublic !== false ? "公開" : "非公開"}</td>
+          <td>${core.ensureArray(collection.workIds).length}</td>
+          <td><button class="btn btn--secondary btn--sm" type="button" data-edit-collection-id="${collection.id}">編集</button></td>
+        `;
+        collectionTableBody.appendChild(row);
+      });
     };
 
     const renderSettings = () => {
@@ -394,6 +530,7 @@
       fillTagOptions();
       renderWorks();
       renderTags();
+      renderCollections();
       renderStats();
       renderLogs();
       renderSettings();
@@ -402,12 +539,18 @@
           ? state.works.find((work) => work.id === workForm.elements.id.value) || {}
           : {}
       );
+      renderCollectionChecks(
+        collectionForm?.elements.id.value
+          ? state.collections.find((collection) => collection.id === collectionForm.elements.id.value) || {}
+          : {}
+      );
     };
 
     fillProfileOptions();
     fillTagOptions();
     resetWorkForm();
     resetTagForm();
+    resetCollectionForm();
     refresh();
 
     workSearch?.addEventListener("input", renderWorks);
@@ -446,22 +589,29 @@
 
     workForm?.addEventListener("submit", (event) => {
       event.preventDefault();
+      const tagIds = getCheckedValues(workForm, 'input[name="tagIds"]');
       store.upsertWork({
         id: workForm.elements.id.value,
         title: workForm.elements.title.value,
         slug: workForm.elements.slug.value,
         status: workForm.elements.status.value,
+        creator: workForm.elements.creator.value,
+        format: workForm.elements.format.value,
         shortDescription: workForm.elements.shortDescription.value,
         publicNote: workForm.elements.publicNote.value,
         internalNote: workForm.elements.internalNote.value,
+        matchSummary: workForm.elements.matchSummary.value,
+        cautionNote: workForm.elements.cautionNote.value,
+        highlightPoints: toLines(workForm.elements.highlightPoints.value),
         releasedAt: workForm.elements.releasedAt.value,
         priority: workForm.elements.priority.value,
         externalLabel: workForm.elements.externalLabel.value,
         externalPartner: workForm.elements.externalPartner.value,
         externalUrl: workForm.elements.externalUrl.value,
         siteProfileIds: getCheckedValues(workForm, 'input[name="siteProfileIds"]'),
-        tagIds: getCheckedValues(workForm, 'input[name="tagIds"]'),
-        primaryTagIds: getCheckedValues(workForm, 'input[name="tagIds"]').slice(0, 4),
+        tagIds,
+        collectionIds: getCheckedValues(workForm, 'input[name="collectionIds"]'),
+        primaryTagIds: tagIds.slice(0, 4),
       });
       resetWorkForm();
       refresh();
@@ -488,6 +638,32 @@
       if (!tagId) return;
       store.deleteTag(tagId);
       resetTagForm();
+      refresh();
+    });
+
+    collectionForm?.addEventListener("submit", (event) => {
+      event.preventDefault();
+      store.upsertCollection({
+        id: collectionForm.elements.id.value,
+        title: collectionForm.elements.title.value,
+        slug: collectionForm.elements.slug.value,
+        description: collectionForm.elements.description.value,
+        lead: collectionForm.elements.lead.value,
+        introPoints: toLines(collectionForm.elements.introPoints.value),
+        siteProfileIds: getCheckedValues(collectionForm, 'input[name="siteProfileIds"]'),
+        tagIds: getCheckedValues(collectionForm, 'input[name="tagIds"]'),
+        workIds: getCheckedValues(collectionForm, 'input[name="workIds"]'),
+        isPublic: collectionForm.elements.isPublic.checked,
+      });
+      resetCollectionForm();
+      refresh();
+    });
+
+    collectionForm?.querySelector("[data-admin-collection-delete]")?.addEventListener("click", () => {
+      const collectionId = collectionForm.elements.id.value;
+      if (!collectionId) return;
+      store.deleteCollection(collectionId);
+      resetCollectionForm();
       refresh();
     });
 
@@ -522,6 +698,7 @@
       selectedIds.clear();
       resetWorkForm();
       resetTagForm();
+      resetCollectionForm();
       refresh();
     });
 
@@ -542,6 +719,15 @@
       if (editTag) {
         const tag = state.tags.find((item) => item.id === editTag.dataset.editTagId);
         if (tag) resetTagForm(tag);
+        return;
+      }
+
+      const editCollection = event.target.closest("[data-edit-collection-id]");
+      if (editCollection) {
+        const collection = state.collections.find(
+          (item) => item.id === editCollection.dataset.editCollectionId
+        );
+        if (collection) resetCollectionForm(collection);
         return;
       }
 

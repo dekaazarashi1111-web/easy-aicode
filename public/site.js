@@ -83,6 +83,43 @@ const updateXProfileLinks = () => {
 
 updateXProfileLinks();
 
+const updateBrandCopy = () => {
+  if (!SITE_CONFIG.BRAND_NAME) return;
+
+  document.querySelectorAll("[data-site-brand]").forEach((element) => {
+    element.textContent = SITE_CONFIG.BRAND_NAME;
+  });
+
+  document.querySelectorAll("[data-site-copyright]").forEach((element) => {
+    element.textContent = `© ${SITE_CONFIG.BRAND_NAME}`;
+  });
+
+  const author = document.querySelector('meta[name="author"]');
+  if (author) author.setAttribute("content", SITE_CONFIG.BRAND_NAME);
+
+  const siteName = document.querySelector('meta[property="og:site_name"]');
+  if (siteName) siteName.setAttribute("content", SITE_CONFIG.BRAND_NAME);
+
+  if (document.title.includes("Media Canvas")) {
+    document.title = document.title.replace(/Media Canvas/g, SITE_CONFIG.BRAND_NAME);
+  }
+
+  const titleMeta = [
+    document.querySelector('meta[property="og:title"]'),
+    document.querySelector('meta[name="twitter:title"]'),
+  ];
+
+  titleMeta.forEach((meta) => {
+    if (!meta) return;
+    const current = meta.getAttribute("content") || "";
+    if (current.includes("Media Canvas")) {
+      meta.setAttribute("content", current.replace(/Media Canvas/g, SITE_CONFIG.BRAND_NAME));
+    }
+  });
+};
+
+updateBrandCopy();
+
 const formatLabel = (value) =>
   (value || "")
     .toString()

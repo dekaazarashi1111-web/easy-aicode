@@ -4,6 +4,8 @@
 /admin/index.html /admin/ 301
 /collections /collections/ 301
 /collections/index.html /collections/ 301
+/collection /collection/ 301
+/collection/index.html /collection/ 301
 /contact /contact/ 301
 /contact/index.html /contact/ 301
 /articles /articles/ 301

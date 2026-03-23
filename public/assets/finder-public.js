@@ -3,6 +3,45 @@
 })(typeof globalThis !== "undefined" ? globalThis : this, function (store, core) {
   if (!store || !core) return {};
 
+  const createText = (tagName, className, text) => {
+    const element = document.createElement(tagName);
+    if (className) element.className = className;
+    element.textContent = text;
+    return element;
+  };
+
+  const createTagChip = ({ label, href = "", className = "tag" }) => {
+    const element = document.createElement(href ? "a" : "span");
+    element.className = className;
+    element.textContent = label;
+    if (href) element.href = href;
+    return element;
+  };
+
+  const toFinderUrl = ({
+    query = "",
+    sort = "recommended",
+    collectionId = "",
+    includeTagIds = [],
+    excludeTagIds = [],
+    matchMode = "and",
+  }) => {
+    const params = new URLSearchParams();
+    if (query) params.set("q", query);
+    if (sort && sort !== "recommended") params.set("sort", sort);
+    if (collectionId) params.set("collection", collectionId);
+    if (matchMode === "or") params.set("mode", "or");
+    core.unique(includeTagIds).forEach((tagId) => params.append("include", tagId));
+    core.unique(excludeTagIds).forEach((tagId) => params.append("exclude", tagId));
+    return `/finder/${params.toString() ? `?${params.toString()}` : ""}`;
+  };
+
+  const updateUrl = (nextState) => {
+    const finderUrl = new URL(toFinderUrl(nextState), window.location.origin);
+    const nextUrl = `${window.location.pathname}${finderUrl.search}${window.location.hash}`;
+    window.history.replaceState({}, "", nextUrl);
+  };
+
   const createTagButton = ({ kind, tag, selected }) => {
     const button = document.createElement("button");
     button.type = "button";
@@ -14,30 +53,7 @@
     return button;
   };
 
-  const createStatusLine = (text) => {
-    const element = document.createElement("p");
-    element.className = "help";
-    element.textContent = text;
-    return element;
-  };
-
-  const toFinderUrl = (state) => {
-    const params = new URLSearchParams();
-    if (state.query) params.set("q", state.query);
-    if (state.sort && state.sort !== "recommended") params.set("sort", state.sort);
-    if (state.collectionId) params.set("collection", state.collectionId);
-    core.unique(state.includeTagIds).forEach((tagId) => params.append("include", tagId));
-    core.unique(state.excludeTagIds).forEach((tagId) => params.append("exclude", tagId));
-    return `/finder/${params.toString() ? `?${params.toString()}` : ""}`;
-  };
-
-  const updateUrl = (nextState) => {
-    const finderUrl = new URL(toFinderUrl(nextState), window.location.origin);
-    const nextUrl = `${window.location.pathname}${finderUrl.search}${window.location.hash}`;
-    window.history.replaceState({}, "", nextUrl);
-  };
-
-  const formatActiveChip = (label, kind, value) => {
+  const createActiveChip = (label, kind, value) => {
     const button = document.createElement("button");
     button.type = "button";
     button.className = "tag-filter__btn";
@@ -45,6 +61,192 @@
     button.dataset.removeValue = value;
     button.textContent = label;
     return button;
+  };
+
+  const createWorkCard = ({ work, profileId, reason = "" }) => {
+    const card = document.createElement("a");
+    const eyebrow = document.createElement("div");
+    const title = document.createElement("h2");
+    const summary = document.createElement("p");
+    const reasonText = document.createElement("p");
+    const tagList = document.createElement("div");
+
+    card.className = "card card--interactive stack result-card";
+    card.href = `/work/?slug=${encodeURIComponent(work.slug)}`;
+    card.dataset.workId = work.id;
+
+    eyebrow.className = "result-meta";
+    eyebrow.append(
+      createText("span", "pill", work.format || "作品"),
+      createText("span", "help", work.creator || "サンプル作者"),
+    );
+
+    title.className = "h2";
+    title.textContent = work.title;
+
+    summary.className = "muted";
+    summary.textContent = work.shortDescription;
+
+    reasonText.className = "help result-reason";
+    reasonText.textContent =
+      reason || work.matchContext?.summary || work.matchSummary || work.publicNote || "";
+
+    tagList.className = "tag-list";
+    work.primaryTagObjects.forEach((tag) => {
+      tagList.appendChild(
+        createTagChip({
+          label: tag.label,
+          href: toFinderUrl({ includeTagIds: [tag.id] }),
+        })
+      );
+    });
+
+    if (profileId) {
+      const footer = document.createElement("div");
+      footer.className = "cluster cluster--spread";
+      footer.append(
+        createText("span", "help", "詳細へ"),
+        createText("span", "help", work.releasedAt || "")
+      );
+      card.append(eyebrow, title, summary, reasonText, tagList, footer);
+    } else {
+      card.append(eyebrow, title, summary, reasonText, tagList);
+    }
+
+    return card;
+  };
+
+  const setMeta = ({ title = "", description = "", canonical = "" }) => {
+    let canonicalUrl = canonical;
+    if (canonical) {
+      try {
+        canonicalUrl = new URL(canonical, window.location.origin).href;
+      } catch (error) {
+        canonicalUrl = canonical;
+      }
+    }
+
+    if (title) document.title = title;
+
+    const descriptionMeta = document.querySelector('meta[name="description"]');
+    if (descriptionMeta && description) descriptionMeta.setAttribute("content", description);
+
+    const ogTitle = document.querySelector('meta[property="og:title"]');
+    if (ogTitle && title) ogTitle.setAttribute("content", title);
+
+    const twitterTitle = document.querySelector('meta[name="twitter:title"]');
+    if (twitterTitle && title) twitterTitle.setAttribute("content", title);
+
+    const ogDescription = document.querySelector('meta[property="og:description"]');
+    if (ogDescription && description) ogDescription.setAttribute("content", description);
+
+    const twitterDescription = document.querySelector('meta[name="twitter:description"]');
+    if (twitterDescription && description) twitterDescription.setAttribute("content", description);
+
+    const canonicalLink = document.querySelector('link[rel="canonical"]');
+    if (canonicalLink && canonicalUrl) canonicalLink.setAttribute("href", canonicalUrl);
+
+    const ogUrl = document.querySelector('meta[property="og:url"]');
+    if (ogUrl && canonicalUrl) ogUrl.setAttribute("content", canonicalUrl);
+  };
+
+  const fillTextList = (root, items, renderItem) => {
+    if (!root) return;
+    root.textContent = "";
+    core.ensureArray(items).forEach((item) => {
+      root.appendChild(renderItem(item));
+    });
+  };
+
+  const renderHomePage = () => {
+    const root = document.querySelector("[data-home-page]");
+    if (!root) return;
+
+    const state = store.loadState();
+    const profile = core.getActiveProfile(state);
+    if (!profile) return;
+
+    const featuredCollections = core
+      .getProfileCollections(state, profile.id, { publicOnly: true })
+      .filter((collection) => core.ensureArray(profile.featuredCollectionIds).includes(collection.id))
+      .map((collection) => core.decorateCollection(collection, state));
+
+    const featuredWorks = core
+      .getProfileWorks(state, profile.id, { publicOnly: true })
+      .filter((work) => core.ensureArray(profile.featuredWorkIds).includes(work.id))
+      .map((work) => {
+        const decorated = core.filterWorks({
+          state,
+          profileId: profile.id,
+          query: "",
+          includeTagIds: [],
+          excludeTagIds: [],
+        }).find((item) => item.id === work.id);
+        return decorated || work;
+      });
+
+    const groupedTags = core.groupTags(core.getVisibleTags(state, profile.id), state.tagGroups);
+
+    const setText = (selector, value) => {
+      const element = root.querySelector(selector);
+      if (element && value) element.textContent = value;
+    };
+
+    setText("[data-home-kicker]", profile.homeKicker || profile.shortName || "");
+    setText("[data-home-title]", profile.heroTitle || "");
+    setText("[data-home-description]", profile.homeIntro || profile.heroDescription || "");
+    setText("[data-home-audience-note]", profile.audienceNote || "");
+
+    fillTextList(root.querySelector("[data-home-value-props]"), profile.valueProps, (item) =>
+      createText("li", "", item)
+    );
+
+    fillTextList(root.querySelector("[data-home-search-tips]"), profile.searchTips, (item) =>
+      createText("li", "", item)
+    );
+
+    fillTextList(root.querySelector("[data-home-featured-collections]"), featuredCollections, (collection) => {
+      const card = document.createElement("a");
+      card.className = "card card--interactive stack";
+      card.href = `/collection/?slug=${encodeURIComponent(collection.slug)}`;
+      card.append(
+        createText("p", "kicker", "Featured Collection"),
+        createText("h3", "h2", collection.title),
+        createText("p", "muted", collection.description),
+      );
+      const tagList = document.createElement("div");
+      tagList.className = "tag-list";
+      collection.tagObjects.slice(0, 4).forEach((tag) => {
+        tagList.appendChild(createTagChip({ label: tag.label }));
+      });
+      card.append(tagList, createText("p", "help", `${collection.workObjects.length}件を起点に探索`));
+      return card;
+    });
+
+    fillTextList(root.querySelector("[data-home-featured-works]"), featuredWorks, (work) =>
+      createWorkCard({ work, profileId: profile.id, reason: work.matchSummary || work.publicNote })
+    );
+
+    fillTextList(root.querySelector("[data-home-tag-groups]"), groupedTags.slice(0, 4), (group) => {
+      const card = document.createElement("div");
+      const list = document.createElement("div");
+      card.className = "card stack";
+      list.className = "tag-list";
+      group.tags.slice(0, 5).forEach((tag) => {
+        list.appendChild(
+          createTagChip({
+            label: tag.label,
+            href: toFinderUrl({ includeTagIds: [tag.id] }),
+          })
+        );
+      });
+      card.append(
+        createText("h3", "h2", group.label),
+        createText("p", "muted", group.description || ""),
+        list
+      );
+      return card;
+    });
   };
 
   const renderFinderPage = () => {
@@ -63,6 +265,10 @@
     const copyButton = root.querySelector("[data-finder-copy]");
     const titleRoot = root.querySelector("[data-profile-hero-title]");
     const descriptionRoot = root.querySelector("[data-profile-hero-description]");
+    const tipsRoot = root.querySelector("[data-profile-search-tips]");
+    const presetsRoot = root.querySelector("[data-finder-presets]");
+    const suggestionsRoot = root.querySelector("[data-finder-suggestions]");
+    const modeButtons = Array.from(root.querySelectorAll("[data-finder-mode]"));
     if (!queryInput || !sortSelect || !includeRoot || !excludeRoot || !resultsRoot || !activeRoot) return;
 
     let state = store.loadState();
@@ -79,6 +285,7 @@
       excludeTagIds: [],
       sort: "recommended",
       collectionId: "",
+      matchMode: "and",
     };
 
     const readUrlState = () => {
@@ -86,13 +293,19 @@
       pageState.query = params.get("q") || "";
       pageState.sort = params.get("sort") || "recommended";
       pageState.collectionId = params.get("collection") || "";
+      pageState.matchMode = params.get("mode") === "or" ? "or" : "and";
       pageState.includeTagIds = core.unique(params.getAll("include"));
       pageState.excludeTagIds = core.unique(params.getAll("exclude"));
     };
 
     const syncControls = () => {
       queryInput.value = pageState.query;
+      queryInput.placeholder = profile?.searchPlaceholder || queryInput.placeholder;
       sortSelect.value = pageState.sort;
+      modeButtons.forEach((button) => {
+        const isActive = button.dataset.finderMode === pageState.matchMode;
+        button.setAttribute("aria-pressed", String(isActive));
+      });
       root.querySelectorAll("[data-filter-kind]").forEach((button) => {
         const kind = button.dataset.filterKind;
         const tagId = button.dataset.tagId;
@@ -105,16 +318,22 @@
       container.textContent = "";
       groupedTags.forEach((group) => {
         const block = document.createElement("div");
-        const title = document.createElement("p");
+        const title = document.createElement("div");
+        const name = document.createElement("p");
+        const description = document.createElement("p");
         const list = document.createElement("div");
-        block.className = "finder-group";
-        title.className = "label";
-        title.textContent = group.label;
+        block.className = "finder-group stack";
+        title.className = "stack";
+        name.className = "label";
+        name.textContent = group.label;
+        description.className = "help";
+        description.textContent = group.description || "";
         list.className = "tag-filter__list";
         group.tags.forEach((tag) => {
           const selectedIds = kind === "include" ? pageState.includeTagIds : pageState.excludeTagIds;
           list.appendChild(createTagButton({ kind, tag, selected: selectedIds.includes(tag.id) }));
         });
+        title.append(name, description);
         block.append(title, list);
         container.appendChild(block);
       });
@@ -123,22 +342,25 @@
     const renderActiveConditions = () => {
       activeRoot.textContent = "";
       if (pageState.query) {
-        activeRoot.appendChild(formatActiveChip(`キーワード: ${pageState.query}`, "query", pageState.query));
+        activeRoot.appendChild(createActiveChip(`キーワード: ${pageState.query}`, "query", pageState.query));
+      }
+      if (pageState.matchMode === "or") {
+        activeRoot.appendChild(createActiveChip("条件: いずれか一致", "mode", "or"));
       }
       pageState.includeTagIds.forEach((tagId) => {
         const tag = tagMap.get(tagId);
         if (!tag) return;
-        activeRoot.appendChild(formatActiveChip(`含める: ${tag.label}`, "include", tagId));
+        activeRoot.appendChild(createActiveChip(`含める: ${tag.label}`, "include", tagId));
       });
       pageState.excludeTagIds.forEach((tagId) => {
         const tag = tagMap.get(tagId);
         if (!tag) return;
-        activeRoot.appendChild(formatActiveChip(`除外: ${tag.label}`, "exclude", tagId));
+        activeRoot.appendChild(createActiveChip(`除外: ${tag.label}`, "exclude", tagId));
       });
       if (pageState.collectionId) {
         const collection = core.getCollection(state, pageState.collectionId);
         if (collection) {
-          activeRoot.appendChild(formatActiveChip(`特集: ${collection.title}`, "collection", collection.id));
+          activeRoot.appendChild(createActiveChip(`特集: ${collection.title}`, "collection", collection.id));
         }
       }
     };
@@ -151,15 +373,18 @@
         pageState.collectionId ||
         resultCount === 0;
       if (!shouldLog) return;
+
       const signature = JSON.stringify({
         query: pageState.query,
         include: pageState.includeTagIds.slice().sort(),
         exclude: pageState.excludeTagIds.slice().sort(),
         collection: pageState.collectionId,
         sort: pageState.sort,
+        matchMode: pageState.matchMode,
         resultCount,
       });
       if (signature === lastLogSignature) return;
+
       window.clearTimeout(logTimer);
       logTimer = window.setTimeout(() => {
         store.logEvent("search", {
@@ -168,10 +393,40 @@
           includeTagIds: pageState.includeTagIds,
           excludeTagIds: pageState.excludeTagIds,
           collectionId: pageState.collectionId,
+          matchMode: pageState.matchMode,
           resultCount,
         });
         lastLogSignature = signature;
       }, 350);
+    };
+
+    const renderSuggestions = (filtered) => {
+      if (!suggestionsRoot) return;
+      suggestionsRoot.textContent = "";
+      if (filtered.length) return;
+
+      const suggestions = core.suggestWorks({
+        state,
+        profileId: profile?.id,
+        query: pageState.query,
+        includeTagIds: pageState.includeTagIds,
+        excludeTagIds: pageState.excludeTagIds,
+        limit: 3,
+      });
+      suggestions.forEach((work) => {
+        suggestionsRoot.appendChild(
+          createWorkCard({
+            work,
+            profileId: profile?.id,
+            reason:
+              work.suggestionSharedTags.length
+                ? `近い条件: ${work.suggestionSharedTags
+                    .map((tagId) => tagMap.get(tagId)?.label || tagId)
+                    .join(" / ")}`
+                : work.matchSummary,
+          })
+        );
+      });
     };
 
     const renderResults = () => {
@@ -185,42 +440,27 @@
         excludeTagIds: pageState.excludeTagIds,
         sort: pageState.sort,
         collectionId: pageState.collectionId,
+        matchMode: pageState.matchMode,
       });
 
       resultsRoot.textContent = "";
       filtered.forEach((work) => {
-        const card = document.createElement("a");
-        const tagList = document.createElement("div");
-        const title = document.createElement("h2");
-        const summary = document.createElement("p");
-        const note = document.createElement("p");
-        card.className = "card card--interactive stack";
-        card.href = `/work/?slug=${encodeURIComponent(work.slug)}`;
-        card.dataset.workId = work.id;
-
-        tagList.className = "tag-list";
-        work.primaryTagObjects.forEach((tag) => {
-          const chip = document.createElement("span");
-          chip.className = "tag";
-          chip.textContent = tag.label;
-          tagList.appendChild(chip);
-        });
-
-        title.className = "h2";
-        title.textContent = work.title;
-        summary.className = "muted";
-        summary.textContent = work.shortDescription;
-        note.className = "help";
-        note.textContent = work.publicNote;
-
-        card.append(tagList, title, summary, note);
-        resultsRoot.appendChild(card);
+        resultsRoot.appendChild(
+          createWorkCard({
+            work,
+            profileId: profile?.id,
+            reason: work.matchContext?.summary || work.matchSummary,
+          })
+        );
       });
 
       if (emptyRoot) emptyRoot.hidden = filtered.length !== 0;
+      renderSuggestions(filtered);
+
       if (statusRoot) {
         const fragments = [];
         if (pageState.query) fragments.push(`キーワード: ${pageState.query}`);
+        if (pageState.matchMode === "or") fragments.push("条件: いずれか一致");
         if (pageState.includeTagIds.length) {
           fragments.push(
             `含める: ${pageState.includeTagIds
@@ -249,11 +489,34 @@
       renderResults();
     };
 
+    const renderPresets = () => {
+      if (!presetsRoot) return;
+      presetsRoot.textContent = "";
+      core
+        .getProfileCollections(state, profile?.id, { publicOnly: true })
+        .filter((collection) => core.ensureArray(profile?.featuredCollectionIds).includes(collection.id))
+        .forEach((collection) => {
+          presetsRoot.appendChild(
+            createTagChip({
+              label: collection.title,
+              href: toFinderUrl({ collectionId: collection.id }),
+            })
+          );
+        });
+    };
+
+    const renderTips = () => {
+      if (!tipsRoot) return;
+      fillTextList(tipsRoot, profile?.searchTips, (item) => createText("li", "", item));
+    };
+
     renderTagGroups(includeRoot, "include");
     renderTagGroups(excludeRoot, "exclude");
     readUrlState();
     if (titleRoot && profile?.heroTitle) titleRoot.textContent = profile.heroTitle;
     if (descriptionRoot && profile?.heroDescription) descriptionRoot.textContent = profile.heroDescription;
+    renderTips();
+    renderPresets();
     applyAndRender();
 
     root.addEventListener("click", (event) => {
@@ -283,9 +546,17 @@
         const kind = removeButton.dataset.removeKind;
         const value = removeButton.dataset.removeValue;
         if (kind === "query") pageState.query = "";
+        if (kind === "mode") pageState.matchMode = "and";
         if (kind === "include") pageState.includeTagIds = pageState.includeTagIds.filter((id) => id !== value);
         if (kind === "exclude") pageState.excludeTagIds = pageState.excludeTagIds.filter((id) => id !== value);
         if (kind === "collection") pageState.collectionId = "";
+        applyAndRender();
+        return;
+      }
+
+      const modeButton = event.target.closest("[data-finder-mode]");
+      if (modeButton) {
+        pageState.matchMode = modeButton.dataset.finderMode === "or" ? "or" : "and";
         applyAndRender();
         return;
       }
@@ -299,6 +570,7 @@
           includeTagIds: pageState.includeTagIds,
           excludeTagIds: pageState.excludeTagIds,
           collectionId: pageState.collectionId,
+          matchMode: pageState.matchMode,
         });
       }
     });
@@ -320,6 +592,7 @@
         pageState.excludeTagIds = [];
         pageState.sort = "recommended";
         pageState.collectionId = "";
+        pageState.matchMode = "and";
         applyAndRender();
       });
     }
@@ -377,18 +650,33 @@
     const linksRoot = root.querySelector("[data-work-links]");
     const similarRoot = root.querySelector("[data-work-similar]");
     const collectionRoot = root.querySelector("[data-work-collections]");
+    const creatorRoot = root.querySelector("[data-work-creator]");
+    const formatRoot = root.querySelector("[data-work-format]");
+    const reasonRoot = root.querySelector("[data-work-reason]");
+    const cautionRoot = root.querySelector("[data-work-caution]");
+    const pointsRoot = root.querySelector("[data-work-points]");
 
     if (titleRoot) titleRoot.textContent = work.title;
     if (summaryRoot) summaryRoot.textContent = work.shortDescription;
     if (noteRoot) noteRoot.textContent = work.publicNote;
+    if (creatorRoot) creatorRoot.textContent = work.creator || "サンプル作者";
+    if (formatRoot) formatRoot.textContent = work.format || "作品";
+    if (reasonRoot) reasonRoot.textContent = work.matchSummary || work.publicNote;
+    if (cautionRoot) cautionRoot.textContent = work.cautionNote || "強い注意点はまだ登録されていません。";
+
+    if (pointsRoot) {
+      fillTextList(pointsRoot, work.highlightPoints, (item) => createText("li", "", item));
+    }
+
     if (tagRoot) {
       tagRoot.textContent = "";
       (decoratedWork?.primaryTagObjects || []).forEach((tag) => {
-        const link = document.createElement("a");
-        link.className = "tag";
-        link.href = `/finder/?include=${encodeURIComponent(tag.id)}`;
-        link.textContent = tag.label;
-        tagRoot.appendChild(link);
+        tagRoot.appendChild(
+          createTagChip({
+            label: tag.label,
+            href: toFinderUrl({ includeTagIds: [tag.id] }),
+          })
+        );
       });
     }
 
@@ -411,32 +699,39 @@
       core.ensureArray(work.collectionIds).forEach((collectionId) => {
         const collection = core.getCollection(state, collectionId);
         if (!collection) return;
-        const link = document.createElement("a");
-        link.className = "tag";
-        link.href = `/finder/?collection=${encodeURIComponent(collection.id)}`;
-        link.textContent = collection.title;
-        collectionRoot.appendChild(link);
+        collectionRoot.appendChild(
+          createTagChip({
+            label: collection.title,
+            href: `/collection/?slug=${encodeURIComponent(collection.slug)}`,
+          })
+        );
       });
     }
 
     if (similarRoot) {
       similarRoot.textContent = "";
       core.findSimilarWorks({ state, work, profileId: profile?.id, limit: 3 }).forEach((item) => {
-        const card = document.createElement("a");
-        const title = document.createElement("h3");
-        const summary = document.createElement("p");
-        card.className = "card card--interactive stack";
-        card.href = `/work/?slug=${encodeURIComponent(item.slug)}`;
-        title.textContent = item.title;
-        summary.className = "muted";
-        summary.textContent = item.shortDescription;
-        card.append(title, summary);
-        similarRoot.appendChild(card);
+        const sharedLabels = item.sharedTagIds
+          .map((tagId) => core.getTagMap(state).get(tagId)?.label || tagId)
+          .join(" / ");
+        similarRoot.appendChild(
+          createWorkCard({
+            work: item,
+            profileId: profile?.id,
+            reason: sharedLabels ? `近い条件: ${sharedLabels}` : item.matchSummary,
+          })
+        );
       });
       if (!similarRoot.childElementCount) {
-        similarRoot.appendChild(createStatusLine("類似作品はまだ手動キュレーション前です。"));
+        similarRoot.appendChild(createText("p", "help", "類似作品はまだ手動キュレーション前です。"));
       }
     }
+
+    setMeta({
+      title: `${work.title} | ${profile?.name || "作品ファインダー"}`,
+      description: work.shortDescription || work.publicNote,
+      canonical: `/work/?slug=${encodeURIComponent(work.slug)}`,
+    });
 
     store.logEvent("detail_view", {
       profileId: profile?.id || "",
@@ -462,53 +757,142 @@
     const state = store.loadState();
     const profile = core.getActiveProfile(state);
     const listRoot = root.querySelector("[data-collections-list]");
+    const introRoot = root.querySelector("[data-collections-intro]");
     if (!listRoot) return;
+
+    if (introRoot && profile?.valueProps) {
+      fillTextList(introRoot, profile.valueProps, (item) => createText("li", "", item));
+    }
 
     listRoot.textContent = "";
     core
-      .ensureArray(state.collections)
-      .filter(
-        (collection) =>
-          collection.isPublic && core.ensureArray(collection.siteProfileIds).includes(profile?.id)
-      )
+      .getProfileCollections(state, profile?.id, { publicOnly: true })
+      .map((collection) => core.decorateCollection(collection, state))
       .forEach((collection) => {
-        const card = document.createElement("div");
+        const card = document.createElement("a");
         const tagList = document.createElement("div");
-        const title = document.createElement("h2");
-        const description = document.createElement("p");
-        const actions = document.createElement("div");
-        const finderLink = document.createElement("a");
-        const note = document.createElement("p");
-        card.className = "card stack";
+        card.className = "card card--interactive stack";
+        card.href = `/collection/?slug=${encodeURIComponent(collection.slug)}`;
         tagList.className = "tag-list";
-        core.ensureArray(collection.tagIds).forEach((tagId) => {
-          const tag = core.getTagMap(state).get(tagId);
-          if (!tag || !tag.isPublic) return;
-          const badge = document.createElement("span");
-          badge.className = "tag";
-          badge.textContent = tag.label;
-          tagList.appendChild(badge);
+
+        collection.tagObjects.slice(0, 4).forEach((tag) => {
+          tagList.appendChild(createTagChip({ label: tag.label }));
         });
-        title.className = "h2";
-        title.textContent = collection.title;
-        description.className = "muted";
-        description.textContent = collection.description;
-        note.className = "help";
-        note.textContent = `${core.ensureArray(collection.workIds).length}件を特集内で管理`;
-        actions.className = "cluster";
-        finderLink.className = "btn btn--secondary";
-        finderLink.href = `/finder/?collection=${encodeURIComponent(collection.id)}`;
-        finderLink.textContent = "この特集で探す";
-        actions.appendChild(finderLink);
-        card.append(tagList, title, description, note, actions);
+
+        card.append(
+          createText("p", "kicker", "Collection"),
+          createText("h2", "h2", collection.title),
+          createText("p", "muted", collection.description),
+          tagList,
+          createText("p", "help", `${collection.workObjects.length}件を起点に探索`),
+        );
         listRoot.appendChild(card);
       });
   };
 
+  const renderCollectionPage = () => {
+    const root = document.querySelector("[data-collection-page]");
+    if (!root) return;
+
+    const params = new URLSearchParams(window.location.search);
+    const slug = params.get("slug") || "";
+    const state = store.loadState();
+    const profile = core.getActiveProfile(state);
+    const collection = core
+      .getProfileCollections(state, profile?.id, { publicOnly: true })
+      .find((item) => item.slug === slug);
+
+    const notFound = root.querySelector("[data-collection-not-found]");
+    const content = root.querySelector("[data-collection-content]");
+    if (!collection) {
+      if (notFound) notFound.hidden = false;
+      if (content) content.hidden = true;
+      return;
+    }
+
+    const decorated = core.decorateCollection(collection, state);
+    const works = core.getCollectionWorks({
+      state,
+      profileId: profile?.id,
+      collectionId: collection.id,
+      sort: "recommended",
+    });
+
+    const setText = (selector, value) => {
+      const element = root.querySelector(selector);
+      if (element && value) element.textContent = value;
+    };
+
+    setText("[data-collection-title]", decorated.title);
+    setText("[data-collection-description]", decorated.description);
+    setText("[data-collection-lead]", decorated.lead || decorated.description);
+
+    const tagsRoot = root.querySelector("[data-collection-tags]");
+    if (tagsRoot) {
+      tagsRoot.textContent = "";
+      decorated.tagObjects.forEach((tag) => {
+        tagsRoot.appendChild(
+          createTagChip({
+            label: tag.label,
+            href: toFinderUrl({ includeTagIds: [tag.id], collectionId: collection.id }),
+          })
+        );
+      });
+    }
+
+    fillTextList(root.querySelector("[data-collection-points]"), decorated.introPoints, (item) =>
+      createText("li", "", item)
+    );
+
+    const worksRoot = root.querySelector("[data-collection-works]");
+    if (worksRoot) {
+      worksRoot.textContent = "";
+      works.forEach((work) => {
+        worksRoot.appendChild(
+          createWorkCard({
+            work,
+            profileId: profile?.id,
+            reason: work.matchSummary || work.publicNote,
+          })
+        );
+      });
+    }
+
+    const relatedRoot = root.querySelector("[data-collection-related]");
+    if (relatedRoot) {
+      relatedRoot.textContent = "";
+      core
+        .getProfileCollections(state, profile?.id, { publicOnly: true })
+        .filter((item) => item.id !== collection.id)
+        .slice(0, 4)
+        .forEach((item) => {
+          relatedRoot.appendChild(
+            createTagChip({
+              label: item.title,
+              href: `/collection/?slug=${encodeURIComponent(item.slug)}`,
+            })
+          );
+        });
+    }
+
+    const finderLink = root.querySelector("[data-collection-finder-link]");
+    if (finderLink) {
+      finderLink.href = toFinderUrl({ collectionId: collection.id });
+    }
+
+    setMeta({
+      title: `${collection.title} | ${profile?.name || "作品ファインダー"}`,
+      description: collection.description,
+      canonical: `/collection/?slug=${encodeURIComponent(collection.slug)}`,
+    });
+  };
+
   const init = () => {
+    renderHomePage();
     renderFinderPage();
     renderWorkPage();
     renderCollectionsPage();
+    renderCollectionPage();
   };
 
   if (typeof document !== "undefined") {

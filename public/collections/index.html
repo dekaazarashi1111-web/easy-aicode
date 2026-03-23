@@ -3,39 +3,39 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>特集一覧 | Media Canvas</title>
+  <title>特集一覧 | ケモホモ作品ファインダー</title>
   <meta
     name="description"
-    content="ニッチな条件から作品を見つけやすくするための特集一覧です。固定の導線として使えるコレクションを管理できます。"
+    content="ケモホモ作品を探しやすくするための固定特集一覧です。初見向け、TF、除外条件、媒体別などの入口を用意しています。"
   />
   <link rel="canonical" href="/collections/" />
   <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
   <link rel="apple-touch-icon" href="/assets/logo.png" />
   <meta name="robots" content="index,follow,max-image-preview:large" />
   <meta name="author" content="Media Canvas" />
-  <meta name="theme-color" content="#6366f1" />
+  <meta name="theme-color" content="#0f766e" />
   <meta property="og:site_name" content="Media Canvas" />
-  <meta property="og:title" content="特集一覧 | Media Canvas" />
+  <meta property="og:title" content="特集一覧 | ケモホモ作品ファインダー" />
   <meta
     property="og:description"
-    content="ニッチな条件から作品を見つけやすくするための特集一覧です。固定の導線として使えるコレクションを管理できます。"
+    content="検索結果ではなく、価値ある固定導線として使う特集ページ一覧です。"
   />
   <meta property="og:type" content="website" />
   <meta property="og:url" content="/collections/" />
   <meta property="og:locale" content="ja_JP" />
   <meta property="og:image" content="/assets/og-default.png" />
   <meta property="og:image:secure_url" content="/assets/og-default.png" />
-  <meta property="og:image:alt" content="Media Canvas 特集一覧のOG画像" />
+  <meta property="og:image:alt" content="特集一覧ページのOG画像" />
   <meta property="og:image:width" content="1200" />
   <meta property="og:image:height" content="630" />
   <meta name="twitter:card" content="summary_large_image" />
-  <meta name="twitter:title" content="特集一覧 | Media Canvas" />
+  <meta name="twitter:title" content="特集一覧 | ケモホモ作品ファインダー" />
   <meta
     name="twitter:description"
-    content="ニッチな条件から作品を見つけやすくするための特集一覧です。固定の導線として使えるコレクションを管理できます。"
+    content="初見向け、TF 入口、除外条件入口などの固定特集一覧です。"
   />
   <meta name="twitter:image" content="/assets/og-default.png" />
-  <meta name="twitter:image:alt" content="Media Canvas 特集一覧のOG画像" />
+  <meta name="twitter:image:alt" content="特集一覧ページのOG画像" />
   <link rel="stylesheet" href="/style.css" />
   <script src="/assets/site-config.js"></script>
   <script src="/assets/finder-seed.js"></script>
@@ -49,7 +49,7 @@
 
 <nav class="nav">
   <div class="container nav__inner">
-    <a class="nav__brand" href="/">Media Canvas</a>
+    <a class="nav__brand" data-site-brand href="/">Media Canvas</a>
 
     <div class="nav__links">
       <a class="nav__link" href="/">ホーム</a>
@@ -66,21 +66,17 @@
     <div class="container stack stack--lg" data-collections-page>
       <div class="hero-grid">
         <div class="hero-panel stack">
-          <p class="kicker">特集一覧</p>
-          <h1 class="h1">固定導線として使うコレクション</h1>
+          <p class="kicker">Collections</p>
+          <h1 class="h1">固定導線として使う特集一覧</h1>
           <p class="lead">
-            条件検索だけでは拾いにくい入り口として、テーマ別の特集ページを並べるための土台です。各特集は検索条件URLへ接続できます。
+            検索結果ではなく、SNS や初見導線、0件検索の受け皿として使う価値ページをここに並べます。
           </p>
         </div>
 
         <div class="hero-panel hero-panel--accent stack">
-          <p class="kicker">Collections</p>
-          <h2 class="h2">検索結果ページではなく、価値のある固定導線として使う</h2>
-          <ul class="list list--compact">
-            <li>迷いやすい条件を特集単位で先回りする</li>
-            <li>0件検索の受け皿を作る</li>
-            <li>検索条件URLと組み合わせて導線を最適化する</li>
-          </ul>
+          <p class="kicker">Why Collections</p>
+          <h2 class="h2">検索に詰まった時の受け皿を先に作る</h2>
+          <ul class="list list--compact" data-collections-intro></ul>
         </div>
       </div>
 
@@ -91,13 +87,13 @@
 
 <footer class="footer">
   <div class="container footer__inner">
-    <p class="muted">© Media Canvas</p>
+    <p class="muted" data-site-copyright>© Media Canvas</p>
     <div class="footer__links">
       <a href="/">ホーム</a>
       <a href="/finder/">作品検索</a>
       <a href="/collections/">特集</a>
       <a href="/articles/">ガイド</a>
-      <a href="/admin/">管理画面</a>
+      <a href="/contact/">お問い合わせ</a>
       <a href="/privacy.html">プライバシー</a>
       <a href="/disclaimer.html">免責事項</a>
     </div>

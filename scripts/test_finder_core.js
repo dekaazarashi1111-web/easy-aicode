@@ -17,47 +17,84 @@ assert.deepEqual(
   core
     .filterWorks({
       state,
-      profileId: "soft-romance-lab",
-      includeTagIds: ["gentle", "no-ntr"],
+      profileId: "kemohomo-main",
+      includeTagIds: ["osu-kemo", "no-ntr"],
       sort: "recommended",
     })
     .map((work) => work.slug),
-  ["quiet-library-midnight", "weekend-atelier-warmth"],
-  "include filters should require all selected tags"
+  ["garage-bond-at-midnight", "rooftop-fence-promise"],
+  "include filters should require all selected tags in AND mode"
 );
 
 assert.deepEqual(
   core
     .filterWorks({
       state,
-      profileId: "soft-romance-lab",
-      excludeTagIds: ["older-heroine"],
+      profileId: "kemohomo-main",
+      includeTagIds: ["format-cg", "tf-present"],
+      matchMode: "or",
       sort: "recommended",
     })
     .map((work) => work.slug),
-  ["rainy-platform-reunion"],
+  [
+    "pocket-shift-memo",
+    "rain-hoodie-shelter",
+    "morning-workshop-shift",
+    "harbor-sketchbook",
+  ],
+  "OR mode should return works matching any selected include tag"
+);
+
+assert.deepEqual(
+  core
+    .filterWorks({
+      state,
+      profileId: "kemohomo-main",
+      excludeTagIds: ["osu-kemo"],
+      sort: "recommended",
+    })
+    .map((work) => work.slug),
+  [
+    "pocket-shift-memo",
+    "rain-hoodie-shelter",
+    "morning-workshop-shift",
+    "harbor-sketchbook",
+  ],
   "exclude filters should remove works containing excluded tags"
 );
 
 assert.deepEqual(
   core
-    .filterWorks({
+    .getCollectionWorks({
       state,
-      profileId: "soft-romance-lab",
-      collectionId: "late-night-gentle",
+      profileId: "kemohomo-main",
+      collectionId: "start-here",
       sort: "recommended",
     })
     .map((work) => work.slug),
-  ["quiet-library-midnight", "rainy-platform-reunion"],
+  ["garage-bond-at-midnight", "pocket-shift-memo", "rain-hoodie-shelter"],
   "collection filter should only return collection works"
 );
 
 store.upsertTag({
-  id: "comfort-food",
-  label: "安心して読める",
-  groupId: "mood",
+  id: "aftercare-clear",
+  label: "アフターケアあり",
+  groupId: "relationship",
   isPublic: true,
-  synonyms: ["安心", "穏やか"],
+  synonyms: ["ケアあり", "安心感"],
+});
+
+store.upsertCollection({
+  id: "test-collection",
+  title: "テスト特集",
+  slug: "test-collection",
+  description: "テスト用の特集です。",
+  lead: "保存の確認用。",
+  introPoints: ["一点目", "二点目"],
+  siteProfileIds: ["kemohomo-main"],
+  tagIds: ["aftercare-clear"],
+  workIds: ["work-garage-bond"],
+  isPublic: true,
 });
 
 store.upsertWork({
@@ -65,11 +102,15 @@ store.upsertWork({
   title: "テスト登録作品",
   slug: "test-seed-work",
   status: "draft",
-  siteProfileIds: ["soft-romance-lab"],
-  tagIds: ["comfort-food"],
-  primaryTagIds: ["comfort-food"],
+  creator: "テスト工房",
+  format: "漫画",
+  siteProfileIds: ["kemohomo-main"],
+  tagIds: ["aftercare-clear"],
+  primaryTagIds: ["aftercare-clear"],
+  collectionIds: ["test-collection"],
   shortDescription: "管理画面保存のテスト作品です。",
   publicNote: "まだ非公開です。",
+  matchSummary: "安心感タグの動作確認用。",
   internalNote: "後で公開へ切り替える想定。",
   priority: 99,
   releasedAt: "2026-03-23",
@@ -90,38 +131,56 @@ assert.equal(
   core
     .filterWorks({
       state,
-      profileId: "soft-romance-lab",
-      includeTagIds: ["comfort-food", "no-ntr"],
+      profileId: "kemohomo-main",
+      includeTagIds: ["aftercare-clear", "no-ntr"],
     })
     .some((work) => work.slug === "test-seed-work"),
   true,
   "saved work should become searchable after bulk publish and tag add"
 );
 
+assert.equal(
+  core.getCollection(state, "test-collection")?.title,
+  "テスト特集",
+  "saved collection should be retrievable"
+);
+
 store.logEvent("search", {
-  profileId: "soft-romance-lab",
-  query: "静かめ",
-  includeTagIds: ["calm"],
-  excludeTagIds: ["older-heroine"],
+  profileId: "kemohomo-main",
+  query: "オスケモ寄り",
+  includeTagIds: ["osu-kemo"],
+  excludeTagIds: ["low-gore"],
+  matchMode: "and",
   resultCount: 1,
 });
 
+store.logEvent("search", {
+  profileId: "kemohomo-main",
+  query: "変化",
+  includeTagIds: ["tf-present"],
+  excludeTagIds: ["mind-stable"],
+  matchMode: "and",
+  resultCount: 0,
+});
+
 store.logEvent("detail_view", {
-  profileId: "soft-romance-lab",
-  workId: "work-quiet-library",
+  profileId: "kemohomo-main",
+  workId: "work-garage-bond",
 });
 
 store.logEvent("outbound_click", {
-  profileId: "soft-romance-lab",
-  workId: "work-quiet-library",
-  href: "https://example.com/dmm/quiet-library-midnight",
+  profileId: "kemohomo-main",
+  workId: "work-garage-bond",
+  href: "https://example.com/dmm/garage-bond-at-midnight",
 });
 
 state = store.loadState();
 
 const summary = core.aggregateLogs(state);
-assert.equal(summary.counts.search >= 1, true, "search log should be counted");
+assert.equal(summary.counts.search >= 2, true, "search log should be counted");
+assert.equal(summary.counts.zeroSearch >= 1, true, "zero-result search should be counted");
 assert.equal(summary.counts.detailView >= 1, true, "detail view log should be counted");
 assert.equal(summary.counts.outboundClick >= 1, true, "outbound click log should be counted");
+assert.equal(summary.topZeroSearches.length >= 1, true, "zero-result searches should be aggregated");
 
 console.log("[finder-core] ok");

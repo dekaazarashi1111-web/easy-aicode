@@ -41,11 +41,12 @@
     return ensureArray(state?.siteProfiles).find((profile) => profile.id === profileId) || null;
   };
 
-  const getTagMap = (state) =>
-    new Map(ensureArray(state?.tags).map((tag) => [tag.id, tag]));
+  const getTagMap = (state) => new Map(ensureArray(state?.tags).map((tag) => [tag.id, tag]));
 
-  const getWorkMap = (state) =>
-    new Map(ensureArray(state?.works).map((work) => [work.id, work]));
+  const getWorkMap = (state) => new Map(ensureArray(state?.works).map((work) => [work.id, work]));
+
+  const getCollectionMap = (state) =>
+    new Map(ensureArray(state?.collections).map((collection) => [collection.id, collection]));
 
   const getCollection = (state, collectionIdOrSlug) =>
     ensureArray(state?.collections).find(
@@ -60,6 +61,17 @@
       const workProfiles = ensureArray(work.siteProfileIds);
       if (!workProfiles.includes(profile.id)) return false;
       if (publicOnly) return work.status === "published";
+      return true;
+    });
+  };
+
+  const getProfileCollections = (state, profileId, { publicOnly = false } = {}) => {
+    const profile = getProfile(state, profileId);
+    if (!profile) return [];
+    return ensureArray(state?.collections).filter((collection) => {
+      const collectionProfiles = ensureArray(collection.siteProfileIds);
+      if (collectionProfiles.length && !collectionProfiles.includes(profile.id)) return false;
+      if (publicOnly) return collection.isPublic !== false;
       return true;
     });
   };
@@ -97,6 +109,7 @@
       orderedGroups.push({
         id: groupId,
         label: groupId,
+        description: "",
         tags: groupTagsValue.slice().sort((left, right) =>
           left.label.localeCompare(right.label, "ja")
         ),
@@ -113,11 +126,17 @@
     const tagLabels = tags.map((tag) => tag.label);
     const tagSynonyms = tags.flatMap((tag) => ensureArray(tag.synonyms));
     const linkPartners = ensureArray(work.externalLinks).map((link) => link.partner);
+    const highlightPoints = ensureArray(work.highlightPoints);
     return normalizeText(
       [
         work.title,
+        work.creator,
+        work.format,
         work.shortDescription,
         work.publicNote,
+        work.matchSummary,
+        work.cautionNote,
+        highlightPoints.join(" "),
         tagLabels.join(" "),
         tagSynonyms.join(" "),
         linkPartners.join(" "),
@@ -127,17 +146,36 @@
 
   const decorateWork = (work, state) => {
     const tagMap = getTagMap(state);
+    const collectionMap = getCollectionMap(state);
     const tagObjects = ensureArray(work.tagIds)
       .map((tagId) => tagMap.get(tagId))
       .filter(Boolean);
     const primaryTagObjects = ensureArray(work.primaryTagIds)
       .map((tagId) => tagMap.get(tagId))
       .filter(Boolean);
+    const collectionObjects = ensureArray(work.collectionIds)
+      .map((collectionId) => collectionMap.get(collectionId))
+      .filter(Boolean);
     return {
       ...work,
       tagObjects,
       primaryTagObjects: primaryTagObjects.length ? primaryTagObjects : tagObjects.slice(0, 4),
+      collectionObjects,
       _searchText: getSearchText(work, tagMap),
+    };
+  };
+
+  const decorateCollection = (collection, state) => {
+    const tagMap = getTagMap(state);
+    const workMap = getWorkMap(state);
+    return {
+      ...collection,
+      tagObjects: ensureArray(collection.tagIds)
+        .map((tagId) => tagMap.get(tagId))
+        .filter(Boolean),
+      workObjects: ensureArray(collection.workIds)
+        .map((workId) => workMap.get(workId))
+        .filter(Boolean),
     };
   };
 
@@ -155,6 +193,46 @@
       left.title.localeCompare(right.title, "ja");
   };
 
+  const matchesTokens = (searchText, tokens, matchMode) => {
+    if (!tokens.length) return true;
+    if (matchMode === "or") {
+      return tokens.some((token) => searchText.includes(token));
+    }
+    return tokens.every((token) => searchText.includes(token));
+  };
+
+  const matchesIncludeTags = (tagIds, includeIds, matchMode) => {
+    if (!includeIds.length) return true;
+    const tagSet = new Set(tagIds);
+    if (matchMode === "or") {
+      return includeIds.some((tagId) => tagSet.has(tagId));
+    }
+    return includeIds.every((tagId) => tagSet.has(tagId));
+  };
+
+  const getMatchContext = ({ work, state, query = "", includeTagIds = [] }) => {
+    const tagMap = getTagMap(state);
+    const tokens = splitTokens(query);
+    const tokenMatches = tokens.filter((token) => work._searchText.includes(token));
+    const includeLabels = unique(includeTagIds)
+      .map((tagId) => tagMap.get(tagId)?.label)
+      .filter(Boolean);
+    const matchedIncludeLabels = unique(includeTagIds)
+      .filter((tagId) => ensureArray(work.tagIds).includes(tagId))
+      .map((tagId) => tagMap.get(tagId)?.label)
+      .filter(Boolean);
+    return {
+      tokenMatches,
+      includeLabels,
+      matchedIncludeLabels,
+      summary:
+        work.matchSummary ||
+        (matchedIncludeLabels.length
+          ? `${matchedIncludeLabels.join(" / ")} で探している人向け。`
+          : work.publicNote || work.shortDescription),
+    };
+  };
+
   const filterWorks = ({
     state,
     profileId,
@@ -163,6 +241,7 @@
     excludeTagIds = [],
     sort = "recommended",
     collectionId = "",
+    matchMode = "and",
   }) => {
     const collection = collectionId ? getCollection(state, collectionId) : null;
     const includeIds = unique(includeTagIds);
@@ -174,16 +253,64 @@
 
     return works
       .filter((work) => {
-        const tagIds = new Set(ensureArray(work.tagIds));
+        const tagIds = ensureArray(work.tagIds);
         if (collection && !ensureArray(collection.workIds).includes(work.id)) return false;
-        if (queryTokens.length && !queryTokens.every((token) => work._searchText.includes(token))) {
-          return false;
-        }
-        if (includeIds.length && !includeIds.every((tagId) => tagIds.has(tagId))) return false;
-        if (excludeIds.length && excludeIds.some((tagId) => tagIds.has(tagId))) return false;
+        if (!matchesTokens(work._searchText, queryTokens, matchMode)) return false;
+        if (!matchesIncludeTags(tagIds, includeIds, matchMode)) return false;
+        if (excludeIds.length && excludeIds.some((tagId) => tagIds.includes(tagId))) return false;
         return true;
       })
+      .map((work) => ({
+        ...work,
+        matchContext: getMatchContext({ work, state, query, includeTagIds: includeIds }),
+      }))
       .sort((left, right) => compareBySort(left, right, sort));
+  };
+
+  const getCollectionWorks = ({ state, profileId, collectionId, sort = "recommended" }) => {
+    const collection = getCollection(state, collectionId);
+    if (!collection) return [];
+    return filterWorks({
+      state,
+      profileId,
+      sort,
+      collectionId: collection.id,
+    });
+  };
+
+  const suggestWorks = ({
+    state,
+    profileId,
+    query = "",
+    includeTagIds = [],
+    excludeTagIds = [],
+    limit = 3,
+  }) => {
+    const includeIds = unique(includeTagIds);
+    const excludeIds = new Set(unique(excludeTagIds));
+    const queryTokens = splitTokens(query);
+
+    return getProfileWorks(state, profileId, { publicOnly: true })
+      .map((work) => decorateWork(work, state))
+      .filter((work) => !ensureArray(work.tagIds).some((tagId) => excludeIds.has(tagId)))
+      .map((work) => {
+        const sharedIncludeIds = includeIds.filter((tagId) => ensureArray(work.tagIds).includes(tagId));
+        const tokenMatches = queryTokens.filter((token) => work._searchText.includes(token));
+        return {
+          ...work,
+          suggestionScore: sharedIncludeIds.length * 2 + tokenMatches.length,
+          suggestionSharedTags: sharedIncludeIds,
+          suggestionTokenMatches: tokenMatches,
+        };
+      })
+      .filter((work) => work.suggestionScore > 0)
+      .sort((left, right) => {
+        if (right.suggestionScore !== left.suggestionScore) {
+          return right.suggestionScore - left.suggestionScore;
+        }
+        return compareBySort(left, right, "recommended");
+      })
+      .slice(0, limit);
   };
 
   const findSimilarWorks = ({ state, work, profileId, limit = 3 }) => {
@@ -255,6 +382,7 @@
       outboundClick: 0,
     };
     const searchBuckets = new Map();
+    const zeroSearchBuckets = new Map();
     const tagBuckets = new Map();
 
     events.forEach((event) => {
@@ -265,16 +393,21 @@
           query: event.query || "",
           includeTagIds: ensureArray(event.includeTagIds).slice().sort(),
           excludeTagIds: ensureArray(event.excludeTagIds).slice().sort(),
+          matchMode: event.matchMode || "and",
         });
         const current = searchBuckets.get(key) || {
           query: event.query || "",
           includeTagIds: ensureArray(event.includeTagIds),
           excludeTagIds: ensureArray(event.excludeTagIds),
+          matchMode: event.matchMode || "and",
           count: 0,
           zeroCount: 0,
         };
         current.count += 1;
-        if (event.resultCount === 0) current.zeroCount += 1;
+        if (event.resultCount === 0) {
+          current.zeroCount += 1;
+          zeroSearchBuckets.set(key, current);
+        }
         searchBuckets.set(key, current);
 
         ensureArray(event.includeTagIds).forEach((tagId) => {
@@ -286,17 +419,24 @@
       if (event.kind === "outbound_click") counts.outboundClick += 1;
     });
 
+    const mapSearchItem = (item) => ({
+      ...item,
+      includeLabels: item.includeTagIds.map((tagId) => tagMap.get(tagId)?.label || tagId),
+      excludeLabels: item.excludeTagIds.map((tagId) => tagMap.get(tagId)?.label || tagId),
+    });
+
     const topSearches = Array.from(searchBuckets.values())
       .sort((left, right) => {
         if (right.count !== left.count) return right.count - left.count;
         return left.query.localeCompare(right.query, "ja");
       })
       .slice(0, 5)
-      .map((item) => ({
-        ...item,
-        includeLabels: item.includeTagIds.map((tagId) => tagMap.get(tagId)?.label || tagId),
-        excludeLabels: item.excludeTagIds.map((tagId) => tagMap.get(tagId)?.label || tagId),
-      }));
+      .map(mapSearchItem);
+
+    const topZeroSearches = Array.from(zeroSearchBuckets.values())
+      .sort((left, right) => right.zeroCount - left.zeroCount)
+      .slice(0, 5)
+      .map(mapSearchItem);
 
     const topTags = Array.from(tagBuckets.entries())
       .map(([tagId, count]) => ({
@@ -317,6 +457,7 @@
     return {
       counts,
       topSearches,
+      topZeroSearches,
       topTags,
       recentEvents,
     };
@@ -324,21 +465,26 @@
 
   return {
     cloneData,
+    decorateCollection,
+    detectDuplicateWorks,
     ensureArray,
-    getActiveProfile,
-    getCollection,
-    getProfile,
-    getProfileWorks,
-    getVisibleTags,
-    getTagMap,
-    groupTags,
     filterWorks,
     findSimilarWorks,
-    detectDuplicateWorks,
+    getActiveProfile,
+    getCollection,
+    getCollectionMap,
+    getCollectionWorks,
+    getProfile,
+    getProfileCollections,
+    getProfileWorks,
+    getTagMap,
+    getVisibleTags,
+    groupTags,
     aggregateLogs,
     normalizeText,
     slugify,
     splitTokens,
+    suggestWorks,
     unique,
   };
 });

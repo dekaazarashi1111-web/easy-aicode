@@ -168,9 +168,16 @@
         siteProfileIds: core.unique(input.siteProfileIds || existing?.siteProfileIds || []),
         status: input.status || existing?.status || "draft",
         title: (input.title || existing?.title || "").trim(),
+        creator: (input.creator || existing?.creator || "").trim(),
+        format: (input.format || existing?.format || "").trim(),
         shortDescription: (input.shortDescription || existing?.shortDescription || "").trim(),
         publicNote: (input.publicNote || existing?.publicNote || "").trim(),
         internalNote: (input.internalNote || existing?.internalNote || "").trim(),
+        matchSummary: (input.matchSummary || existing?.matchSummary || "").trim(),
+        cautionNote: (input.cautionNote || existing?.cautionNote || "").trim(),
+        highlightPoints: core.unique(
+          core.ensureArray(input.highlightPoints || existing?.highlightPoints || [])
+        ),
         tagIds: core.unique(input.tagIds || existing?.tagIds || []),
         primaryTagIds: core.unique(input.primaryTagIds || existing?.primaryTagIds || []),
         collectionIds: core.unique(input.collectionIds || existing?.collectionIds || []),
@@ -187,6 +194,40 @@
       } else {
         state.works[index] = { ...state.works[index], ...nextWork };
       }
+    });
+
+  const upsertCollection = (input) =>
+    mutate((state) => {
+      const existing = state.collections.find((collection) => collection.id === input.id);
+      const nextCollection = {
+        id: existing?.id || input.id || core.slugify(input.slug || input.title || "collection"),
+        slug: (input.slug || existing?.slug || core.slugify(input.title || "collection")).trim(),
+        title: (input.title || existing?.title || "").trim(),
+        description: (input.description || existing?.description || "").trim(),
+        lead: (input.lead || existing?.lead || "").trim(),
+        introPoints: core.unique(
+          core.ensureArray(input.introPoints || existing?.introPoints || [])
+        ),
+        siteProfileIds: core.unique(input.siteProfileIds || existing?.siteProfileIds || []),
+        tagIds: core.unique(input.tagIds || existing?.tagIds || []),
+        workIds: core.unique(input.workIds || existing?.workIds || []),
+        isPublic: input.isPublic !== false,
+      };
+      const index = state.collections.findIndex((collection) => collection.id === nextCollection.id);
+      if (index === -1) {
+        state.collections.push(nextCollection);
+      } else {
+        state.collections[index] = { ...state.collections[index], ...nextCollection };
+      }
+    });
+
+  const deleteCollection = (collectionId) =>
+    mutate((state) => {
+      state.collections = state.collections.filter((collection) => collection.id !== collectionId);
+      state.works = state.works.map((work) => ({
+        ...work,
+        collectionIds: core.ensureArray(work.collectionIds).filter((value) => value !== collectionId),
+      }));
     });
 
   const bulkUpdateWorks = ({ ids = [], status = "", addTagId = "", removeTagId = "" }) =>
@@ -228,17 +269,19 @@
 
   return {
     STORAGE_KEY,
-    loadState,
-    saveState,
-    resetState,
+    bulkUpdateWorks,
+    clearLogs,
+    deleteCollection,
+    deleteTag,
     exportState,
+    loadState,
+    logEvent,
+    resetState,
+    saveState,
     setActiveProfile,
+    upsertCollection,
     upsertSiteProfile,
     upsertTag,
-    deleteTag,
     upsertWork,
-    bulkUpdateWorks,
-    logEvent,
-    clearLogs,
   };
 });

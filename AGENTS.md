@@ -8,6 +8,7 @@
 - `/finder/` : `public/finder/index.html`
 - `/work/` : `public/work/index.html`
 - `/collections/` : `public/collections/index.html`
+- `/collection/` : `public/collection/index.html`
 - `/admin/` : `public/admin/index.html`
 - `/articles/` : `public/articles/index.html`
 - `/articles/comparison-template/` : `public/articles/comparison-template/index.html`
@@ -24,6 +25,7 @@
 
 ## 方針
 - すべて日本語で記述します。
+- ケモホモ作品ファインダーとしての方針メモは `docs/kemohomo-finder-strategy.md` を参照します。
 - 文言は汎用的な土台として保ち、公開前にブランド名・問い合わせ先・提携先・ポリシーを差し替えやすい状態を優先します。
 - 公開フロントと管理画面は、作品 / タグ / コレクション / サイトプロファイル / ログの共通データ構造を意識して編集します。
 - ユーザーから停止指示がない限り、作業完了ごとに変更を GitHub へ同期します。
