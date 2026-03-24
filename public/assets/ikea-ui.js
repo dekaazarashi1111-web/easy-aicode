@@ -853,7 +853,6 @@
       "ikea-product-card__detail",
       work.highlightPoints?.[0] || work.shortDescription || work.publicNote || ""
     );
-    const price = createElement("p", "ikea-product-card__price", meta.highlightLabel);
     const metaRow = createElement("div", "ikea-product-card__metaRow");
     const swatchLabel = createElement("p", "ikea-product-card__swatchLabel", "近い条件や次の起点");
     const affinityLinks = createAffinityLinks(meta.relatedLinks);
@@ -892,7 +891,7 @@
     }
 
     if (meta.matchLabels.length) body.appendChild(createMatchTagList(meta.matchLabels));
-    body.append(title, subtitle, detail, price, metaRow);
+    body.append(title, subtitle, detail, metaRow);
     if (reason) body.appendChild(createElement("p", "ikea-product-card__reason", reason));
     const startLink = createElement("a", "ikea-product-card__tool", "検索の起点に使う");
     startLink.href = meta.startHref;
