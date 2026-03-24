@@ -7963,6 +7963,233 @@ body {
   font-size: 1.06rem;
 }
 
+.ikea-quick-filters {
+  display: grid;
+  gap: 16px;
+}
+
+.ikea-quick-filters__header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.ikea-quick-filters__heading {
+  display: grid;
+  gap: 4px;
+}
+
+.ikea-quick-filters__heading h2 {
+  margin: 0;
+}
+
+.ikea-quick-filters__eyebrow {
+  margin: 0;
+  color: var(--ikea-muted);
+  font-size: 0.78rem;
+  font-weight: 800;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.ikea-quick-filters__clear {
+  min-height: 34px;
+  padding: 0 12px;
+  border: 1px solid var(--ikea-border);
+  border-radius: 999px;
+  background: #fff;
+  color: var(--ikea-text);
+  font: inherit;
+  font-size: 0.82rem;
+  font-weight: 800;
+  cursor: pointer;
+}
+
+.ikea-quick-filters__summary {
+  margin: 0;
+  color: var(--ikea-muted);
+  font-size: 0.88rem;
+  line-height: 1.6;
+}
+
+.ikea-quick-character-card {
+  display: grid;
+  gap: 14px;
+  padding: 16px;
+  border: 1px solid #ececec;
+  border-radius: 18px;
+  background: #fbfbfb;
+}
+
+.ikea-quick-character-card__header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.ikea-quick-character-card__title {
+  font-size: 0.98rem;
+}
+
+.ikea-quick-character-card__meta {
+  color: var(--ikea-muted);
+  font-size: 0.74rem;
+  line-height: 1.5;
+  text-align: right;
+}
+
+.ikea-quick-filter-field {
+  display: grid;
+  gap: 8px;
+}
+
+.ikea-quick-filter-field__labelRow {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+}
+
+.ikea-quick-filter-field__label {
+  font-size: 0.92rem;
+}
+
+.ikea-quick-filter-field__link {
+  color: var(--ikea-blue);
+  font-size: 0.8rem;
+  font-weight: 800;
+  text-decoration: none;
+}
+
+.ikea-quick-filter-chipRow {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.ikea-quick-filter-chip {
+  min-height: 36px;
+  padding: 0 12px;
+  border: 1px solid var(--ikea-border);
+  border-radius: 999px;
+  background: #fff;
+  color: var(--ikea-text);
+  font: inherit;
+  font-size: 0.83rem;
+  font-weight: 800;
+  cursor: pointer;
+}
+
+.ikea-quick-filter-chip[aria-pressed="true"] {
+  border-color: var(--ikea-blue);
+  background: rgba(0, 88, 163, 0.08);
+  color: var(--ikea-blue);
+}
+
+.ikea-quick-filter-chip.plp-filter-chip--exclude[aria-pressed="true"] {
+  border-color: #8d2c27;
+  background: #fff1f0;
+  color: #8d2c27;
+}
+
+.ikea-quick-filter-bodyGrid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 8px;
+}
+
+.ikea-quick-filter-bodyButton {
+  display: grid;
+  gap: 8px;
+  padding: 10px;
+  border: 1px solid var(--ikea-border);
+  border-radius: 16px;
+  background: #fff;
+  color: var(--ikea-text);
+  font: inherit;
+  cursor: pointer;
+}
+
+.ikea-quick-filter-bodyButton[aria-pressed="true"] {
+  border-color: var(--ikea-blue);
+  background: rgba(0, 88, 163, 0.08);
+  color: var(--ikea-blue);
+}
+
+.ikea-quick-filter-bodyButton__image {
+  display: grid;
+  place-items: center;
+  aspect-ratio: 1 / 1;
+  border-radius: 12px;
+  background: #f4f4f4;
+  overflow: hidden;
+}
+
+.ikea-quick-filter-bodyButton__image img {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+}
+
+.ikea-quick-filter-bodyButton__fallback {
+  display: grid;
+  place-items: center;
+  width: 100%;
+  height: 100%;
+  padding: 8px;
+  color: var(--ikea-muted);
+  font-size: 0.8rem;
+  text-align: center;
+}
+
+.ikea-quick-filter-bodyButton__label {
+  font-size: 0.8rem;
+  font-weight: 800;
+  text-align: center;
+}
+
+.ikea-search-sidebar__details {
+  padding: 0;
+  overflow: hidden;
+}
+
+.ikea-search-sidebar__details > summary {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  min-height: 52px;
+  padding: 14px 18px;
+  list-style: none;
+  cursor: pointer;
+  font-size: 0.98rem;
+  font-weight: 700;
+}
+
+.ikea-search-sidebar__details > summary::-webkit-details-marker {
+  display: none;
+}
+
+.ikea-search-sidebar__details > summary::after {
+  content: "⌄";
+  color: var(--ikea-muted);
+  transition: transform 180ms ease;
+}
+
+.ikea-search-sidebar__details[open] > summary::after {
+  transform: rotate(180deg);
+}
+
+.ikea-search-sidebar__details > :not(summary) {
+  padding: 0 18px 16px;
+}
+
+.ikea-search-sidebar__details .ikea-search-tips {
+  margin-top: 0;
+}
+
 .ikea-inline-search__field,
 .ikea-search-sidebar__field input,
 .ikea-search-sidebar__field select {

@@ -29,6 +29,14 @@
 
   const buildSeedState = () => core.cloneData(seed);
 
+  const normalizeSearchCharacters = (value) =>
+    core.ensureArray(value).map((item, index) => ({
+      id: item?.id || `character-${index + 1}`,
+      speciesTagIds: core.unique(item?.speciesTagIds),
+      bodyTypeTagIds: core.unique(item?.bodyTypeTagIds),
+      ageFeelTagIds: core.unique(item?.ageFeelTagIds),
+    }));
+
   const ensureStateShape = (state) => {
     const next = state && typeof state === "object" ? state : {};
     next.schemaVersion = next.schemaVersion || seed.schemaVersion || 1;
@@ -49,6 +57,7 @@
       label: (item.label || "").trim(),
       query: (item.query || "").trim(),
       creatorQuery: (item.creatorQuery || "").trim(),
+      characters: normalizeSearchCharacters(item.characters),
       sort: item.sort || "recommended",
       collectionId: item.collectionId || "",
       matchMode: item.matchMode === "or" ? "or" : "and",
@@ -314,6 +323,7 @@
         label: (input.label || "").trim(),
         query: (input.query || "").trim(),
         creatorQuery: (input.creatorQuery || "").trim(),
+        characters: normalizeSearchCharacters(input.characters),
         sort: input.sort || "recommended",
         collectionId: input.collectionId || "",
         matchMode: input.matchMode === "or" ? "or" : "and",

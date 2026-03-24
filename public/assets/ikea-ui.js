@@ -97,6 +97,9 @@
 
   const FILTER_LABEL_OVERRIDES = {
     entrance: "入口条件",
+    species: "種族",
+    "body-type": "体型",
+    "age-feel": "年齢感",
     style: "雰囲気",
     transformation: "変化要素",
     relationship: "関係性",
@@ -104,6 +107,52 @@
     curation: "運営選抜",
     avoid: "除外条件",
   };
+
+  const QUICK_FILTER_GROUP_IDS = new Set(["species", "body-type", "age-feel"]);
+
+  const QUICK_FILTER_SPECIES_TAG_IDS = [
+    "species-wolf",
+    "species-dog",
+    "species-fox",
+    "species-cat",
+    "species-bear",
+  ];
+
+  const QUICK_FILTER_BODY_OPTIONS = [
+    {
+      tagId: "body-normal",
+      label: "普通体型",
+      imageSrc: "/assets/quick-filters/body-normal.png",
+    },
+    {
+      tagId: "body-muscular",
+      label: "筋肉",
+      imageSrc: "/assets/quick-filters/body-muscular.png",
+    },
+    {
+      tagId: "body-fat",
+      label: "デブ",
+      imageSrc: "/assets/quick-filters/body-fat.png",
+    },
+  ];
+
+  const QUICK_FILTER_AGE_TAG_IDS = ["age-young", "age-adult", "age-older"];
+
+  const QUICK_FILTER_GLOBAL_INCLUDE_TAG_IDS = [
+    "osu-kemo",
+    "dense-fur",
+    "buddy-energy",
+    "distance-close",
+    "gentle-tone",
+    "light-tone",
+    "format-comic",
+    "format-cg",
+    "format-novel",
+  ];
+
+  const QUICK_FILTER_GLOBAL_EXCLUDE_TAG_IDS = ["no-ntr", "clear-consent", "low-gore"];
+  const QUICK_FILTER_GLOBAL_INCLUDE_SET = new Set(QUICK_FILTER_GLOBAL_INCLUDE_TAG_IDS);
+  const QUICK_FILTER_GLOBAL_EXCLUDE_SET = new Set(QUICK_FILTER_GLOBAL_EXCLUDE_TAG_IDS);
 
   const hashString = (value) => {
     let hash = 0;
@@ -513,6 +562,7 @@
       <div class="ikea-page-shell ikea-search-shell">
         <div class="ikea-search-layout">
           <aside class="ikea-search-sidebar">
+            <section class="ikea-search-sidebar__card" data-finder-quick-filters></section>
             <section class="ikea-search-sidebar__card ikea-search-sidebar__card--compact">
               <label class="ikea-search-sidebar__field">
                 <span>並び替え</span>
@@ -525,27 +575,31 @@
               </label>
               <p class="ikea-search-sidebar__help" data-finder-sort-note></p>
             </section>
-            <section class="ikea-search-sidebar__card ikea-search-sidebar__card--compact" id="saved-searches">
-              <h2>保存した検索</h2>
-              <div class="ikea-mini-stack" data-finder-saved-searches></div>
-            </section>
-            <section class="ikea-search-sidebar__card ikea-search-sidebar__card--compact">
-              <h2>よく使う入口</h2>
-              <div class="ikea-pill-cloud" data-finder-popular-searches></div>
-            </section>
-            <section class="ikea-search-sidebar__card ikea-search-sidebar__card--compact">
-              <h2>入口特集</h2>
-              <div class="ikea-pill-cloud" data-finder-presets></div>
-            </section>
-            <section class="ikea-search-sidebar__card ikea-search-sidebar__card--compact">
-              <h2>詳細条件で探す</h2>
-              <div class="ikea-mini-stack" data-finder-builder-links></div>
-            </section>
-            <section class="ikea-search-sidebar__card ikea-search-sidebar__card--compact">
-              <h2>検索のコツ</h2>
-              <ul class="ikea-search-tips" data-profile-search-tips></ul>
-            </section>
             <div class="ikea-filter-groups" data-finder-groups></div>
+            <details class="ikea-search-sidebar__card ikea-search-sidebar__card--compact ikea-search-sidebar__details">
+              <summary>詳細条件で探す</summary>
+              <div class="ikea-mini-stack" data-finder-builder-links></div>
+            </details>
+            <details class="ikea-search-sidebar__card ikea-search-sidebar__card--compact ikea-search-sidebar__details" id="saved-searches">
+              <summary>保存した検索</summary>
+              <div class="ikea-mini-stack" data-finder-saved-searches></div>
+            </details>
+            <details class="ikea-search-sidebar__card ikea-search-sidebar__card--compact ikea-search-sidebar__details" id="recent-history">
+              <summary>閲覧履歴</summary>
+              <div class="ikea-mini-stack" data-finder-recent></div>
+            </details>
+            <details class="ikea-search-sidebar__card ikea-search-sidebar__card--compact ikea-search-sidebar__details">
+              <summary>よく使う入口</summary>
+              <div class="ikea-pill-cloud" data-finder-popular-searches></div>
+            </details>
+            <details class="ikea-search-sidebar__card ikea-search-sidebar__card--compact ikea-search-sidebar__details">
+              <summary>入口特集</summary>
+              <div class="ikea-pill-cloud" data-finder-presets></div>
+            </details>
+            <details class="ikea-search-sidebar__card ikea-search-sidebar__card--compact ikea-search-sidebar__details">
+              <summary>検索のコツ</summary>
+              <ul class="ikea-search-tips" data-profile-search-tips></ul>
+            </details>
           </aside>
           <section class="ikea-search-results">
             <p aria-live="assertive" class="sr-only" data-finder-a11y-live></p>
@@ -623,15 +677,6 @@
               </div>
               <ul class="ikea-related-searches" data-finder-related-searches></ul>
             </section>
-            <section class="ikea-search-section" id="recent-history">
-              <div class="ikea-section-heading">
-                <div>
-                  <p class="ikea-section-heading__eyebrow">最近見た作品</p>
-                  <h2 class="ikea-section-heading__title">履歴</h2>
-                </div>
-              </div>
-              <div class="ikea-mini-stack" data-finder-recent></div>
-            </section>
           </section>
         </div>
       </div>
@@ -647,6 +692,7 @@
     includeTagIds = [],
     excludeTagIds = [],
     matchMode = "and",
+    characters = [],
   } = {}) => {
     const params = new URLSearchParams();
     if (query) params.set("q", query);
@@ -656,6 +702,7 @@
     if (matchMode === "or") params.set("mode", "or");
     unique(includeTagIds).forEach((tagId) => params.append("include", tagId));
     unique(excludeTagIds).forEach((tagId) => params.append("exclude", tagId));
+    appendCharacterParams(params, characters);
     return `/finder/${params.toString() ? `?${params.toString()}` : ""}`;
   };
 
@@ -684,6 +731,15 @@
     const parts = [];
     if (search.query) parts.push(`作品: ${search.query}`);
     if (search.creatorQuery) parts.push(`作者: ${search.creatorQuery}`);
+    ensureArray(search.characters).forEach((character, index) => {
+      const labels = [
+        ...ensureArray(character?.speciesTagIds).map((tagId) => tagMap.get(tagId)?.label || tagId),
+        ...ensureArray(character?.bodyTypeTagIds).map((tagId) => tagMap.get(tagId)?.label || tagId),
+        ...ensureArray(character?.ageFeelTagIds).map((tagId) => tagMap.get(tagId)?.label || tagId),
+      ];
+      if (!labels.length) return;
+      parts.push(`キャラ${index + 1}: ${labels.join(" / ")}`);
+    });
     ensureArray(search.includeTagIds).forEach((tagId) => {
       const tag = tagMap.get(tagId);
       if (!tag) return;
@@ -701,6 +757,159 @@
       parts.push("いずれか一致");
     }
     return parts.join(" / ") || "条件なし";
+  };
+
+  const createEmptyCharacterState = (id = "character-1") => ({
+    id,
+    speciesTagIds: [],
+    bodyTypeTagIds: [],
+    ageFeelTagIds: [],
+  });
+
+  const normalizeCharacterState = (value, fallbackId = "character-1") => ({
+    id: value?.id || fallbackId,
+    speciesTagIds: unique(value?.speciesTagIds),
+    bodyTypeTagIds: unique(value?.bodyTypeTagIds),
+    ageFeelTagIds: unique(value?.ageFeelTagIds),
+  });
+
+  const normalizeCharacters = (characters) => {
+    const nextCharacters = ensureArray(characters).map((character, index) =>
+      normalizeCharacterState(character, `character-${index + 1}`)
+    );
+    return nextCharacters.length ? nextCharacters : [createEmptyCharacterState()];
+  };
+
+  const getCharacterFieldTagIds = (character, field) => {
+    if (field === "species") return ensureArray(character?.speciesTagIds);
+    if (field === "body") return ensureArray(character?.bodyTypeTagIds);
+    if (field === "age") return ensureArray(character?.ageFeelTagIds);
+    return [];
+  };
+
+  const getAllCharacterTagIds = (characters) =>
+    unique(
+      normalizeCharacters(characters).flatMap((character) => [
+        ...ensureArray(character.speciesTagIds),
+        ...ensureArray(character.bodyTypeTagIds),
+        ...ensureArray(character.ageFeelTagIds),
+      ])
+    );
+
+  const characterMatchesField = (work, character, field) => {
+    const selectedTagIds = getCharacterFieldTagIds(character, field);
+    if (!selectedTagIds.length) return true;
+    const workTagIds = new Set(ensureArray(work?.tagIds));
+    return selectedTagIds.some((tagId) => workTagIds.has(tagId));
+  };
+
+  const matchesCharacters = (work, characters) =>
+    normalizeCharacters(characters).every((character) =>
+      ["species", "body", "age"].every((field) => characterMatchesField(work, character, field))
+    );
+
+  const appendCharacterParams = (params, characters) => {
+    const character = normalizeCharacters(characters)[0];
+    ensureArray(character.speciesTagIds).forEach((tagId) => params.append("c1_species", tagId));
+    ensureArray(character.bodyTypeTagIds).forEach((tagId) => params.append("c1_body", tagId));
+    ensureArray(character.ageFeelTagIds).forEach((tagId) => params.append("c1_age", tagId));
+  };
+
+  const readCharactersFromParams = (params) => [
+    normalizeCharacterState({
+      id: "character-1",
+      speciesTagIds: params.getAll("c1_species"),
+      bodyTypeTagIds: params.getAll("c1_body"),
+      ageFeelTagIds: params.getAll("c1_age"),
+    }),
+  ];
+
+  const getQuickFilterBuilderHref = (state) =>
+    createFinderUrl({
+      query: state.query,
+      creatorQuery: state.creatorQuery,
+      sort: state.sort,
+      collectionId: state.collectionId,
+      includeTagIds: unique([...state.includeTagIds, ...getAllCharacterTagIds(state.characters)]),
+      excludeTagIds: state.excludeTagIds,
+      matchMode: state.matchMode,
+    }).replace("/finder/", "/builder/");
+
+  const getQuickFilterSummary = (state, tagMap) => {
+    const parts = [];
+    normalizeCharacters(state.characters).forEach((character, index) => {
+      const labels = [
+        ...ensureArray(character.speciesTagIds).map((tagId) => tagMap.get(tagId)?.label || tagId),
+        ...ensureArray(character.bodyTypeTagIds).map((tagId) => tagMap.get(tagId)?.label || tagId),
+        ...ensureArray(character.ageFeelTagIds).map((tagId) => tagMap.get(tagId)?.label || tagId),
+      ];
+      if (!labels.length) return;
+      parts.push(`キャラ${index + 1}: ${labels.join(" / ")}`);
+    });
+    const quickIncludeLabels = state.includeTagIds
+      .filter((tagId) => QUICK_FILTER_GLOBAL_INCLUDE_SET.has(tagId))
+      .map((tagId) => tagMap.get(tagId)?.label || tagId);
+    const quickExcludeLabels = state.excludeTagIds
+      .filter((tagId) => QUICK_FILTER_GLOBAL_EXCLUDE_SET.has(tagId))
+      .map((tagId) => tagMap.get(tagId)?.label || tagId);
+    if (quickIncludeLabels.length) {
+      parts.push(`含める: ${quickIncludeLabels.join(" / ")}`);
+    }
+    if (quickExcludeLabels.length) {
+      parts.push(`除外: ${quickExcludeLabels.join(" / ")}`);
+    }
+    return parts.filter(Boolean).join(" | ") || "条件なし";
+  };
+
+  const createQuickFilterChip = ({
+    label,
+    selected = false,
+    className = "",
+    dataset = {},
+  }) => {
+    const button = createElement(
+      "button",
+      `ikea-quick-filter-chip${className ? ` ${className}` : ""}`,
+      label
+    );
+    button.type = "button";
+    button.setAttribute("aria-pressed", String(selected));
+    Object.entries(dataset).forEach(([key, value]) => {
+      button.dataset[key] = value;
+    });
+    return button;
+  };
+
+  const createQuickFilterBodyButton = ({
+    label,
+    imageSrc = "",
+    selected = false,
+    dataset = {},
+  }) => {
+    const button = createElement("button", "ikea-quick-filter-bodyButton");
+    button.type = "button";
+    button.setAttribute("aria-pressed", String(selected));
+    Object.entries(dataset).forEach(([key, value]) => {
+      button.dataset[key] = value;
+    });
+
+    const imageWrap = createElement("span", "ikea-quick-filter-bodyButton__image");
+    if (imageSrc) {
+      const image = document.createElement("img");
+      image.src = imageSrc;
+      image.alt = "";
+      image.loading = "lazy";
+      image.decoding = "async";
+      imageWrap.appendChild(image);
+    } else {
+      imageWrap.appendChild(createElement("span", "ikea-quick-filter-bodyButton__fallback", label));
+    }
+
+    button.append(
+      imageWrap,
+      createElement("span", "ikea-quick-filter-bodyButton__label", label)
+    );
+    return button;
   };
 
   const updateFinderUrl = (state) => {
@@ -1160,6 +1369,7 @@
     const creatorInput = root.querySelector("[data-finder-creator]");
     const sortSelect = root.querySelector("[data-finder-sort]");
     const sortNoteRoot = root.querySelector("[data-finder-sort-note]");
+    const quickFiltersRoot = root.querySelector("[data-finder-quick-filters]");
     const groupsRoot = root.querySelector("[data-finder-groups]");
     const resultsRoot = root.querySelector("[data-finder-results]");
     const activeRoot = root.querySelector("[data-finder-active]");
@@ -1220,6 +1430,7 @@
       sort: "recommended",
       collectionId: "",
       matchMode: "and",
+      characters: [createEmptyCharacterState()],
     };
 
     const readUrlState = () => {
@@ -1231,6 +1442,7 @@
       pageState.matchMode = params.get("mode") === "or" ? "or" : "and";
       pageState.includeTagIds = unique(params.getAll("include"));
       pageState.excludeTagIds = unique(params.getAll("exclude"));
+      pageState.characters = normalizeCharacters(readCharactersFromParams(params));
     };
 
     const syncControls = () => {
@@ -1251,10 +1463,202 @@
       });
     };
 
+    const getFinderStateSnapshot = (overrides = {}) => ({
+      query: overrides.query ?? pageState.query,
+      creatorQuery: overrides.creatorQuery ?? pageState.creatorQuery,
+      includeTagIds: unique(overrides.includeTagIds ?? pageState.includeTagIds),
+      excludeTagIds: unique(overrides.excludeTagIds ?? pageState.excludeTagIds),
+      sort: overrides.sort ?? pageState.sort,
+      collectionId: overrides.collectionId ?? pageState.collectionId,
+      matchMode: overrides.matchMode ?? pageState.matchMode,
+      characters: normalizeCharacters(overrides.characters ?? pageState.characters),
+    });
+
+    const filterFinderWorks = (overrides = {}) => {
+      const searchState = getFinderStateSnapshot(overrides);
+      const filtered = core.filterWorks({
+        state,
+        profileId: profile.id,
+        query: searchState.query,
+        creatorQuery: searchState.creatorQuery,
+        includeTagIds: searchState.includeTagIds,
+        excludeTagIds: searchState.excludeTagIds,
+        sort: searchState.sort,
+        collectionId: searchState.collectionId,
+        matchMode: searchState.matchMode,
+      });
+      return filtered.filter((work) => matchesCharacters(work, searchState.characters));
+    };
+
+    const toggleCharacterFieldValue = (field, tagId) => {
+      const character = normalizeCharacters(pageState.characters)[0];
+      const nextCharacter = normalizeCharacterState(character);
+      const key =
+        field === "species"
+          ? "speciesTagIds"
+          : field === "body"
+            ? "bodyTypeTagIds"
+            : "ageFeelTagIds";
+      nextCharacter[key] = ensureArray(nextCharacter[key]).includes(tagId)
+        ? ensureArray(nextCharacter[key]).filter((value) => value !== tagId)
+        : unique([...ensureArray(nextCharacter[key]), tagId]);
+      pageState.characters = [nextCharacter];
+    };
+
+    const clearQuickFilters = () => {
+      pageState.characters = [createEmptyCharacterState()];
+      pageState.includeTagIds = [];
+      pageState.excludeTagIds = [];
+    };
+
     const getTagState = (tagId) => {
       if (pageState.includeTagIds.includes(tagId)) return "include";
       if (pageState.excludeTagIds.includes(tagId)) return "exclude";
       return "ignore";
+    };
+
+    const renderQuickFilters = () => {
+      if (!quickFiltersRoot) return;
+      quickFiltersRoot.textContent = "";
+
+      const quickSummary = getQuickFilterSummary(pageState, tagMap);
+      const character = normalizeCharacters(pageState.characters)[0];
+
+      const wrapper = createElement("div", "ikea-quick-filters");
+      const header = createElement("div", "ikea-quick-filters__header");
+      const headingBlock = createElement("div", "ikea-quick-filters__heading");
+      headingBlock.append(
+        createElement("p", "ikea-quick-filters__eyebrow", "Quick filters"),
+        createElement("h2", "", "すばやく絞る")
+      );
+      header.append(
+        headingBlock,
+        createActionButton({
+          label: "すべて解除",
+          className: "ikea-quick-filters__clear",
+          dataset: { quickFiltersClear: "true" },
+        })
+      );
+
+      const summary = createElement("p", "ikea-quick-filters__summary", quickSummary);
+
+      const characterCard = createElement("section", "ikea-quick-character-card");
+      const characterHeader = createElement("div", "ikea-quick-character-card__header");
+      characterHeader.append(
+        createElement("strong", "ikea-quick-character-card__title", "キャラ 1"),
+        createElement(
+          "span",
+          "ikea-quick-character-card__meta",
+          "複数選択は OR / 項目をまたぐと AND"
+        )
+      );
+      characterCard.appendChild(characterHeader);
+
+      const speciesField = createElement("section", "ikea-quick-filter-field");
+      const speciesLabelRow = createElement("div", "ikea-quick-filter-field__labelRow");
+      const searchMoreLink = createElement("a", "ikea-quick-filter-field__link", "もっと探す");
+      searchMoreLink.href = getQuickFilterBuilderHref(pageState);
+      speciesLabelRow.append(
+        createElement("strong", "ikea-quick-filter-field__label", "種族"),
+        searchMoreLink
+      );
+      const speciesRow = createElement("div", "ikea-quick-filter-chipRow");
+      QUICK_FILTER_SPECIES_TAG_IDS.forEach((tagId) => {
+        const tag = tagMap.get(tagId);
+        if (!tag) return;
+        speciesRow.appendChild(
+          createQuickFilterChip({
+            label: tag.label,
+            selected: character.speciesTagIds.includes(tagId),
+            dataset: {
+              quickCharacterField: "species",
+              quickTagId: tagId,
+            },
+          })
+        );
+      });
+      speciesField.append(speciesLabelRow, speciesRow);
+
+      const bodyField = createElement("section", "ikea-quick-filter-field");
+      bodyField.appendChild(createElement("strong", "ikea-quick-filter-field__label", "体型"));
+      const bodyGrid = createElement("div", "ikea-quick-filter-bodyGrid");
+      QUICK_FILTER_BODY_OPTIONS.forEach((option) => {
+        bodyGrid.appendChild(
+          createQuickFilterBodyButton({
+            label: option.label,
+            imageSrc: option.imageSrc,
+            selected: character.bodyTypeTagIds.includes(option.tagId),
+            dataset: {
+              quickCharacterField: "body",
+              quickTagId: option.tagId,
+            },
+          })
+        );
+      });
+      bodyField.appendChild(bodyGrid);
+
+      const ageField = createElement("section", "ikea-quick-filter-field");
+      ageField.appendChild(createElement("strong", "ikea-quick-filter-field__label", "年齢感"));
+      const ageRow = createElement("div", "ikea-quick-filter-chipRow");
+      QUICK_FILTER_AGE_TAG_IDS.forEach((tagId) => {
+        const tag = tagMap.get(tagId);
+        if (!tag) return;
+        ageRow.appendChild(
+          createQuickFilterChip({
+            label: tag.label,
+            selected: character.ageFeelTagIds.includes(tagId),
+            dataset: {
+              quickCharacterField: "age",
+              quickTagId: tagId,
+            },
+          })
+        );
+      });
+      ageField.appendChild(ageRow);
+
+      characterCard.append(speciesField, bodyField, ageField);
+
+      const includeField = createElement("section", "ikea-quick-filter-field");
+      includeField.appendChild(createElement("strong", "ikea-quick-filter-field__label", "全体で含める"));
+      const includeRow = createElement("div", "ikea-quick-filter-chipRow");
+      QUICK_FILTER_GLOBAL_INCLUDE_TAG_IDS.forEach((tagId) => {
+        const tag = tagMap.get(tagId);
+        if (!tag) return;
+        includeRow.appendChild(
+          createQuickFilterChip({
+            label: tag.label,
+            selected: pageState.includeTagIds.includes(tagId),
+            dataset: {
+              quickGlobalState: "include",
+              quickTagId: tagId,
+            },
+          })
+        );
+      });
+      includeField.appendChild(includeRow);
+
+      const excludeField = createElement("section", "ikea-quick-filter-field");
+      excludeField.appendChild(createElement("strong", "ikea-quick-filter-field__label", "全体で除外"));
+      const excludeRow = createElement("div", "ikea-quick-filter-chipRow");
+      QUICK_FILTER_GLOBAL_EXCLUDE_TAG_IDS.forEach((tagId) => {
+        const tag = tagMap.get(tagId);
+        if (!tag) return;
+        excludeRow.appendChild(
+          createQuickFilterChip({
+            label: tag.label,
+            selected: pageState.excludeTagIds.includes(tagId),
+            className: "plp-filter-chip--exclude",
+            dataset: {
+              quickGlobalState: "exclude",
+              quickTagId: tagId,
+            },
+          })
+        );
+      });
+      excludeField.appendChild(excludeRow);
+
+      wrapper.append(header, summary, characterCard, includeField, excludeField);
+      quickFiltersRoot.appendChild(wrapper);
     };
 
     const renderSavedSearches = () => {
@@ -1290,7 +1694,7 @@
         }),
         createMiniLink({
           label: "この条件をビルダーへ持っていく",
-          href: `/builder/${window.location.search || ""}`,
+          href: getQuickFilterBuilderHref(pageState),
           meta: "今のキーワードとタグを引き継いで編集できます。",
           icon: "save",
         })
@@ -1452,6 +1856,7 @@
     const renderFilterGroups = () => {
       groupsRoot.textContent = "";
       groupedTags.forEach((group) => {
+        if (QUICK_FILTER_GROUP_IDS.has(group.id)) return;
         const section = createElement("section", "plp-filter-panel");
         const heading = createActionButton({
           label: FILTER_LABEL_OVERRIDES[group.id] || group.label,
@@ -1472,16 +1877,10 @@
             ...pageState.includeTagIds.filter((value) => value !== tag.id),
             tag.id,
           ]);
-          const includeCount = core.filterWorks({
-            state,
-            profileId: profile.id,
-            query: pageState.query,
-            creatorQuery: pageState.creatorQuery,
+          const includeCount = filterFinderWorks({
             includeTagIds: nextIncludeIds,
             excludeTagIds: pageState.excludeTagIds.filter((value) => value !== tag.id),
             sort: "recommended",
-            collectionId: pageState.collectionId,
-            matchMode: pageState.matchMode,
           }).length;
           const row = createElement("div", "plp-filter-option");
           const main = createElement("div", "plp-filter-option__main");
@@ -1620,16 +2019,10 @@
 
       const pool = filtered.length
         ? filtered
-        : core.filterWorks({
-            state,
-            profileId: profile.id,
-            query: pageState.query,
-            creatorQuery: pageState.creatorQuery,
+        : filterFinderWorks({
             includeTagIds: [],
             excludeTagIds: pageState.excludeTagIds,
             sort: "recommended",
-            collectionId: pageState.collectionId,
-            matchMode: pageState.matchMode,
           });
 
       const buckets = new Map();
@@ -1714,7 +2107,7 @@
           }),
           createMiniLink({
             label: "詳細条件ビルダーへ",
-            href: createFinderUrl(pageState).replace("/finder/", "/builder/"),
+            href: getQuickFilterBuilderHref(pageState),
             meta: "今の条件を持ったまま細かく組み直せます。",
             icon: "compare",
           }),
@@ -1840,16 +2233,10 @@
         .sort((left, right) => right.count - left.count)
         .slice(0, 10)
         .forEach(({ tag }) => {
-          const resultCount = core.filterWorks({
-            state,
-            profileId: profile.id,
-            query: pageState.query,
-            creatorQuery: pageState.creatorQuery,
+          const resultCount = filterFinderWorks({
             includeTagIds: unique([...pageState.includeTagIds, tag.id]),
             excludeTagIds: pageState.excludeTagIds,
             sort: pageState.sort,
-            collectionId: pageState.collectionId,
-            matchMode: pageState.matchMode,
           }).length;
           if (!resultCount) return;
           pushItem({
@@ -1857,6 +2244,7 @@
             href: createFinderUrl({
               query: pageState.query,
               creatorQuery: pageState.creatorQuery,
+              characters: pageState.characters,
               includeTagIds: [...pageState.includeTagIds, tag.id],
               excludeTagIds: pageState.excludeTagIds,
               sort: pageState.sort,
@@ -1872,16 +2260,11 @@
           .getProfileCollections(state, profile.id, { publicOnly: true })
           .slice(0, 6)
           .forEach((collection) => {
-            const resultCount = core.filterWorks({
-              state,
-              profileId: profile.id,
-              query: pageState.query,
-              creatorQuery: pageState.creatorQuery,
+            const resultCount = filterFinderWorks({
               includeTagIds: pageState.includeTagIds,
               excludeTagIds: pageState.excludeTagIds,
               sort: pageState.sort,
               collectionId: collection.id,
-              matchMode: pageState.matchMode,
             }).length;
             if (!resultCount) return;
             pushItem({
@@ -1889,6 +2272,7 @@
               href: createFinderUrl({
                 query: pageState.query,
                 creatorQuery: pageState.creatorQuery,
+                characters: pageState.characters,
                 includeTagIds: pageState.includeTagIds,
                 excludeTagIds: pageState.excludeTagIds,
                 sort: pageState.sort,
@@ -1925,6 +2309,7 @@
       const signature = JSON.stringify({
         query: pageState.query,
         creatorQuery: pageState.creatorQuery,
+        characters: normalizeCharacters(pageState.characters),
         includeTagIds: pageState.includeTagIds.slice().sort(),
         excludeTagIds: pageState.excludeTagIds.slice().sort(),
         collectionId: pageState.collectionId,
@@ -1940,6 +2325,7 @@
           profileId: profile.id,
           query: pageState.query,
           creatorQuery: pageState.creatorQuery,
+          characters: normalizeCharacters(pageState.characters),
           includeTagIds: pageState.includeTagIds,
           excludeTagIds: pageState.excludeTagIds,
           collectionId: pageState.collectionId,
@@ -1954,17 +2340,7 @@
       state = store.loadState();
       const uiState = getUiState(state);
       const collection = pageState.collectionId ? core.getCollection(state, pageState.collectionId) : null;
-      const filtered = core.filterWorks({
-        state,
-        profileId: profile.id,
-        query: pageState.query,
-        creatorQuery: pageState.creatorQuery,
-        includeTagIds: pageState.includeTagIds,
-        excludeTagIds: pageState.excludeTagIds,
-        sort: pageState.sort,
-        collectionId: pageState.collectionId,
-        matchMode: pageState.matchMode,
-      });
+      const filtered = filterFinderWorks();
       const displayedWorks = filtered.slice();
       if (filtered.length && filtered.length < 8) {
         core
@@ -2019,27 +2395,29 @@
       });
 
       const conditionFragments = [];
-      if (pageState.query) conditionFragments.push(`作品: ${pageState.query}`);
+      if (pageState.query) conditionFragments.push(`検索語: ${pageState.query}`);
       if (pageState.creatorQuery) conditionFragments.push(`作者: ${pageState.creatorQuery}`);
       if (pageState.matchMode === "or") conditionFragments.push("いずれか一致");
-      if (pageState.includeTagIds.length) {
-        conditionFragments.push(
-          `含める: ${pageState.includeTagIds
-            .map((tagId) => tagMap.get(tagId)?.label || tagId)
-            .join(" / ")}`
-        );
-      }
-      if (pageState.excludeTagIds.length) {
-        conditionFragments.push(
-          `除外: ${pageState.excludeTagIds
-            .map((tagId) => tagMap.get(tagId)?.label || tagId)
-            .join(" / ")}`
-        );
-      }
       if (collection) conditionFragments.push(`特集: ${collection.title}`);
-      statusRoot.textContent = `${filtered.length}件 | ${getSortMeta(pageState.sort).label} | ${
-        conditionFragments.length ? conditionFragments.join(" | ") : "条件なし"
-      }`;
+      const quickFilterSummary = getQuickFilterSummary(pageState, tagMap);
+      conditionFragments.push(quickFilterSummary === "条件なし" ? "クイック条件なし" : quickFilterSummary);
+      const nonQuickIncludeIds = pageState.includeTagIds.filter(
+        (tagId) => !QUICK_FILTER_GLOBAL_INCLUDE_SET.has(tagId)
+      );
+      const nonQuickExcludeIds = pageState.excludeTagIds.filter(
+        (tagId) => !QUICK_FILTER_GLOBAL_EXCLUDE_SET.has(tagId)
+      );
+      if (nonQuickIncludeIds.length) {
+        conditionFragments.push(
+          `追加条件: ${nonQuickIncludeIds.map((tagId) => tagMap.get(tagId)?.label || tagId).join(" / ")}`
+        );
+      }
+      if (nonQuickExcludeIds.length) {
+        conditionFragments.push(
+          `追加除外: ${nonQuickExcludeIds.map((tagId) => tagMap.get(tagId)?.label || tagId).join(" / ")}`
+        );
+      }
+      statusRoot.textContent = `${filtered.length}件 | ${getSortMeta(pageState.sort).label} | ${conditionFragments.join(" | ")}`;
 
       if (emptyRoot) emptyRoot.hidden = filtered.length !== 0;
       renderActiveChips();
@@ -2056,8 +2434,10 @@
     };
 
     const applyAndRender = () => {
+      state = store.loadState();
       syncControls();
       updateFinderUrl(pageState);
+      renderQuickFilters();
       renderFilterGroups();
       renderSavedSearches();
       renderBuilderLinks();
@@ -2073,6 +2453,40 @@
 
     if (!root.dataset.finderBound) {
       root.addEventListener("click", (event) => {
+        const quickClearButton = event.target.closest("[data-quick-filters-clear]");
+        if (quickClearButton) {
+          clearQuickFilters();
+          applyAndRender();
+          return;
+        }
+
+        const quickCharacterButton = event.target.closest("[data-quick-character-field]");
+        if (quickCharacterButton) {
+          const field = quickCharacterButton.dataset.quickCharacterField;
+          const tagId = quickCharacterButton.dataset.quickTagId || "";
+          if (!field || !tagId) return;
+          toggleCharacterFieldValue(field, tagId);
+          applyAndRender();
+          return;
+        }
+
+        const quickGlobalButton = event.target.closest("[data-quick-global-state]");
+        if (quickGlobalButton) {
+          const tagId = quickGlobalButton.dataset.quickTagId || "";
+          const nextState = quickGlobalButton.dataset.quickGlobalState || "";
+          if (!tagId) return;
+          pageState.includeTagIds = pageState.includeTagIds.filter((value) => value !== tagId);
+          pageState.excludeTagIds = pageState.excludeTagIds.filter((value) => value !== tagId);
+          if (nextState === "include" && !quickGlobalButton.matches('[aria-pressed="true"]')) {
+            pageState.includeTagIds = unique([...pageState.includeTagIds, tagId]);
+          }
+          if (nextState === "exclude" && !quickGlobalButton.matches('[aria-pressed="true"]')) {
+            pageState.excludeTagIds = unique([...pageState.excludeTagIds, tagId]);
+          }
+          applyAndRender();
+          return;
+        }
+
         const accordionButton = event.target.closest("[data-accordion-button], .plp-filter-panel__heading");
         if (accordionButton) {
           const expanded = accordionButton.getAttribute("aria-expanded") !== "false";
@@ -2226,6 +2640,7 @@
       pageState.sort = "recommended";
       pageState.collectionId = "";
       pageState.matchMode = "and";
+      pageState.characters = [createEmptyCharacterState()];
       applyAndRender();
     });
 
@@ -2237,6 +2652,7 @@
       pageState.sort = "recommended";
       pageState.collectionId = "";
       pageState.matchMode = "and";
+      pageState.characters = [createEmptyCharacterState()];
       applyAndRender();
     });
 
@@ -2251,6 +2667,7 @@
         label,
         query: pageState.query,
         creatorQuery: pageState.creatorQuery,
+        characters: normalizeCharacters(pageState.characters),
         includeTagIds: pageState.includeTagIds,
         excludeTagIds: pageState.excludeTagIds,
         collectionId: pageState.collectionId,
