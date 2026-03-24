@@ -109,6 +109,15 @@
   };
 
   const QUICK_FILTER_GROUP_IDS = new Set(["species", "body-type", "age-feel"]);
+  const FINDER_SIDEBAR_HIDDEN_GROUP_IDS = new Set([
+    "species",
+    "body-type",
+    "age-feel",
+    "style",
+    "relationship",
+    "transformation",
+    "curation",
+  ]);
 
   const QUICK_FILTER_SPECIES_TAG_IDS = [
     "species-wolf",
@@ -576,30 +585,6 @@
               <p class="ikea-search-sidebar__help" data-finder-sort-note></p>
             </section>
             <div class="ikea-filter-groups" data-finder-groups></div>
-            <details class="ikea-search-sidebar__card ikea-search-sidebar__card--compact ikea-search-sidebar__details">
-              <summary>詳細条件で探す</summary>
-              <div class="ikea-mini-stack" data-finder-builder-links></div>
-            </details>
-            <details class="ikea-search-sidebar__card ikea-search-sidebar__card--compact ikea-search-sidebar__details" id="saved-searches">
-              <summary>保存した検索</summary>
-              <div class="ikea-mini-stack" data-finder-saved-searches></div>
-            </details>
-            <details class="ikea-search-sidebar__card ikea-search-sidebar__card--compact ikea-search-sidebar__details" id="recent-history">
-              <summary>閲覧履歴</summary>
-              <div class="ikea-mini-stack" data-finder-recent></div>
-            </details>
-            <details class="ikea-search-sidebar__card ikea-search-sidebar__card--compact ikea-search-sidebar__details">
-              <summary>よく使う入口</summary>
-              <div class="ikea-pill-cloud" data-finder-popular-searches></div>
-            </details>
-            <details class="ikea-search-sidebar__card ikea-search-sidebar__card--compact ikea-search-sidebar__details">
-              <summary>入口特集</summary>
-              <div class="ikea-pill-cloud" data-finder-presets></div>
-            </details>
-            <details class="ikea-search-sidebar__card ikea-search-sidebar__card--compact ikea-search-sidebar__details">
-              <summary>検索のコツ</summary>
-              <ul class="ikea-search-tips" data-profile-search-tips></ul>
-            </details>
           </aside>
           <section class="ikea-search-results">
             <p aria-live="assertive" class="sr-only" data-finder-a11y-live></p>
@@ -1636,6 +1621,7 @@
     };
 
     const renderSavedSearches = () => {
+      if (!savedRoot) return;
       state = store.loadState();
       const uiState = getUiState(state);
       savedRoot.textContent = "";
@@ -1676,6 +1662,7 @@
     };
 
     const renderPresets = () => {
+      if (!presetsRoot) return;
       presetsRoot.textContent = "";
       core
         .getProfileCollections(state, profile.id, { publicOnly: true })
@@ -1691,6 +1678,7 @@
     };
 
     const renderPopularSearches = () => {
+      if (!popularRoot) return;
       state = store.loadState();
       popularRoot.textContent = "";
       const summary = core.aggregateLogs(state);
@@ -1720,6 +1708,7 @@
     };
 
     const renderRecentWorks = () => {
+      if (!recentRoot) return;
       state = store.loadState();
       recentRoot.textContent = "";
       const uiState = getUiState(state);
@@ -1752,6 +1741,7 @@
     };
 
     const renderTips = () => {
+      if (!tipsRoot) return;
       tipsRoot.textContent = "";
       ensureArray(profile.searchTips).forEach((tip) => {
         tipsRoot.appendChild(createElement("li", "", tip));
@@ -1830,7 +1820,7 @@
     const renderFilterGroups = () => {
       groupsRoot.textContent = "";
       groupedTags.forEach((group) => {
-        if (QUICK_FILTER_GROUP_IDS.has(group.id)) return;
+        if (FINDER_SIDEBAR_HIDDEN_GROUP_IDS.has(group.id)) return;
         const section = createElement("section", "plp-filter-panel");
         const heading = createActionButton({
           label: FILTER_LABEL_OVERRIDES[group.id] || group.label,
