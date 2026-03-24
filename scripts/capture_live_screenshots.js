@@ -279,6 +279,19 @@ function looksLikeHtmlPath(pathname) {
   return extension === ".html" || extension === ".htm";
 }
 
+function hasSuspiciousQuotedPath(pathname) {
+  const lowerPathname = pathname.toLowerCase();
+  if (lowerPathname.includes("%22") || lowerPathname.includes("%27")) {
+    return true;
+  }
+
+  try {
+    return /['"]/.test(decodeURIComponent(pathname));
+  } catch (error) {
+    return /['"]/.test(pathname);
+  }
+}
+
 function normalizeSameOriginUrl(rawHref, currentUrl) {
   if (shouldSkipHref(rawHref)) {
     return null;
@@ -314,6 +327,9 @@ function normalizeSameOriginUrl(rawHref, currentUrl) {
     return null;
   }
   if (!looksLikeHtmlPath(target.pathname)) {
+    return null;
+  }
+  if (hasSuspiciousQuotedPath(target.pathname)) {
     return null;
   }
 
@@ -455,9 +471,21 @@ async function main() {
   const seedSet = new Set([...localSeeds, ...sitemapSeeds]);
   const queue = Array.from(seedSet).sort();
   const queued = new Set(queue);
+  const discoveredBy = new Map();
   const visited = new Set();
   const pages = [];
   const failures = [];
+
+  for (const url of localSeeds) {
+    discoveredBy.set(url, "local-seed");
+  }
+  for (const url of sitemapSeeds) {
+    if (discoveredBy.has(url)) {
+      discoveredBy.set(url, `${discoveredBy.get(url)}, sitemap-seed`);
+    } else {
+      discoveredBy.set(url, "sitemap-seed");
+    }
+  }
 
   log(`初期URL数: ${queue.length}`);
 
@@ -498,6 +526,9 @@ async function main() {
       if (!visited.has(link) && !queued.has(link)) {
         queue.push(link);
         queued.add(link);
+        if (!discoveredBy.has(link)) {
+          discoveredBy.set(link, currentUrl);
+        }
       }
     }
     queue.sort();
@@ -506,6 +537,7 @@ async function main() {
       url: currentUrl,
       title: extractTitle(dom),
       screenshot: path.relative(ROOT, absoluteScreenshotPath),
+      discoveredFrom: discoveredBy.get(currentUrl) || null,
       discoveredLinks: discoveredLinks.length,
     });
   }
