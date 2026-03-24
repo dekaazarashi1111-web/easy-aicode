@@ -1544,13 +1544,8 @@
 
       const characterCard = createElement("section", "ikea-quick-character-card");
       const characterHeader = createElement("div", "ikea-quick-character-card__header");
-      characterHeader.append(
-        createElement("strong", "ikea-quick-character-card__title", "キャラ 1"),
-        createElement(
-          "span",
-          "ikea-quick-character-card__meta",
-          "複数選択は OR / 項目をまたぐと AND"
-        )
+      characterHeader.appendChild(
+        createElement("strong", "ikea-quick-character-card__title", "キャラ 1")
       );
       characterCard.appendChild(characterHeader);
 
