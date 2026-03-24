@@ -172,23 +172,6 @@ const NAV_ITEMS = [
   { href: "/articles/", label: "ガイド・方針", section: "articles" },
 ];
 
-const HEADER_UTILITY_LEFT = [
-  { href: "/about/", label: "JP | 日本語", icon: "globe" },
-];
-
-const HEADER_UTILITY_CENTER = [
-  {
-    href: "/finder/?collection=start-here",
-    label: "初見向け / TFあり / 安心条件 からすぐ探せます",
-    icon: "spark",
-  },
-];
-
-const HEADER_UTILITY_RIGHT = [
-  { href: "/builder/", label: "詳細条件で探す", icon: "search" },
-  { href: "/finder/?include=tf-present", label: "TFありから入る", icon: "tag" },
-];
-
 const HEADER_ACTIONS = [
   { href: "/finder/#saved-searches", label: "保存検索", icon: "save" },
   { href: "/finder/#compare-tray", label: "比較", icon: "compare" },
@@ -243,9 +226,6 @@ const FOOTER_LEGAL_LINKS = [
   { href: "/disclaimer.html", label: "免責事項" },
   { href: "/contact/", label: "お問い合わせ" },
 ];
-
-const FOOTER_SOCIAL_LABELS = ["LINE", "IG", "f", "X", "YT", "in"];
-const FOOTER_PAYMENT_LABELS = ["VISA", "Mastercard", "JCB", "Diners", "AMEX", "PayPay", "Apple Pay"];
 
 const createIcon = (kind, className = "") => {
   const svg = document.createElementNS("http://www.w3.org/2000/svg", "svg");
@@ -335,11 +315,6 @@ const renderSiteChrome = () => {
     nav.textContent = "";
 
     const shell = document.createElement("div");
-    const utilityBar = document.createElement("div");
-    const utilityInner = document.createElement("div");
-    const utilityLeft = document.createElement("div");
-    const utilityCenter = document.createElement("div");
-    const utilityRight = document.createElement("div");
     const header = document.createElement("div");
     const headerInner = document.createElement("div");
     const brand = document.createElement("a");
@@ -354,11 +329,6 @@ const renderSiteChrome = () => {
     const actionBar = document.createElement("div");
 
     shell.className = "ikea-shell";
-    utilityBar.className = "ikea-shell__utilityBar";
-    utilityInner.className = "ikea-shell__utilityInner";
-    utilityLeft.className = "ikea-shell__utilityGroup";
-    utilityCenter.className = "ikea-shell__utilityGroup ikea-shell__utilityGroup--center";
-    utilityRight.className = "ikea-shell__utilityGroup ikea-shell__utilityGroup--right";
     header.className = "ikea-shell__header";
     headerInner.className = "ikea-shell__headerInner";
     brand.className = "ikea-shell__logo";
@@ -398,37 +368,6 @@ const renderSiteChrome = () => {
 
     actionBar.className = "ikea-shell__actions";
 
-    HEADER_UTILITY_LEFT.forEach((item) => {
-      utilityLeft.appendChild(
-        createChromeLink({
-          href: item.href,
-          label: item.label,
-          className: "ikea-shell__utilityLink",
-          icon: item.icon,
-        })
-      );
-    });
-    HEADER_UTILITY_CENTER.forEach((item) => {
-      utilityCenter.appendChild(
-        createChromeLink({
-          href: item.href,
-          label: item.label,
-          className: "ikea-shell__utilityLink ikea-shell__utilityLink--emphasis",
-          icon: item.icon,
-        })
-      );
-    });
-    HEADER_UTILITY_RIGHT.forEach((item) => {
-      utilityRight.appendChild(
-        createChromeLink({
-          href: item.href,
-          label: item.label,
-          className: "ikea-shell__utilityLink",
-          icon: item.icon,
-        })
-      );
-    });
-
     NAV_ITEMS.forEach((item) => {
       menu.appendChild(
         createChromeLink({
@@ -451,11 +390,9 @@ const renderSiteChrome = () => {
       actionBar.appendChild(link);
     });
 
-    utilityInner.append(utilityLeft, utilityCenter, utilityRight);
-    utilityBar.appendChild(utilityInner);
     headerInner.append(brand, menu, searchForm, actionBar);
     header.appendChild(headerInner);
-    shell.append(utilityBar, header);
+    shell.appendChild(header);
     nav.appendChild(shell);
   });
 
@@ -467,10 +404,6 @@ const renderSiteChrome = () => {
     const top = document.createElement("div");
     const featured = document.createElement("section");
     const groups = document.createElement("div");
-    const socialRow = document.createElement("div");
-    const socialList = document.createElement("div");
-    const paymentList = document.createElement("div");
-    const localeButton = document.createElement("a");
     const legalRow = document.createElement("div");
     const copyright = document.createElement("p");
     const legalLinks = document.createElement("div");
@@ -480,12 +413,6 @@ const renderSiteChrome = () => {
     top.className = "ikea-footer__top";
     featured.className = "ikea-footer__featured";
     groups.className = "ikea-footer__groups";
-    socialRow.className = "ikea-footer__socialRow";
-    socialList.className = "ikea-footer__socialList";
-    paymentList.className = "ikea-footer__paymentList";
-    localeButton.className = "ikea-footer__locale";
-    localeButton.href = "/about/";
-    localeButton.append(createIcon("globe"), Object.assign(document.createElement("span"), { textContent: "JP | 日本語" }));
     legalRow.className = "ikea-footer__legalRow";
     copyright.className = "ikea-footer__copyright";
     copyright.textContent = `© ${BRAND_NAME}`;
@@ -528,21 +455,6 @@ const renderSiteChrome = () => {
       groups.appendChild(column);
     });
 
-    FOOTER_SOCIAL_LABELS.forEach((label) => {
-      const badge = document.createElement("a");
-      badge.className = "ikea-footer__socialBadge";
-      badge.href = "/contact/";
-      badge.textContent = label;
-      socialList.appendChild(badge);
-    });
-
-    FOOTER_PAYMENT_LABELS.forEach((label) => {
-      const badge = document.createElement("span");
-      badge.className = "ikea-footer__paymentBadge";
-      badge.textContent = label;
-      paymentList.appendChild(badge);
-    });
-
     FOOTER_LEGAL_LINKS.forEach((item) => {
       legalLinks.appendChild(
         createChromeLink({
@@ -554,9 +466,8 @@ const renderSiteChrome = () => {
     });
 
     top.append(featured, groups);
-    socialRow.append(socialList, paymentList, localeButton);
     legalRow.append(copyright, legalLinks);
-    inner.append(top, socialRow, legalRow);
+    inner.append(top, legalRow);
     shell.appendChild(inner);
     footer.appendChild(shell);
   });
