@@ -96,6 +96,15 @@ const updateBrandCopy = () => {
   if (!SITE_CONFIG.BRAND_NAME) return;
 
   document.querySelectorAll("[data-site-brand]").forEach((element) => {
+    if (element.classList.contains("nav__brand")) {
+      const text = element.querySelector(".nav__brand-text");
+      if (text) {
+        text.textContent = SITE_CONFIG.BRAND_NAME;
+      } else {
+        element.textContent = SITE_CONFIG.BRAND_NAME;
+      }
+      return;
+    }
     element.textContent = SITE_CONFIG.BRAND_NAME;
   });
 
@@ -163,6 +172,16 @@ const NAV_ITEMS = [
   { href: "/contact/", label: "お問い合わせ", section: "contact" },
 ];
 
+const NAV_CATEGORY_ITEMS = [
+  { href: "/finder/?collection=start-here", label: "まずここから" },
+  { href: "/finder/?include=tf-present", label: "TFあり" },
+  { href: "/finder/?include=format-comic", label: "漫画" },
+  { href: "/finder/?include=format-cg", label: "CG・イラスト" },
+  { href: "/finder/?include=no-ntr", label: "NTRなし" },
+  { href: "/collections/", label: "特集一覧" },
+  { href: "/articles/", label: "ガイド一覧" },
+];
+
 const FOOTER_GROUPS = [
   {
     title: "探す",
@@ -204,23 +223,71 @@ const renderSiteChrome = () => {
   document.querySelectorAll(".nav").forEach((nav) => {
     const inner = nav.querySelector(".nav__inner");
     if (!inner) return;
+    inner.textContent = "";
 
-    let brand = inner.querySelector(".nav__brand");
-    if (!brand) {
-      brand = document.createElement("a");
-      brand.className = "nav__brand";
-      inner.prepend(brand);
-    }
+    const topbar = document.createElement("div");
+    const topbarLeft = document.createElement("div");
+    const topbarRight = document.createElement("div");
+    const mainRow = document.createElement("div");
+    const brand = document.createElement("a");
+    const brandMark = document.createElement("span");
+    const brandText = document.createElement("span");
+    const searchForm = document.createElement("form");
+    const searchInput = document.createElement("input");
+    const searchButton = document.createElement("button");
+    const utility = document.createElement("div");
+    const linksRoot = document.createElement("div");
+    const categoryRoot = document.createElement("div");
+    const promo = document.createElement("div");
+    const promoText = document.createElement("p");
+    const promoActions = document.createElement("div");
+
+    topbar.className = "nav__topbar";
+    topbarLeft.className = "nav__topbar-links";
+    topbarRight.className = "nav__topbar-links nav__topbar-links--right";
+    mainRow.className = "nav__main";
+    brand.className = "nav__brand";
     brand.href = "/";
-    brand.textContent = BRAND_NAME;
+    brand.setAttribute("data-site-brand", "");
+    brandMark.className = "nav__brand-mark";
+    brandMark.textContent = BRAND_NAME.slice(0, 2);
+    brandText.className = "nav__brand-text";
+    brandText.textContent = BRAND_NAME;
+    brand.append(brandMark, brandText);
 
-    let linksRoot = inner.querySelector(".nav__links");
-    if (!linksRoot) {
-      linksRoot = document.createElement("div");
-      linksRoot.className = "nav__links";
-      inner.appendChild(linksRoot);
-    }
-    linksRoot.textContent = "";
+    searchForm.className = "nav__search";
+    searchForm.action = "/finder/";
+    searchForm.method = "get";
+    searchInput.className = "nav__search-input";
+    searchInput.type = "search";
+    searchInput.name = "q";
+    searchInput.placeholder = "作品名、作者、雰囲気で探す";
+    searchInput.setAttribute("aria-label", "サイト内検索");
+    searchButton.className = "nav__search-button";
+    searchButton.type = "submit";
+    searchButton.textContent = "検索";
+    searchForm.append(searchInput, searchButton);
+
+    utility.className = "nav__utility";
+    linksRoot.className = "nav__links";
+    categoryRoot.className = "nav__categories";
+    promo.className = "nav__promo";
+    promoText.className = "nav__promo-text";
+    promoText.textContent =
+      "条件検索、固定特集、ガイド導線を一つの流れで使える探索サイトの土台です。";
+    promoActions.className = "nav__promo-actions";
+
+    topbarLeft.append(
+      createChromeLink({ href: "/about/", label: "このサイトについて" }),
+      createChromeLink({ href: "/collections/", label: "特集から探す" }),
+      createChromeLink({ href: "/articles/", label: "ガイドを見る" })
+    );
+
+    topbarRight.append(
+      createChromeLink({ href: "/contact/", label: "お問い合わせ" }),
+      createChromeLink({ href: "/privacy.html", label: "プライバシー" })
+    );
+
     NAV_ITEMS.forEach((item) => {
       linksRoot.appendChild(
         createChromeLink({
@@ -232,13 +299,16 @@ const renderSiteChrome = () => {
       );
     });
 
-    let utility = inner.querySelector(".nav__utility");
-    if (!utility) {
-      utility = document.createElement("div");
-      utility.className = "nav__utility";
-      inner.appendChild(utility);
-    }
-    utility.textContent = "";
+    NAV_CATEGORY_ITEMS.forEach((item) => {
+      categoryRoot.appendChild(
+        createChromeLink({
+          href: item.href,
+          label: item.label,
+          className: "nav__category-link",
+        })
+      );
+    });
+
     utility.append(
       createChromeLink({
         href: "/collections/",
@@ -251,6 +321,24 @@ const renderSiteChrome = () => {
         className: "nav__cta nav__cta--primary",
       })
     );
+
+    promoActions.append(
+      createChromeLink({
+        href: "/finder/",
+        label: "検索ページへ",
+        className: "nav__promo-link",
+      }),
+      createChromeLink({
+        href: "/collections/",
+        label: "公開中特集を見る",
+        className: "nav__promo-link nav__promo-link--secondary",
+      })
+    );
+
+    topbar.append(topbarLeft, topbarRight);
+    mainRow.append(brand, searchForm, utility);
+    promo.append(promoText, promoActions);
+    inner.append(topbar, mainRow, linksRoot, categoryRoot, promo);
   });
 
   document.querySelectorAll(".footer").forEach((footer) => {

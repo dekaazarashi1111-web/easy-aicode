@@ -2940,6 +2940,680 @@ body {
   }
 }
 
+/*
+   =========================================================
+   Retail Shell Override
+   ========================================================= */
+
+html,
+body {
+  background: #ffffff;
+  color: #111111;
+}
+
+body {
+  font-family: "Noto Sans JP", "Hiragino Sans", "Yu Gothic", sans-serif;
+}
+
+.container {
+  max-width: 1440px;
+}
+
+.section,
+.section--alt,
+.section--tight,
+.footer {
+  background: #ffffff;
+}
+
+.muted,
+.help {
+  color: #484848;
+}
+
+.card,
+.booking-page-header,
+.booking-detail-header,
+.booking-sticky-card,
+.finder-command,
+.finder-panel-v2,
+.finder-summary-bar,
+.compare-dock,
+.finder-empty-state,
+.page-hero,
+.rail-card,
+.guide-search-panel {
+  background: #ffffff;
+  color: #111111;
+  border: 1px solid #dfdfdf;
+  box-shadow: none;
+}
+
+.card a,
+.collection-card__title,
+.work-card__title {
+  color: #111111;
+}
+
+.btn {
+  border-radius: 999px;
+  font-weight: 700;
+}
+
+.btn--primary {
+  background: #111111;
+  color: #ffffff;
+  border: 1px solid #111111;
+}
+
+.btn--secondary,
+.btn--ghost {
+  background: #ffffff;
+  color: #111111;
+  border: 1px solid #111111;
+}
+
+.tag,
+.pill {
+  background: #f5f5f5;
+  color: #111111;
+  border: 1px solid #d9d9d9;
+}
+
+.nav {
+  position: sticky;
+  top: 0;
+  z-index: 50;
+  background: #ffffff;
+  border-bottom: 1px solid #dfdfdf;
+}
+
+.nav__inner {
+  display: grid;
+  gap: 0.75rem;
+  padding-block: 0.75rem 1rem;
+}
+
+.nav__topbar {
+  display: flex;
+  justify-content: space-between;
+  gap: 1rem;
+  padding-bottom: 0.4rem;
+  border-bottom: 1px solid #ededed;
+  font-size: 0.9rem;
+}
+
+.nav__topbar-links {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1rem;
+}
+
+.nav__topbar-links a {
+  color: #484848;
+  text-decoration: none;
+}
+
+.nav__topbar-links a:hover {
+  color: #111111;
+}
+
+.nav__main {
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr) auto;
+  gap: 1rem;
+  align-items: center;
+}
+
+.nav__brand {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.8rem;
+  color: #111111;
+  text-decoration: none;
+  font-weight: 800;
+  font-size: 1rem;
+}
+
+.nav__brand-mark {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 3.6rem;
+  height: 2.1rem;
+  border-radius: 999px;
+  background: #0058a3;
+  color: #fbd914;
+  font-size: 0.85rem;
+  font-weight: 900;
+  letter-spacing: 0.08em;
+}
+
+.nav__brand-text {
+  line-height: 1.1;
+}
+
+.nav__search {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  gap: 0.75rem;
+}
+
+.nav__search-input {
+  width: 100%;
+  min-height: 3rem;
+  padding: 0.8rem 1rem;
+  border-radius: 999px;
+  border: 1px solid #d9d9d9;
+  background: #f5f5f5;
+  color: #111111;
+}
+
+.nav__search-button {
+  min-width: 5.5rem;
+  min-height: 3rem;
+  border-radius: 999px;
+  border: 1px solid #111111;
+  background: #111111;
+  color: #ffffff;
+  font-weight: 700;
+}
+
+.nav__utility {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+.nav__cta--primary {
+  background: #111111;
+  color: #ffffff;
+  box-shadow: none;
+}
+
+.nav__cta--secondary {
+  background: #ffffff;
+  color: #111111;
+  border: 1px solid #111111;
+}
+
+.nav__links,
+.nav__categories {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1rem;
+}
+
+.nav__link,
+.nav__category-link {
+  color: #111111;
+  text-decoration: none;
+  font-weight: 700;
+}
+
+.nav__link[aria-current="page"] {
+  text-decoration: underline;
+  text-underline-offset: 0.28em;
+}
+
+.nav__category-link {
+  padding: 0.2rem 0;
+  color: #484848;
+  font-weight: 600;
+}
+
+.nav__category-link:hover {
+  color: #111111;
+}
+
+.nav__promo {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  gap: 1rem;
+  align-items: center;
+  padding: 0.9rem 1rem;
+  border-radius: 18px;
+  background: #fbd914;
+}
+
+.nav__promo-text {
+  margin: 0;
+  color: #111111;
+  font-weight: 700;
+}
+
+.nav__promo-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.75rem;
+}
+
+.nav__promo-link {
+  color: #111111;
+  font-weight: 700;
+  text-decoration: none;
+}
+
+.nav__promo-link--secondary {
+  color: #0058a3;
+}
+
+.footer {
+  border-top: 1px solid #dfdfdf;
+}
+
+.footer__lead,
+.footer__column {
+  background: #ffffff;
+  border: 1px solid #dfdfdf;
+}
+
+.footer__eyebrow {
+  color: #0058a3;
+}
+
+.footer__column-title,
+.guide-mini-link strong {
+  color: #111111;
+}
+
+.footer__column-links a,
+.guide-mini-link,
+.finder-mini-link {
+  color: #484848;
+}
+
+.ikea-hero {
+  padding: 1.5rem 0 2rem;
+}
+
+.ikea-hero__grid {
+  display: grid;
+  grid-template-columns: minmax(0, 1.5fr) minmax(340px, 0.9fr);
+  gap: 1rem;
+}
+
+.ikea-promo {
+  border-radius: 22px;
+  padding: 1.4rem;
+  border: 1px solid #dfdfdf;
+}
+
+.ikea-promo--primary {
+  min-height: 26rem;
+  justify-content: end;
+  background:
+    linear-gradient(180deg, rgba(255,255,255,0.1), rgba(255,255,255,0.1)),
+    linear-gradient(135deg, #f7f7f7 0%, #e7eef9 100%);
+}
+
+.ikea-promo--secondary,
+.ikea-promo--tertiary {
+  background: #f5f5f5;
+}
+
+.ikea-promo-stack {
+  display: grid;
+  gap: 1rem;
+}
+
+.ikea-promo__eyebrow {
+  margin: 0;
+  color: #0058a3;
+  font-size: 0.9rem;
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+}
+
+.ikea-promo__title {
+  margin: 0;
+  font-size: clamp(2rem, 4vw, 3.6rem);
+  line-height: 1.05;
+}
+
+.ikea-promo__lead,
+.ikea-promo__sub {
+  margin: 0;
+  max-width: 54rem;
+  font-size: 1.05rem;
+  color: #333333;
+}
+
+.ikea-promo__actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.8rem;
+}
+
+.ikea-search-panel {
+  max-width: 46rem;
+}
+
+.ikea-search-panel__row {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  gap: 0.75rem;
+}
+
+.ikea-search-panel__input {
+  min-height: 3.4rem;
+  border-radius: 999px;
+  border: 1px solid #d1d1d1;
+  padding: 0.9rem 1.1rem;
+  background: #ffffff;
+  color: #111111;
+}
+
+.ikea-search-panel__button {
+  min-height: 3.4rem;
+  padding: 0 1.25rem;
+  border-radius: 999px;
+  border: 1px solid #111111;
+  background: #111111;
+  color: #ffffff;
+  font-weight: 700;
+}
+
+.ikea-utility-strip {
+  padding-bottom: 1rem;
+}
+
+.ikea-utility-strip__grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 1rem;
+}
+
+.ikea-utility-item {
+  display: grid;
+  gap: 0.4rem;
+  padding: 1rem 1.1rem;
+  border-radius: 18px;
+  border: 1px solid #dfdfdf;
+  background: #ffffff;
+}
+
+.ikea-section-head {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  gap: 1rem;
+  align-items: end;
+}
+
+.ikea-section-head__link {
+  color: #111111;
+  font-weight: 700;
+  text-decoration: none;
+}
+
+.ikea-section-head__link:hover {
+  text-decoration: underline;
+}
+
+.ikea-category-grid {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 1rem;
+}
+
+.ikea-category-card {
+  min-height: 13rem;
+}
+
+.ikea-card-row,
+.ikea-product-grid,
+.result-list--finder {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 1rem;
+}
+
+.ikea-editorial-grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 1rem;
+}
+
+.ikea-editorial-card {
+  min-height: 12rem;
+}
+
+.work-card,
+.collection-card {
+  display: grid;
+  gap: 0;
+  overflow: hidden;
+  border-radius: 18px;
+}
+
+.work-card__visual,
+.collection-card__visual {
+  min-height: 12.5rem;
+  padding: 1rem;
+  display: flex;
+  align-items: end;
+  background: linear-gradient(135deg, #f5f5f5 0%, #e8eef8 100%);
+  border-bottom: 1px solid #dfdfdf;
+}
+
+.work-card__visual-meta,
+.collection-card__visual-title {
+  display: grid;
+  gap: 0.35rem;
+}
+
+.work-card__visual-label,
+.collection-card__visual-label {
+  display: inline-flex;
+  width: fit-content;
+  padding: 0.25rem 0.55rem;
+  border-radius: 999px;
+  background: #0058a3;
+  color: #ffffff;
+  font-size: 0.78rem;
+  font-weight: 800;
+  letter-spacing: 0.05em;
+}
+
+.work-card__visual strong,
+.collection-card__visual strong {
+  color: #111111;
+  font-size: 1rem;
+}
+
+.work-card__body,
+.collection-card__body {
+  padding: 1rem 1rem 1.1rem;
+}
+
+.work-card__reason {
+  background: #f5f5f5;
+  border: 0;
+  color: #111111;
+  padding: 0.8rem;
+}
+
+.work-card__meta {
+  color: #484848;
+}
+
+.work-action-chip {
+  background: #ffffff;
+  color: #111111;
+  border: 1px solid #d1d1d1;
+}
+
+.work-action-chip[aria-pressed="true"] {
+  background: #111111;
+  color: #ffffff;
+  border-color: #111111;
+}
+
+.collection-card__count {
+  background: #f5f5f5;
+  color: #111111;
+  border: 1px solid #d9d9d9;
+}
+
+.finder-experience {
+  gap: 1.2rem;
+}
+
+.finder-command {
+  background: #fbd914;
+  border-color: #e5c100;
+}
+
+.finder-command .lead,
+.finder-command .help,
+.finder-command .muted,
+.finder-command .label {
+  color: #111111;
+}
+
+.finder-command .input,
+.finder-command .select {
+  background: #ffffff;
+  color: #111111;
+  border: 1px solid #cfcfcf;
+}
+
+.finder-layout-v2 {
+  grid-template-columns: minmax(280px, 320px) minmax(0, 1fr);
+  gap: 1rem;
+}
+
+.finder-panel-v2,
+.finder-summary-bar,
+.compare-dock,
+.finder-empty-state {
+  border-radius: 18px;
+}
+
+.finder-group-v2 {
+  padding: 0.4rem 0;
+}
+
+.finder-tag-row {
+  background: #ffffff;
+  border: 1px solid #e3e3e3;
+}
+
+.finder-state-btn {
+  background: #ffffff;
+  color: #111111;
+  border: 1px solid #d0d0d0;
+}
+
+.finder-state-btn[aria-pressed="true"],
+.finder-state-btn--include[aria-pressed="true"] {
+  background: #0058a3;
+  color: #ffffff;
+  border-color: #0058a3;
+}
+
+.finder-state-btn--exclude[aria-pressed="true"] {
+  background: #111111;
+  color: #ffffff;
+  border-color: #111111;
+}
+
+.active-filter-list .tag-filter__btn {
+  background: #f5f5f5;
+  color: #111111;
+}
+
+.compare-pill {
+  background: #f5f5f5;
+  border: 1px solid #dfdfdf;
+}
+
+.finder-mini-link,
+.guide-mini-link {
+  background: #ffffff;
+  border: 1px solid #dfdfdf;
+}
+
+.page-hero::before,
+.page-hero--guide::before,
+.page-hero--article::before,
+.page-hero--support::before {
+  background: linear-gradient(135deg, #f7f7f7 0%, #ececec 100%);
+}
+
+.page-hero,
+.page-hero .lead,
+.page-hero .muted {
+  color: #111111;
+}
+
+.booking-detail-page,
+.booking-two-column,
+.page-layout,
+.guide-detail-layout {
+  gap: 1rem;
+}
+
+.booking-sticky-card,
+.rail-card {
+  position: sticky;
+  top: 10.5rem;
+}
+
+@media (max-width: 1200px) {
+  .ikea-hero__grid,
+  .nav__main,
+  .finder-layout-v2,
+  .page-layout,
+  .guide-detail-layout {
+    grid-template-columns: 1fr;
+  }
+
+  .ikea-category-grid,
+  .ikea-card-row,
+  .ikea-product-grid,
+  .result-list--finder,
+  .ikea-editorial-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .nav__utility {
+    justify-content: flex-start;
+  }
+}
+
+@media (max-width: 760px) {
+  .nav__topbar,
+  .nav__promo,
+  .ikea-section-head {
+    grid-template-columns: 1fr;
+    display: grid;
+  }
+
+  .nav__search,
+  .ikea-search-panel__row {
+    grid-template-columns: 1fr;
+  }
+
+  .nav__categories {
+    overflow-x: auto;
+    flex-wrap: nowrap;
+    padding-bottom: 0.35rem;
+  }
+
+  .ikea-utility-strip__grid,
+  .ikea-category-grid,
+  .ikea-card-row,
+  .ikea-product-grid,
+  .result-list--finder,
+  .ikea-editorial-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
 .work-card__actions {
   gap: 0.5rem;
 }

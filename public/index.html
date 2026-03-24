@@ -62,49 +62,61 @@
 </nav>
 
 <main id="main" data-home-page>
-  <section class="landing-hero">
-    <div class="container landing-hero__inner">
-      <div class="landing-hero__content">
-        <p class="landing-hero__eyebrow" data-home-kicker>Kemo Finder Starter</p>
-        <h1 class="landing-hero__title" data-home-title>ケモホモ作品を、条件と除外条件で探しやすくする</h1>
-        <p class="landing-hero__lead" data-home-description>
-          DMM 側の分類だけでは拾いにくい語彙を、入口タグ、TF、媒体、除外条件に翻訳して探すための土台です。
-        </p>
-        <p class="landing-hero__sub" data-home-audience-note>
-          まずは「何から見ればいいか分からない」人を迷わせず、その後で TF や媒体別の枝へ落とします。
-        </p>
-      </div>
-
-      <form class="landing-search" action="/finder/" method="get">
-        <div class="landing-search__row">
-          <div class="landing-search__field">
-            <label class="label" for="home-search-query">キーワード</label>
-            <input id="home-search-query" class="input landing-search__input" type="search" name="q" placeholder="オスケモ寄り / TFは軽め / 入口向け" />
+  <section class="ikea-hero">
+    <div class="container">
+      <div class="ikea-hero__grid">
+        <article class="ikea-promo ikea-promo--primary stack">
+          <p class="ikea-promo__eyebrow" data-home-kicker>Kemo Finder Starter</p>
+          <h1 class="ikea-promo__title" data-home-title>ケモホモ作品を、条件と除外条件で探しやすくする</h1>
+          <p class="ikea-promo__lead" data-home-description>
+            DMM 側の分類だけでは拾いにくい語彙を、入口タグ、TF、媒体、除外条件に翻訳して探すための土台です。
+          </p>
+          <p class="ikea-promo__sub" data-home-audience-note>
+            まずは「何から見ればいいか分からない」人を迷わせず、その後で TF や媒体別の枝へ落とします。
+          </p>
+          <form class="ikea-search-panel" action="/finder/" method="get">
+            <label class="label sr-only" for="home-search-query">キーワード</label>
+            <div class="ikea-search-panel__row">
+              <input id="home-search-query" class="ikea-search-panel__input" type="search" name="q" placeholder="オスケモ寄り / TFは軽め / 入口向け" />
+              <button class="ikea-search-panel__button" type="submit">作品を探す</button>
+            </div>
+          </form>
+          <div class="ikea-promo__actions">
+            <a class="btn btn--primary" href="/finder/?collection=start-here">まずここから</a>
+            <a class="btn btn--secondary" href="/collections/">特集を見る</a>
           </div>
-          <button class="btn btn--primary landing-search__submit" type="submit">作品を探す</button>
+        </article>
+
+        <div class="ikea-promo-stack">
+          <article class="ikea-promo ikea-promo--secondary stack">
+            <p class="ikea-promo__eyebrow">Popular Searches</p>
+            <h2 class="h3">よく使われる切り口</h2>
+            <div class="tag-list" data-home-popular-searches></div>
+          </article>
+
+          <article class="ikea-promo ikea-promo--tertiary stack">
+            <p class="ikea-promo__eyebrow">Saved & Recent</p>
+            <h2 class="h3">続きから探す</h2>
+            <div class="finder-mini-list" data-home-saved-searches></div>
+            <div class="finder-mini-list" data-home-recent-works></div>
+          </article>
         </div>
-        <div class="landing-search__chips">
-          <a class="tag" href="/finder/?collection=start-here">まずここから</a>
-          <a class="tag" href="/finder/?include=tf-present">TFあり</a>
-          <a class="tag" href="/finder/?include=format-comic">漫画</a>
-          <a class="tag" href="/finder/?include=no-ntr">NTRなし</a>
-        </div>
-      </form>
+      </div>
     </div>
   </section>
 
-  <section class="section section--tight">
+  <section class="ikea-utility-strip">
     <div class="container">
-      <div class="trust-strip">
-        <div class="trust-strip__item">
+      <div class="ikea-utility-strip__grid">
+        <div class="ikea-utility-item">
           <strong>入口は広く</strong>
           <span>ケモホモを入口語にして、あとから深い枝へ送る</span>
         </div>
-        <div class="trust-strip__item">
+        <div class="ikea-utility-item">
           <strong>検索は細かく</strong>
           <span>含める条件と除外条件を同じ画面で扱う</span>
         </div>
-        <div class="trust-strip__item">
+        <div class="ikea-utility-item">
           <strong>運用は手動で強く</strong>
           <span>特集、タグ、公開状態、ログを同じ基盤で回す</span>
         </div>
@@ -112,106 +124,66 @@
     </div>
   </section>
 
-  <section class="section section--tight">
-    <div class="container quick-dashboard">
-      <div class="card stack">
-        <p class="kicker">Saved Searches</p>
-        <h2 class="h3">保存した条件から再開する</h2>
-        <div class="finder-mini-list" data-home-saved-searches></div>
-      </div>
-      <div class="card stack">
-        <p class="kicker">Recently Viewed</p>
-        <h2 class="h3">最近見た作品</h2>
-        <div class="finder-mini-list" data-home-recent-works></div>
-      </div>
-      <div class="card stack">
-        <p class="kicker">Popular Searches</p>
-        <h2 class="h3">よく使われる切り口</h2>
-        <div class="tag-list" data-home-popular-searches></div>
-      </div>
-    </div>
-  </section>
-
   <section class="section">
     <div class="container stack stack--lg">
-      <div class="section-head">
+      <div class="ikea-section-head">
         <div class="stack">
-          <p class="kicker">Start Here</p>
-          <h2 class="h2">最初に見るべき入口</h2>
+          <p class="kicker">Browse by Tags</p>
+          <h2 class="h2">最初に使うタググループ</h2>
         </div>
-        <a class="btn btn--secondary btn--sm" href="/finder/">検索ページへ</a>
+        <a class="ikea-section-head__link" href="/finder/">検索ページへ</a>
       </div>
-      <div class="booking-info-grid">
-        <div class="card stack">
-          <p class="pill">探索価値</p>
-          <h3>語彙のズレを埋める</h3>
-          <p class="muted">ユーザーが探す言葉と、ストア側の粗い分類の間にあるズレをタグ設計で吸収します。</p>
-        </div>
-        <div class="card stack">
-          <p class="pill">公開導線</p>
-          <h3>検索だけに頼らず特集で入口を作る</h3>
-          <p class="muted">初見向け、TF 入口、除外条件入口のような固定特集を検索の受け皿にします。</p>
-        </div>
-        <div class="card stack">
-          <p class="pill">運営基盤</p>
-          <h3>作品、タグ、特集、ログを同じ状態で回す</h3>
-          <p class="muted">手動キュレーション前提で、将来的な別ニッチ展開も見据えて構造を分けています。</p>
-        </div>
-      </div>
-      <div class="card stack">
-        <h3 class="h2">運用上の軸</h3>
-        <ul class="list" data-home-value-props></ul>
-      </div>
+      <div class="ikea-category-grid" data-home-tag-groups></div>
     </div>
   </section>
 
   <section class="section section--alt">
     <div class="container stack stack--lg">
-      <div class="section-head">
+      <div class="ikea-section-head">
         <div class="stack">
           <p class="kicker">Collections</p>
           <h2 class="h2">固定特集から探す</h2>
         </div>
-        <a class="btn btn--secondary btn--sm" href="/collections/">特集一覧へ</a>
+        <a class="ikea-section-head__link" href="/collections/">すべての特集を見る</a>
       </div>
-      <div class="result-list result-list--cards" data-home-featured-collections></div>
+      <div class="ikea-card-row" data-home-featured-collections></div>
     </div>
   </section>
 
   <section class="section">
     <div class="container stack stack--lg">
-      <div class="section-head">
+      <div class="ikea-section-head">
         <div class="stack">
           <p class="kicker">Featured Works</p>
           <h2 class="h2">入口導線で使う代表的な作品</h2>
         </div>
       </div>
-      <div class="booking-feature-grid" data-home-featured-works></div>
+      <div class="ikea-product-grid" data-home-featured-works></div>
     </div>
   </section>
 
-  <section class="section section--tight">
+  <section class="section">
     <div class="container stack stack--lg">
-      <div class="section-head">
+      <div class="ikea-section-head">
         <div class="stack">
           <p class="kicker">Keep Shortlist</p>
           <h2 class="h2">あとで比較したい候補</h2>
         </div>
-        <a class="btn btn--secondary btn--sm" href="/finder/">検索で比較する</a>
+        <a class="ikea-section-head__link" href="/finder/">比較トレイへ</a>
       </div>
-      <div class="booking-feature-grid" data-home-favorite-works></div>
+      <div class="ikea-product-grid" data-home-favorite-works></div>
     </div>
   </section>
 
-  <section class="section section--tight">
-    <div class="container stack">
-      <div class="section-head">
+  <section class="section section--alt">
+    <div class="container stack stack--lg">
+      <div class="ikea-section-head">
         <div class="stack">
-          <p class="kicker">Discovery Tags</p>
-          <h2 class="h2">最初に使うタググループ</h2>
+          <p class="kicker">Value Props</p>
+          <h2 class="h2">運用上の軸</h2>
         </div>
       </div>
-      <div class="booking-info-grid" data-home-tag-groups></div>
+      <div class="ikea-editorial-grid" data-home-value-props></div>
     </div>
   </section>
 </main>

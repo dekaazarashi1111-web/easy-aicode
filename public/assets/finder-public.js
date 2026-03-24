@@ -167,6 +167,10 @@
     showActions = layout === "list",
   }) => {
     const article = document.createElement("article");
+    const visual = document.createElement("div");
+    const visualMeta = document.createElement("div");
+    const visualLabel = document.createElement("span");
+    const visualText = document.createElement("strong");
     const header = document.createElement("div");
     const content = document.createElement("div");
     const titleLink = document.createElement("a");
@@ -183,10 +187,18 @@
     article.className = `card work-card work-card--${layout}`;
     article.dataset.workId = work.id;
 
+    visual.className = "work-card__visual";
+    visualMeta.className = "work-card__visual-meta";
+    visualLabel.className = "work-card__visual-label";
+    visualLabel.textContent = work.format || "作品";
+    visualText.textContent = work.creator || "サンプル作者";
+    visualMeta.append(visualLabel, visualText);
+    visual.append(visualMeta);
+
     header.className = "work-card__header";
     header.append(
       createText("span", "pill", work.format || "作品"),
-      createText("span", "help", work.creator || "サンプル作者")
+      createText("span", "help", work.releasedAt || "公開日未設定")
     );
 
     titleLink.className = "work-card__title";
@@ -247,7 +259,7 @@
 
     content.className = "work-card__body";
     content.append(header, titleLink, summary, reasonText, tagList, meta, footer);
-    article.append(content);
+    article.append(visual, content);
 
     if (profileId && layout === "compact") {
       article.append(
@@ -264,6 +276,7 @@
 
   const createCollectionCard = ({ collection, layout = "list" }) => {
     const article = document.createElement("article");
+    const visual = document.createElement("div");
     const body = document.createElement("div");
     const header = document.createElement("div");
     const titleLink = document.createElement("a");
@@ -274,6 +287,11 @@
     const detailLink = document.createElement("a");
 
     article.className = `card collection-card collection-card--${layout}`;
+    visual.className = "collection-card__visual";
+    visual.append(
+      createText("span", "collection-card__visual-label", "COLLECTION"),
+      createText("strong", "collection-card__visual-title", collection.title)
+    );
 
     header.className = "collection-card__meta";
     header.append(
@@ -311,7 +329,7 @@
     footer.className = "collection-card__footer";
     footer.append(count, detailLink);
     body.append(footer);
-    article.append(body);
+    article.append(visual, body);
 
     return article;
   };
@@ -481,9 +499,17 @@
     setText("[data-home-description]", profile.homeIntro || profile.heroDescription || "");
     setText("[data-home-audience-note]", profile.audienceNote || "");
 
-    fillTextList(root.querySelector("[data-home-value-props]"), profile.valueProps, (item) =>
-      createText("li", "", item)
-    );
+    fillTextList(root.querySelector("[data-home-value-props]"), profile.valueProps, (item) => {
+      const card = document.createElement("article");
+      const title = item.split("を")[0] || "運用軸";
+      card.className = "card ikea-editorial-card stack";
+      card.append(
+        createText("p", "pill", "運用軸"),
+        createText("h3", "h3", title),
+        createText("p", "muted", item)
+      );
+      return card;
+    });
 
     fillTextList(root.querySelector("[data-home-featured-collections]"), featuredCollections, (collection) =>
       createCollectionCard({ collection, layout: "compact" })
@@ -503,7 +529,7 @@
     fillTextList(root.querySelector("[data-home-tag-groups]"), groupedTags.slice(0, 4), (group) => {
       const card = document.createElement("div");
       const list = document.createElement("div");
-      card.className = "card stack";
+      card.className = "card ikea-category-card stack";
       list.className = "tag-list";
       group.tags.slice(0, 5).forEach((tag) => {
         list.appendChild(
@@ -514,6 +540,7 @@
         );
       });
       card.append(
+        createText("p", "pill", "カテゴリー"),
         createText("h3", "h2", group.label),
         createText("p", "muted", group.description || ""),
         list
