@@ -1040,8 +1040,6 @@
     const swatchLabel = createElement("p", "ikea-product-card__swatchLabel", "近い条件や次の起点");
     const affinityLinks = createAffinityLinks(meta.relatedLinks);
     const actionRow = createElement("div", "ikea-product-card__actionRow");
-    const toolRow = createElement("div", "ikea-product-card__toolRow");
-    const compareSet = new Set(ensureArray(uiState.compareWorkIds));
     const favoriteSet = new Set(ensureArray(uiState.favoriteWorkIds));
 
     article.dataset.tone = meta.tone;
@@ -1076,25 +1074,6 @@
     if (meta.matchLabels.length) body.appendChild(createMatchTagList(meta.matchLabels));
     body.append(title, subtitle, detail, metaRow);
     if (reason) body.appendChild(createElement("p", "ikea-product-card__reason", reason));
-    const startLink = createElement("a", "ikea-product-card__tool", "検索の起点に使う");
-    startLink.href = meta.startHref;
-    toolRow.appendChild(startLink);
-    const compareButton = createElement(
-      "button",
-      "ikea-product-card__tool ikea-product-card__tool--button",
-      compareSet.has(work.id) ? "比較中" : "比較に追加"
-    );
-    compareButton.type = "button";
-    compareButton.dataset.workAction = "compare";
-    compareButton.dataset.workId = work.id;
-    compareButton.setAttribute("aria-pressed", String(compareSet.has(work.id)));
-    toolRow.appendChild(compareButton);
-    if (meta.cautionHref && meta.cautionLabel) {
-      const cautionLink = createElement("a", "ikea-product-card__tool", meta.cautionLabel);
-      cautionLink.href = meta.cautionHref;
-      toolRow.appendChild(cautionLink);
-    }
-    body.appendChild(toolRow);
     if (showActions) body.appendChild(actionRow);
     body.append(swatchLabel, affinityLinks);
     article.append(mediaLink, body);
