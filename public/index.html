@@ -13,7 +13,7 @@
   <link rel="apple-touch-icon" href="/assets/logo.png" />
   <meta name="robots" content="index,follow,max-image-preview:large" />
   <meta name="author" content="Media Canvas" />
-  <meta name="theme-color" content="#006ce4" />
+  <meta name="theme-color" content="#ffffff" />
   <meta property="og:site_name" content="Media Canvas" />
   <meta property="og:title" content="ケモホモ作品ファインダー | 探索サイトの土台" />
   <meta
@@ -43,178 +43,212 @@
   <script src="/assets/finder-store.js"></script>
   <script src="/assets/finder-public.js" defer></script>
   <script src="/site.js" defer></script>
+  <script src="/assets/ikea-ui.js" defer></script>
 </head>
 <body>
-<a class="skip-link" href="#main">本文へスキップ</a>
+<a class="hnf-skip-to-content hnf-btn hnf-btn--secondary" href="#main">
+  <span class="hnf-btn__inner">
+    <span class="hnf-btn__label">メインに戻る</span>
+  </span>
+</a>
 
-<nav class="nav">
-  <div class="container nav__inner">
-    <a class="nav__brand" data-site-brand href="/">Media Canvas</a>
+<nav class="nav"></nav>
 
-    <div class="nav__links">
-      <a class="nav__link" href="/" aria-current="page">ホーム</a>
-      <a class="nav__link" href="/finder/">作品検索</a>
-      <a class="nav__link" href="/collections/">特集</a>
-      <a class="nav__link" href="/articles/">ガイド</a>
-      <a class="nav__link" href="/about/">運営方針</a>
-    </div>
+<main id="main" class="main" data-home-ikea-page>
+  <div class="hri-content-container">
+    <section class="hri-home-hero">
+      <div class="hri-home-hero__lead">
+        <p class="hri-eyebrow" data-home-kicker>Kemo Finder Starter</p>
+        <h1 class="hri-home-hero__title" data-home-title>ケモホモ作品を、条件と除外条件で探しやすくする</h1>
+        <p class="hri-home-hero__description" data-home-description>
+          DMM 側の分類だけでは拾いにくい語彙を、入口タグ、TF、媒体、除外条件に翻訳して探すための土台です。
+        </p>
+        <p class="hri-home-hero__note" data-home-audience-note>
+          まずは「何から見ればいいか分からない」人を迷わせず、その後で TF や媒体別の枝へ落とします。
+        </p>
+
+        <form class="search-box-form search-box-form--hero" action="/finder/" method="get">
+          <div class="search-box-search search-box-search--filled search-box-search--hero">
+            <svg viewBox="0 0 24 24" focusable="false" width="24" height="24" aria-hidden="true" class="search-box-svg-icon search-box-search__icon">
+              <path fill-rule="evenodd" clip-rule="evenodd" d="M13.9804 15.3946c-1.0361.7502-2.3099 1.1925-3.6869 1.1925C6.8177 16.5871 4 13.7694 4 10.2935 4 6.8177 6.8177 4 10.2935 4c3.4759 0 6.2936 2.8177 6.2936 6.2935 0 1.377-.4423 2.6508-1.1925 3.6869l4.6016 4.6016-1.4142 1.4142-4.6016-4.6016zm.6067-5.1011c0 2.3713-1.9223 4.2936-4.2936 4.2936C7.9223 14.5871 6 12.6648 6 10.2935 6 7.9223 7.9223 6 10.2935 6c2.3713 0 4.2936 1.9223 4.2936 4.2935z"></path>
+            </svg>
+            <label class="sr-only" for="home-search-query">作品を検索</label>
+            <input
+              id="home-search-query"
+              class="search-box-search__input"
+              type="search"
+              name="q"
+              placeholder="作品・タグ・作者で検索"
+              autocomplete="off"
+            />
+            <span aria-hidden="true" class="search-box-search__divider"></span>
+            <button class="search-box-btn search-box-btn--xsmall search-box-btn--icon-tertiary search-box-search__action" type="submit">
+              <span class="search-box-btn__inner">
+                <svg viewBox="0 0 24 24" focusable="false" width="24" height="24" aria-hidden="true" class="search-box-svg-icon search-box-btn__icon">
+                  <path fill-rule="evenodd" clip-rule="evenodd" d="M13.9804 15.3946c-1.0361.7502-2.3099 1.1925-3.6869 1.1925C6.8177 16.5871 4 13.7694 4 10.2935 4 6.8177 6.8177 4 10.2935 4c3.4759 0 6.2936 2.8177 6.2936 6.2935 0 1.377-.4423 2.6508-1.1925 3.6869l4.6016 4.6016-1.4142 1.4142-4.6016-4.6016zm.6067-5.1011c0 2.3713-1.9223 4.2936-4.2936 4.2936C7.9223 14.5871 6 12.6648 6 10.2935 6 7.9223 7.9223 6 10.2935 6c2.3713 0 4.2936 1.9223 4.2936 4.2935z"></path>
+                </svg>
+                <span class="search-box-btn__label">検索</span>
+              </span>
+            </button>
+          </div>
+        </form>
+
+        <div class="hri-home-hero__actions">
+          <a class="hri-btn hri-btn--primary" href="/finder/?collection=start-here">まずここから</a>
+          <a class="hri-btn hri-btn--secondary" href="/collections/">固定特集を見る</a>
+        </div>
+      </div>
+
+      <div class="hri-home-hero__aside">
+        <article class="hri-feature-card hri-feature-card--accent">
+          <div class="hri-feature-card__head">
+            <p class="hri-eyebrow">人気の切り口</p>
+            <h2 class="hri-section-title-sm">よく使われる検索</h2>
+          </div>
+          <div class="hri-pill-list" data-home-popular-searches></div>
+        </article>
+
+        <article class="hri-feature-card">
+          <div class="hri-feature-card__head">
+            <p class="hri-eyebrow">続きから探す</p>
+            <h2 class="hri-section-title-sm">保存した検索と最近見た作品</h2>
+          </div>
+          <div class="hri-mini-stack" data-home-saved-searches></div>
+          <div class="hri-mini-stack" data-home-recent-works></div>
+        </article>
+      </div>
+    </section>
+
+    <section class="hri-section">
+      <div class="hri-section-heading">
+        <div>
+          <p class="hri-eyebrow">カテゴリに移動</p>
+          <h2 class="hri-section-title">入口タグから探す</h2>
+        </div>
+        <a class="hri-section-link" href="/finder/">すべて見る</a>
+      </div>
+      <div class="plp-carousel plp-shelfcarousel" data-carousel>
+        <button type="button" aria-label="以前の項目を見る" class="plp-btn plp-btn--small plp-btn--icon-primary plp-carousel__button" data-carousel-prev>
+          <span class="plp-btn__inner">
+            <svg viewBox="0 0 24 24" focusable="false" width="24" height="24" aria-hidden="true" class="plp-svg-icon plp-btn__icon">
+              <path fill-rule="evenodd" clip-rule="evenodd" d="m7 12.0009 8.0012-8.0007 1.4142 1.4142-6.587 6.5866 6.5859 6.5868L15 20.002l-8-8.0011z"></path>
+            </svg>
+          </span>
+        </button>
+        <div class="plp-carousel__wrapper">
+          <div tabindex="0" role="list" class="plp-carousel__content plp-carousel__content--snap-slide" data-home-tag-groups></div>
+        </div>
+        <button type="button" aria-label="次の項目を見る" class="plp-btn plp-btn--small plp-btn--icon-primary plp-carousel__button plp-carousel__button--right" data-carousel-next>
+          <span class="plp-btn__inner">
+            <svg viewBox="0 0 24 24" focusable="false" width="24" height="24" aria-hidden="true" class="plp-svg-icon plp-btn__icon">
+              <path fill-rule="evenodd" clip-rule="evenodd" d="m16.415 12.0011-8.0012 8.0007-1.4141-1.4143 6.587-6.5866-6.586-6.5868L8.415 4l8 8.0011z"></path>
+            </svg>
+          </span>
+        </button>
+        <div class="plp-carousel__counter--wrapper">
+          <div aria-hidden="true" class="plp-scroll-indicator">
+            <span class="plp-scroll-indicator__bar-wrapper">
+              <span class="plp-scroll-indicator__bar"></span>
+            </span>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="hri-section">
+      <div class="hri-section-heading">
+        <div>
+          <p class="hri-eyebrow">特集棚</p>
+          <h2 class="hri-section-title">固定特集から入る</h2>
+        </div>
+        <a class="hri-section-link" href="/collections/">すべての特集を見る</a>
+      </div>
+      <div class="plp-carousel plp-shelfcarousel" data-carousel>
+        <button type="button" aria-label="以前の項目を見る" class="plp-btn plp-btn--small plp-btn--icon-primary plp-carousel__button" data-carousel-prev>
+          <span class="plp-btn__inner">
+            <svg viewBox="0 0 24 24" focusable="false" width="24" height="24" aria-hidden="true" class="plp-svg-icon plp-btn__icon">
+              <path fill-rule="evenodd" clip-rule="evenodd" d="m7 12.0009 8.0012-8.0007 1.4142 1.4142-6.587 6.5866 6.5859 6.5868L15 20.002l-8-8.0011z"></path>
+            </svg>
+          </span>
+        </button>
+        <div class="plp-carousel__wrapper">
+          <div tabindex="0" role="list" class="plp-carousel__content plp-carousel__content--snap-slide" data-home-featured-collections></div>
+        </div>
+        <button type="button" aria-label="次の項目を見る" class="plp-btn plp-btn--small plp-btn--icon-primary plp-carousel__button plp-carousel__button--right" data-carousel-next>
+          <span class="plp-btn__inner">
+            <svg viewBox="0 0 24 24" focusable="false" width="24" height="24" aria-hidden="true" class="plp-svg-icon plp-btn__icon">
+              <path fill-rule="evenodd" clip-rule="evenodd" d="m16.415 12.0011-8.0012 8.0007-1.4141-1.4143 6.587-6.5866-6.586-6.5868L8.415 4l8 8.0011z"></path>
+            </svg>
+          </span>
+        </button>
+        <div class="plp-carousel__counter--wrapper">
+          <div aria-hidden="true" class="plp-scroll-indicator">
+            <span class="plp-scroll-indicator__bar-wrapper">
+              <span class="plp-scroll-indicator__bar"></span>
+            </span>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="hri-section">
+      <div class="hri-section-heading">
+        <div>
+          <p class="hri-eyebrow">おすすめ作品</p>
+          <h2 class="hri-section-title">入口導線で使う代表的な作品</h2>
+        </div>
+        <a class="hri-section-link" href="/finder/">検索ページへ</a>
+      </div>
+      <div class="plp-carousel plp-shelfcarousel" data-carousel>
+        <button type="button" aria-label="以前の項目を見る" class="plp-btn plp-btn--small plp-btn--icon-primary plp-carousel__button" data-carousel-prev>
+          <span class="plp-btn__inner">
+            <svg viewBox="0 0 24 24" focusable="false" width="24" height="24" aria-hidden="true" class="plp-svg-icon plp-btn__icon">
+              <path fill-rule="evenodd" clip-rule="evenodd" d="m7 12.0009 8.0012-8.0007 1.4142 1.4142-6.587 6.5866 6.5859 6.5868L15 20.002l-8-8.0011z"></path>
+            </svg>
+          </span>
+        </button>
+        <div class="plp-carousel__wrapper">
+          <div tabindex="0" role="list" class="plp-carousel__content plp-carousel__content--snap-slide" data-home-featured-works></div>
+        </div>
+        <button type="button" aria-label="次の項目を見る" class="plp-btn plp-btn--small plp-btn--icon-primary plp-carousel__button plp-carousel__button--right" data-carousel-next>
+          <span class="plp-btn__inner">
+            <svg viewBox="0 0 24 24" focusable="false" width="24" height="24" aria-hidden="true" class="plp-svg-icon plp-btn__icon">
+              <path fill-rule="evenodd" clip-rule="evenodd" d="m16.415 12.0011-8.0012 8.0007-1.4141-1.4143 6.587-6.5866-6.586-6.5868L8.415 4l8 8.0011z"></path>
+            </svg>
+          </span>
+        </button>
+        <div class="plp-carousel__counter--wrapper">
+          <div aria-hidden="true" class="plp-scroll-indicator">
+            <span class="plp-scroll-indicator__bar-wrapper">
+              <span class="plp-scroll-indicator__bar"></span>
+            </span>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="hri-section">
+      <div class="hri-home-utility-grid">
+        <article class="hri-feature-card">
+          <div class="hri-feature-card__head">
+            <p class="hri-eyebrow">比較トレイ</p>
+            <h2 class="hri-section-title-sm">あとで比べる候補</h2>
+          </div>
+          <div class="hri-mini-stack" data-home-favorite-works></div>
+        </article>
+
+        <article class="hri-feature-card hri-feature-card--support">
+          <div class="hri-feature-card__head">
+            <p class="hri-eyebrow">サービスとサポート</p>
+            <h2 class="hri-section-title-sm">運用上の軸</h2>
+          </div>
+          <div class="hri-support-grid" data-home-value-props></div>
+        </article>
+      </div>
+    </section>
   </div>
-</nav>
-
-<main id="main" data-home-page>
-  <section class="storefront-hero">
-    <div class="container stack stack--lg">
-      <div class="storefront-hero__grid">
-        <article class="storefront-hero-card storefront-hero-card--primary">
-          <div class="storefront-hero-card__content stack">
-            <p class="storefront-eyebrow" data-home-kicker>Kemo Finder Starter</p>
-            <h1 class="storefront-hero-card__title" data-home-title>ケモホモ作品を、条件と除外条件で探しやすくする</h1>
-            <p class="storefront-hero-card__lead" data-home-description>
-              DMM 側の分類だけでは拾いにくい語彙を、入口タグ、TF、媒体、除外条件に翻訳して探すための土台です。
-            </p>
-            <p class="storefront-hero-card__note" data-home-audience-note>
-              まずは「何から見ればいいか分からない」人を迷わせず、その後で TF や媒体別の枝へ落とします。
-            </p>
-            <form class="storefront-search-box" action="/finder/" method="get">
-              <label class="sr-only" for="home-search-query">キーワード</label>
-              <input id="home-search-query" class="storefront-search-box__input" type="search" name="q" placeholder="オスケモ寄り / TFは軽め / 入口向け" />
-              <button class="storefront-search-box__button" type="submit">検索</button>
-            </form>
-            <div class="storefront-hero-card__actions">
-              <a class="btn btn--primary" href="/finder/?collection=start-here">まずここから</a>
-              <a class="btn btn--secondary" href="/collections/">特集を見る</a>
-            </div>
-          </div>
-          <div class="storefront-hero-card__media storefront-visual storefront-visual--room">
-            <span class="storefront-visual__badge">CURATED ENTRY</span>
-            <strong class="storefront-visual__title">条件から探す</strong>
-            <p class="storefront-visual__text">トップ、特集、検索を往復しやすい探索カタログの基準形</p>
-          </div>
-        </article>
-
-        <div class="storefront-hero__aside">
-          <article class="storefront-promo-card">
-            <div class="storefront-promo-card__media storefront-visual storefront-visual--product">
-              <span class="storefront-visual__badge">POPULAR</span>
-              <strong class="storefront-visual__title">よく使われる条件</strong>
-            </div>
-            <div class="storefront-promo-card__body stack">
-              <p class="storefront-eyebrow">Popular searches</p>
-              <h2 class="h3">人気の切り口から始める</h2>
-              <div class="tag-list" data-home-popular-searches></div>
-            </div>
-          </article>
-
-          <article class="storefront-promo-card storefront-promo-card--subtle">
-            <div class="storefront-promo-card__body stack">
-              <p class="storefront-eyebrow">Saved and recent</p>
-              <h2 class="h3">続きから探す</h2>
-              <div class="finder-mini-list" data-home-saved-searches></div>
-              <div class="finder-mini-list" data-home-recent-works></div>
-            </div>
-          </article>
-        </div>
-      </div>
-
-      <div class="storefront-utility-grid">
-        <article class="storefront-utility-card">
-          <strong>入口は広く</strong>
-          <span>広い入口語から、あとで深い条件へ落とす</span>
-        </article>
-        <article class="storefront-utility-card">
-          <strong>検索は細かく</strong>
-          <span>含める条件と除外条件を同じ画面で扱う</span>
-        </article>
-        <article class="storefront-utility-card">
-          <strong>手動で磨く</strong>
-          <span>特集とタグを人力で整え、発見性を上げる</span>
-        </article>
-        <article class="storefront-utility-card">
-          <strong>比較しやすく</strong>
-          <span>保存と比較トレイで候補を見失わない</span>
-        </article>
-      </div>
-    </div>
-  </section>
-
-  <section class="storefront-section">
-    <div class="container stack stack--lg">
-      <div class="storefront-section__head">
-        <div class="stack">
-          <p class="storefront-eyebrow">Browse by category</p>
-          <h2 class="h2">最初に使うタググループ</h2>
-        </div>
-        <a class="storefront-section__link" href="/finder/">すべて見る</a>
-      </div>
-      <div class="storefront-category-grid" data-home-tag-groups></div>
-    </div>
-  </section>
-
-  <section class="storefront-section storefront-section--tint">
-    <div class="container stack stack--lg">
-      <div class="storefront-section__head">
-        <div class="stack">
-          <p class="storefront-eyebrow">Collections</p>
-          <h2 class="h2">固定特集から探す</h2>
-        </div>
-        <a class="storefront-section__link" href="/collections/">すべての特集を見る</a>
-      </div>
-      <div class="storefront-shelf" data-home-featured-collections></div>
-    </div>
-  </section>
-
-  <section class="storefront-section">
-    <div class="container stack stack--lg">
-      <div class="storefront-section__head">
-        <div class="stack">
-          <p class="storefront-eyebrow">Featured works</p>
-          <h2 class="h2">入口導線で使う代表的な作品</h2>
-        </div>
-      </div>
-      <div class="storefront-product-grid" data-home-featured-works></div>
-    </div>
-  </section>
-
-  <section class="storefront-section">
-    <div class="container stack stack--lg">
-      <div class="storefront-section__head">
-        <div class="stack">
-          <p class="storefront-eyebrow">Keep shortlist</p>
-          <h2 class="h2">あとで比較したい候補</h2>
-        </div>
-        <a class="storefront-section__link" href="/finder/">比較トレイを見る</a>
-      </div>
-      <div class="storefront-product-grid" data-home-favorite-works></div>
-    </div>
-  </section>
-
-  <section class="storefront-section storefront-section--tint">
-    <div class="container stack stack--lg">
-      <div class="storefront-section__head">
-        <div class="stack">
-          <p class="storefront-eyebrow">Value props</p>
-          <h2 class="h2">運用上の軸</h2>
-        </div>
-      </div>
-      <div class="storefront-editorial-grid" data-home-value-props></div>
-    </div>
-  </section>
 </main>
 
-<footer class="footer">
-  <div class="container footer__inner">
-    <p class="muted" data-site-copyright>© Media Canvas</p>
-    <div class="footer__links">
-      <a href="/">ホーム</a>
-      <a href="/finder/">作品検索</a>
-      <a href="/collections/">特集</a>
-      <a href="/articles/">ガイド</a>
-      <a href="/about/">運営方針</a>
-      <a href="/contact/">お問い合わせ</a>
-      <a href="/privacy.html">プライバシー</a>
-      <a href="/disclaimer.html">免責事項</a>
-    </div>
-  </div>
-</footer>
+<footer class="footer"></footer>
 </body>
 </html>
