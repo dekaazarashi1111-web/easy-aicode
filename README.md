@@ -37,6 +37,7 @@
 - 特集は `collections` に追加し、作品詳細と検索導線の両方に接続します。
 
 ## ライブスクリーンショット
+- UI改修の途中確認には `node scripts/capture_local_ui_screenshots.js` を使います。ホーム、検索、詳細条件ビルダー、作品詳細の主要画面をローカルでまとめて撮ります。
 - `node scripts/capture_live_screenshots.js` で `https://wintergator.com/` の全ページスクリーンショットを取得します。
 - 対象URLは `public/` のHTMLルート、ライブの `sitemap.xml`、描画後DOMの内部リンクを合算して動的に列挙します。
 - 出力先は `artifacts/live-screenshots/latest/` です。`manifest.json` にURL一覧、`summary.txt` に結果概要を出します。

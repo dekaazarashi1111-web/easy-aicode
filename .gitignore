@@ -29,3 +29,4 @@ tmp/
 userfile/
 node_modules/
 artifacts/live-screenshots/
+artifacts/local-ui-screenshots/

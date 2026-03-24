@@ -8688,6 +8688,38 @@ body {
   align-items: center;
 }
 
+.ikea-search-hero__scope {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  padding-top: 8px;
+}
+
+.ikea-search-hero__scopeHeader {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.ikea-search-hero__scopeHeader strong {
+  font-size: 0.9rem;
+}
+
+.ikea-search-hero__scopeHeader button {
+  min-height: 34px;
+  padding: 0 12px;
+  border: 1px solid var(--ikea-border);
+  border-radius: 999px;
+  background: #fff;
+  color: var(--ikea-text);
+  font: inherit;
+  font-size: 0.82rem;
+  font-weight: 700;
+}
+
 .ikea-search-hero__link {
   min-height: 42px;
   display: inline-flex;
@@ -8711,6 +8743,46 @@ body {
   display: flex;
   flex-direction: column;
   gap: 28px;
+}
+
+.ikea-pill--muted {
+  opacity: 0.82;
+}
+
+.ikea-promoted-filters {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+}
+
+.ikea-promoted-filter {
+  min-height: 40px;
+  padding: 0 14px;
+  border: 1px solid var(--ikea-border);
+  border-radius: 999px;
+  background: #fff;
+  color: var(--ikea-text);
+  font: inherit;
+  font-size: 0.86rem;
+  font-weight: 700;
+}
+
+.ikea-search-empty-grid {
+  margin-top: 20px;
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 18px;
+}
+
+.ikea-search-empty-grid__column {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.ikea-search-empty-grid__column h3 {
+  margin: 0;
+  font-size: 0.96rem;
 }
 
 .ikea-builder-hero {
@@ -8871,6 +8943,7 @@ body {
 }
 
 @media (max-width: 980px) {
+  .ikea-search-empty-grid,
   .ikea-builder-hero,
   .ikea-builder-layout,
   .ikea-builder-fields {

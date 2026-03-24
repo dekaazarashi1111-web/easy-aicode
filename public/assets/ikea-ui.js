@@ -521,7 +521,13 @@
             <a href="/builder/" class="ikea-search-hero__link">詳細条件ビルダーへ</a>
             <a href="/collections/" class="ikea-search-hero__link ikea-search-hero__link--secondary">入口特集を見る</a>
           </div>
-          <div class="ikea-pill-cloud" data-finder-active></div>
+          <div class="ikea-search-hero__scope">
+            <div class="ikea-search-hero__scopeHeader">
+              <strong>選択中の条件</strong>
+              <button type="button" data-finder-clear-inline>すべて解除</button>
+            </div>
+            <div class="ikea-pill-cloud" data-finder-active></div>
+          </div>
         </section>
         <div class="ikea-search-layout">
           <aside class="ikea-search-sidebar">
@@ -610,6 +616,29 @@
               <h2>一致する作品が見つかりません</h2>
               <p>条件を絞りすぎている可能性があります。下の緩和候補から近い条件の作品を探してください。</p>
               <div class="finder-relax-list" data-finder-rescue></div>
+              <div class="ikea-search-empty-grid">
+                <div class="ikea-search-empty-grid__column">
+                  <h3>入口特集</h3>
+                  <div class="ikea-mini-stack" data-finder-empty-collections></div>
+                </div>
+                <div class="ikea-search-empty-grid__column">
+                  <h3>最近見た作品</h3>
+                  <div class="ikea-mini-stack" data-finder-empty-recent></div>
+                </div>
+                <div class="ikea-search-empty-grid__column">
+                  <h3>助けが必要なとき</h3>
+                  <div class="ikea-mini-stack" data-finder-empty-help></div>
+                </div>
+              </div>
+            </section>
+            <section class="ikea-search-section ikea-search-section--promoted" data-finder-promoted-wrap>
+              <div class="ikea-section-heading">
+                <div>
+                  <p class="ikea-section-heading__eyebrow">Promoted filters</p>
+                  <h2 class="ikea-section-heading__title">すぐ絞る</h2>
+                </div>
+              </div>
+              <div class="ikea-promoted-filters" data-finder-promoted></div>
             </section>
             <div class="ikea-product-grid ikea-product-grid--search" id="product-list" data-finder-results></div>
             <section class="ikea-search-section" data-finder-suggestions-wrap hidden>
@@ -1197,7 +1226,13 @@
     const compareGridRoot = root.querySelector("[data-compare-grid]");
     const rescueRoot = root.querySelector("[data-finder-rescue]");
     const emptyRoot = root.querySelector("[data-finder-empty]");
+    const emptyCollectionsRoot = root.querySelector("[data-finder-empty-collections]");
+    const emptyRecentRoot = root.querySelector("[data-finder-empty-recent]");
+    const emptyHelpRoot = root.querySelector("[data-finder-empty-help]");
+    const promotedRoot = root.querySelector("[data-finder-promoted]");
+    const promotedWrap = root.querySelector("[data-finder-promoted-wrap]");
     const clearButton = root.querySelector("[data-finder-clear]");
+    const clearInlineButton = root.querySelector("[data-finder-clear-inline]");
     const clearQueryButton = root.querySelector("[data-finder-clear-query]");
     const copyButton = root.querySelector("[data-finder-copy]");
     const saveButton = root.querySelector("[data-finder-save-search]");
@@ -1454,6 +1489,9 @@
           );
         }
       }
+      if (!activeRoot.childElementCount) {
+        activeRoot.appendChild(createElement("span", "ikea-pill ikea-pill--muted", "条件なし"));
+      }
     };
 
     const renderFilterGroups = () => {
@@ -1619,6 +1657,120 @@
         );
         rescueRoot.appendChild(item);
       });
+    };
+
+    const renderPromotedFilters = (filtered) => {
+      if (!promotedRoot || !promotedWrap) return;
+      promotedRoot.textContent = "";
+
+      const pool = filtered.length
+        ? filtered
+        : core.filterWorks({
+            state,
+            profileId: profile.id,
+            query: pageState.query,
+            creatorQuery: pageState.creatorQuery,
+            includeTagIds: [],
+            excludeTagIds: pageState.excludeTagIds,
+            sort: "recommended",
+            collectionId: pageState.collectionId,
+            matchMode: pageState.matchMode,
+          });
+
+      const buckets = new Map();
+      pool.forEach((work) => {
+        ensureArray(work.primaryTagObjects).forEach((tag) => {
+          if (pageState.includeTagIds.includes(tag.id) || pageState.excludeTagIds.includes(tag.id)) return;
+          const current = buckets.get(tag.id) || { tag, count: 0 };
+          current.count += 1;
+          buckets.set(tag.id, current);
+        });
+      });
+
+      const promoted = Array.from(buckets.values())
+        .sort((left, right) => right.count - left.count)
+        .slice(0, 6);
+
+      promotedWrap.hidden = promoted.length === 0;
+      promoted.forEach(({ tag, count }) => {
+        const button = createElement("button", "ikea-promoted-filter", `${tag.label} (${count})`);
+        button.type = "button";
+        button.dataset.promotedTagId = tag.id;
+        promotedRoot.appendChild(button);
+      });
+    };
+
+    const renderEmptyRecovery = () => {
+      if (emptyCollectionsRoot) {
+        emptyCollectionsRoot.textContent = "";
+        core
+          .getProfileCollections(state, profile.id, { publicOnly: true })
+          .slice(0, 3)
+          .forEach((collection) => {
+            emptyCollectionsRoot.appendChild(
+              createMiniLink({
+                label: collection.title,
+                href: createFinderUrl({ collectionId: collection.id }),
+                meta: collection.lead || collection.description,
+                icon: "collection",
+              })
+            );
+          });
+      }
+
+      if (emptyRecentRoot) {
+        emptyRecentRoot.textContent = "";
+        const workMap = getDecoratedWorkMap(store.loadState(), profile.id);
+        const recentWorks = ensureArray(store.loadState().ui?.recentWorkIds)
+          .map((workId) => workMap.get(workId))
+          .filter(Boolean)
+          .slice(0, 3);
+        if (!recentWorks.length) {
+          emptyRecentRoot.appendChild(
+            createMiniLink({
+              label: "最近見た作品はまだありません",
+              href: "/finder/",
+              meta: "入口特集や人気条件から探し直せます。",
+              icon: "recent",
+            })
+          );
+        } else {
+          recentWorks.forEach((work) => {
+            emptyRecentRoot.appendChild(
+              createMiniLink({
+                label: work.title,
+                href: `/work/?slug=${encodeURIComponent(work.slug)}`,
+                meta: [work.format, work.creator].filter(Boolean).join(" / "),
+                icon: "recent",
+              })
+            );
+          });
+        }
+      }
+
+      if (emptyHelpRoot) {
+        emptyHelpRoot.textContent = "";
+        emptyHelpRoot.append(
+          createMiniLink({
+            label: "通常検索へ戻る",
+            href: "/finder/",
+            meta: "条件を外して広い入口から再開します。",
+            icon: "search",
+          }),
+          createMiniLink({
+            label: "詳細条件ビルダーへ",
+            href: createFinderUrl(pageState).replace("/finder/", "/builder/"),
+            meta: "今の条件を持ったまま細かく組み直せます。",
+            icon: "compare",
+          }),
+          createMiniLink({
+            label: "お問い合わせ",
+            href: "/contact/",
+            meta: "該当条件の追加要望を送れます。",
+            icon: "save",
+          })
+        );
+      }
     };
 
     const renderSuggestions = (filtered, uiState) => {
@@ -1935,6 +2087,8 @@
       if (emptyRoot) emptyRoot.hidden = filtered.length !== 0;
       renderActiveChips();
       renderRescue();
+      renderEmptyRecovery();
+      renderPromotedFilters(filtered);
       renderSuggestions(filtered, uiState);
       renderCompare(uiState);
       renderCategories(filtered);
@@ -2009,6 +2163,16 @@
         const modeButton = event.target.closest("[data-finder-mode]");
         if (modeButton) {
           pageState.matchMode = modeButton.dataset.finderMode === "or" ? "or" : "and";
+          applyAndRender();
+          return;
+        }
+
+        const promotedButton = event.target.closest("[data-promoted-tag-id]");
+        if (promotedButton) {
+          const tagId = promotedButton.dataset.promotedTagId || "";
+          if (!tagId) return;
+          pageState.excludeTagIds = pageState.excludeTagIds.filter((value) => value !== tagId);
+          pageState.includeTagIds = unique([...pageState.includeTagIds, tagId]);
           applyAndRender();
           return;
         }
@@ -2096,6 +2260,17 @@
     });
 
     clearButton?.addEventListener("click", () => {
+      pageState.query = "";
+      pageState.creatorQuery = "";
+      pageState.includeTagIds = [];
+      pageState.excludeTagIds = [];
+      pageState.sort = "recommended";
+      pageState.collectionId = "";
+      pageState.matchMode = "and";
+      applyAndRender();
+    });
+
+    clearInlineButton?.addEventListener("click", () => {
       pageState.query = "";
       pageState.creatorQuery = "";
       pageState.includeTagIds = [];
