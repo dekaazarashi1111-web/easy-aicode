@@ -164,66 +164,86 @@ const getCurrentSection = (pathname = window.location.pathname) => {
 };
 
 const NAV_ITEMS = [
-  { href: "/finder/", label: "作品一覧", section: "finder" },
-  { href: "/finder/?include=kemo-entry", label: "タグ別", section: "tags" },
-  { href: "/collections/", label: "特集", section: "collections" },
-  { href: "/articles/", label: "ガイド", section: "articles" },
-  { href: "/about/", label: "運営情報", section: "about" },
+  { href: "/finder/", label: "商品一覧", section: "finder" },
+  { href: "/collections/", label: "部屋別", section: "collections" },
+  { href: "/finder/?collection=start-here", label: "お買い得商品", section: "finder" },
+  { href: "/articles/", label: "アイデア＆プラン", section: "articles" },
+  { href: "/about/", label: "サービス・イケア店舗", section: "about" },
 ];
 
-const HEADER_UTILITY_ITEMS = [
-  { href: "/about/", label: "JA | JP 日本語", icon: "globe" },
-  { href: "/finder/?collection=start-here", label: "入口タグから絞って探せます", icon: "spark" },
+const HEADER_UTILITY_LEFT = [
+  { href: "/about/", label: "JP | 日本語", icon: "globe" },
 ];
 
-const HEADER_PICKER_ITEMS = [
-  { href: "/finder/", label: "保存した検索", icon: "save" },
-  { href: "/contact/", label: "お問い合わせ", icon: "mail" },
+const HEADER_UTILITY_CENTER = [
+  {
+    href: "/finder/?collection=start-here",
+    label: "IKEA Familyメンバーなら配送料がお得に！",
+    icon: "truck",
+  },
+];
+
+const HEADER_UTILITY_RIGHT = [
+  { href: "/contact/", label: "郵便番号を入力", icon: "location" },
+  { href: "/collections/", label: "ストアを選択", icon: "store" },
 ];
 
 const HEADER_ACTIONS = [
-  { href: "/finder/", label: "検索", icon: "search" },
-  { href: "/finder/", label: "比較", icon: "compare" },
-  { href: "/collections/", label: "特集", icon: "heart" },
+  { href: "/about/", label: "アカウント", icon: "user" },
+  { href: "/collections/", label: "お気に入り", icon: "heart" },
+  { href: "/finder/", label: "カート", icon: "cart" },
 ];
+
+const FOOTER_FEATURED = {
+  title: "IKEA Business Networkに入会する",
+  text:
+    "法人のお客さま向けに、請求書払いやインテリアデザインサービスの割引など、さまざまな会員特典をご用意。法人担当者があなたのビジネスをサポートします。入会費・年会費無料。",
+  detailLabel: "詳しく見る",
+  buttonLabel: "IKEA Business Network特典を見る",
+};
 
 const FOOTER_GROUPS = [
   {
-    title: "オンライン探索ガイド",
+    title: "",
     links: [
-      { href: "/finder/", label: "作品検索" },
-      { href: "/collections/", label: "固定特集" },
-      { href: "/articles/", label: "ガイド記事" },
-      { href: "/finder/?collection=start-here", label: "まずここから" },
+      { href: "/contact/", label: "配送状況の確認" },
+      { href: "/contact/", label: "配送日時の変更" },
+      { href: "/contact/", label: "キャンセル/返品/交換" },
+      { href: "/contact/", label: "電話注文" },
+      { href: "/about/", label: "IKEAアプリ" },
     ],
   },
   {
-    title: "お客さまサポート",
+    title: "",
     links: [
-      { href: "/about/", label: "運営方針" },
-      { href: "/contact/", label: "お問い合わせ" },
-      { href: "/finder/?include=no-ntr", label: "除外条件の入口" },
-      { href: "/collections/", label: "特集一覧" },
+      { href: "/about/", label: "品質保証" },
+      { href: "/contact/", label: "忘れ物/落とし物" },
+      { href: "/contact/", label: "領収書発行" },
+      { href: "/contact/", label: "製品リコール" },
+      { href: "/contact/", label: "カスタマーハラスメント防止への取り組み" },
+      { href: "/contact/", label: "お問い合わせ・FAQ" },
+      { href: "/contact/", label: "ご意見・ご感想" },
     ],
   },
   {
-    title: "メンバーシップ",
+    title: "",
     links: [
-      { href: "/finder/", label: "保存した検索を使う" },
-      { href: "/finder/", label: "比較トレイを見る" },
-      { href: "/articles/", label: "検索の使い方" },
-      { href: "/contact/", label: "更新希望を送る" },
-    ],
-  },
-  {
-    title: "サイトについて",
-    links: [
-      { href: "/about/", label: "このサイトについて" },
-      { href: "/privacy.html", label: "プライバシー" },
-      { href: "/disclaimer.html", label: "免責事項" },
+      { href: "/collections/", label: "ギフトリスト" },
     ],
   },
 ];
+
+const FOOTER_LEGAL_LINKS = [
+  { href: "/privacy.html", label: "プライバシーポリシー" },
+  { href: "/disclaimer.html", label: "利用規約" },
+  { href: "/privacy.html", label: "Cookieポリシー" },
+  { href: "/privacy.html", label: "Cookie設定" },
+  { href: "/disclaimer.html", label: "特定商取引法に基づく表記" },
+  { href: "/disclaimer.html", label: "古物営業法に基づく表記" },
+];
+
+const FOOTER_SOCIAL_LABELS = ["LINE", "IG", "f", "X", "YT", "in"];
+const FOOTER_PAYMENT_LABELS = ["VISA", "Mastercard", "JCB", "Diners", "AMEX", "PayPay", "Apple Pay"];
 
 const createIcon = (kind, className = "") => {
   const svg = document.createElementNS("http://www.w3.org/2000/svg", "svg");
@@ -252,6 +272,24 @@ const createIcon = (kind, className = "") => {
     ],
     compare: [
       "M3 4h8v6H3V4zm10 0h8v6h-8V4zM3 14h8v6H3v-6zm10 3h8v-2h-8v2z",
+    ],
+    truck: [
+      "M2 5h11v8H2V5zm12 2h3.5L22 10.5V13h-2.051a2.5 2.5 0 0 0-4.898 0H13V7h1zm1.5 1.5V11H19.5l-2-2.5H15.5zM6.5 16a2.5 2.5 0 1 1 0-5 2.5 2.5 0 0 1 0 5zm11 0a2.5 2.5 0 1 1 0-5 2.5 2.5 0 0 1 0 5z",
+    ],
+    location: [
+      "M12 22s6-5.6863 6-11a6 6 0 1 0-12 0c0 5.3137 6 11 6 11zm0-8a3 3 0 1 1 0-6 3 3 0 0 1 0 6z",
+    ],
+    store: [
+      "M4 4h16l1 4H3l1-4zm0 6h16v10H4V10zm4 2v6h2v-6H8zm4 0v6h2v-6h-2z",
+    ],
+    user: [
+      "M12 12a4 4 0 1 0-4-4 4 4 0 0 0 4 4zm0 2c-3.866 0-7 1.79-7 4v2h14v-2c0-2.21-3.134-4-7-4z",
+    ],
+    cart: [
+      "M6 5H3v2h1.3l1.9 8.4A2 2 0 0 0 8.15 17h8.7a2 2 0 0 0 1.95-1.6L20 9H7.1l-.35-2H21V5H6zm3 15a1.5 1.5 0 1 1 0-3 1.5 1.5 0 0 1 0 3zm8 0a1.5 1.5 0 1 1 0-3 1.5 1.5 0 0 1 0 3z",
+    ],
+    chat: [
+      "M4 4h16v11H8.8L5 18.2V15H4V4zm2 2v7h2v1.2L8.8 13H18V6H6z",
     ],
     close: [
       "m12.0006 13.4148 2.8283 2.8283 1.4142-1.4142-2.8283-2.8283 2.8283-2.8283-1.4142-1.4142-2.8283 2.8283L9.172 7.7578 7.7578 9.172l2.8286 2.8286-2.8286 2.8285 1.4142 1.4143 2.8286-2.8286z",
@@ -288,252 +326,241 @@ const renderSiteChrome = () => {
   document.querySelectorAll(".nav").forEach((nav) => {
     nav.textContent = "";
 
-    const messages = document.createElement("div");
-    const utilities = document.createElement("div");
-    const utilitiesContainer = document.createElement("div");
-    const utilitiesWrapper = document.createElement("div");
+    const shell = document.createElement("div");
+    const utilityBar = document.createElement("div");
+    const utilityInner = document.createElement("div");
     const utilityLeft = document.createElement("div");
     const utilityCenter = document.createElement("div");
     const utilityRight = document.createElement("div");
     const header = document.createElement("div");
-    const headerContainer = document.createElement("div");
+    const headerInner = document.createElement("div");
     const brand = document.createElement("a");
-    const brandMark = document.createElement("span");
-    const brandLockup = document.createElement("span");
-    const brandEyebrow = document.createElement("span");
-    const brandText = document.createElement("span");
-    const entrypoints = document.createElement("nav");
+    const brandFrame = document.createElement("span");
+    const brandOval = document.createElement("span");
+    const menu = document.createElement("nav");
     const searchForm = document.createElement("form");
     const searchShell = document.createElement("div");
-    const searchIcon = createIcon("search", "search-box-svg-icon search-box-search__icon");
     const searchInput = document.createElement("input");
     const clearButton = document.createElement("button");
-    const divider = document.createElement("span");
     const searchButton = document.createElement("button");
-    const actions = document.createElement("div");
+    const actionBar = document.createElement("div");
 
-    messages.className = "hnf-messages";
-    utilities.className = "hnf-utilities";
-    utilitiesContainer.className = "hnf-content-container";
-    utilitiesWrapper.className = "hnf-utilities__wrapper";
-    utilityLeft.className = "hnf-utilities__block";
-    utilityCenter.className = "hnf-utilities__block hnf-utilities__block--vp";
-    utilityRight.className = "hnf-utilities__block hnf-utilities__block--pickers";
-    header.className = "hnf-header hnf-header--nextnav";
-    headerContainer.className = "hnf-content-container hnf-header__container";
-    brand.className = "hnf-logo";
+    shell.className = "ikea-shell";
+    utilityBar.className = "ikea-shell__utilityBar";
+    utilityInner.className = "ikea-shell__utilityInner";
+    utilityLeft.className = "ikea-shell__utilityGroup";
+    utilityCenter.className = "ikea-shell__utilityGroup ikea-shell__utilityGroup--center";
+    utilityRight.className = "ikea-shell__utilityGroup ikea-shell__utilityGroup--right";
+    header.className = "ikea-shell__header";
+    headerInner.className = "ikea-shell__headerInner";
+    brand.className = "ikea-shell__logo";
     brand.href = "/";
-    brand.setAttribute("aria-label", "サイトトップへ");
-    brandMark.className = "hnf-logo__mark";
-    brandMark.textContent = "FINDER";
-    brandLockup.className = "hnf-logo__lockup";
-    brandEyebrow.className = "hnf-logo__eyebrow";
-    brandEyebrow.textContent = "Curated Search";
-    brandText.className = "hnf-logo__name";
-    brandText.setAttribute("data-site-brand", "");
-    brandText.textContent = BRAND_NAME;
-    brandLockup.append(brandEyebrow, brandText);
-    brand.append(brandMark, brandLockup);
+    brand.setAttribute("aria-label", "IKEA風トップへ");
+    brandFrame.className = "ikea-shell__logoFrame";
+    brandOval.className = "ikea-shell__logoOval";
+    brandOval.textContent = "IKEA";
+    brandFrame.appendChild(brandOval);
+    brand.appendChild(brandFrame);
 
-    entrypoints.className = "hnf-megamenu__entrypoints";
-    entrypoints.setAttribute("aria-label", "主要メニュー");
+    menu.className = "ikea-shell__menu";
+    menu.setAttribute("aria-label", "主要メニュー");
 
-    searchForm.className = "search-box-form";
+    searchForm.className = "ikea-shell__searchForm";
     searchForm.action = "/finder/";
     searchForm.method = "get";
-    searchShell.className = "search-box-search search-box-search--filled search-box-search--medium";
+    searchShell.className = "ikea-shell__search";
+    searchShell.appendChild(createIcon("search", "ikea-shell__searchIcon"));
     searchInput.type = "search";
     searchInput.name = "q";
-    searchInput.className = "search-box-search__input";
     searchInput.value = currentQuery;
-    searchInput.placeholder = "作品・タグ・作者で検索";
+    searchInput.placeholder = "商品・コンテンツを検索";
+    searchInput.className = "ikea-shell__searchInput";
     searchInput.setAttribute("aria-label", "サイト内検索");
-    clearButton.className =
-      "search-box-btn search-box-btn--xsmall search-box-btn--icon-tertiary search-box-search__clear";
+    clearButton.className = "ikea-shell__searchClear";
     clearButton.type = "button";
     clearButton.dataset.headerClear = "true";
-    clearButton.append(
-      Object.assign(document.createElement("span"), {
-        className: "search-box-btn__inner",
-      })
-    );
-    clearButton.firstChild.append(
-      createIcon("close", "search-box-svg-icon search-box-btn__icon"),
-      Object.assign(document.createElement("span"), {
-        className: "search-box-btn__label",
-        textContent: "クリア",
-      })
-    );
-    divider.className = "search-box-search__divider";
-    searchButton.className =
-      "search-box-btn search-box-btn--xsmall search-box-btn--icon-tertiary search-box-search__action";
+    clearButton.setAttribute("aria-label", "検索語を消去");
+    clearButton.appendChild(createIcon("close"));
+    searchButton.className = "ikea-shell__searchSubmit";
     searchButton.type = "submit";
-    searchButton.append(
-      Object.assign(document.createElement("span"), {
-        className: "search-box-btn__inner",
-      })
-    );
-    searchButton.firstChild.append(
-      createIcon("search", "search-box-svg-icon search-box-btn__icon"),
-      Object.assign(document.createElement("span"), {
-        className: "search-box-btn__label",
-        textContent: "検索",
-      })
-    );
-    searchShell.append(searchIcon, searchInput, clearButton, divider, searchButton);
-    searchForm.append(searchShell);
-    searchForm.classList.add("hnf-header__search");
+    searchButton.setAttribute("aria-label", "検索");
+    searchButton.appendChild(createIcon("search"));
+    searchShell.append(searchInput, clearButton, searchButton);
+    searchForm.appendChild(searchShell);
 
-    actions.className = "hnf-header__actions";
+    actionBar.className = "ikea-shell__actions";
 
-    HEADER_UTILITY_ITEMS.forEach((item, index) => {
-      const target = index === 0 ? utilityLeft : utilityCenter;
-      target.appendChild(
+    HEADER_UTILITY_LEFT.forEach((item) => {
+      utilityLeft.appendChild(
         createChromeLink({
           href: item.href,
           label: item.label,
-          className: index === 0 ? "hnf-link hnf-utilities__chip" : "hnf-link hnf-vp",
+          className: "ikea-shell__utilityLink",
           icon: item.icon,
         })
       );
     });
-
-    HEADER_PICKER_ITEMS.forEach((item) => {
+    HEADER_UTILITY_CENTER.forEach((item) => {
+      utilityCenter.appendChild(
+        createChromeLink({
+          href: item.href,
+          label: item.label,
+          className: "ikea-shell__utilityLink ikea-shell__utilityLink--emphasis",
+          icon: item.icon,
+        })
+      );
+    });
+    HEADER_UTILITY_RIGHT.forEach((item) => {
       utilityRight.appendChild(
         createChromeLink({
           href: item.href,
           label: item.label,
-          className: "hnf-link hnf-utilities__chip",
+          className: "ikea-shell__utilityLink",
           icon: item.icon,
         })
       );
     });
 
     NAV_ITEMS.forEach((item) => {
-      entrypoints.appendChild(
+      menu.appendChild(
         createChromeLink({
           href: item.href,
           label: item.label,
-          className: "hnf-link hnf-megamenu__entrypoint",
+          className: "ikea-shell__menuLink",
           current: item.section === currentSection,
         })
       );
     });
 
     HEADER_ACTIONS.forEach((item) => {
-      actions.appendChild(
-        createChromeLink({
-          href: item.href,
-          label: item.label,
-          className: "hnf-link hnf-header__action",
-          icon: item.icon,
-        })
-      );
+      const link = createChromeLink({
+        href: item.href,
+        label: item.label,
+        className: "ikea-shell__iconLink",
+        icon: item.icon,
+      });
+      link.setAttribute("aria-label", item.label);
+      actionBar.appendChild(link);
     });
 
-    utilitiesWrapper.append(utilityLeft, utilityCenter, utilityRight);
-    utilitiesContainer.appendChild(utilitiesWrapper);
-    utilities.appendChild(utilitiesContainer);
-    messages.appendChild(utilities);
-    headerContainer.append(brand, entrypoints, searchForm, actions);
-    header.appendChild(headerContainer);
-    nav.append(messages, header);
+    utilityInner.append(utilityLeft, utilityCenter, utilityRight);
+    utilityBar.appendChild(utilityInner);
+    headerInner.append(brand, menu, searchForm, actionBar);
+    header.appendChild(headerInner);
+    shell.append(utilityBar, header);
+    nav.appendChild(shell);
   });
 
   document.querySelectorAll(".footer").forEach((footer) => {
     footer.textContent = "";
 
     const shell = document.createElement("div");
-    const container = document.createElement("div");
-    const featured = document.createElement("div");
+    const inner = document.createElement("div");
+    const top = document.createElement("div");
+    const featured = document.createElement("section");
     const groups = document.createElement("div");
-    const bottom = document.createElement("div");
+    const socialRow = document.createElement("div");
+    const socialList = document.createElement("div");
+    const paymentList = document.createElement("div");
+    const localeButton = document.createElement("a");
+    const legalRow = document.createElement("div");
     const copyright = document.createElement("p");
-    const note = document.createElement("p");
+    const legalLinks = document.createElement("div");
 
-    shell.className = "hnf-footer";
-    container.className = "hnf-content-container hnf-footer__container";
-    featured.className = "hnf-footer__featuredLinks";
-    groups.className = "hnf-footer__linkGroups";
-    bottom.className = "hnf-footer__bottom";
+    shell.className = "ikea-footer";
+    inner.className = "ikea-footer__inner";
+    top.className = "ikea-footer__top";
+    featured.className = "ikea-footer__featured";
+    groups.className = "ikea-footer__groups";
+    socialRow.className = "ikea-footer__socialRow";
+    socialList.className = "ikea-footer__socialList";
+    paymentList.className = "ikea-footer__paymentList";
+    localeButton.className = "ikea-footer__locale";
+    localeButton.href = "/about/";
+    localeButton.append(createIcon("globe"), Object.assign(document.createElement("span"), { textContent: "JP | 日本語" }));
+    legalRow.className = "ikea-footer__legalRow";
+    copyright.className = "ikea-footer__copyright";
+    copyright.textContent = "© Inter IKEA Systems B.V 1999-2026";
+    legalLinks.className = "ikea-footer__legalLinks";
 
-    [
-      {
-        title: "検索導線を使い切る",
-        text: "保存した検索、比較トレイ、関連検索まで一つの流れで扱えるようにしています。公開前は文言差し替えだけで使える汎用土台です。",
-        links: [
-          { href: "/finder/", label: "作品検索へ", className: "hri-btn hri-btn--primary" },
-          { href: "/articles/", label: "使い方を見る", className: "hri-btn hri-btn--secondary" },
-        ],
-      },
-      {
-        title: "運用の前提を確認する",
-        text: "特集の固定導線、検索ログ、除外条件の扱いなど、ケモホモ作品ファインダーの運用方針をまとめています。",
-        links: [
-          { href: "/about/", label: "運営方針", className: "hri-btn hri-btn--primary" },
-          { href: "/contact/", label: "お問い合わせ", className: "hri-btn hri-btn--secondary" },
-        ],
-      },
-    ].forEach((card) => {
-      const article = document.createElement("article");
-      const title = document.createElement("h3");
-      const text = document.createElement("p");
-      const actions = document.createElement("div");
-
-      article.className = "hnf-footer__featuredLink";
-      title.textContent = card.title;
-      text.textContent = card.text;
-      actions.className = "hnf-footer__featuredLinkActions";
-      card.links.forEach((link) => {
-        actions.appendChild(
-          createChromeLink({
-            href: link.href,
-            label: link.label,
-            className: link.className,
-          })
-        );
-      });
-      article.append(title, text, actions);
-      featured.appendChild(article);
-    });
+    featured.append(
+      Object.assign(document.createElement("h2"), { textContent: FOOTER_FEATURED.title }),
+      Object.assign(document.createElement("p"), { textContent: FOOTER_FEATURED.text }),
+      createChromeLink({
+        href: "/about/",
+        label: FOOTER_FEATURED.detailLabel,
+        className: "ikea-footer__detailLink",
+      }),
+      createChromeLink({
+        href: "/about/",
+        label: FOOTER_FEATURED.buttonLabel,
+        className: "ikea-footer__featuredButton",
+      })
+    );
 
     FOOTER_GROUPS.forEach((group) => {
       const column = document.createElement("div");
       const title = document.createElement("h3");
       const list = document.createElement("ul");
-
-      column.className = "hnf-footer__linkColumn";
+      column.className = "ikea-footer__column";
       title.textContent = group.title;
-
+      if (group.title) column.appendChild(title);
       group.links.forEach((item) => {
         const listItem = document.createElement("li");
-        list.appendChild(
-          listItem
-        );
         listItem.appendChild(
           createChromeLink({
             href: item.href,
             label: item.label,
-            className: "hnf-link",
+            className: "ikea-footer__link",
           })
         );
+        list.appendChild(listItem);
       });
-
-      column.append(title, list);
+      column.appendChild(list);
       groups.appendChild(column);
     });
 
-    copyright.setAttribute("data-site-copyright", "");
-    copyright.textContent = `© ${BRAND_NAME}`;
+    FOOTER_SOCIAL_LABELS.forEach((label) => {
+      const badge = document.createElement("a");
+      badge.className = "ikea-footer__socialBadge";
+      badge.href = "/contact/";
+      badge.textContent = label;
+      socialList.appendChild(badge);
+    });
 
-    note.textContent =
-      "トップ、検索、特集、詳細の役割を明確に分けつつ、差し替えやすい汎用土台として維持します。";
+    FOOTER_PAYMENT_LABELS.forEach((label) => {
+      const badge = document.createElement("span");
+      badge.className = "ikea-footer__paymentBadge";
+      badge.textContent = label;
+      paymentList.appendChild(badge);
+    });
 
-    bottom.append(copyright, note);
-    container.append(featured, groups, bottom);
-    shell.appendChild(container);
+    FOOTER_LEGAL_LINKS.forEach((item) => {
+      legalLinks.appendChild(
+        createChromeLink({
+          href: item.href,
+          label: item.label,
+          className: "ikea-footer__legalLink",
+        })
+      );
+    });
+
+    top.append(featured, groups);
+    socialRow.append(socialList, paymentList, localeButton);
+    legalRow.append(copyright, legalLinks);
+    inner.append(top, socialRow, legalRow);
+    shell.appendChild(inner);
     footer.appendChild(shell);
   });
+
+  if (document.body && !document.querySelector(".ikea-help-fab")) {
+    const fab = document.createElement("a");
+    fab.className = "ikea-help-fab";
+    fab.href = "/contact/";
+    fab.setAttribute("aria-label", "お問い合わせ");
+    fab.appendChild(createIcon("chat"));
+    document.body.appendChild(fab);
+  }
 };
 
 renderSiteChrome();
