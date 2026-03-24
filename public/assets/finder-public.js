@@ -158,6 +158,17 @@
     });
   };
 
+  const getVisualTone = (seed = "") => {
+    const tones = ["sun", "sky", "clay", "mint", "stone"];
+    let hash = 0;
+    String(seed)
+      .split("")
+      .forEach((char) => {
+        hash = (hash * 31 + char.charCodeAt(0)) % 2147483647;
+      });
+    return tones[Math.abs(hash) % tones.length];
+  };
+
   const createWorkCard = ({
     work,
     profileId,
@@ -169,7 +180,7 @@
     const article = document.createElement("article");
     const visual = document.createElement("div");
     const visualMeta = document.createElement("div");
-    const visualLabel = document.createElement("span");
+    const visualBadgeLabel = document.createElement("span");
     const visualText = document.createElement("strong");
     const header = document.createElement("div");
     const content = document.createElement("div");
@@ -183,21 +194,39 @@
     const detailLink = document.createElement("a");
     const compareSet = new Set(core.ensureArray(uiState.compareWorkIds));
     const favoriteSet = new Set(core.ensureArray(uiState.favoriteWorkIds));
+    const visualTone = getVisualTone(work.id || work.slug || work.title);
+    const visualLink = document.createElement("a");
+    const visualKind = work.format || "作品";
+    const visualBadge = core.ensureArray(work.primaryTagObjects).some((tag) => tag.id === "gateway-pick")
+      ? "SELECTED"
+      : core.ensureArray(work.primaryTagObjects).some((tag) => tag.id === "tf-present")
+        ? "POPULAR"
+        : "NEW";
 
     article.className = `card work-card work-card--${layout}`;
     article.dataset.workId = work.id;
+    article.dataset.tone = visualTone;
 
     visual.className = "work-card__visual";
     visualMeta.className = "work-card__visual-meta";
-    visualLabel.className = "work-card__visual-label";
-    visualLabel.textContent = work.format || "作品";
+    visualBadgeLabel.className = "work-card__visual-label";
+    visualBadgeLabel.textContent = visualBadge;
     visualText.textContent = work.creator || "サンプル作者";
-    visualMeta.append(visualLabel, visualText);
-    visual.append(visualMeta);
+    visualMeta.append(visualBadgeLabel, visualText);
+    visualLink.className = "work-card__visual-link";
+    visualLink.href = `/work/?slug=${encodeURIComponent(work.slug)}`;
+    visualLink.dataset.workLink = "true";
+    visualLink.dataset.workId = work.id;
+    visualLink.append(
+      createText("span", "work-card__visual-kind", visualKind),
+      createText("strong", "work-card__visual-title", work.title),
+      visualMeta
+    );
+    visual.append(visualLink);
 
     header.className = "work-card__header";
     header.append(
-      createText("span", "pill", work.format || "作品"),
+      createText("span", "work-card__creator", work.creator || "サンプル作者"),
       createText("span", "help", work.releasedAt || "公開日未設定")
     );
 
@@ -207,7 +236,7 @@
     titleLink.dataset.workId = work.id;
     titleLink.textContent = work.title;
 
-    summary.className = "muted";
+    summary.className = "work-card__summary";
     summary.textContent = work.shortDescription;
 
     reasonText.className = "work-card__reason";
@@ -226,7 +255,7 @@
 
     meta.className = "work-card__meta";
     meta.append(
-      createText("span", "help", work.releasedAt || "公開日未設定"),
+      createText("strong", "work-card__format", work.format || "作品"),
       createText("span", "help", work.highlightPoints?.[0] || "条件要約あり")
     );
 
@@ -244,7 +273,7 @@
       })
     );
 
-    detailLink.className = "btn btn--primary btn--sm";
+    detailLink.className = "btn btn--secondary btn--sm";
     detailLink.href = `/work/?slug=${encodeURIComponent(work.slug)}`;
     detailLink.dataset.workLink = "true";
     detailLink.dataset.workId = work.id;
@@ -258,7 +287,7 @@
     }
 
     content.className = "work-card__body";
-    content.append(header, titleLink, summary, reasonText, tagList, meta, footer);
+    content.append(header, titleLink, summary, meta, reasonText, tagList, footer);
     article.append(visual, content);
 
     if (profileId && layout === "compact") {
@@ -285,8 +314,10 @@
     const footer = document.createElement("div");
     const count = document.createElement("span");
     const detailLink = document.createElement("a");
+    const visualTone = getVisualTone(collection.id || collection.slug || collection.title);
 
     article.className = `card collection-card collection-card--${layout}`;
+    article.dataset.tone = visualTone;
     visual.className = "collection-card__visual";
     visual.append(
       createText("span", "collection-card__visual-label", "COLLECTION"),
@@ -294,16 +325,13 @@
     );
 
     header.className = "collection-card__meta";
-    header.append(
-      createText("span", "pill", "Collection"),
-      createText("span", "help", "固定導線")
-    );
+    header.append(createText("span", "collection-card__creator", "固定導線"), createText("span", "help", "Curated"));
 
     titleLink.className = layout === "compact" ? "h3 collection-card__title" : "h2 collection-card__title";
     titleLink.href = `/collection/?slug=${encodeURIComponent(collection.slug)}`;
     titleLink.textContent = collection.title;
 
-    description.className = "muted";
+    description.className = "collection-card__summary";
     description.textContent = collection.description;
 
     tagList.className = "tag-list";
@@ -502,7 +530,7 @@
     fillTextList(root.querySelector("[data-home-value-props]"), profile.valueProps, (item) => {
       const card = document.createElement("article");
       const title = item.split("を")[0] || "運用軸";
-      card.className = "card ikea-editorial-card stack";
+      card.className = "card storefront-editorial-card stack";
       card.append(
         createText("p", "pill", "運用軸"),
         createText("h3", "h3", title),
@@ -529,7 +557,7 @@
     fillTextList(root.querySelector("[data-home-tag-groups]"), groupedTags.slice(0, 4), (group) => {
       const card = document.createElement("div");
       const list = document.createElement("div");
-      card.className = "card ikea-category-card stack";
+      card.className = "card storefront-category-card stack";
       list.className = "tag-list";
       group.tags.slice(0, 5).forEach((tag) => {
         list.appendChild(
@@ -672,13 +700,25 @@
     const renderTagGroups = () => {
       groupsRoot.textContent = "";
       groupedTags.forEach((group) => {
-        const block = document.createElement("section");
-        block.className = "finder-group-v2 stack";
+        const block = document.createElement("details");
+        const summary = document.createElement("summary");
+        const summaryLabel = document.createElement("span");
+        const summaryMeta = document.createElement("span");
+        const body = document.createElement("div");
 
-        block.append(
-          createText("p", "label", group.label),
-          createText("p", "help", group.description || "")
-        );
+        block.className = "plp-filter-group";
+        block.open = true;
+        summary.className = "plp-filter-group__summary";
+        summaryLabel.textContent = group.label;
+        summaryMeta.className = "help";
+        summaryMeta.textContent = `${group.tags.length}条件`;
+        summary.append(summaryLabel, summaryMeta);
+        block.append(summary);
+        if (group.description) {
+          block.append(createText("p", "help plp-filter-group__description", group.description));
+        }
+
+        body.className = "plp-filter-group__body";
 
         group.tags.forEach((tag) => {
           const row = document.createElement("div");
@@ -697,8 +737,8 @@
           }).length;
           const tagState = getTagState(tag.id);
 
-          row.className = `finder-tag-row finder-tag-row--${tagState}`;
-          info.className = "finder-tag-row__info";
+          row.className = `plp-filter-row plp-filter-row--${tagState}`;
+          info.className = "plp-filter-row__info";
           info.append(
             createText("strong", "", tag.label),
             createText(
@@ -708,33 +748,34 @@
             )
           );
 
-          controls.className = "finder-tag-row__controls";
+          controls.className = "plp-filter-row__controls";
           controls.append(
             createButton({
               label: "無視",
-              className: "finder-state-btn",
+              className: "plp-filter-chip",
               dataset: { filterTagId: tag.id, filterState: "ignore" },
               pressed: tagState === "ignore",
             }),
             createButton({
               label: "含める",
-              className: "finder-state-btn finder-state-btn--include",
+              className: "plp-filter-chip plp-filter-chip--include",
               dataset: { filterTagId: tag.id, filterState: "include" },
               pressed: tagState === "include",
               disabled: includeCount === 0 && tagState !== "include",
             }),
             createButton({
               label: "除外",
-              className: "finder-state-btn finder-state-btn--exclude",
+              className: "plp-filter-chip plp-filter-chip--exclude",
               dataset: { filterTagId: tag.id, filterState: "exclude" },
               pressed: tagState === "exclude",
             })
           );
 
           row.append(info, controls);
-          block.append(row);
+          body.append(row);
         });
 
+        block.append(body);
         groupsRoot.appendChild(block);
       });
     };

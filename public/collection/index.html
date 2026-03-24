@@ -73,35 +73,47 @@
         </div>
       </div>
 
-      <div class="booking-detail-page" data-collection-content>
-        <div class="booking-detail-main stack stack--lg">
-          <div class="card booking-detail-header stack">
-            <p class="kicker">Collection Detail</p>
-            <h1 class="h1" data-collection-title>特集名</h1>
-            <p class="lead" data-collection-description>特集の説明</p>
-            <div class="tag-list" data-collection-tags></div>
-          </div>
+      <div class="collection-detail-layout" data-collection-content>
+        <div class="collection-detail-main stack stack--lg">
+          <section class="collection-detail-hero">
+            <div class="collection-detail-hero__copy stack">
+              <p class="plp-breadcrumb">ホーム / 特集 / 詳細</p>
+              <p class="storefront-eyebrow">Collection detail</p>
+              <h1 class="h1" data-collection-title>特集名</h1>
+              <p class="lead" data-collection-description>特集の説明</p>
+              <div class="tag-list" data-collection-tags></div>
+            </div>
+            <div class="collection-detail-hero__visual storefront-visual storefront-visual--collection">
+              <span class="storefront-visual__badge">COLLECTION</span>
+              <strong class="storefront-visual__title">Curated path</strong>
+            </div>
+          </section>
 
-          <div class="booking-detail-info-grid">
-            <div class="card stack">
+          <div class="collection-detail-grid">
+            <section class="card stack">
               <h2 class="h3">この特集の意図</h2>
               <p class="muted" data-collection-lead></p>
-            </div>
-            <div class="card stack">
+            </section>
+            <section class="card stack">
               <h2 class="h3">見方のポイント</h2>
               <ul class="list" data-collection-points></ul>
-            </div>
+            </section>
           </div>
 
-          <div class="stack">
-            <h2 class="h3">この特集に含まれる作品</h2>
-            <div class="booking-feature-grid" data-collection-works></div>
-          </div>
+          <section class="stack">
+            <div class="storefront-section__head">
+              <div class="stack">
+                <p class="storefront-eyebrow">Selected works</p>
+                <h2 class="h3">この特集に含まれる作品</h2>
+              </div>
+            </div>
+            <div class="storefront-product-grid" data-collection-works></div>
+          </section>
         </div>
 
-        <aside class="booking-detail-side">
-          <div class="card booking-sticky-card stack">
-            <p class="kicker">Explore This Collection</p>
+        <aside class="collection-detail-side">
+          <div class="card collection-detail-aside stack">
+            <p class="storefront-eyebrow">Explore this collection</p>
             <h2 class="h3">この特集で検索する</h2>
             <p class="muted">この特集の中からさらに条件を足して絞り込みたい場合は、検索ページへ戻ります。</p>
             <a class="btn btn--primary" data-collection-finder-link href="/finder/">この特集で検索する</a>

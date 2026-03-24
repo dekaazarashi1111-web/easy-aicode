@@ -73,54 +73,77 @@
         </div>
       </div>
 
-      <div class="booking-detail-page" data-work-content>
-        <div class="booking-detail-main stack stack--lg">
-          <div class="card booking-detail-header stack">
-            <p class="help" data-work-breadcrumb>ホーム / 作品検索 / 作品詳細</p>
-            <div class="cluster">
-              <span class="pill" data-work-format>漫画</span>
-              <span class="help" data-work-creator>作者名</span>
+      <div class="pdp-layout" data-work-content>
+        <div class="pdp-main stack stack--lg">
+          <p class="pdp-breadcrumb" data-work-breadcrumb>ホーム / 作品検索 / 作品詳細</p>
+
+          <div class="pdp-overview">
+            <div class="card pdp-gallery">
+              <div class="pdp-gallery__hero">
+                <div class="pdp-gallery__visual">
+                  <span class="pdp-gallery__badge">CATALOG VIEW</span>
+                  <strong>Finder Item</strong>
+                  <p>Visual placeholder</p>
+                </div>
+              </div>
+              <div class="pdp-gallery__thumbs">
+                <div class="pdp-gallery__thumb"></div>
+                <div class="pdp-gallery__thumb"></div>
+                <div class="pdp-gallery__thumb"></div>
+              </div>
             </div>
-            <h1 class="h1" data-work-title>作品名</h1>
-            <p class="lead" data-work-summary>作品の一言説明</p>
-            <div class="cluster work-meta-strip">
-              <span class="tag" data-work-release>公開日</span>
-              <span class="tag" data-work-tag-count>主要タグ</span>
+
+            <div class="pdp-summary stack">
+              <div class="cluster">
+                <span class="pill" data-work-format>漫画</span>
+                <span class="help" data-work-creator>作者名</span>
+              </div>
+              <h1 class="h1" data-work-title>作品名</h1>
+              <p class="lead" data-work-summary>作品の一言説明</p>
+              <div class="cluster work-meta-strip">
+                <span class="tag" data-work-release>公開日</span>
+                <span class="tag" data-work-tag-count>主要タグ</span>
+              </div>
+              <div class="tag-list" data-work-tags></div>
+              <div class="card pdp-highlight-box stack">
+                <h2 class="h3">この作品が合いやすい人</h2>
+                <p class="muted" data-work-reason></p>
+                <p class="help" data-work-note></p>
+              </div>
             </div>
-            <div class="tag-list" data-work-tags></div>
           </div>
 
-          <div class="booking-detail-info-grid">
-            <div class="card stack">
-              <h2 class="h3">この作品が合いやすい人</h2>
-              <p class="muted" data-work-reason></p>
-              <p class="help" data-work-note></p>
-            </div>
-            <div class="card stack">
+          <div class="pdp-detail-grid">
+            <section class="card stack">
               <h2 class="h3">補足メモ</h2>
               <p class="muted" data-work-caution></p>
-            </div>
+            </section>
+
+            <section class="card stack">
+              <h2 class="h3">注目ポイント</h2>
+              <ul class="list" data-work-points></ul>
+            </section>
           </div>
 
-          <div class="card stack">
-            <h2 class="h3">注目ポイント</h2>
-            <ul class="list" data-work-points></ul>
-          </div>
-
-          <div class="card stack">
+          <section class="card stack">
             <h2 class="h3">関連特集</h2>
             <div class="tag-list" data-work-collections></div>
-          </div>
+          </section>
 
-          <div class="stack">
-            <h2 class="h3">近い条件で探しやすい作品</h2>
-            <div class="booking-feature-grid" data-work-similar></div>
-          </div>
+          <section class="stack">
+            <div class="storefront-section__head">
+              <div class="stack">
+                <p class="storefront-eyebrow">Similar items</p>
+                <h2 class="h3">近い条件で探しやすい作品</h2>
+              </div>
+            </div>
+            <div class="storefront-product-grid" data-work-similar></div>
+          </section>
         </div>
 
-        <aside class="booking-detail-side">
-          <div class="card booking-sticky-card stack">
-            <p class="kicker">Explore This Work</p>
+        <aside class="pdp-side">
+          <div class="card pdp-buybox stack">
+            <p class="storefront-eyebrow">Link and save</p>
             <h2 class="h3">保存・比較・外部リンク</h2>
             <p class="muted">お気に入り保存や比較トレイへの追加をしてから、必要に応じて外部ページへ進みます。</p>
             <div class="stack" data-work-actions></div>

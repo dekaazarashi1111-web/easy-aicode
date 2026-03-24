@@ -1,7 +1,7 @@
 const SITE_CONFIG = window.SITE_CONFIG || {};
 
 if (typeof document !== "undefined" && !document.documentElement.hasAttribute("data-theme")) {
-  document.documentElement.setAttribute("data-theme", "dark");
+  document.documentElement.setAttribute("data-theme", "light");
 }
 
 const sendAnalyticsEvent = (name, params = {}) => {
@@ -67,7 +67,7 @@ updateSeoUrls();
 
 const themeColorMeta = document.querySelector('meta[name="theme-color"]');
 if (themeColorMeta) {
-  themeColorMeta.setAttribute("content", "#09111d");
+  themeColorMeta.setAttribute("content", "#ffffff");
 }
 
 const updateXProfileLinks = () => {
@@ -261,7 +261,7 @@ const renderSiteChrome = () => {
     searchInput.className = "nav__search-input";
     searchInput.type = "search";
     searchInput.name = "q";
-    searchInput.placeholder = "作品名、作者、雰囲気で探す";
+    searchInput.placeholder = "作品・タグ・作者で検索";
     searchInput.setAttribute("aria-label", "サイト内検索");
     searchButton.className = "nav__search-button";
     searchButton.type = "submit";
@@ -274,13 +274,13 @@ const renderSiteChrome = () => {
     promo.className = "nav__promo";
     promoText.className = "nav__promo-text";
     promoText.textContent =
-      "条件検索、固定特集、ガイド導線を一つの流れで使える探索サイトの土台です。";
+      "固定特集、条件検索、ガイド導線を一つの流れで使える探索カタログです。";
     promoActions.className = "nav__promo-actions";
 
     topbarLeft.append(
-      createChromeLink({ href: "/about/", label: "このサイトについて" }),
-      createChromeLink({ href: "/collections/", label: "特集から探す" }),
-      createChromeLink({ href: "/articles/", label: "ガイドを見る" })
+      createChromeLink({ href: "/collections/", label: "おすすめ特集" }),
+      createChromeLink({ href: "/articles/", label: "ガイドを見る" }),
+      createChromeLink({ href: "/about/", label: "このサイトについて" })
     );
 
     topbarRight.append(
@@ -312,12 +312,12 @@ const renderSiteChrome = () => {
     utility.append(
       createChromeLink({
         href: "/collections/",
-        label: "特集から始める",
+        label: "特集",
         className: "nav__cta nav__cta--secondary",
       }),
       createChromeLink({
         href: "/finder/",
-        label: "条件から探す",
+        label: "検索する",
         className: "nav__cta nav__cta--primary",
       })
     );
@@ -375,7 +375,7 @@ const renderSiteChrome = () => {
 
     leadText.className = "muted";
     leadText.textContent =
-      "条件検索、固定特集、ガイド導線を一つの体験として揃え、どのページから入っても迷わず次の行動へ進めるようにします。";
+      "固定特集、条件検索、ガイド導線を一つの体験として揃え、どのページから入っても迷わず次の行動へ進めるようにします。";
 
     leadLinks.append(
       createChromeLink({
@@ -421,7 +421,7 @@ const renderSiteChrome = () => {
 
     note.className = "help";
     note.textContent =
-      "固定ページ、ガイド、検索結果で導線や表記を揃え、見た瞬間に役割が分かる構造を維持します。";
+      "トップ、検索、特集、詳細の役割を分け、どの導線から入っても迷わない構造を維持します。";
 
     bottom.append(copyright, note);
     inner.append(lead, grid, bottom);

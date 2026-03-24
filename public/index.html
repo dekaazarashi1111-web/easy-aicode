@@ -62,128 +62,141 @@
 </nav>
 
 <main id="main" data-home-page>
-  <section class="ikea-hero">
-    <div class="container">
-      <div class="ikea-hero__grid">
-        <article class="ikea-promo ikea-promo--primary stack">
-          <p class="ikea-promo__eyebrow" data-home-kicker>Kemo Finder Starter</p>
-          <h1 class="ikea-promo__title" data-home-title>ケモホモ作品を、条件と除外条件で探しやすくする</h1>
-          <p class="ikea-promo__lead" data-home-description>
-            DMM 側の分類だけでは拾いにくい語彙を、入口タグ、TF、媒体、除外条件に翻訳して探すための土台です。
-          </p>
-          <p class="ikea-promo__sub" data-home-audience-note>
-            まずは「何から見ればいいか分からない」人を迷わせず、その後で TF や媒体別の枝へ落とします。
-          </p>
-          <form class="ikea-search-panel" action="/finder/" method="get">
-            <label class="label sr-only" for="home-search-query">キーワード</label>
-            <div class="ikea-search-panel__row">
-              <input id="home-search-query" class="ikea-search-panel__input" type="search" name="q" placeholder="オスケモ寄り / TFは軽め / 入口向け" />
-              <button class="ikea-search-panel__button" type="submit">作品を探す</button>
+  <section class="storefront-hero">
+    <div class="container stack stack--lg">
+      <div class="storefront-hero__grid">
+        <article class="storefront-hero-card storefront-hero-card--primary">
+          <div class="storefront-hero-card__content stack">
+            <p class="storefront-eyebrow" data-home-kicker>Kemo Finder Starter</p>
+            <h1 class="storefront-hero-card__title" data-home-title>ケモホモ作品を、条件と除外条件で探しやすくする</h1>
+            <p class="storefront-hero-card__lead" data-home-description>
+              DMM 側の分類だけでは拾いにくい語彙を、入口タグ、TF、媒体、除外条件に翻訳して探すための土台です。
+            </p>
+            <p class="storefront-hero-card__note" data-home-audience-note>
+              まずは「何から見ればいいか分からない」人を迷わせず、その後で TF や媒体別の枝へ落とします。
+            </p>
+            <form class="storefront-search-box" action="/finder/" method="get">
+              <label class="sr-only" for="home-search-query">キーワード</label>
+              <input id="home-search-query" class="storefront-search-box__input" type="search" name="q" placeholder="オスケモ寄り / TFは軽め / 入口向け" />
+              <button class="storefront-search-box__button" type="submit">検索</button>
+            </form>
+            <div class="storefront-hero-card__actions">
+              <a class="btn btn--primary" href="/finder/?collection=start-here">まずここから</a>
+              <a class="btn btn--secondary" href="/collections/">特集を見る</a>
             </div>
-          </form>
-          <div class="ikea-promo__actions">
-            <a class="btn btn--primary" href="/finder/?collection=start-here">まずここから</a>
-            <a class="btn btn--secondary" href="/collections/">特集を見る</a>
+          </div>
+          <div class="storefront-hero-card__media storefront-visual storefront-visual--room">
+            <span class="storefront-visual__badge">CURATED ENTRY</span>
+            <strong class="storefront-visual__title">条件から探す</strong>
+            <p class="storefront-visual__text">トップ、特集、検索を往復しやすい探索カタログの基準形</p>
           </div>
         </article>
 
-        <div class="ikea-promo-stack">
-          <article class="ikea-promo ikea-promo--secondary stack">
-            <p class="ikea-promo__eyebrow">Popular Searches</p>
-            <h2 class="h3">よく使われる切り口</h2>
-            <div class="tag-list" data-home-popular-searches></div>
+        <div class="storefront-hero__aside">
+          <article class="storefront-promo-card">
+            <div class="storefront-promo-card__media storefront-visual storefront-visual--product">
+              <span class="storefront-visual__badge">POPULAR</span>
+              <strong class="storefront-visual__title">よく使われる条件</strong>
+            </div>
+            <div class="storefront-promo-card__body stack">
+              <p class="storefront-eyebrow">Popular searches</p>
+              <h2 class="h3">人気の切り口から始める</h2>
+              <div class="tag-list" data-home-popular-searches></div>
+            </div>
           </article>
 
-          <article class="ikea-promo ikea-promo--tertiary stack">
-            <p class="ikea-promo__eyebrow">Saved & Recent</p>
-            <h2 class="h3">続きから探す</h2>
-            <div class="finder-mini-list" data-home-saved-searches></div>
-            <div class="finder-mini-list" data-home-recent-works></div>
+          <article class="storefront-promo-card storefront-promo-card--subtle">
+            <div class="storefront-promo-card__body stack">
+              <p class="storefront-eyebrow">Saved and recent</p>
+              <h2 class="h3">続きから探す</h2>
+              <div class="finder-mini-list" data-home-saved-searches></div>
+              <div class="finder-mini-list" data-home-recent-works></div>
+            </div>
           </article>
         </div>
       </div>
-    </div>
-  </section>
 
-  <section class="ikea-utility-strip">
-    <div class="container">
-      <div class="ikea-utility-strip__grid">
-        <div class="ikea-utility-item">
+      <div class="storefront-utility-grid">
+        <article class="storefront-utility-card">
           <strong>入口は広く</strong>
-          <span>ケモホモを入口語にして、あとから深い枝へ送る</span>
-        </div>
-        <div class="ikea-utility-item">
+          <span>広い入口語から、あとで深い条件へ落とす</span>
+        </article>
+        <article class="storefront-utility-card">
           <strong>検索は細かく</strong>
           <span>含める条件と除外条件を同じ画面で扱う</span>
-        </div>
-        <div class="ikea-utility-item">
-          <strong>運用は手動で強く</strong>
-          <span>特集、タグ、公開状態、ログを同じ基盤で回す</span>
-        </div>
+        </article>
+        <article class="storefront-utility-card">
+          <strong>手動で磨く</strong>
+          <span>特集とタグを人力で整え、発見性を上げる</span>
+        </article>
+        <article class="storefront-utility-card">
+          <strong>比較しやすく</strong>
+          <span>保存と比較トレイで候補を見失わない</span>
+        </article>
       </div>
     </div>
   </section>
 
-  <section class="section">
+  <section class="storefront-section">
     <div class="container stack stack--lg">
-      <div class="ikea-section-head">
+      <div class="storefront-section__head">
         <div class="stack">
-          <p class="kicker">Browse by Tags</p>
+          <p class="storefront-eyebrow">Browse by category</p>
           <h2 class="h2">最初に使うタググループ</h2>
         </div>
-        <a class="ikea-section-head__link" href="/finder/">検索ページへ</a>
+        <a class="storefront-section__link" href="/finder/">すべて見る</a>
       </div>
-      <div class="ikea-category-grid" data-home-tag-groups></div>
+      <div class="storefront-category-grid" data-home-tag-groups></div>
     </div>
   </section>
 
-  <section class="section section--alt">
+  <section class="storefront-section storefront-section--tint">
     <div class="container stack stack--lg">
-      <div class="ikea-section-head">
+      <div class="storefront-section__head">
         <div class="stack">
-          <p class="kicker">Collections</p>
+          <p class="storefront-eyebrow">Collections</p>
           <h2 class="h2">固定特集から探す</h2>
         </div>
-        <a class="ikea-section-head__link" href="/collections/">すべての特集を見る</a>
+        <a class="storefront-section__link" href="/collections/">すべての特集を見る</a>
       </div>
-      <div class="ikea-card-row" data-home-featured-collections></div>
+      <div class="storefront-shelf" data-home-featured-collections></div>
     </div>
   </section>
 
-  <section class="section">
+  <section class="storefront-section">
     <div class="container stack stack--lg">
-      <div class="ikea-section-head">
+      <div class="storefront-section__head">
         <div class="stack">
-          <p class="kicker">Featured Works</p>
+          <p class="storefront-eyebrow">Featured works</p>
           <h2 class="h2">入口導線で使う代表的な作品</h2>
         </div>
       </div>
-      <div class="ikea-product-grid" data-home-featured-works></div>
+      <div class="storefront-product-grid" data-home-featured-works></div>
     </div>
   </section>
 
-  <section class="section">
+  <section class="storefront-section">
     <div class="container stack stack--lg">
-      <div class="ikea-section-head">
+      <div class="storefront-section__head">
         <div class="stack">
-          <p class="kicker">Keep Shortlist</p>
+          <p class="storefront-eyebrow">Keep shortlist</p>
           <h2 class="h2">あとで比較したい候補</h2>
         </div>
-        <a class="ikea-section-head__link" href="/finder/">比較トレイへ</a>
+        <a class="storefront-section__link" href="/finder/">比較トレイを見る</a>
       </div>
-      <div class="ikea-product-grid" data-home-favorite-works></div>
+      <div class="storefront-product-grid" data-home-favorite-works></div>
     </div>
   </section>
 
-  <section class="section section--alt">
+  <section class="storefront-section storefront-section--tint">
     <div class="container stack stack--lg">
-      <div class="ikea-section-head">
+      <div class="storefront-section__head">
         <div class="stack">
-          <p class="kicker">Value Props</p>
+          <p class="storefront-eyebrow">Value props</p>
           <h2 class="h2">運用上の軸</h2>
         </div>
       </div>
-      <div class="ikea-editorial-grid" data-home-value-props></div>
+      <div class="storefront-editorial-grid" data-home-value-props></div>
     </div>
   </section>
 </main>

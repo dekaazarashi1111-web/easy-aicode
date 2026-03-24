@@ -64,34 +64,34 @@
 <main id="main">
   <section class="section section--tight">
     <div class="container stack stack--lg" data-collections-page>
-      <div class="card booking-page-header stack">
-        <p class="kicker">Collections</p>
-        <h1 class="h2">固定導線として使う特集一覧</h1>
-        <p class="muted">検索結果ではなく、SNS や初見導線、0件検索の受け皿として使う価値ページをここに並べます。</p>
-      </div>
-
-      <div class="booking-two-column">
-        <div class="stack">
-          <div class="section-head">
-            <div class="stack">
-              <p class="kicker">All Collections</p>
-              <h2 class="h3">公開中の特集</h2>
-            </div>
-          </div>
-          <div class="result-list" data-collections-list></div>
+      <div class="collections-hero">
+        <div class="collections-hero__copy stack">
+          <p class="plp-breadcrumb">ホーム / 特集</p>
+          <p class="storefront-eyebrow">Collections</p>
+          <h1 class="h2">固定導線として使う特集一覧</h1>
+          <p class="muted">検索結果ではなく、SNS や初見導線、0件検索の受け皿として使う価値ページをここに並べます。</p>
         </div>
 
-        <aside class="booking-aside stack">
-          <div class="card booking-sticky-card stack">
-            <p class="kicker">Why Collections</p>
-            <h2 class="h3">検索に詰まった時の受け皿を先に作る</h2>
-            <ul class="list list--compact" data-collections-intro></ul>
-            <div class="divider"></div>
-            <h3 class="h3">最近見た作品</h3>
-            <div class="finder-mini-list" data-collections-recent></div>
-          </div>
+        <aside class="card collections-hero__aside stack">
+          <h2 class="h3">最近見た作品</h2>
+          <div class="finder-mini-list" data-collections-recent></div>
         </aside>
       </div>
+
+      <section class="card collections-intro stack">
+        <h2 class="h3">この一覧の役割</h2>
+        <ul class="list list--compact" data-collections-intro></ul>
+      </section>
+
+      <section class="stack">
+        <div class="storefront-section__head">
+          <div class="stack">
+            <p class="storefront-eyebrow">All collections</p>
+            <h2 class="h3">公開中の特集</h2>
+          </div>
+        </div>
+        <div class="collections-directory" data-collections-list></div>
+      </section>
     </div>
   </section>
 </main>
