@@ -595,7 +595,6 @@
                 <h2>結果リスト</h2>
                 <p data-finder-status>条件なし</p>
               </div>
-              <span class="ikea-search-results__pill">検索インデックス</span>
             </div>
             <section class="ikea-search-results__compare" data-finder-compare hidden id="compare-tray">
               <div class="ikea-section-heading">
