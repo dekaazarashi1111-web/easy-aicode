@@ -8,6 +8,7 @@
 ## 主要ページ
 - トップ: `public/index.html` → `/`
 - 作品検索: `public/finder/index.html` → `/finder/`
+- 詳細条件ビルダー: `public/builder/index.html` → `/builder/`
 - 作品詳細: `public/work/index.html` → `/work/?slug=...`
 - 特集一覧: `public/collections/index.html` → `/collections/`
 - 特集詳細: `public/collection/index.html` → `/collection/?slug=...`

@@ -1330,6 +1330,7 @@
     const tagRoot = root.querySelector("[data-work-tags]");
     const linksRoot = root.querySelector("[data-work-links]");
     const actionsRoot = root.querySelector("[data-work-actions]");
+    const searchLinksRoot = root.querySelector("[data-work-search-links]");
     const similarRoot = root.querySelector("[data-work-similar]");
     const collectionRoot = root.querySelector("[data-work-collections]");
     const creatorRoot = root.querySelector("[data-work-creator]");
@@ -1394,6 +1395,37 @@
     };
 
     renderWorkActions();
+
+    if (searchLinksRoot) {
+      searchLinksRoot.textContent = "";
+      const primaryTags = core.ensureArray(decoratedWork?.primaryTagObjects);
+      const startTagIds = primaryTags.slice(0, 2).map((tag) => tag.id);
+      if (startTagIds.length) {
+        searchLinksRoot.appendChild(
+          createFinderLink({
+            label: "主要タグを起点に一覧を見る",
+            href: toFinderUrl({ includeTagIds: startTagIds }),
+            meta: primaryTags.slice(0, 2).map((tag) => tag.label).join(" / "),
+          })
+        );
+      }
+      if (work.creator) {
+        searchLinksRoot.appendChild(
+          createFinderLink({
+            label: "同作者から探す",
+            href: toFinderUrl({ creatorQuery: work.creator }),
+            meta: work.creator,
+          })
+        );
+      }
+      searchLinksRoot.appendChild(
+        createFinderLink({
+          label: "この条件をビルダーで編集する",
+          href: `/builder/${new URL(toFinderUrl({ includeTagIds: startTagIds, creatorQuery: work.creator || "" }), window.location.origin).search}`,
+          meta: "通常検索より細かく条件を追加できます。",
+        })
+      );
+    }
 
     if (linksRoot) {
       linksRoot.textContent = "";

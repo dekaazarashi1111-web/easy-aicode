@@ -6,6 +6,7 @@
 ## 主要ページ
 - `/` : `public/index.html`
 - `/finder/` : `public/finder/index.html`
+- `/builder/` : `public/builder/index.html`
 - `/work/` : `public/work/index.html`
 - `/collections/` : `public/collections/index.html`
 - `/collection/` : `public/collection/index.html`

@@ -154,6 +154,7 @@ const getCurrentSection = (pathname = window.location.pathname) => {
   const normalized = normalizePathname(pathname);
   if (normalized === "/") return "home";
   if (normalized.startsWith("/finder/") || normalized.startsWith("/work/")) return "finder";
+  if (normalized.startsWith("/builder/")) return "builder";
   if (normalized.startsWith("/collections/") || normalized.startsWith("/collection/")) {
     return "collections";
   }
@@ -164,11 +165,11 @@ const getCurrentSection = (pathname = window.location.pathname) => {
 };
 
 const NAV_ITEMS = [
-  { href: "/finder/", label: "商品一覧", section: "finder" },
-  { href: "/collections/", label: "部屋別", section: "collections" },
-  { href: "/finder/?collection=start-here", label: "お買い得商品", section: "finder" },
-  { href: "/articles/", label: "アイデア＆プラン", section: "articles" },
-  { href: "/about/", label: "サービス・イケア店舗", section: "about" },
+  { href: "/finder/", label: "条件から探す", section: "finder" },
+  { href: "/collections/", label: "探し方別", section: "collections" },
+  { href: "/finder/?collection=start-here", label: "まずここから", section: "finder" },
+  { href: "/builder/", label: "詳細条件ビルダー", section: "builder" },
+  { href: "/articles/", label: "ガイド・方針", section: "articles" },
 ];
 
 const HEADER_UTILITY_LEFT = [
@@ -178,68 +179,69 @@ const HEADER_UTILITY_LEFT = [
 const HEADER_UTILITY_CENTER = [
   {
     href: "/finder/?collection=start-here",
-    label: "IKEA Familyメンバーなら配送料がお得に！",
-    icon: "truck",
+    label: "初見向け / TFあり / 安心条件 からすぐ探せます",
+    icon: "spark",
   },
 ];
 
 const HEADER_UTILITY_RIGHT = [
-  { href: "/contact/", label: "郵便番号を入力", icon: "location" },
-  { href: "/collections/", label: "ストアを選択", icon: "store" },
+  { href: "/builder/", label: "詳細条件で探す", icon: "search" },
+  { href: "/finder/?include=tf-present", label: "TFありから入る", icon: "tag" },
 ];
 
 const HEADER_ACTIONS = [
-  { href: "/about/", label: "アカウント", icon: "user" },
-  { href: "/collections/", label: "お気に入り", icon: "heart" },
-  { href: "/finder/", label: "カート", icon: "cart" },
+  { href: "/finder/#saved-searches", label: "保存検索", icon: "save" },
+  { href: "/finder/#compare-tray", label: "比較", icon: "compare" },
+  { href: "/finder/#recent-history", label: "閲覧履歴", icon: "recent" },
 ];
 
 const FOOTER_FEATURED = {
-  title: "IKEA Business Networkに入会する",
+  title: "まずここから探す",
   text:
-    "法人のお客さま向けに、請求書払いやインテリアデザインサービスの割引など、さまざまな会員特典をご用意。法人担当者があなたのビジネスをサポートします。入会費・年会費無料。",
-  detailLabel: "詳しく見る",
-  buttonLabel: "IKEA Business Network特典を見る",
+    "広い入口はトップと特集、細かい組み合わせは詳細条件ビルダーへ。IKEA型の見やすさを保ったまま、探索導線の意味に差し替えた土台です。",
+  detailLabel: "条件検索へ",
+  buttonLabel: "入口特集を見る",
 };
 
 const FOOTER_GROUPS = [
   {
     title: "",
     links: [
-      { href: "/contact/", label: "配送状況の確認" },
-      { href: "/contact/", label: "配送日時の変更" },
-      { href: "/contact/", label: "キャンセル/返品/交換" },
-      { href: "/contact/", label: "電話注文" },
-      { href: "/about/", label: "IKEAアプリ" },
+      { href: "/finder/", label: "条件から探す" },
+      { href: "/finder/?collection=start-here", label: "まずここから" },
+      { href: "/finder/?include=tf-present", label: "TFありから探す" },
+      { href: "/finder/?include=no-ntr", label: "NTRなしで探す" },
+      { href: "/collections/", label: "特集一覧" },
     ],
   },
   {
     title: "",
     links: [
-      { href: "/about/", label: "品質保証" },
-      { href: "/contact/", label: "忘れ物/落とし物" },
-      { href: "/contact/", label: "領収書発行" },
-      { href: "/contact/", label: "製品リコール" },
-      { href: "/contact/", label: "カスタマーハラスメント防止への取り組み" },
-      { href: "/contact/", label: "お問い合わせ・FAQ" },
-      { href: "/contact/", label: "ご意見・ご感想" },
+      { href: "/builder/", label: "詳細条件ビルダー" },
+      { href: "/articles/", label: "探し方ガイド" },
+      { href: "/about/", label: "運営方針" },
+      { href: "/contact/", label: "お問い合わせ" },
+      { href: "/privacy.html", label: "プライバシー" },
+      { href: "/disclaimer.html", label: "免責事項" },
     ],
   },
   {
     title: "",
     links: [
-      { href: "/collections/", label: "ギフトリスト" },
+      { href: "/finder/#saved-searches", label: "保存検索" },
+      { href: "/finder/#compare-tray", label: "比較トレイ" },
+      { href: "/finder/#recent-history", label: "閲覧履歴" },
     ],
   },
 ];
 
 const FOOTER_LEGAL_LINKS = [
+  { href: "/about/", label: "運営方針" },
+  { href: "/articles/", label: "ガイド一覧" },
+  { href: "/builder/", label: "詳細条件ビルダー" },
   { href: "/privacy.html", label: "プライバシーポリシー" },
-  { href: "/disclaimer.html", label: "利用規約" },
-  { href: "/privacy.html", label: "Cookieポリシー" },
-  { href: "/privacy.html", label: "Cookie設定" },
-  { href: "/disclaimer.html", label: "特定商取引法に基づく表記" },
-  { href: "/disclaimer.html", label: "古物営業法に基づく表記" },
+  { href: "/disclaimer.html", label: "免責事項" },
+  { href: "/contact/", label: "お問い合わせ" },
 ];
 
 const FOOTER_SOCIAL_LABELS = ["LINE", "IG", "f", "X", "YT", "in"];
@@ -254,7 +256,7 @@ const createIcon = (kind, className = "") => {
   svg.setAttribute("aria-hidden", "true");
   if (className) svg.setAttribute("class", className);
 
-  const paths = {
+    const paths = {
     globe: [
       "M12 2C6.4772 2 2 6.4771 2 12c0 5.5228 4.4772 10 10 10 5.5228 0 10-4.4772 10-10C22 6.4771 17.5228 2 12 2zm0 2c.2151 0 .9482.2263 1.7467 1.8234.3065.6131.5745 1.3473.7831 2.1766H9.4702c.2086-.8293.4766-1.5635.7831-2.1766C11.0518 4.2263 11.7849 4 12 4zm-3.4627.7862C8.0651 5.693 7.6818 6.7834 7.416 8H5.0703a8.035 8.035 0 0 1 3.467-3.2138zM4.252 10H7.1A19.829 19.829 0 0 0 7 12c0 .6906.0875 1.3608.252 2H4.252A8.0147 8.0147 0 0 1 4 12c0-.6906.0875-1.3608.252-2zm.8184 6H7.416c.2658 1.2166.6491 2.307 1.1213 3.2138A8.0347 8.0347 0 0 1 5.0704 16zm4.0415 0h5.777c-.0723.6359-.1115 1.3051-.1115 2 0 .6949.0392 1.3641.1115 2H9.1119A17.7354 17.7354 0 0 1 9 18c0-.6949.0392-1.3641.1119-2zm.3583-2A17.7354 17.7354 0 0 1 9 12c0-.6949.0392-1.3641.1119-2h5.7762c.0723.6359.1119 1.3051.1119 2 0 .6949-.0396 1.3641-.1119 2H9.4702zm.7831 2h5.0594c-.2086.8293-.4766 1.5635-.7831 2.1766C12.9482 19.7737 12.2151 20 12 20c-.2151 0-.9482-.2263-1.7467-1.8234-.3065-.6131-.5745-1.3473-.7831-2.1766zm5.2096 3.2138c.4721-.9068.8555-1.9972 1.1213-3.2138h2.3457a8.0347 8.0347 0 0 1-3.467 3.2138zM16.9 14c.0656-.6462.1-1.3151.1-2 0-.6849-.0344-1.3538-.1-2h2.848c.1645.6392.252 1.3094.252 2 0 .6906-.0875 1.3608-.252 2H16.9zm-.316-6c-.2658-1.2166-.6492-2.307-1.1213-3.2138A8.035 8.035 0 0 1 18.9297 8h-2.3457z",
     ],
@@ -272,6 +274,12 @@ const createIcon = (kind, className = "") => {
     ],
     compare: [
       "M3 4h8v6H3V4zm10 0h8v6h-8V4zM3 14h8v6H3v-6zm10 3h8v-2h-8v2z",
+    ],
+    recent: [
+      "M12 4a8 8 0 1 0 8 8h-2a6 6 0 1 1-1.7574-4.2426L14 10h6V4l-2.3431 2.3431A7.9635 7.9635 0 0 0 12 4zm-1 3h2v5h4v2h-6V7z",
+    ],
+    tag: [
+      "M10.5 3H5a2 2 0 0 0-2 2v5.5a2 2 0 0 0 .5858 1.4142l8.5 8.5a2 2 0 0 0 2.8284 0l5.5-5.5a2 2 0 0 0 0-2.8284l-8.5-8.5A2 2 0 0 0 10.5 3zM7 8a1.5 1.5 0 1 1 3 0 1.5 1.5 0 0 1-3 0z",
     ],
     truck: [
       "M2 5h11v8H2V5zm12 2h3.5L22 10.5V13h-2.051a2.5 2.5 0 0 0-4.898 0H13V7h1zm1.5 1.5V11H19.5l-2-2.5H15.5zM6.5 16a2.5 2.5 0 1 1 0-5 2.5 2.5 0 0 1 0 5zm11 0a2.5 2.5 0 1 1 0-5 2.5 2.5 0 0 1 0 5z",
@@ -355,10 +363,10 @@ const renderSiteChrome = () => {
     headerInner.className = "ikea-shell__headerInner";
     brand.className = "ikea-shell__logo";
     brand.href = "/";
-    brand.setAttribute("aria-label", "IKEA風トップへ");
+    brand.setAttribute("aria-label", `${BRAND_NAME} トップへ`);
     brandFrame.className = "ikea-shell__logoFrame";
     brandOval.className = "ikea-shell__logoOval";
-    brandOval.textContent = "IKEA";
+    brandOval.textContent = "FIND";
     brandFrame.appendChild(brandOval);
     brand.appendChild(brandFrame);
 
@@ -373,7 +381,7 @@ const renderSiteChrome = () => {
     searchInput.type = "search";
     searchInput.name = "q";
     searchInput.value = currentQuery;
-    searchInput.placeholder = "商品・コンテンツを検索";
+    searchInput.placeholder = "作品名 / タグ / 作者 / 気分で探す";
     searchInput.className = "ikea-shell__searchInput";
     searchInput.setAttribute("aria-label", "サイト内検索");
     clearButton.className = "ikea-shell__searchClear";
@@ -480,19 +488,19 @@ const renderSiteChrome = () => {
     localeButton.append(createIcon("globe"), Object.assign(document.createElement("span"), { textContent: "JP | 日本語" }));
     legalRow.className = "ikea-footer__legalRow";
     copyright.className = "ikea-footer__copyright";
-    copyright.textContent = "© Inter IKEA Systems B.V 1999-2026";
+    copyright.textContent = `© ${BRAND_NAME}`;
     legalLinks.className = "ikea-footer__legalLinks";
 
     featured.append(
       Object.assign(document.createElement("h2"), { textContent: FOOTER_FEATURED.title }),
       Object.assign(document.createElement("p"), { textContent: FOOTER_FEATURED.text }),
       createChromeLink({
-        href: "/about/",
+        href: "/finder/",
         label: FOOTER_FEATURED.detailLabel,
         className: "ikea-footer__detailLink",
       }),
       createChromeLink({
-        href: "/about/",
+        href: "/collections/",
         label: FOOTER_FEATURED.buttonLabel,
         className: "ikea-footer__featuredButton",
       })
