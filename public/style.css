@@ -6962,6 +6962,15 @@ body {
   outline: none;
 }
 
+.ikea-shell__searchInput::-webkit-search-decoration,
+.ikea-shell__searchInput::-webkit-search-cancel-button,
+.ikea-shell__searchInput::-webkit-search-results-button,
+.ikea-shell__searchInput::-webkit-search-results-decoration {
+  -webkit-appearance: none;
+  appearance: none;
+  display: none;
+}
+
 .ikea-shell__searchClear,
 .ikea-shell__searchSubmit {
   width: 34px;
