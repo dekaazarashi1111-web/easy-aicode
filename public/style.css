@@ -7934,6 +7934,10 @@ body {
   gap: 14px;
 }
 
+.ikea-search-sidebar .ikea-filter-groups {
+  display: none !important;
+}
+
 .ikea-search-sidebar__skip {
   display: inline-flex;
   align-items: center;

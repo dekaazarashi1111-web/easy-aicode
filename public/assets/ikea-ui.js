@@ -587,7 +587,6 @@
               </label>
               <p class="ikea-search-sidebar__help" data-finder-sort-note></p>
             </section>
-            <div class="ikea-filter-groups" data-finder-groups></div>
           </aside>
           <section class="ikea-search-results">
             <p aria-live="assertive" class="sr-only" data-finder-a11y-live></p>
@@ -1337,7 +1336,6 @@
     const sortSelect = root.querySelector("[data-finder-sort]");
     const sortNoteRoot = root.querySelector("[data-finder-sort-note]");
     const quickFiltersRoot = root.querySelector("[data-finder-quick-filters]");
-    const groupsRoot = root.querySelector("[data-finder-groups]");
     const resultsRoot = root.querySelector("[data-finder-results]");
     const activeRoot = root.querySelector("[data-finder-active]");
     const statusRoot = root.querySelector("[data-finder-status]");
@@ -1373,7 +1371,6 @@
     const modeButtons = Array.from(root.querySelectorAll("[data-finder-mode]"));
     if (
       !sortSelect ||
-      !groupsRoot ||
       !resultsRoot ||
       !statusRoot
     ) {
@@ -1820,84 +1817,7 @@
       }
     };
 
-    const renderFilterGroups = () => {
-      groupsRoot.textContent = "";
-      groupedTags.forEach((group) => {
-        if (FINDER_SIDEBAR_HIDDEN_GROUP_IDS.has(group.id)) return;
-        const section = createElement("section", "plp-filter-panel");
-        const heading = createActionButton({
-          label: FILTER_LABEL_OVERRIDES[group.id] || group.label,
-          className: "plp-filter-panel__heading",
-          dataset: { accordionButton: "true" },
-        });
-        const panel = createElement("div", "plp-filter-panel__body");
-        const options = createElement("div", "plp-filter-options");
-
-        heading.setAttribute("aria-expanded", "false");
-        section.append(heading, panel);
-        if (group.description) {
-          panel.appendChild(createElement("p", "plp-field__help", group.description));
-        }
-
-        group.tags.forEach((tag) => {
-          const nextIncludeIds = unique([
-            ...pageState.includeTagIds.filter((value) => value !== tag.id),
-            tag.id,
-          ]);
-          const includeCount = filterFinderWorks({
-            includeTagIds: nextIncludeIds,
-            excludeTagIds: pageState.excludeTagIds.filter((value) => value !== tag.id),
-            sort: "recommended",
-          }).length;
-          const row = createElement("div", "plp-filter-option");
-          const main = createElement("div", "plp-filter-option__main");
-          const title = createElement("div", "plp-filter-option__title");
-          const actions = createElement("div", "plp-filter-option__actions");
-          const tagState = getTagState(tag.id);
-
-          title.append(
-            createElement("strong", "", tag.label),
-            createElement(
-              "span",
-              "plp-filter-option__meta",
-              includeCount > 0 ? `追加時に ${includeCount}件` : "この条件では候補なし"
-            )
-          );
-          main.append(
-            title,
-            createElement("span", "plp-filter-option__count", `${includeCount}件`)
-          );
-
-          actions.append(
-            createActionButton({
-              label: "解除",
-              className: "plp-filter-chip",
-              dataset: { filterTagId: tag.id, filterState: "ignore" },
-              pressed: tagState === "ignore",
-            }),
-            createActionButton({
-              label: "含める",
-              className: "plp-filter-chip",
-              dataset: { filterTagId: tag.id, filterState: "include" },
-              pressed: tagState === "include",
-            }),
-            createActionButton({
-              label: "除外",
-              className: "plp-filter-chip plp-filter-chip--exclude",
-              dataset: { filterTagId: tag.id, filterState: "exclude" },
-              pressed: tagState === "exclude",
-            })
-          );
-
-          row.append(main, actions);
-          options.appendChild(row);
-        });
-
-        panel.appendChild(options);
-        groupsRoot.appendChild(section);
-      });
-      initializeAccordions(groupsRoot);
-    };
+    const renderFilterGroups = () => {};
 
     const renderCompare = (uiState) => {
       if (!compareRoot || !compareItemsRoot || !compareGridRoot) return;
@@ -2405,7 +2325,6 @@
       syncControls();
       updateFinderUrl(pageState);
       renderQuickFilters();
-      renderFilterGroups();
       renderSavedSearches();
       renderBuilderLinks();
       renderPresets();
