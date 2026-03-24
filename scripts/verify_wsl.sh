@@ -187,6 +187,14 @@ else
   log "skip dotnet (set LOOP_DOTNET_TEST=1 to enable)"
 fi
 
+if command -v node >/dev/null 2>&1 && [ -f "scripts/capture_live_screenshots.js" ]; then
+  log "node scripts/capture_live_screenshots.js"
+  node scripts/capture_live_screenshots.js
+  ran=1
+else
+  log "skip live screenshots (node or script not available)"
+fi
+
 ############################################
 # Nothing ran?
 ############################################

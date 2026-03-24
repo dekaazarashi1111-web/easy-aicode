@@ -35,6 +35,13 @@
 - 公開検索では `published` の作品だけが表示されます。
 - 特集は `collections` に追加し、作品詳細と検索導線の両方に接続します。
 
+## ライブスクリーンショット
+- `node scripts/capture_live_screenshots.js` で `https://wintergator.com/` の全ページスクリーンショットを取得します。
+- 対象URLは `public/` のHTMLルート、ライブの `sitemap.xml`、描画後DOMの内部リンクを合算して動的に列挙します。
+- 出力先は `artifacts/live-screenshots/latest/` です。`manifest.json` にURL一覧、`summary.txt` に結果概要を出します。
+- `scripts/verify_linux.sh` / `scripts/verify_wsl.sh` / `scripts/verify_windows.ps1` からも毎回この処理を実行します。
+- 必要に応じて `LIVE_SCREENSHOT_BASE_URL`、`LIVE_SCREENSHOT_OUTPUT_DIR`、`LIVE_SCREENSHOT_MAX_PAGES`、`LIVE_SCREENSHOT_BROWSER` を上書きできます。
+
 ## 補足
 - 現在のシードデータは仮データです。実データ公開前に差し替えてください。
 - `sitemap.xml` と `robots.txt` のドメインは仮の `example.com` にしています。公開前に本番ドメインへ更新してください。
