@@ -513,32 +513,6 @@
       <div class="ikea-page-shell ikea-search-shell">
         <div class="ikea-search-layout">
           <aside class="ikea-search-sidebar">
-            <section class="ikea-search-sidebar__card">
-              <form class="ikea-inline-search" action="/finder/" method="get">
-                <div class="ikea-inline-search__field">
-                  <svg viewBox="0 0 24 24" focusable="false" width="24" height="24" aria-hidden="true"><path fill-rule="evenodd" clip-rule="evenodd" d="M13.9804 15.3946c-1.0361.7502-2.3099 1.1925-3.6869 1.1925C6.8177 16.5871 4 13.7694 4 10.2935 4 6.8177 6.8177 4 10.2935 4c3.4759 0 6.2936 2.8177 6.2936 6.2935 0 1.377-.4423 2.6508-1.1925 3.6869l4.6016 4.6016-1.4142 1.4142-4.6016-4.6016zm.6067-5.1011c0 2.3713-1.9223 4.2936-4.2936 4.2936C7.9223 14.5871 6 12.6648 6 10.2935 6 7.9223 7.9223 6 10.2935 6c2.3713 0 4.2936 1.9223 4.2936 4.2935z"></path></svg>
-                  <input type="search" name="q" placeholder="棚" autocomplete="off" data-finder-query />
-                  <button type="button" data-finder-clear-query>クリア</button>
-                  <button type="submit">検索</button>
-                </div>
-              </form>
-              <label class="ikea-search-sidebar__field">
-                <span>作者・サークル</span>
-                <input type="search" autocomplete="off" placeholder="作者名やサークル名" data-finder-creator />
-              </label>
-              <div class="ikea-search-sidebar__field">
-                <span>一致条件</span>
-                <div class="ikea-search-modeSwitch">
-                  <button type="button" data-finder-mode="and" aria-pressed="true">すべて一致</button>
-                  <button type="button" data-finder-mode="or" aria-pressed="false">いずれか一致</button>
-                </div>
-              </div>
-              <div class="ikea-search-sidebar__actions">
-                <button type="button" data-finder-save-search>検索を保存</button>
-                <button type="button" data-finder-copy>共有URLをコピー</button>
-                <button type="button" data-finder-clear>やり直す</button>
-              </div>
-            </section>
             <section class="ikea-search-sidebar__card ikea-search-sidebar__card--compact">
               <label class="ikea-search-sidebar__field">
                 <span>並び替え</span>
@@ -1221,8 +1195,6 @@
     const tipsRoot = root.querySelector("[data-profile-search-tips]");
     const modeButtons = Array.from(root.querySelectorAll("[data-finder-mode]"));
     if (
-      !queryInput ||
-      !creatorInput ||
       !sortSelect ||
       !groupsRoot ||
       !resultsRoot ||
@@ -1262,9 +1234,13 @@
     };
 
     const syncControls = () => {
-      queryInput.value = pageState.query;
-      creatorInput.value = pageState.creatorQuery;
-      queryInput.placeholder = profile.searchPlaceholder || "作品・タグ・作者で検索";
+      if (queryInput) {
+        queryInput.value = pageState.query;
+        queryInput.placeholder = profile.searchPlaceholder || "作品・タグ・作者で検索";
+      }
+      if (creatorInput) {
+        creatorInput.value = pageState.creatorQuery;
+      }
       sortSelect.value = pageState.sort;
       if (sortNoteRoot) sortNoteRoot.textContent = getSortMeta(pageState.sort).description;
       modeButtons.forEach((button) => {
@@ -2218,12 +2194,12 @@
       root.dataset.finderBound = "true";
     }
 
-    queryInput.addEventListener("input", () => {
+    queryInput?.addEventListener("input", () => {
       pageState.query = queryInput.value.trim();
       applyAndRender();
     });
 
-    creatorInput.addEventListener("input", () => {
+    creatorInput?.addEventListener("input", () => {
       pageState.creatorQuery = creatorInput.value.trim();
       applyAndRender();
     });
@@ -2235,9 +2211,11 @@
 
     clearQueryButton?.addEventListener("click", () => {
       pageState.query = "";
-      queryInput.value = "";
+      if (queryInput) {
+        queryInput.value = "";
+      }
       applyAndRender();
-      queryInput.focus();
+      queryInput?.focus();
     });
 
     clearButton?.addEventListener("click", () => {
