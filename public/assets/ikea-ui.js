@@ -110,13 +110,16 @@
 
   const QUICK_FILTER_GROUP_IDS = new Set(["species", "body-type", "age-feel"]);
   const FINDER_SIDEBAR_HIDDEN_GROUP_IDS = new Set([
+    "entrance",
     "species",
     "body-type",
     "age-feel",
     "style",
     "relationship",
     "transformation",
+    "format",
     "curation",
+    "avoid",
   ]);
 
   const QUICK_FILTER_SPECIES_TAG_IDS = [
