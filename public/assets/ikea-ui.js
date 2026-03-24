@@ -511,27 +511,8 @@
     root.className = "main ikea-main ikea-search-page";
     root.innerHTML = `
       <div class="ikea-page-shell ikea-search-shell">
-        <section class="ikea-search-alert">広い入口は上の検索バー、細かい組み合わせは左の条件か詳細条件ビルダーで組み立てます。</section>
-        <section class="ikea-search-hero">
-          <div>
-            <h1 class="ikea-search-hero__title" data-finder-heading>検索結果</h1>
-            <p class="ikea-search-hero__summary" data-finder-summary-note>一致理由と次の探索導線が見える一覧です。</p>
-          </div>
-          <div class="ikea-search-hero__actions">
-            <a href="/builder/" class="ikea-search-hero__link">詳細条件ビルダーへ</a>
-            <a href="/collections/" class="ikea-search-hero__link ikea-search-hero__link--secondary">入口特集を見る</a>
-          </div>
-          <div class="ikea-search-hero__scope">
-            <div class="ikea-search-hero__scopeHeader">
-              <strong>選択中の条件</strong>
-              <button type="button" data-finder-clear-inline>すべて解除</button>
-            </div>
-            <div class="ikea-pill-cloud" data-finder-active></div>
-          </div>
-        </section>
         <div class="ikea-search-layout">
           <aside class="ikea-search-sidebar">
-            <a href="#product-list" class="ikea-search-sidebar__skip">結果へスキップ</a>
             <section class="ikea-search-sidebar__card">
               <form class="ikea-inline-search" action="/finder/" method="get">
                 <div class="ikea-inline-search__field">
@@ -1246,9 +1227,7 @@
       !sortSelect ||
       !groupsRoot ||
       !resultsRoot ||
-      !activeRoot ||
-      !statusRoot ||
-      !headingRoot
+      !statusRoot
     ) {
       return;
     }
@@ -1427,6 +1406,7 @@
     };
 
     const renderActiveChips = () => {
+      if (!activeRoot) return;
       activeRoot.textContent = "";
       if (pageState.query) {
         activeRoot.appendChild(
@@ -2033,7 +2013,9 @@
           ? `${collection.title}：${filtered.length}件`
           : `作品検索：${filtered.length}件`;
 
-      headingRoot.textContent = headingLabel;
+      if (headingRoot) {
+        headingRoot.textContent = headingLabel;
+      }
       if (summaryRoot) {
         summaryRoot.textContent =
           collection?.description || profile.heroDescription || "条件を組み合わせて作品を探します。";
