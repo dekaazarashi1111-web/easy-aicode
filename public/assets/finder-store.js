@@ -7,6 +7,7 @@
 })(typeof globalThis !== "undefined" ? globalThis : this, function (seed, core) {
   const STORAGE_KEY = "finder-canvas-state";
   const RECENT_WORK_LIMIT = 20;
+  const LOCAL_SOURCE_KIND = "local";
 
   const getStorage = () => {
     if (typeof localStorage !== "undefined") return localStorage;
@@ -69,6 +70,16 @@
     return next;
   };
 
+  const isLocalEntity = (item) => item?.sourceKind === LOCAL_SOURCE_KIND;
+
+  const mergeSeedEntities = (seedItems, storedItems) => {
+    const seedIds = new Set(core.ensureArray(seedItems).map((item) => item?.id).filter(Boolean));
+    const localItems = core
+      .ensureArray(storedItems)
+      .filter((item) => item?.id && isLocalEntity(item) && !seedIds.has(item.id));
+    return [...core.ensureArray(seedItems), ...localItems];
+  };
+
   const reconcileState = (state) => {
     const next = ensureStateShape(state);
     const validProfileIds = new Set(
@@ -113,6 +124,10 @@
     const stored = ensureStateShape(storedState);
     return reconcileState({
       ...base,
+      siteProfiles: mergeSeedEntities(base.siteProfiles, stored.siteProfiles),
+      tags: mergeSeedEntities(base.tags, stored.tags),
+      works: mergeSeedEntities(base.works, stored.works),
+      collections: mergeSeedEntities(base.collections, stored.collections),
       activeProfileId: stored.activeProfileId || base.activeProfileId,
       logs: stored.logs,
       ui: stored.ui,
@@ -175,6 +190,10 @@
         heroDescription: (input.heroDescription || "").trim(),
         searchPlaceholder: (input.searchPlaceholder || "").trim(),
         visibleTagGroupIds: core.unique(input.visibleTagGroupIds || []),
+        sourceKind:
+          input.sourceKind ||
+          state.siteProfiles.find((profile) => profile.id === input.id)?.sourceKind ||
+          LOCAL_SOURCE_KIND,
       };
       const index = state.siteProfiles.findIndex((profile) => profile.id === nextProfile.id);
       if (index === -1) {
@@ -193,6 +212,10 @@
         groupId: (input.groupId || "").trim(),
         isPublic: input.isPublic !== false,
         synonyms: core.unique(core.ensureArray(input.synonyms || [])),
+        sourceKind:
+          input.sourceKind ||
+          state.tags.find((tag) => tag.id === input.id)?.sourceKind ||
+          LOCAL_SOURCE_KIND,
       };
       const index = state.tags.findIndex((tag) => tag.id === nextTag.id);
       if (index === -1) {
@@ -267,6 +290,18 @@
         updatedAt: nowIso().slice(0, 10),
         createdAt: existing?.createdAt || nowIso(),
         externalLinks: normalizeExternalLinks(input),
+        hoverImageUrl: (input.hoverImageUrl || existing?.hoverImageUrl || "").trim(),
+        hoverPreviewImageUrl:
+          (input.hoverPreviewImageUrl || existing?.hoverPreviewImageUrl || "").trim(),
+        cardHoverImageUrl:
+          (input.cardHoverImageUrl || existing?.cardHoverImageUrl || "").trim(),
+        galleryImageUrls: core.unique(
+          core.ensureArray(input.galleryImageUrls || existing?.galleryImageUrls || [])
+        ),
+        sourceUrl: (input.sourceUrl || existing?.sourceUrl || "").trim(),
+        importSource: (input.importSource || existing?.importSource || "").trim(),
+        priceJPY: Number(input.priceJPY ?? existing?.priceJPY ?? 0),
+        sourceKind: input.sourceKind || existing?.sourceKind || LOCAL_SOURCE_KIND,
       };
 
       const index = state.works.findIndex((work) => work.id === nextWork.id);
@@ -293,6 +328,7 @@
         tagIds: core.unique(input.tagIds || existing?.tagIds || []),
         workIds: core.unique(input.workIds || existing?.workIds || []),
         isPublic: input.isPublic !== false,
+        sourceKind: input.sourceKind || existing?.sourceKind || LOCAL_SOURCE_KIND,
       };
       const index = state.collections.findIndex((collection) => collection.id === nextCollection.id);
       if (index === -1) {

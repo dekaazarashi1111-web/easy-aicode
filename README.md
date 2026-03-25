@@ -36,6 +36,11 @@
 - 公開検索では `published` の作品だけが表示されます。
 - 特集は `collections` に追加し、作品詳細と検索導線の両方に接続します。
 
+## BOOTH取込
+- `node scripts/import_booth_item.js https://booth.pm/ja/items/<item-id>` で、BOOTH の公開商品ページから `title / creator / shortDescription / hoverImageUrl / externalLinks` などを含む `work` JSON を生成できます。
+- 現状は静的サイト運用を優先し、生成した内容を `public/assets/finder-seed.js` に反映して公開します。
+- 実例として `https://booth.pm/ja/items/2427390` の取り込み結果を seed に追加済みです。
+
 ## ライブスクリーンショット
 - UI改修の途中確認には `node scripts/capture_local_ui_screenshots.js` を使います。ホーム、検索、詳細条件ビルダー、作品詳細の主要画面をローカルでまとめて撮ります。
 - `node scripts/capture_live_screenshots.js` で `https://wintergator.com/` の全ページスクリーンショットを取得します。

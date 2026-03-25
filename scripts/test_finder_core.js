@@ -59,6 +59,7 @@ assert.deepEqual(
     "rain-hoodie-shelter",
     "morning-workshop-shift",
     "harbor-sketchbook",
+    "booth-item-2427390",
   ],
   "exclude filters should remove works containing excluded tags"
 );
