@@ -119,6 +119,21 @@
         "m12.0006 13.4148 2.8283 2.8283 1.4142-1.4142-2.8283-2.8283 2.8283-2.8283-1.4142-1.4142-2.8283 2.8283L9.172 7.7578 7.7578 9.172l2.8286 2.8286-2.8286 2.8285 1.4142 1.4143 2.8286-2.8286z",
     };
 
+    if (kind === "heart") {
+      const path = document.createElementNS("http://www.w3.org/2000/svg", "path");
+      path.setAttribute(
+        "d",
+        "M12.001 20.727l-.752-.431C5.4 16.94 2 13.863 2 9.992 2 6.915 4.42 4.5 7.5 4.5c1.74 0 3.41.81 4.5 2.09A5.96 5.96 0 0 1 16.5 4.5C19.58 4.5 22 6.915 22 9.992c0 3.87-3.4 6.947-9.249 10.304l-.75.43z"
+      );
+      path.setAttribute("fill", "none");
+      path.setAttribute("stroke", "currentColor");
+      path.setAttribute("stroke-width", "1.8");
+      path.setAttribute("stroke-linecap", "round");
+      path.setAttribute("stroke-linejoin", "round");
+      svg.appendChild(path);
+      return svg;
+    }
+
     const path = document.createElementNS("http://www.w3.org/2000/svg", "path");
     path.setAttribute("fill-rule", "evenodd");
     path.setAttribute("clip-rule", "evenodd");

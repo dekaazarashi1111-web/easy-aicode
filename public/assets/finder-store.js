@@ -160,6 +160,19 @@
   const saveState = (state) => {
     const next = reconcileState(core.cloneData(state));
     getStorage().setItem(STORAGE_KEY, JSON.stringify(next));
+    if (typeof window !== "undefined" && typeof window.dispatchEvent === "function") {
+      try {
+        window.dispatchEvent(
+          new CustomEvent("finder:state-changed", {
+            detail: {
+              state: next,
+            },
+          })
+        );
+      } catch (error) {
+        // Ignore environments without CustomEvent support.
+      }
+    }
     return next;
   };
 

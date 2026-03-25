@@ -141,6 +141,7 @@ updateBrandCopy();
 const BRAND_NAME = SITE_CONFIG.BRAND_NAME || "Media Canvas";
 const FINDER_STORAGE_KEY = "finder-canvas-state";
 const RECENT_HISTORY_HASH = "#recent-history";
+const SAVED_SEARCH_HASH = "#saved-searches";
 const RECENT_HISTORY_LIMIT = 20;
 const HEADER_FILTER_SPECIES_TAG_IDS = [
   "species-wolf",
@@ -204,6 +205,8 @@ const HEADER_FILTER_SORT_META = {
 };
 let historyDrawerCloseTimer = null;
 let historyDrawerRestoreFocus = null;
+let savedSearchDrawerCloseTimer = null;
+let savedSearchDrawerRestoreFocus = null;
 let searchFilterScreenRestoreFocus = null;
 let searchFilterTagPickerRestoreFocus = null;
 
@@ -356,6 +359,76 @@ const getRecentHistoryWorks = () => {
     .map((workId) => workMap.get(workId))
     .filter(Boolean)
     .slice(0, RECENT_HISTORY_LIMIT);
+};
+
+const getSavedSearches = () => {
+  const state = readFinderCanvasState();
+  return Array.isArray(state?.ui?.savedSearches) ? state.ui.savedSearches.slice(0, 10) : [];
+};
+
+const buildFinderSearchHref = (search = {}) => {
+  const params = new URLSearchParams();
+  const characters = normalizeFinderCharacters(search.characters);
+  const character = characters[0] || {
+    speciesTagIds: [],
+    bodyTypeTagIds: [],
+    ageFeelTagIds: [],
+  };
+
+  if (search.query) params.set("q", search.query);
+  if (search.creatorQuery) params.set("creator", search.creatorQuery);
+  if (search.sort && search.sort !== "recommended") params.set("sort", search.sort);
+  if (search.collectionId) params.set("collection", search.collectionId);
+  if (search.matchMode === "or") params.set("mode", "or");
+
+  uniqueFinderValues(search.includeTagIds).forEach((tagId) => params.append("include", tagId));
+  uniqueFinderValues(search.excludeTagIds).forEach((tagId) => params.append("exclude", tagId));
+  character.speciesTagIds.forEach((tagId) => params.append("c1_species", tagId));
+  character.bodyTypeTagIds.forEach((tagId) => params.append("c1_body", tagId));
+  character.ageFeelTagIds.forEach((tagId) => params.append("c1_age", tagId));
+
+  return params.toString() ? `/finder/?${params.toString()}` : "/finder/";
+};
+
+const getSavedSearchSummary = (search = {}) => {
+  const character = normalizeFinderCharacters(search.characters)[0] || {
+    speciesTagIds: [],
+    bodyTypeTagIds: [],
+    ageFeelTagIds: [],
+  };
+  const parts = [];
+  const characterLabels = [
+    ...character.speciesTagIds.map((tagId) => getHeaderFilterTagLabel(tagId)),
+    ...character.bodyTypeTagIds.map((tagId) => getHeaderFilterTagLabel(tagId)),
+    ...character.ageFeelTagIds.map((tagId) => getHeaderFilterTagLabel(tagId)),
+  ].filter(Boolean);
+  const includeLabels = uniqueFinderValues(search.includeTagIds)
+    .map((tagId) => getHeaderFilterTagLabel(tagId))
+    .filter(Boolean);
+  const excludeLabels = uniqueFinderValues(search.excludeTagIds)
+    .map((tagId) => getHeaderFilterTagLabel(tagId))
+    .filter(Boolean);
+
+  if (search.query) parts.push(`作品: ${search.query}`);
+  if (search.creatorQuery) parts.push(`作者: ${search.creatorQuery}`);
+  if (characterLabels.length) parts.push(`キャラ1: ${characterLabels.join(" / ")}`);
+  if (includeLabels.length) parts.push(`含める: ${includeLabels.join(" / ")}`);
+  if (excludeLabels.length) parts.push(`除外: ${excludeLabels.join(" / ")}`);
+  if (search.collectionId) parts.push("特集あり");
+  if (search.matchMode === "or") parts.push("いずれか一致");
+  return parts.join(" / ") || "条件なし";
+};
+
+const formatSavedSearchUpdatedAt = (value) => {
+  if (!value) return "";
+  const normalized = `${value}`.trim();
+  if (/^\d{4}-\d{2}-\d{2}$/.test(normalized)) {
+    return `保存 ${normalized.replace(/-/g, ".")}`;
+  }
+  if (/^\d{4}-\d{2}-\d{2}T/.test(normalized)) {
+    return `保存 ${normalized.slice(0, 10).replace(/-/g, ".")}`;
+  }
+  return normalized;
 };
 
 const normalizePathname = (pathname) => {
@@ -653,7 +726,7 @@ const renderHistoryDrawer = () => {
   return drawer;
 };
 
-const closeHistoryDrawer = () => {
+const closeHistoryDrawer = ({ restoreFocus = true } = {}) => {
   const drawer = document.querySelector("[data-history-drawer]");
   if (!drawer || drawer.hidden) return;
 
@@ -665,7 +738,11 @@ const closeHistoryDrawer = () => {
   historyDrawerCloseTimer = window.setTimeout(() => {
     if (drawer.dataset.open === "true") return;
     drawer.hidden = true;
-    if (historyDrawerRestoreFocus && typeof historyDrawerRestoreFocus.focus === "function") {
+    if (
+      restoreFocus &&
+      historyDrawerRestoreFocus &&
+      typeof historyDrawerRestoreFocus.focus === "function"
+    ) {
       historyDrawerRestoreFocus.focus();
     }
     historyDrawerRestoreFocus = null;
@@ -675,6 +752,7 @@ const closeHistoryDrawer = () => {
 const openHistoryDrawer = ({ clearHash = false } = {}) => {
   const drawer = renderHistoryDrawer();
   if (!drawer) return;
+  closeSavedSearchDrawer({ restoreFocus: false });
 
   if (historyDrawerCloseTimer) {
     window.clearTimeout(historyDrawerCloseTimer);
@@ -731,6 +809,219 @@ const initHistoryDrawer = () => {
   }
 
   document.body.dataset.historyDrawerBound = "true";
+};
+
+const createSavedSearchDrawer = () => {
+  if (typeof document === "undefined" || !document.body) return null;
+  const existing = document.querySelector("[data-saved-search-drawer]");
+  if (existing) return existing;
+
+  const drawer = document.createElement("div");
+  const backdrop = document.createElement("button");
+  const panel = document.createElement("aside");
+  const header = document.createElement("div");
+  const headingGroup = document.createElement("div");
+  const eyebrow = document.createElement("p");
+  const title = document.createElement("h2");
+  const closeButton = document.createElement("button");
+  const body = document.createElement("div");
+  const lead = document.createElement("p");
+  const count = document.createElement("p");
+  const list = document.createElement("div");
+
+  drawer.className = "ikea-history-drawer";
+  drawer.hidden = true;
+  drawer.dataset.savedSearchDrawer = "true";
+  drawer.dataset.open = "false";
+
+  backdrop.className = "ikea-history-drawer__backdrop";
+  backdrop.type = "button";
+  backdrop.dataset.savedSearchClose = "true";
+  backdrop.setAttribute("aria-label", "保存検索を閉じる");
+
+  panel.className = "ikea-history-drawer__panel";
+  panel.setAttribute("role", "dialog");
+  panel.setAttribute("aria-modal", "true");
+  panel.setAttribute("aria-labelledby", "saved-search-title");
+
+  header.className = "ikea-history-drawer__header";
+  headingGroup.className = "ikea-history-drawer__heading";
+  eyebrow.className = "ikea-history-drawer__eyebrow";
+  eyebrow.textContent = "このブラウザだけに保存";
+  title.className = "ikea-history-drawer__title";
+  title.id = "saved-search-title";
+  title.textContent = "保存検索";
+  closeButton.className = "ikea-history-drawer__close";
+  closeButton.type = "button";
+  closeButton.dataset.savedSearchClose = "true";
+  closeButton.setAttribute("aria-label", "保存検索を閉じる");
+  closeButton.appendChild(createIcon("close"));
+  headingGroup.append(eyebrow, title);
+  header.append(headingGroup, closeButton);
+
+  body.className = "ikea-history-drawer__body";
+  lead.className = "ikea-history-drawer__lead";
+  lead.textContent = "保存した検索条件を、直近 10 件まで一覧できます。";
+  count.className = "ikea-history-drawer__count";
+  count.dataset.savedSearchCount = "true";
+  list.className = "finder-mini-list ikea-history-drawer__list";
+  list.dataset.savedSearchList = "true";
+  body.append(lead, count, list);
+
+  panel.append(header, body);
+  drawer.append(backdrop, panel);
+  document.body.appendChild(drawer);
+  return drawer;
+};
+
+const renderSavedSearchDrawer = () => {
+  const drawer = createSavedSearchDrawer();
+  if (!drawer) return null;
+
+  const count = drawer.querySelector("[data-saved-search-count]");
+  const list = drawer.querySelector("[data-saved-search-list]");
+  const searches = getSavedSearches();
+
+  if (count) {
+    count.textContent = searches.length ? `${searches.length} 件の保存検索` : "保存検索はまだありません";
+  }
+
+  if (list) {
+    list.textContent = "";
+    if (!searches.length) {
+      const empty = document.createElement("p");
+      empty.className = "ikea-history-drawer__empty";
+      empty.textContent = "まだ保存検索はありません。作品検索や詳細条件ビルダーで条件を保存するとここにたまります。";
+      list.appendChild(empty);
+    } else {
+      searches.forEach((search) => {
+        const link = document.createElement("a");
+        const body = document.createElement("div");
+        const title = document.createElement("strong");
+        const meta = document.createElement("span");
+        const updatedAt = document.createElement("span");
+        const summary = getSavedSearchSummary(search);
+        const titleLabel = `${search?.label || summary || "保存検索"}`.trim();
+
+        link.className = "finder-mini-link finder-mini-link--saved ikea-history-drawer__link";
+        link.href = buildFinderSearchHref(search);
+        body.className = "finder-mini-link__body";
+        title.textContent = titleLabel;
+        body.appendChild(title);
+
+        if (summary && summary !== titleLabel) {
+          meta.className = "help";
+          meta.textContent = summary;
+          body.appendChild(meta);
+        }
+
+        link.appendChild(body);
+
+        const updatedLabel = formatSavedSearchUpdatedAt(search?.createdAt);
+        if (updatedLabel) {
+          updatedAt.className = "ikea-history-drawer__updated";
+          updatedAt.textContent = updatedLabel;
+          link.appendChild(updatedAt);
+        }
+
+        list.appendChild(link);
+      });
+    }
+  }
+
+  return drawer;
+};
+
+const closeSavedSearchDrawer = ({ restoreFocus = true } = {}) => {
+  const drawer = document.querySelector("[data-saved-search-drawer]");
+  if (!drawer || drawer.hidden) return;
+
+  drawer.dataset.open = "false";
+  drawer.setAttribute("aria-hidden", "true");
+  document.body.classList.remove("history-drawer-open");
+
+  if (savedSearchDrawerCloseTimer) window.clearTimeout(savedSearchDrawerCloseTimer);
+  savedSearchDrawerCloseTimer = window.setTimeout(() => {
+    if (drawer.dataset.open === "true") return;
+    drawer.hidden = true;
+    if (
+      restoreFocus &&
+      savedSearchDrawerRestoreFocus &&
+      typeof savedSearchDrawerRestoreFocus.focus === "function"
+    ) {
+      savedSearchDrawerRestoreFocus.focus();
+    }
+    savedSearchDrawerRestoreFocus = null;
+  }, 220);
+};
+
+const openSavedSearchDrawer = ({ clearHash = false } = {}) => {
+  const drawer = renderSavedSearchDrawer();
+  if (!drawer) return;
+  closeHistoryDrawer({ restoreFocus: false });
+
+  if (savedSearchDrawerCloseTimer) {
+    window.clearTimeout(savedSearchDrawerCloseTimer);
+    savedSearchDrawerCloseTimer = null;
+  }
+
+  savedSearchDrawerRestoreFocus =
+    document.activeElement instanceof HTMLElement ? document.activeElement : null;
+  drawer.hidden = false;
+  drawer.dataset.open = "true";
+  drawer.setAttribute("aria-hidden", "false");
+  document.body.classList.add("history-drawer-open");
+
+  const closeButton = drawer.querySelector(".ikea-history-drawer__close");
+  window.requestAnimationFrame(() => {
+    closeButton?.focus();
+  });
+
+  if (clearHash && window.location.hash === SAVED_SEARCH_HASH) {
+    window.history.replaceState({}, "", `${window.location.pathname}${window.location.search}`);
+  }
+};
+
+const initSavedSearchDrawer = () => {
+  if (typeof document === "undefined" || !document.body || document.body.dataset.savedSearchDrawerBound) {
+    return;
+  }
+
+  createSavedSearchDrawer();
+
+  document.body.addEventListener("click", (event) => {
+    const savedSearchLink = event.target.closest(`a[href$="${SAVED_SEARCH_HASH}"]`);
+    if (savedSearchLink) {
+      event.preventDefault();
+      openSavedSearchDrawer({ clearHash: true });
+      return;
+    }
+
+    const closeTrigger = event.target.closest("[data-saved-search-close]");
+    if (closeTrigger) {
+      event.preventDefault();
+      closeSavedSearchDrawer();
+    }
+  });
+
+  document.addEventListener("keydown", (event) => {
+    if (event.key === "Escape") {
+      closeSavedSearchDrawer();
+    }
+  });
+
+  window.addEventListener("finder:state-changed", () => {
+    const drawer = document.querySelector("[data-saved-search-drawer]");
+    if (drawer && !drawer.hidden) {
+      renderSavedSearchDrawer();
+    }
+  });
+
+  if (window.location.hash === SAVED_SEARCH_HASH) {
+    openSavedSearchDrawer({ clearHash: true });
+  }
+
+  document.body.dataset.savedSearchDrawerBound = "true";
 };
 
 const getHeaderSearchQuery = (trigger = null) => {
@@ -1918,6 +2209,7 @@ const renderSiteChrome = () => {
 
 renderSiteChrome();
 initHistoryDrawer();
+initSavedSearchDrawer();
 initSearchFilterScreen();
 if (typeof document !== "undefined" && document.body && !document.body.dataset.siteChromeBound) {
   document.body.addEventListener("click", (event) => {
