@@ -43,11 +43,12 @@
 
 ## ライブスクリーンショット
 - UI改修の途中確認には `node scripts/capture_local_ui_screenshots.js` を使います。ホーム、検索、詳細条件ビルダー、作品詳細の主要画面をローカルでまとめて撮ります。
-- `node scripts/capture_live_screenshots.js` で `https://wintergator.com/` の全ページスクリーンショットを取得します。
-- 対象URLは `public/` のHTMLルート、ライブの `sitemap.xml`、描画後DOMの内部リンクを合算して動的に列挙します。
+- `node scripts/capture_live_screenshots.js` はデフォルトで `quick` モードです。`public/` のHTMLルートと `sitemap.xml` を起点に、主要ページだけを軽く撮ります。
+- `node scripts/capture_live_screenshots.js --full` で、描画後DOMの内部リンクも辿る従来どおりの網羅モードを実行できます。
+- `quick` は日常の確認向け、`full` は公開前や導線の大きな変更時向けです。
 - 出力先は `artifacts/live-screenshots/latest/` です。`manifest.json` にURL一覧、`summary.txt` に結果概要を出します。
-- `scripts/verify_linux.sh` / `scripts/verify_wsl.sh` / `scripts/verify_windows.ps1` からも毎回この処理を実行します。
-- 必要に応じて `LIVE_SCREENSHOT_BASE_URL`、`LIVE_SCREENSHOT_OUTPUT_DIR`、`LIVE_SCREENSHOT_MAX_PAGES`、`LIVE_SCREENSHOT_BROWSER` を上書きできます。
+- `scripts/verify_linux.sh` / `scripts/verify_wsl.sh` はデフォルトではスクリーンショットを回しません。必要な時だけ `VERIFY_LOCAL_SCREENSHOTS=1`、`VERIFY_LIVE_SCREENSHOTS=quick`、`VERIFY_LIVE_SCREENSHOTS=full` を指定してください。
+- 必要に応じて `LIVE_SCREENSHOT_BASE_URL`、`LIVE_SCREENSHOT_MODE`、`LIVE_SCREENSHOT_OUTPUT_DIR`、`LIVE_SCREENSHOT_MAX_PAGES`、`LIVE_SCREENSHOT_BROWSER` を上書きできます。
 
 ## 補足
 - 現在のシードデータは仮データです。実データ公開前に差し替えてください。

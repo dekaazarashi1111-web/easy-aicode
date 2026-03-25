@@ -169,20 +169,32 @@ else
   log "skip dotnet (set LOOP_DOTNET_TEST=1 to enable)"
 fi
 
-if command -v node >/dev/null 2>&1 && [ -f "scripts/capture_local_ui_screenshots.js" ]; then
-  log "node scripts/capture_local_ui_screenshots.js"
-  node scripts/capture_local_ui_screenshots.js
-  ran=1
+if [ "${VERIFY_LOCAL_SCREENSHOTS:-0}" = "1" ]; then
+  if command -v node >/dev/null 2>&1 && [ -f "scripts/capture_local_ui_screenshots.js" ]; then
+    log "node scripts/capture_local_ui_screenshots.js"
+    node scripts/capture_local_ui_screenshots.js
+    ran=1
+  else
+    log "skip local UI screenshots (node or script not available)"
+  fi
 else
-  log "skip local UI screenshots (node or script not available)"
+  log "skip local UI screenshots (set VERIFY_LOCAL_SCREENSHOTS=1 to enable)"
 fi
 
-if command -v node >/dev/null 2>&1 && [ -f "scripts/capture_live_screenshots.js" ]; then
-  log "node scripts/capture_live_screenshots.js"
-  node scripts/capture_live_screenshots.js
-  ran=1
+if [ "${VERIFY_LIVE_SCREENSHOTS:-0}" != "0" ]; then
+  live_mode="${VERIFY_LIVE_SCREENSHOTS}"
+  if [ "$live_mode" = "1" ]; then
+    live_mode="quick"
+  fi
+  if command -v node >/dev/null 2>&1 && [ -f "scripts/capture_live_screenshots.js" ]; then
+    log "node scripts/capture_live_screenshots.js --mode $live_mode"
+    node scripts/capture_live_screenshots.js --mode "$live_mode"
+    ran=1
+  else
+    log "skip live screenshots (node or script not available)"
+  fi
 else
-  log "skip live screenshots (node or script not available)"
+  log "skip live screenshots (set VERIFY_LIVE_SCREENSHOTS=quick or full to enable)"
 fi
 
 if [ $ran -eq 0 ]; then

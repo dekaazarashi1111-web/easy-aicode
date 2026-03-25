@@ -8,12 +8,27 @@ const ROOT = path.resolve(__dirname, "..");
 const PUBLIC_DIR = path.join(ROOT, "public");
 const DEFAULT_BASE_URL = "https://wintergator.com/";
 const DEFAULT_OUTPUT_DIR = path.join(ROOT, "artifacts", "live-screenshots", "latest");
-const DEFAULT_MAX_PAGES = 200;
-const DEFAULT_VIRTUAL_TIME_BUDGET_MS = 5000;
-const DEFAULT_WINDOW_WIDTH = 1440;
-const DEFAULT_WINDOW_HEIGHT = 9000;
-const DEFAULT_COMMAND_TIMEOUT_MS = 60000;
 const SAME_PATH_QUERY_CHAIN_BLOCKLIST = new Set(["/finder/", "/articles/"]);
+const MODE_CONFIG = {
+  quick: {
+    label: "quick",
+    maxPages: 40,
+    virtualTimeMs: 1500,
+    windowWidth: 1440,
+    windowHeight: 4200,
+    commandTimeoutMs: 30000,
+    discoverRenderedLinks: false,
+  },
+  full: {
+    label: "full",
+    maxPages: 200,
+    virtualTimeMs: 5000,
+    windowWidth: 1440,
+    windowHeight: 9000,
+    commandTimeoutMs: 60000,
+    discoverRenderedLinks: true,
+  },
+};
 
 function log(message) {
   process.stdout.write(`[screenshots] ${message}\n`);
@@ -37,31 +52,84 @@ function getIntEnv(name, fallback) {
   return Number.isFinite(value) && value > 0 ? value : fallback;
 }
 
+function parseCliArgs(rawArgs) {
+  const result = {
+    showHelp: false,
+    mode: "",
+    baseUrl: "",
+  };
+
+  for (let index = 0; index < rawArgs.length; index += 1) {
+    const arg = rawArgs[index];
+    if (arg === "--help" || arg === "-h") {
+      result.showHelp = true;
+      continue;
+    }
+    if (arg === "--quick") {
+      result.mode = "quick";
+      continue;
+    }
+    if (arg === "--full") {
+      result.mode = "full";
+      continue;
+    }
+    if (arg === "--mode") {
+      result.mode = rawArgs[index + 1] || "";
+      index += 1;
+      continue;
+    }
+    if (arg.startsWith("--mode=")) {
+      result.mode = arg.slice("--mode=".length);
+      continue;
+    }
+    if (!arg.startsWith("-") && !result.baseUrl) {
+      result.baseUrl = arg;
+      continue;
+    }
+    fail(`未知の引数です: ${arg}`);
+  }
+
+  return result;
+}
+
 function printHelp() {
   process.stdout.write(
     [
       "usage: node scripts/capture_live_screenshots.js [base-url]",
+      "       node scripts/capture_live_screenshots.js --quick [base-url]",
+      "       node scripts/capture_live_screenshots.js --full [base-url]",
       "",
       "env:",
       "  LIVE_SCREENSHOT_BASE_URL        default: https://wintergator.com/",
+      "  LIVE_SCREENSHOT_MODE            quick | full (default: quick)",
       "  LIVE_SCREENSHOT_OUTPUT_DIR      default: artifacts/live-screenshots/latest",
       "  LIVE_SCREENSHOT_BROWSER         chromium executable path",
-      "  LIVE_SCREENSHOT_MAX_PAGES       default: 200",
-      "  LIVE_SCREENSHOT_VIRTUAL_TIME_MS default: 5000",
-      "  LIVE_SCREENSHOT_WINDOW_WIDTH    default: 1440",
-      "  LIVE_SCREENSHOT_WINDOW_HEIGHT   default: 9000",
-      "  LIVE_SCREENSHOT_TIMEOUT_MS      default: 60000",
+      "  LIVE_SCREENSHOT_MAX_PAGES       mode default: quick=40 full=200",
+      "  LIVE_SCREENSHOT_VIRTUAL_TIME_MS mode default: quick=1500 full=5000",
+      "  LIVE_SCREENSHOT_WINDOW_WIDTH    mode default: 1440",
+      "  LIVE_SCREENSHOT_WINDOW_HEIGHT   mode default: quick=4200 full=9000",
+      "  LIVE_SCREENSHOT_TIMEOUT_MS      mode default: quick=30000 full=60000",
+      "",
+      "notes:",
+      "  quick は public/ と sitemap.xml の静的入口だけを軽く撮ります。",
+      "  full は描画後 DOM の内部リンクも辿る従来の網羅モードです。",
     ].join("\n") + "\n"
   );
 }
 
-const argv = process.argv.slice(2);
-if (argv.includes("--help") || argv.includes("-h")) {
+const cliArgs = parseCliArgs(process.argv.slice(2));
+if (cliArgs.showHelp) {
   printHelp();
   process.exit(0);
 }
 
-const baseUrlInput = process.env.LIVE_SCREENSHOT_BASE_URL || argv[0] || DEFAULT_BASE_URL;
+const modeInput = `${process.env.LIVE_SCREENSHOT_MODE || cliArgs.mode || "quick"}`.trim().toLowerCase();
+const modeConfig = MODE_CONFIG[modeInput];
+if (!modeConfig) {
+  fail(`LIVE_SCREENSHOT_MODE は quick か full を指定してください: ${modeInput}`);
+}
+
+const baseUrlInput = process.env.LIVE_SCREENSHOT_BASE_URL || cliArgs.baseUrl || DEFAULT_BASE_URL;
 let baseUrl;
 
 try {
@@ -77,11 +145,11 @@ if (!["http:", "https:"].includes(baseUrl.protocol)) {
 baseUrl.hash = "";
 const baseOrigin = baseUrl.origin;
 const outputDir = path.resolve(process.env.LIVE_SCREENSHOT_OUTPUT_DIR || DEFAULT_OUTPUT_DIR);
-const maxPages = getIntEnv("LIVE_SCREENSHOT_MAX_PAGES", DEFAULT_MAX_PAGES);
-const virtualTimeMs = getIntEnv("LIVE_SCREENSHOT_VIRTUAL_TIME_MS", DEFAULT_VIRTUAL_TIME_BUDGET_MS);
-const windowWidth = getIntEnv("LIVE_SCREENSHOT_WINDOW_WIDTH", DEFAULT_WINDOW_WIDTH);
-const windowHeight = getIntEnv("LIVE_SCREENSHOT_WINDOW_HEIGHT", DEFAULT_WINDOW_HEIGHT);
-const commandTimeoutMs = getIntEnv("LIVE_SCREENSHOT_TIMEOUT_MS", DEFAULT_COMMAND_TIMEOUT_MS);
+const maxPages = getIntEnv("LIVE_SCREENSHOT_MAX_PAGES", modeConfig.maxPages);
+const virtualTimeMs = getIntEnv("LIVE_SCREENSHOT_VIRTUAL_TIME_MS", modeConfig.virtualTimeMs);
+const windowWidth = getIntEnv("LIVE_SCREENSHOT_WINDOW_WIDTH", modeConfig.windowWidth);
+const windowHeight = getIntEnv("LIVE_SCREENSHOT_WINDOW_HEIGHT", modeConfig.windowHeight);
+const commandTimeoutMs = getIntEnv("LIVE_SCREENSHOT_TIMEOUT_MS", modeConfig.commandTimeoutMs);
 
 function resolveBrowser() {
   const candidates = [
@@ -204,6 +272,24 @@ async function captureScreenshot(targetUrl, destinationPath) {
     ),
     `スクリーンショット取得: ${targetUrl}`
   );
+}
+
+async function fetchPageHtml(targetUrl) {
+  const controller = new AbortController();
+  const timeout = setTimeout(() => controller.abort(), commandTimeoutMs);
+
+  try {
+    const response = await fetch(targetUrl, {
+      redirect: "follow",
+      signal: controller.signal,
+    });
+    if (!response.ok) {
+      throw new Error(`${response.status} ${response.statusText}`);
+    }
+    return await response.text();
+  } finally {
+    clearTimeout(timeout);
+  }
 }
 
 function sanitizeToken(value) {
@@ -463,6 +549,7 @@ async function main() {
   resetOutputDirectory();
 
   log(`base URL: ${baseUrl.toString()}`);
+  log(`mode: ${modeConfig.label}`);
   log(`browser: ${browserPath}`);
   log(`output: ${path.relative(ROOT, outputDir) || "."}`);
 
@@ -500,12 +587,22 @@ async function main() {
     log(`処理中 (${pages.length + 1}/${maxPages}): ${currentUrl}`);
 
     let dom = "";
-    try {
-      dom = await dumpDom(currentUrl);
-    } catch (error) {
-      failures.push({ url: currentUrl, phase: "dump-dom", message: error.message });
-      warn(`DOM取得失敗: ${currentUrl}`);
-      continue;
+    let discoveredLinks = [];
+    if (modeConfig.discoverRenderedLinks) {
+      try {
+        dom = await dumpDom(currentUrl);
+      } catch (error) {
+        failures.push({ url: currentUrl, phase: "dump-dom", message: error.message });
+        warn(`DOM取得失敗: ${currentUrl}`);
+        continue;
+      }
+      discoveredLinks = extractLinksFromDom(dom, currentUrl);
+    } else {
+      try {
+        dom = await fetchPageHtml(currentUrl);
+      } catch (error) {
+        warn(`HTML取得失敗: ${currentUrl} (${error.message})`);
+      }
     }
 
     const relativeScreenshotPath = buildScreenshotRelativePath(currentUrl);
@@ -518,20 +615,21 @@ async function main() {
       continue;
     }
 
-    const discoveredLinks = extractLinksFromDom(dom, currentUrl);
-    for (const link of discoveredLinks) {
-      if (!shouldEnqueueDiscoveredLink(currentUrl, link)) {
-        continue;
-      }
-      if (!visited.has(link) && !queued.has(link)) {
-        queue.push(link);
-        queued.add(link);
-        if (!discoveredBy.has(link)) {
-          discoveredBy.set(link, currentUrl);
+    if (modeConfig.discoverRenderedLinks) {
+      for (const link of discoveredLinks) {
+        if (!shouldEnqueueDiscoveredLink(currentUrl, link)) {
+          continue;
+        }
+        if (!visited.has(link) && !queued.has(link)) {
+          queue.push(link);
+          queued.add(link);
+          if (!discoveredBy.has(link)) {
+            discoveredBy.set(link, currentUrl);
+          }
         }
       }
+      queue.sort();
     }
-    queue.sort();
 
     pages.push({
       url: currentUrl,
@@ -553,6 +651,7 @@ async function main() {
   const manifest = {
     generatedAt: new Date().toISOString(),
     baseUrl: baseUrl.toString(),
+    mode: modeConfig.label,
     browser: browserPath,
     outputDir: path.relative(ROOT, outputDir),
     maxPages,
@@ -569,6 +668,7 @@ async function main() {
   const summaryLines = [
     `generatedAt: ${manifest.generatedAt}`,
     `baseUrl: ${manifest.baseUrl}`,
+    `mode: ${manifest.mode}`,
     `browser: ${manifest.browser}`,
     `pageCount: ${manifest.pageCount}`,
     `failureCount: ${manifest.failureCount}`,
