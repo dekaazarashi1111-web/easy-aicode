@@ -170,9 +170,42 @@ const HEADER_FILTER_AGE_OPTIONS = [
   { tagId: "age-adult", label: "成年" },
   { tagId: "age-older", label: "熟年" },
 ];
+const HEADER_FILTER_LABEL_OVERRIDES = {
+  entrance: "入口条件",
+  species: "種族",
+  "body-type": "体型",
+  "age-feel": "年齢",
+  style: "雰囲気",
+  transformation: "変化要素",
+  relationship: "関係性",
+  format: "媒体",
+  curation: "運営選抜",
+  avoid: "除外条件",
+};
+const HEADER_FILTER_HIDDEN_GROUP_IDS = new Set(["species", "body-type", "age-feel"]);
+const HEADER_FILTER_TAG_PREVIEW_LIMIT = 10;
+const HEADER_FILTER_SORT_META = {
+  recommended: {
+    label: "ベストマッチ",
+    description: "一致タグと表示優先度を重視します。",
+  },
+  latest: {
+    label: "新しい順",
+    description: "公開日が新しい順に並びます。",
+  },
+  updated: {
+    label: "更新順",
+    description: "更新日が新しい順に並びます。",
+  },
+  title: {
+    label: "名前順",
+    description: "タイトルの五十音順に並びます。",
+  },
+};
 let historyDrawerCloseTimer = null;
 let historyDrawerRestoreFocus = null;
 let searchFilterScreenRestoreFocus = null;
+let searchFilterTagPickerRestoreFocus = null;
 
 const parseFinderCanvasState = () => {
   if (typeof window === "undefined" || !window.localStorage) {
@@ -712,6 +745,13 @@ const getHeaderSearchQuery = (trigger = null) => {
   return new URLSearchParams(window.location.search).get("q") || "";
 };
 
+const normalizeSearchFilterText = (value) =>
+  String(value || "")
+    .toLowerCase()
+    .replace(/\u3000/g, " ")
+    .replace(/\s+/g, " ")
+    .trim();
+
 const getHeaderFilterTagMap = () =>
   new Map(
     (Array.isArray(window.FINDER_SEED?.tags) ? window.FINDER_SEED.tags : [])
@@ -722,6 +762,71 @@ const getHeaderFilterTagMap = () =>
 const getHeaderFilterTagLabel = (tagId, fallback = "") =>
   getHeaderFilterTagMap().get(tagId)?.label || fallback || tagId;
 
+const getHeaderFilterSortMeta = (sort) => HEADER_FILTER_SORT_META[sort] || HEADER_FILTER_SORT_META.recommended;
+
+const getHeaderFilterGroupedTags = () => {
+  const tagGroups = Array.isArray(window.FINDER_SEED?.tagGroups) ? window.FINDER_SEED.tagGroups : [];
+  const visibleTags = (Array.isArray(window.FINDER_SEED?.tags) ? window.FINDER_SEED.tags : []).filter(
+    (tag) => tag && tag.id && tag.label && tag.isPublic !== false
+  );
+  const tagsByGroup = new Map();
+
+  visibleTags.forEach((tag) => {
+    const current = tagsByGroup.get(tag.groupId) || [];
+    current.push(tag);
+    tagsByGroup.set(tag.groupId, current);
+  });
+
+  const buildTagRecord = (tag, groupLabel) => ({
+    ...tag,
+    groupLabel,
+    searchText: normalizeSearchFilterText(
+      [
+        tag.label,
+        Array.isArray(tag.synonyms) ? tag.synonyms.join(" ") : "",
+        groupLabel,
+      ].join(" ")
+    ),
+  });
+
+  const groups = tagGroups
+    .map((group) => {
+      const groupLabel = HEADER_FILTER_LABEL_OVERRIDES[group.id] || group.label || group.id;
+      return {
+        ...group,
+        label: groupLabel,
+        tags: (tagsByGroup.get(group.id) || [])
+          .slice()
+          .sort((left, right) => left.label.localeCompare(right.label, "ja"))
+          .map((tag) => buildTagRecord(tag, groupLabel)),
+      };
+    })
+    .filter((group) => group.tags.length);
+
+  const knownGroupIds = new Set(groups.map((group) => group.id));
+  tagsByGroup.forEach((groupTags, groupId) => {
+    if (knownGroupIds.has(groupId)) return;
+    const groupLabel = HEADER_FILTER_LABEL_OVERRIDES[groupId] || groupId;
+    groups.push({
+      id: groupId,
+      label: groupLabel,
+      description: "",
+      tags: groupTags
+        .slice()
+        .sort((left, right) => left.label.localeCompare(right.label, "ja"))
+        .map((tag) => buildTagRecord(tag, groupLabel)),
+    });
+  });
+
+  return groups;
+};
+
+const getHeaderFilterQuickTagGroups = () =>
+  getHeaderFilterGroupedTags().filter((group) => !HEADER_FILTER_HIDDEN_GROUP_IDS.has(group.id));
+
+const getHeaderFilterQuickSelectableTags = () =>
+  getHeaderFilterQuickTagGroups().flatMap((group) => group.tags);
+
 const normalizeSearchFilterCharacterState = (value = {}) => ({
   speciesTagIds: uniqueFinderValues(value.speciesTagIds),
   bodyTypeTagIds: uniqueFinderValues(value.bodyTypeTagIds),
@@ -731,44 +836,68 @@ const normalizeSearchFilterCharacterState = (value = {}) => ({
 const getSearchFilterCharacterState = (screen) =>
   normalizeSearchFilterCharacterState(screen?._characterFilterState);
 
-const syncSearchFilterCharacterInputs = (screen) => {
-  const container = screen?.querySelector("[data-search-filter-character-inputs]");
+const getSearchFilterIncludeTagIds = (screen) =>
+  uniqueFinderValues(screen?._searchFilterIncludeTagIds);
+
+const getSearchFilterExcludeTagIds = (screen) =>
+  uniqueFinderValues(screen?._searchFilterExcludeTagIds);
+
+const getSearchFilterSortValue = (screen) =>
+  HEADER_FILTER_SORT_META[screen?._searchFilterSort] ? screen._searchFilterSort : "recommended";
+
+const appendSearchFilterHiddenInput = (container, name, value) => {
+  const input = document.createElement("input");
+  input.type = "hidden";
+  input.name = name;
+  input.value = value;
+  container.appendChild(input);
+};
+
+const syncSearchFilterHiddenInputs = (screen) => {
+  const container = screen?.querySelector("[data-search-filter-hidden-inputs]");
   if (!container) return;
 
   const characterState = getSearchFilterCharacterState(screen);
   container.textContent = "";
-  characterState.speciesTagIds.forEach((tagId) => {
-    const input = document.createElement("input");
-    input.type = "hidden";
-    input.name = "c1_species";
-    input.value = tagId;
-    container.appendChild(input);
-  });
-  characterState.bodyTypeTagIds.forEach((tagId) => {
-    const input = document.createElement("input");
-    input.type = "hidden";
-    input.name = "c1_body";
-    input.value = tagId;
-    container.appendChild(input);
-  });
-  characterState.ageFeelTagIds.forEach((tagId) => {
-    const input = document.createElement("input");
-    input.type = "hidden";
-    input.name = "c1_age";
-    input.value = tagId;
-    container.appendChild(input);
-  });
+  characterState.speciesTagIds.forEach((tagId) =>
+    appendSearchFilterHiddenInput(container, "c1_species", tagId)
+  );
+  characterState.bodyTypeTagIds.forEach((tagId) =>
+    appendSearchFilterHiddenInput(container, "c1_body", tagId)
+  );
+  characterState.ageFeelTagIds.forEach((tagId) =>
+    appendSearchFilterHiddenInput(container, "c1_age", tagId)
+  );
+  getSearchFilterIncludeTagIds(screen).forEach((tagId) =>
+    appendSearchFilterHiddenInput(container, "include", tagId)
+  );
+  getSearchFilterExcludeTagIds(screen).forEach((tagId) =>
+    appendSearchFilterHiddenInput(container, "exclude", tagId)
+  );
 };
 
 const setSearchFilterCharacterState = (screen, nextState) => {
   if (!screen) return;
   screen._characterFilterState = normalizeSearchFilterCharacterState(nextState);
-  syncSearchFilterCharacterInputs(screen);
+  syncSearchFilterHiddenInputs(screen);
 };
 
-const getSearchFilterCharacterSummary = (screen) => {
+const setSearchFilterTagSelections = (screen, nextState = {}) => {
+  if (!screen) return;
+  screen._searchFilterIncludeTagIds = uniqueFinderValues(nextState.includeTagIds);
+  screen._searchFilterExcludeTagIds = uniqueFinderValues(nextState.excludeTagIds);
+  syncSearchFilterHiddenInputs(screen);
+};
+
+const setSearchFilterSortValue = (screen, sort) => {
+  if (!screen) return;
+  screen._searchFilterSort = HEADER_FILTER_SORT_META[sort] ? sort : "recommended";
+};
+
+const getSearchFilterSummary = (screen) => {
   const characterState = getSearchFilterCharacterState(screen);
-  const labels = [
+  const parts = [];
+  const characterLabels = [
     ...characterState.speciesTagIds.map((tagId) => getHeaderFilterTagLabel(tagId)),
     ...characterState.bodyTypeTagIds.map((tagId) =>
       HEADER_FILTER_BODY_OPTIONS.find((option) => option.tagId === tagId)?.label || tagId
@@ -777,13 +906,28 @@ const getSearchFilterCharacterSummary = (screen) => {
       HEADER_FILTER_AGE_OPTIONS.find((option) => option.tagId === tagId)?.label || tagId
     ),
   ].filter(Boolean);
-  return labels.length ? `キャラ1: ${labels.join(" / ")}` : "条件なし";
+  const includeLabels = getSearchFilterIncludeTagIds(screen)
+    .map((tagId) => getHeaderFilterTagLabel(tagId))
+    .filter(Boolean);
+  const excludeLabels = getSearchFilterExcludeTagIds(screen)
+    .map((tagId) => getHeaderFilterTagLabel(tagId))
+    .filter(Boolean);
+
+  if (characterLabels.length) parts.push(`キャラ1: ${characterLabels.join(" / ")}`);
+  if (includeLabels.length) parts.push(`含める: ${includeLabels.join(" / ")}`);
+  if (excludeLabels.length) parts.push(`除外: ${excludeLabels.join(" / ")}`);
+  return parts.join(" | ") || "条件なし";
 };
 
-const createSearchFilterChipButton = ({ label, selected = false, dataset = {} }) => {
+const createSearchFilterChipButton = ({
+  label,
+  selected = false,
+  className = "",
+  dataset = {},
+}) => {
   const button = document.createElement("button");
   button.type = "button";
-  button.className = "ikea-quick-filter-chip";
+  button.className = `ikea-quick-filter-chip${className ? ` ${className}` : ""}`;
   button.textContent = label;
   button.setAttribute("aria-pressed", String(selected));
   Object.entries(dataset).forEach(([key, value]) => {
@@ -843,15 +987,94 @@ const toggleSearchFilterCharacterValue = (screen, field, tagId) => {
   setSearchFilterCharacterState(screen, nextState);
 };
 
-const renderSearchFilterCharacterFields = (screen) => {
+const toggleSearchFilterQuickTag = (screen, mode, tagId) => {
+  const includeTagIds = getSearchFilterIncludeTagIds(screen).filter((value) => value !== tagId);
+  const excludeTagIds = getSearchFilterExcludeTagIds(screen).filter((value) => value !== tagId);
+  const isSelected = mode === "exclude"
+    ? getSearchFilterExcludeTagIds(screen).includes(tagId)
+    : getSearchFilterIncludeTagIds(screen).includes(tagId);
+
+  if (!isSelected) {
+    if (mode === "exclude") {
+      excludeTagIds.push(tagId);
+    } else {
+      includeTagIds.push(tagId);
+    }
+  }
+
+  setSearchFilterTagSelections(screen, {
+    includeTagIds,
+    excludeTagIds,
+  });
+};
+
+const getSearchFilterQuickTagPreview = (screen, mode) => {
+  const selectedTagIds = new Set(
+    mode === "exclude" ? getSearchFilterExcludeTagIds(screen) : getSearchFilterIncludeTagIds(screen)
+  );
+  const selected = [];
+  const unselected = [];
+
+  getHeaderFilterQuickSelectableTags().forEach((tag) => {
+    if (selectedTagIds.has(tag.id)) {
+      selected.push(tag);
+      return;
+    }
+    unselected.push(tag);
+  });
+
+  return [...selected, ...unselected].slice(0, HEADER_FILTER_TAG_PREVIEW_LIMIT);
+};
+
+const getSearchFilterBuilderHref = (screen) => {
+  const params = new URLSearchParams();
+  const queryValue =
+    document.querySelector('.ikea-shell__searchForm input[name="q"]')?.value?.trim() ||
+    screen?.querySelector("[data-search-filter-query-input]")?.value?.trim() ||
+    "";
+  const characterState = getSearchFilterCharacterState(screen);
+  const includeTagIds = uniqueFinderValues([
+    ...getSearchFilterIncludeTagIds(screen),
+    ...characterState.speciesTagIds,
+    ...characterState.bodyTypeTagIds,
+    ...characterState.ageFeelTagIds,
+  ]);
+
+  if (queryValue) params.set("q", queryValue);
+  includeTagIds.forEach((tagId) => params.append("include", tagId));
+  getSearchFilterExcludeTagIds(screen).forEach((tagId) => params.append("exclude", tagId));
+  return params.toString() ? `/builder/?${params.toString()}` : "/builder/";
+};
+
+const renderSearchFilterFields = (screen) => {
   const summary = screen?.querySelector("[data-search-filter-summary]");
   const speciesRow = screen?.querySelector("[data-search-filter-species-row]");
   const bodyGrid = screen?.querySelector("[data-search-filter-body-grid]");
   const ageRow = screen?.querySelector("[data-search-filter-age-row]");
-  if (!summary || !speciesRow || !bodyGrid || !ageRow) return;
+  const includeRow = screen?.querySelector("[data-search-filter-include-row]");
+  const excludeRow = screen?.querySelector("[data-search-filter-exclude-row]");
+  const includeMoreButton = screen?.querySelector('[data-search-filter-tag-picker-open="include"]');
+  const excludeMoreButton = screen?.querySelector('[data-search-filter-tag-picker-open="exclude"]');
+  const sortSelect = screen?.querySelector("[data-search-filter-sort]");
+  const sortNote = screen?.querySelector("[data-search-filter-sort-note]");
+  const builderLink = screen?.querySelector("[data-search-filter-builder-link]");
+  if (
+    !summary ||
+    !speciesRow ||
+    !bodyGrid ||
+    !ageRow ||
+    !includeRow ||
+    !excludeRow ||
+    !sortSelect ||
+    !sortNote
+  ) {
+    return;
+  }
 
   const characterState = getSearchFilterCharacterState(screen);
-  summary.textContent = getSearchFilterCharacterSummary(screen);
+  const allQuickTags = getHeaderFilterQuickSelectableTags();
+
+  summary.textContent = getSearchFilterSummary(screen);
 
   speciesRow.textContent = "";
   HEADER_FILTER_SPECIES_TAG_IDS.forEach((tagId) => {
@@ -895,6 +1118,251 @@ const renderSearchFilterCharacterFields = (screen) => {
       })
     );
   });
+
+  includeRow.textContent = "";
+  getSearchFilterQuickTagPreview(screen, "include").forEach((tag) => {
+    includeRow.appendChild(
+      createSearchFilterChipButton({
+        label: tag.label,
+        selected: getSearchFilterIncludeTagIds(screen).includes(tag.id),
+        dataset: {
+          searchFilterGlobalState: "include",
+          searchFilterTagId: tag.id,
+        },
+      })
+    );
+  });
+
+  excludeRow.textContent = "";
+  getSearchFilterQuickTagPreview(screen, "exclude").forEach((tag) => {
+    excludeRow.appendChild(
+      createSearchFilterChipButton({
+        label: tag.label,
+        selected: getSearchFilterExcludeTagIds(screen).includes(tag.id),
+        className: "plp-filter-chip--exclude",
+        dataset: {
+          searchFilterGlobalState: "exclude",
+          searchFilterTagId: tag.id,
+        },
+      })
+    );
+  });
+
+  if (includeMoreButton) {
+    includeMoreButton.hidden = allQuickTags.length <= HEADER_FILTER_TAG_PREVIEW_LIMIT;
+  }
+  if (excludeMoreButton) {
+    excludeMoreButton.hidden = allQuickTags.length <= HEADER_FILTER_TAG_PREVIEW_LIMIT;
+  }
+
+  sortSelect.value = getSearchFilterSortValue(screen);
+  sortNote.textContent = getHeaderFilterSortMeta(sortSelect.value).description;
+  if (builderLink) builderLink.href = getSearchFilterBuilderHref(screen);
+};
+
+const createSearchFilterTagPicker = () => {
+  if (typeof document === "undefined" || !document.body) return null;
+  const existing = document.querySelector("[data-search-filter-tag-picker]");
+  if (existing) return existing;
+
+  const picker = document.createElement("div");
+  const backdrop = document.createElement("button");
+  const panel = document.createElement("div");
+  const header = document.createElement("div");
+  const heading = document.createElement("div");
+  const eyebrow = document.createElement("p");
+  const title = document.createElement("h2");
+  const lead = document.createElement("p");
+  const closeButton = document.createElement("button");
+  const body = document.createElement("div");
+  const searchField = document.createElement("label");
+  const searchLabel = document.createElement("span");
+  const searchInput = document.createElement("input");
+  const count = document.createElement("p");
+  const results = document.createElement("div");
+
+  picker.className = "ikea-tag-picker";
+  picker.hidden = true;
+  picker.dataset.searchFilterTagPicker = "true";
+  picker.dataset.open = "false";
+  picker.setAttribute("aria-hidden", "true");
+  picker._mode = "include";
+  picker._query = "";
+
+  backdrop.className = "ikea-tag-picker__backdrop";
+  backdrop.type = "button";
+  backdrop.dataset.searchFilterTagPickerClose = "true";
+  backdrop.setAttribute("aria-label", "タグ選択を閉じる");
+
+  panel.className = "ikea-tag-picker__panel";
+  panel.setAttribute("role", "dialog");
+  panel.setAttribute("aria-modal", "true");
+  panel.setAttribute("aria-labelledby", "site-search-filter-tag-picker-title");
+
+  header.className = "ikea-tag-picker__header";
+  heading.className = "ikea-tag-picker__heading";
+  eyebrow.className = "ikea-tag-picker__eyebrow";
+  eyebrow.textContent = "タグ選択";
+  title.className = "ikea-tag-picker__title";
+  title.id = "site-search-filter-tag-picker-title";
+  title.dataset.searchFilterTagPickerTitle = "true";
+  lead.className = "ikea-tag-picker__lead";
+  lead.dataset.searchFilterTagPickerLead = "true";
+  heading.append(eyebrow, title, lead);
+
+  closeButton.className = "ikea-tag-picker__close";
+  closeButton.type = "button";
+  closeButton.dataset.searchFilterTagPickerClose = "true";
+  closeButton.setAttribute("aria-label", "タグ選択を閉じる");
+  closeButton.appendChild(createIcon("close"));
+  header.append(heading, closeButton);
+
+  body.className = "ikea-tag-picker__body";
+  searchField.className = "ikea-tag-picker__searchField";
+  searchLabel.className = "ikea-tag-picker__searchLabel";
+  searchLabel.textContent = "タグ検索";
+  searchInput.className = "ikea-tag-picker__searchInput";
+  searchInput.type = "search";
+  searchInput.placeholder = "タグ名や関連語で検索";
+  searchInput.dataset.searchFilterTagPickerQuery = "true";
+  searchInput.setAttribute("aria-label", "タグ検索");
+  searchField.append(searchLabel, searchInput);
+
+  count.className = "ikea-tag-picker__count";
+  count.dataset.searchFilterTagPickerCount = "true";
+  results.className = "ikea-tag-picker__results";
+  results.dataset.searchFilterTagPickerResults = "true";
+  body.append(searchField, count, results);
+
+  panel.append(header, body);
+  picker.append(backdrop, panel);
+  document.body.appendChild(picker);
+  return picker;
+};
+
+const closeSearchFilterTagPicker = ({ restoreFocus = true } = {}) => {
+  const picker = document.querySelector("[data-search-filter-tag-picker]");
+  if (!picker || picker.hidden) return;
+
+  picker.hidden = true;
+  picker.dataset.open = "false";
+  picker.setAttribute("aria-hidden", "true");
+  document.body.classList.remove("finder-tag-picker-open");
+
+  if (
+    restoreFocus &&
+    searchFilterTagPickerRestoreFocus &&
+    typeof searchFilterTagPickerRestoreFocus.focus === "function"
+  ) {
+    searchFilterTagPickerRestoreFocus.focus();
+  }
+  searchFilterTagPickerRestoreFocus = null;
+};
+
+const openSearchFilterTagPicker = (mode, trigger = null) => {
+  const picker = createSearchFilterTagPicker();
+  if (!picker) return;
+
+  picker._mode = mode === "exclude" ? "exclude" : "include";
+  picker._query = "";
+  picker.hidden = false;
+  picker.dataset.open = "true";
+  picker.setAttribute("aria-hidden", "false");
+  document.body.classList.add("finder-tag-picker-open");
+  searchFilterTagPickerRestoreFocus = trigger instanceof HTMLElement ? trigger : null;
+  renderSearchFilterTagPicker();
+
+  const searchInput = picker.querySelector("[data-search-filter-tag-picker-query]");
+  window.requestAnimationFrame(() => {
+    searchInput?.focus();
+  });
+};
+
+const renderSearchFilterTagPicker = () => {
+  const picker = createSearchFilterTagPicker();
+  const screen = createSearchFilterScreen();
+  if (!picker || !screen) return;
+
+  const title = picker.querySelector("[data-search-filter-tag-picker-title]");
+  const lead = picker.querySelector("[data-search-filter-tag-picker-lead]");
+  const count = picker.querySelector("[data-search-filter-tag-picker-count]");
+  const results = picker.querySelector("[data-search-filter-tag-picker-results]");
+  const searchInput = picker.querySelector("[data-search-filter-tag-picker-query]");
+  if (!title || !lead || !count || !results || !searchInput) return;
+
+  const isExclude = picker._mode === "exclude";
+  const normalizedQuery = normalizeSearchFilterText(picker._query);
+  const selectedTagIds = new Set(
+    isExclude ? getSearchFilterExcludeTagIds(screen) : getSearchFilterIncludeTagIds(screen)
+  );
+
+  title.textContent = isExclude ? "除外タグ" : "含めるタグ";
+  lead.textContent = isExclude
+    ? "外したい要素をまとめて選べます。"
+    : "含めたい要素をまとめて選べます。";
+  searchInput.value = picker._query;
+
+  const filteredGroups = getHeaderFilterQuickTagGroups()
+    .map((group) => ({
+      ...group,
+      tags: group.tags
+        .filter((tag) => !normalizedQuery || tag.searchText.includes(normalizedQuery))
+        .sort((left, right) => {
+          const leftSelected = selectedTagIds.has(left.id) ? 1 : 0;
+          const rightSelected = selectedTagIds.has(right.id) ? 1 : 0;
+          if (leftSelected !== rightSelected) return rightSelected - leftSelected;
+          return left.label.localeCompare(right.label, "ja");
+        }),
+    }))
+    .filter((group) => group.tags.length);
+
+  const totalCount = filteredGroups.reduce((sum, group) => sum + group.tags.length, 0);
+  count.textContent = normalizedQuery
+    ? `${totalCount} 件のタグが見つかりました`
+    : `${getHeaderFilterQuickSelectableTags().length} 件のタグを選べます`;
+  results.textContent = "";
+
+  if (!filteredGroups.length) {
+    const empty = document.createElement("p");
+    empty.className = "ikea-tag-picker__empty";
+    empty.textContent = "一致するタグはありません。";
+    results.appendChild(empty);
+    return;
+  }
+
+  filteredGroups.forEach((group) => {
+    const section = document.createElement("section");
+    const groupHeader = document.createElement("div");
+    const groupTitle = document.createElement("h3");
+    const groupCount = document.createElement("p");
+    const row = document.createElement("div");
+
+    section.className = "ikea-tag-picker__group";
+    groupHeader.className = "ikea-tag-picker__groupHeader";
+    groupTitle.className = "ikea-tag-picker__groupTitle";
+    groupTitle.textContent = group.label;
+    groupCount.className = "ikea-tag-picker__groupCount";
+    groupCount.textContent = `${group.tags.length}件`;
+    row.className = "ikea-tag-picker__chipRow";
+
+    group.tags.forEach((tag) => {
+      row.appendChild(
+        createSearchFilterChipButton({
+          label: tag.label,
+          selected: selectedTagIds.has(tag.id),
+          className: isExclude ? "plp-filter-chip--exclude" : "",
+          dataset: {
+            searchFilterTagPickerState: picker._mode,
+            searchFilterTagId: tag.id,
+          },
+        })
+      );
+    });
+
+    groupHeader.append(groupTitle, groupCount);
+    section.append(groupHeader, row);
+    results.appendChild(section);
+  });
 };
 
 const createSearchFilterScreen = () => {
@@ -907,12 +1375,17 @@ const createSearchFilterScreen = () => {
   const panel = document.createElement("section");
   const form = document.createElement("form");
   const queryInput = document.createElement("input");
-  const characterInputs = document.createElement("div");
+  const hiddenInputs = document.createElement("div");
   const header = document.createElement("div");
   const title = document.createElement("h2");
   const closeButton = document.createElement("button");
   const body = document.createElement("div");
   const wrapper = document.createElement("div");
+  const wrapperHeader = document.createElement("div");
+  const headingBlock = document.createElement("div");
+  const eyebrow = document.createElement("p");
+  const sectionTitle = document.createElement("h2");
+  const clearButton = document.createElement("button");
   const summary = document.createElement("p");
   const characterCard = document.createElement("section");
   const characterHeader = document.createElement("div");
@@ -928,9 +1401,20 @@ const createSearchFilterScreen = () => {
   const ageField = document.createElement("section");
   const ageLabel = document.createElement("strong");
   const ageRow = document.createElement("div");
-  const note = document.createElement("p");
+  const includeField = document.createElement("section");
+  const includeLabel = document.createElement("strong");
+  const includeRow = document.createElement("div");
+  const includeMoreButton = document.createElement("button");
+  const excludeField = document.createElement("section");
+  const excludeLabel = document.createElement("strong");
+  const excludeRow = document.createElement("div");
+  const excludeMoreButton = document.createElement("button");
+  const sortCard = document.createElement("section");
+  const sortField = document.createElement("label");
+  const sortLabel = document.createElement("span");
+  const sortSelect = document.createElement("select");
+  const sortNote = document.createElement("p");
   const footer = document.createElement("div");
-  const resetButton = document.createElement("button");
   const submitButton = document.createElement("button");
 
   screen.className = "ikea-search-filter-screen";
@@ -956,13 +1440,13 @@ const createSearchFilterScreen = () => {
   queryInput.type = "hidden";
   queryInput.name = "q";
   queryInput.dataset.searchFilterQueryInput = "true";
-  characterInputs.hidden = true;
-  characterInputs.dataset.searchFilterCharacterInputs = "true";
+  hiddenInputs.hidden = true;
+  hiddenInputs.dataset.searchFilterHiddenInputs = "true";
 
   header.className = "ikea-search-filter-screen__header";
   title.className = "ikea-search-filter-screen__title";
   title.id = "site-search-filter-title";
-  title.textContent = "キャラクターフィルター";
+  title.textContent = "フィルター";
   closeButton.className = "ikea-search-filter-screen__close";
   closeButton.type = "button";
   closeButton.dataset.searchFilterClose = "true";
@@ -972,6 +1456,18 @@ const createSearchFilterScreen = () => {
 
   body.className = "ikea-search-filter-screen__body";
   wrapper.className = "ikea-quick-filters";
+  wrapperHeader.className = "ikea-quick-filters__header";
+  headingBlock.className = "ikea-quick-filters__heading";
+  eyebrow.className = "ikea-quick-filters__eyebrow";
+  eyebrow.textContent = "フィルター";
+  sectionTitle.textContent = "キャラクターフィルター";
+  headingBlock.append(eyebrow, sectionTitle);
+  clearButton.className = "ikea-quick-filters__clear";
+  clearButton.type = "button";
+  clearButton.dataset.searchFilterReset = "true";
+  clearButton.textContent = "すべて解除";
+  wrapperHeader.append(headingBlock, clearButton);
+
   summary.className = "ikea-quick-filters__summary";
   summary.dataset.searchFilterSummary = "true";
 
@@ -987,7 +1483,7 @@ const createSearchFilterScreen = () => {
   speciesLabel.className = "ikea-quick-filter-field__label";
   speciesLabel.textContent = "種族";
   speciesLink.className = "ikea-quick-filter-field__link";
-  speciesLink.href = "/finder/";
+  speciesLink.dataset.searchFilterBuilderLink = "true";
   speciesLink.textContent = "もっと探す";
   speciesLabelRow.append(speciesLabel, speciesLink);
   speciesRow.className = "ikea-quick-filter-chipRow";
@@ -1010,27 +1506,61 @@ const createSearchFilterScreen = () => {
 
   characterCard.append(speciesField, bodyField, ageField);
 
-  note.className = "ikea-search-filter-screen__note";
-  note.textContent = "この条件で作品検索へ移動します。";
+  includeField.className = "ikea-quick-filter-field";
+  includeLabel.className = "ikea-quick-filter-field__label";
+  includeLabel.textContent = "含めるタグ";
+  includeRow.className = "ikea-quick-filter-chipRow";
+  includeRow.dataset.searchFilterIncludeRow = "true";
+  includeMoreButton.className = "ikea-quick-filter-field__more";
+  includeMoreButton.type = "button";
+  includeMoreButton.dataset.searchFilterTagPickerOpen = "include";
+  includeMoreButton.textContent = "もっと見る";
+  includeField.append(includeLabel, includeRow, includeMoreButton);
+
+  excludeField.className = "ikea-quick-filter-field";
+  excludeLabel.className = "ikea-quick-filter-field__label";
+  excludeLabel.textContent = "除外タグ";
+  excludeRow.className = "ikea-quick-filter-chipRow";
+  excludeRow.dataset.searchFilterExcludeRow = "true";
+  excludeMoreButton.className = "ikea-quick-filter-field__more";
+  excludeMoreButton.type = "button";
+  excludeMoreButton.dataset.searchFilterTagPickerOpen = "exclude";
+  excludeMoreButton.textContent = "もっと見る";
+  excludeField.append(excludeLabel, excludeRow, excludeMoreButton);
+
+  sortCard.className = "ikea-search-sidebar__card ikea-search-sidebar__card--compact";
+  sortField.className = "ikea-search-sidebar__field";
+  sortLabel.textContent = "並び替え";
+  sortSelect.name = "sort";
+  sortSelect.dataset.searchFilterSort = "true";
+  Object.entries(HEADER_FILTER_SORT_META).forEach(([value, meta]) => {
+    const option = document.createElement("option");
+    option.value = value;
+    option.textContent = meta.label;
+    sortSelect.appendChild(option);
+  });
+  sortField.append(sortLabel, sortSelect);
+  sortNote.className = "ikea-search-sidebar__help";
+  sortNote.dataset.searchFilterSortNote = "true";
+  sortCard.append(sortField, sortNote);
 
   footer.className = "ikea-search-filter-screen__footer";
-  resetButton.className = "ikea-search-filter-screen__secondary";
-  resetButton.type = "button";
-  resetButton.dataset.searchFilterReset = "true";
-  resetButton.textContent = "すべて解除";
   submitButton.className = "ikea-search-filter-screen__primary";
   submitButton.type = "submit";
   submitButton.textContent = "この条件で探す";
-  footer.append(resetButton, submitButton);
+  footer.appendChild(submitButton);
 
-  wrapper.append(summary, characterCard);
-  body.append(wrapper, note);
-  form.append(header, queryInput, characterInputs, body, footer);
+  wrapper.append(wrapperHeader, summary, characterCard, includeField, excludeField);
+  body.append(wrapper, sortCard);
+  form.append(header, queryInput, hiddenInputs, body, footer);
   panel.appendChild(form);
   screen.append(backdrop, panel);
   document.body.appendChild(screen);
+
   setSearchFilterCharacterState(screen, {});
-  renderSearchFilterCharacterFields(screen);
+  setSearchFilterTagSelections(screen, { includeTagIds: [], excludeTagIds: [] });
+  setSearchFilterSortValue(screen, "recommended");
+  renderSearchFilterFields(screen);
   return screen;
 };
 
@@ -1038,6 +1568,7 @@ const closeSearchFilterScreen = () => {
   const screen = document.querySelector("[data-search-filter-screen]");
   if (!screen || screen.hidden) return;
 
+  closeSearchFilterTagPicker({ restoreFocus: false });
   screen.hidden = true;
   screen.dataset.open = "false";
   screen.setAttribute("aria-hidden", "true");
@@ -1062,7 +1593,12 @@ const openSearchFilterScreen = (trigger = null) => {
     bodyTypeTagIds: params.getAll("c1_body"),
     ageFeelTagIds: params.getAll("c1_age"),
   });
-  renderSearchFilterCharacterFields(screen);
+  setSearchFilterTagSelections(screen, {
+    includeTagIds: params.getAll("include"),
+    excludeTagIds: params.getAll("exclude"),
+  });
+  setSearchFilterSortValue(screen, params.get("sort") || "recommended");
+  renderSearchFilterFields(screen);
 
   searchFilterScreenRestoreFocus =
     document.activeElement instanceof HTMLElement ? document.activeElement : null;
@@ -1073,7 +1609,8 @@ const openSearchFilterScreen = (trigger = null) => {
 
   const firstButton =
     screen.querySelector("[data-search-filter-character-field]") ||
-    screen.querySelector("[data-search-filter-reset]");
+    screen.querySelector("[data-search-filter-reset]") ||
+    screen.querySelector("[data-search-filter-tag-picker-open]");
   window.requestAnimationFrame(() => {
     firstButton?.focus();
   });
@@ -1085,6 +1622,7 @@ const initSearchFilterScreen = () => {
   }
 
   createSearchFilterScreen();
+  createSearchFilterTagPicker();
 
   document.body.addEventListener("click", (event) => {
     const openButton = event.target.closest("[data-header-filter]");
@@ -1099,6 +1637,18 @@ const initSearchFilterScreen = () => {
       return;
     }
 
+    const tagPickerCloseButton = event.target.closest("[data-search-filter-tag-picker-close]");
+    if (tagPickerCloseButton) {
+      closeSearchFilterTagPicker();
+      return;
+    }
+
+    const tagPickerOpenButton = event.target.closest("[data-search-filter-tag-picker-open]");
+    if (tagPickerOpenButton) {
+      openSearchFilterTagPicker(tagPickerOpenButton.dataset.searchFilterTagPickerOpen, tagPickerOpenButton);
+      return;
+    }
+
     const characterButton = event.target.closest("[data-search-filter-character-field]");
     if (characterButton) {
       const screen = characterButton.closest("[data-search-filter-screen]");
@@ -1106,7 +1656,30 @@ const initSearchFilterScreen = () => {
       const tagId = characterButton.dataset.searchFilterTagId || "";
       if (!screen || !field || !tagId) return;
       toggleSearchFilterCharacterValue(screen, field, tagId);
-      renderSearchFilterCharacterFields(screen);
+      renderSearchFilterFields(screen);
+      return;
+    }
+
+    const globalTagButton = event.target.closest("[data-search-filter-global-state]");
+    if (globalTagButton) {
+      const screen = globalTagButton.closest("[data-search-filter-screen]");
+      const mode = globalTagButton.dataset.searchFilterGlobalState || "include";
+      const tagId = globalTagButton.dataset.searchFilterTagId || "";
+      if (!screen || !tagId) return;
+      toggleSearchFilterQuickTag(screen, mode, tagId);
+      renderSearchFilterFields(screen);
+      return;
+    }
+
+    const pickerTagButton = event.target.closest("[data-search-filter-tag-picker-state]");
+    if (pickerTagButton) {
+      const screen = document.querySelector("[data-search-filter-screen]");
+      const mode = pickerTagButton.dataset.searchFilterTagPickerState || "include";
+      const tagId = pickerTagButton.dataset.searchFilterTagId || "";
+      if (!screen || !tagId) return;
+      toggleSearchFilterQuickTag(screen, mode, tagId);
+      renderSearchFilterFields(screen);
+      renderSearchFilterTagPicker();
       return;
     }
 
@@ -1115,9 +1688,28 @@ const initSearchFilterScreen = () => {
       const screen = resetButton.closest("[data-search-filter-screen]");
       if (!screen) return;
       setSearchFilterCharacterState(screen, {});
-      renderSearchFilterCharacterFields(screen);
+      setSearchFilterTagSelections(screen, { includeTagIds: [], excludeTagIds: [] });
+      renderSearchFilterFields(screen);
       resetButton.focus();
     }
+  });
+
+  document.body.addEventListener("input", (event) => {
+    const tagPickerQueryInput = event.target.closest("[data-search-filter-tag-picker-query]");
+    if (!tagPickerQueryInput) return;
+    const picker = tagPickerQueryInput.closest("[data-search-filter-tag-picker]");
+    if (!picker) return;
+    picker._query = tagPickerQueryInput.value || "";
+    renderSearchFilterTagPicker();
+  });
+
+  document.body.addEventListener("change", (event) => {
+    const sortSelect = event.target.closest("[data-search-filter-sort]");
+    if (!sortSelect) return;
+    const screen = sortSelect.closest("[data-search-filter-screen]");
+    if (!screen) return;
+    setSearchFilterSortValue(screen, sortSelect.value);
+    renderSearchFilterFields(screen);
   });
 
   document.body.addEventListener("submit", (event) => {
@@ -1125,14 +1717,19 @@ const initSearchFilterScreen = () => {
     if (!form) return;
     const queryInput = form.querySelector("[data-search-filter-query-input]");
     if (!(queryInput instanceof HTMLInputElement)) return;
-    queryInput.value = getHeaderSearchQuery(form) || "";
+    const liveQuery = document.querySelector('.ikea-shell__searchForm input[name="q"]')?.value?.trim() || "";
+    queryInput.value = liveQuery || queryInput.value.trim();
     queryInput.disabled = queryInput.value.trim() === "";
   });
 
   document.addEventListener("keydown", (event) => {
-    if (event.key === "Escape") {
-      closeSearchFilterScreen();
+    if (event.key !== "Escape") return;
+    const picker = document.querySelector("[data-search-filter-tag-picker]");
+    if (picker && !picker.hidden) {
+      closeSearchFilterTagPicker();
+      return;
     }
+    closeSearchFilterScreen();
   });
 
   document.body.dataset.searchFilterScreenBound = "true";
