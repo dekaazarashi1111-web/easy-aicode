@@ -41,6 +41,7 @@
     },
   };
   const ARTICLE_RESULTS_PER_PAGE = 6;
+  const FINDER_RESULTS_PER_PAGE = 12;
 
   const ensureArray = (value) => core.ensureArray(value);
   const unique = (value) => core.unique(value);
@@ -855,6 +856,7 @@
     excludeTagIds = [],
     matchMode = "and",
     characters = [],
+    page = 1,
   } = {}) => {
     const params = new URLSearchParams();
     if (query) params.set("q", query);
@@ -865,6 +867,7 @@
     unique(includeTagIds).forEach((tagId) => params.append("include", tagId));
     unique(excludeTagIds).forEach((tagId) => params.append("exclude", tagId));
     appendCharacterParams(params, characters);
+    if (page && page > 1) params.set("page", String(page));
     return `/finder/${params.toString() ? `?${params.toString()}` : ""}`;
   };
 
@@ -1703,6 +1706,13 @@
     const a11yLive = root.querySelector("[data-finder-a11y-live]");
     const tipsRoot = root.querySelector("[data-profile-search-tips]");
     const modeButtons = Array.from(root.querySelectorAll("[data-finder-mode]"));
+    let paginationRoot = root.querySelector("[data-finder-pagination]");
+    if (!paginationRoot && resultsRoot) {
+      paginationRoot = createElement("nav", "ikea-article-pagination");
+      paginationRoot.dataset.finderPagination = "true";
+      paginationRoot.setAttribute("aria-label", "作品ページ送り");
+      resultsRoot.insertAdjacentElement("afterend", paginationRoot);
+    }
     if (
       !sortSelect ||
       !resultsRoot ||
@@ -1729,6 +1739,7 @@
       collectionId: "",
       matchMode: "and",
       characters: [createEmptyCharacterState()],
+      page: 1,
     };
     const quickTagGroups = groupedTags
       .filter((group) => !QUICK_FILTER_GROUP_IDS.has(group.id))
@@ -1766,6 +1777,7 @@
       pageState.includeTagIds = unique(params.getAll("include"));
       pageState.excludeTagIds = unique(params.getAll("exclude"));
       pageState.characters = normalizeCharacters(readCharactersFromParams(params));
+      pageState.page = Math.max(Number.parseInt(params.get("page") || "1", 10) || 1, 1);
     };
 
     const syncControls = () => {
@@ -1811,6 +1823,75 @@
         matchMode: searchState.matchMode,
       });
       return filtered.filter((work) => matchesCharacters(work, searchState.characters));
+    };
+
+    const createFinderPaginationButton = ({
+      label,
+      page,
+      disabled = false,
+      current = false,
+    }) => {
+      const button = createElement(
+        "button",
+        `ikea-article-pagination__button${current ? " is-current" : ""}`,
+        label
+      );
+      button.type = "button";
+      button.disabled = disabled;
+      if (!disabled) {
+        button.dataset.finderPageTarget = String(page);
+      }
+      if (current) button.setAttribute("aria-current", "page");
+      return button;
+    };
+
+    const renderPagination = (totalCount) => {
+      if (!paginationRoot) return;
+      paginationRoot.textContent = "";
+      if (!totalCount) {
+        paginationRoot.hidden = true;
+        return;
+      }
+
+      const totalPages = Math.max(Math.ceil(totalCount / FINDER_RESULTS_PER_PAGE), 1);
+      const currentPage = Math.min(Math.max(pageState.page, 1), totalPages);
+      const startIndex = (currentPage - 1) * FINDER_RESULTS_PER_PAGE + 1;
+      const endIndex = Math.min(currentPage * FINDER_RESULTS_PER_PAGE, totalCount);
+      const summary = createElement(
+        "p",
+        "ikea-article-pagination__summary",
+        `${totalCount}件中 ${startIndex}-${endIndex}件を表示`
+      );
+      const controls = createElement("div", "ikea-article-pagination__controls");
+
+      controls.appendChild(
+        createFinderPaginationButton({
+          label: "前へ",
+          page: currentPage - 1,
+          disabled: currentPage <= 1,
+        })
+      );
+
+      Array.from({ length: totalPages }, (_, index) => index + 1).forEach((pageNumber) => {
+        controls.appendChild(
+          createFinderPaginationButton({
+            label: String(pageNumber),
+            page: pageNumber,
+            current: pageNumber === currentPage,
+          })
+        );
+      });
+
+      controls.appendChild(
+        createFinderPaginationButton({
+          label: "次へ",
+          page: currentPage + 1,
+          disabled: currentPage >= totalPages,
+        })
+      );
+
+      paginationRoot.hidden = false;
+      paginationRoot.append(summary, controls);
     };
 
     const toggleCharacterFieldValue = (field, tagId) => {
@@ -2786,7 +2867,12 @@
       const uiState = getUiState(state);
       const collection = pageState.collectionId ? core.getCollection(state, pageState.collectionId) : null;
       const filtered = filterFinderWorks();
-      const displayedWorks = filtered.slice();
+      const totalPages = Math.max(Math.ceil(filtered.length / FINDER_RESULTS_PER_PAGE), 1);
+      pageState.page = Math.min(Math.max(pageState.page, 1), totalPages);
+      const displayedWorks = filtered.slice(
+        (pageState.page - 1) * FINDER_RESULTS_PER_PAGE,
+        pageState.page * FINDER_RESULTS_PER_PAGE
+      );
       if (filtered.length && filtered.length < 8) {
         core
           .suggestWorks({
@@ -2847,13 +2933,14 @@
       if (collection) conditionFragments.push(`特集: ${collection.title}`);
       const quickFilterSummary = getQuickFilterSummary(pageState, tagMap);
       conditionFragments.push(quickFilterSummary === "条件なし" ? "クイック条件なし" : quickFilterSummary);
-      statusRoot.textContent = `${filtered.length}件 | ${getSortMeta(pageState.sort).label} | ${conditionFragments.join(" | ")}`;
+      statusRoot.textContent = `${filtered.length}件 | ${getSortMeta(pageState.sort).label} | ${pageState.page}/${totalPages}ページ | ${conditionFragments.join(" | ")}`;
 
       if (emptyRoot) emptyRoot.hidden = filtered.length !== 0;
       renderActiveChips();
       renderRescue();
       renderEmptyRecovery();
       renderCompare(uiState);
+      renderPagination(filtered.length);
       renderRecentWorks();
       refreshCarousels(root);
       scheduleLog(filtered.length);
@@ -2882,6 +2969,7 @@
         const quickClearButton = event.target.closest("[data-quick-filters-clear]");
         if (quickClearButton) {
           clearQuickFilters();
+          pageState.page = 1;
           applyAndRender();
           return;
         }
@@ -2892,6 +2980,7 @@
           const tagId = quickCharacterButton.dataset.quickTagId || "";
           if (!field || !tagId) return;
           toggleCharacterFieldValue(field, tagId);
+          pageState.page = 1;
           applyAndRender();
           return;
         }
@@ -2913,6 +3002,7 @@
             nextState,
             quickGlobalButton.matches('[aria-pressed="true"]')
           );
+          pageState.page = 1;
           applyAndRender();
           return;
         }
@@ -2939,6 +3029,7 @@
           if (nextState === "exclude") {
             pageState.excludeTagIds = unique([...pageState.excludeTagIds, tagId]);
           }
+          pageState.page = 1;
           applyAndRender();
           return;
         }
@@ -2957,6 +3048,7 @@
             pageState.excludeTagIds = pageState.excludeTagIds.filter((tagId) => tagId !== value);
           }
           if (kind === "collection") pageState.collectionId = "";
+          pageState.page = 1;
           applyAndRender();
           return;
         }
@@ -2964,6 +3056,7 @@
         const modeButton = event.target.closest("[data-finder-mode]");
         if (modeButton) {
           pageState.matchMode = modeButton.dataset.finderMode === "or" ? "or" : "and";
+          pageState.page = 1;
           applyAndRender();
           return;
         }
@@ -2974,7 +3067,20 @@
           if (!tagId) return;
           pageState.excludeTagIds = pageState.excludeTagIds.filter((value) => value !== tagId);
           pageState.includeTagIds = unique([...pageState.includeTagIds, tagId]);
+          pageState.page = 1;
           applyAndRender();
+          return;
+        }
+
+        const pageButton = event.target.closest("[data-finder-page-target]");
+        if (pageButton) {
+          const nextPage = Math.max(Number.parseInt(pageButton.dataset.finderPageTarget || "1", 10) || 1, 1);
+          pageState.page = nextPage;
+          applyAndRender();
+          root.querySelector(".ikea-search-results__toolbar")?.scrollIntoView({
+            behavior: "smooth",
+            block: "start",
+          });
           return;
         }
 
@@ -3007,6 +3113,7 @@
             pageState.collectionId = nextState.collectionId || "";
             pageState.matchMode = nextState.matchMode === "or" ? "or" : "and";
             pageState.sort = nextState.sort || pageState.sort;
+            pageState.page = 1;
             applyAndRender();
           } catch (error) {
             // ignore malformed rescue payloads
@@ -3052,6 +3159,7 @@
             nextState,
             tagButton.matches('[aria-pressed="true"]')
           );
+          pageState.page = 1;
           applyAndRender();
         }
       });
@@ -3073,21 +3181,25 @@
 
     queryInput?.addEventListener("input", () => {
       pageState.query = queryInput.value.trim();
+      pageState.page = 1;
       applyAndRender();
     });
 
     creatorInput?.addEventListener("input", () => {
       pageState.creatorQuery = creatorInput.value.trim();
+      pageState.page = 1;
       applyAndRender();
     });
 
     sortSelect.addEventListener("change", () => {
       pageState.sort = sortSelect.value;
+      pageState.page = 1;
       applyAndRender();
     });
 
     clearQueryButton?.addEventListener("click", () => {
       pageState.query = "";
+      pageState.page = 1;
       if (queryInput) {
         queryInput.value = "";
       }
@@ -3104,6 +3216,7 @@
       pageState.collectionId = "";
       pageState.matchMode = "and";
       pageState.characters = [createEmptyCharacterState()];
+      pageState.page = 1;
       applyAndRender();
     });
 
@@ -3116,6 +3229,7 @@
       pageState.collectionId = "";
       pageState.matchMode = "and";
       pageState.characters = [createEmptyCharacterState()];
+      pageState.page = 1;
       applyAndRender();
     });
 
