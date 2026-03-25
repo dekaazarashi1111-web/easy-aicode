@@ -3912,14 +3912,27 @@ h3 {
   color: var(--retail-text);
 }
 
+.apply-form .label,
+.apply-form .apply-work-item__header strong {
+  color: #111111;
+}
+
+.apply-form .input,
+.apply-form .textarea {
+  border-color: #bfbfbf;
+  background: #ffffff;
+  color: #111111;
+  -webkit-text-fill-color: #111111;
+}
+
 .apply-form .input::placeholder,
 .apply-form .textarea::placeholder {
-  color: #5a5f66;
+  color: #4b5563;
   opacity: 1;
 }
 
 .apply-form .help {
-  color: #333333;
+  color: #222222;
 }
 
 .storefront-eyebrow {
