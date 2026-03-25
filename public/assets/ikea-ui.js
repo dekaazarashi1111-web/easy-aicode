@@ -40,6 +40,7 @@
       description: "比較記事やガイドなど、記事種別ごとに並びます。",
     },
   };
+  const ARTICLE_RESULTS_PER_PAGE = 6;
 
   const ensureArray = (value) => core.ensureArray(value);
   const unique = (value) => core.unique(value);
@@ -936,6 +937,7 @@
     selectedTags = [],
     sort = "latest",
     mode = "and",
+    page = 1,
   } = {}) => {
     const params = new URLSearchParams();
     if (query) params.set("q", query);
@@ -943,6 +945,7 @@
     unique(selectedTags).forEach((value) => params.append("tag", value));
     if (sort && sort !== "latest") params.set("sort", sort);
     if (mode === "or") params.set("mode", "or");
+    if (page && page > 1) params.set("page", String(page));
     return `/articles/${params.toString() ? `?${params.toString()}` : ""}`;
   };
 
@@ -3007,18 +3010,19 @@
     const categoryRoot = root.querySelector("[data-finder-categories]");
     const relatedRoot = root.querySelector("[data-finder-related-searches]");
     const compareRoot = root.querySelector("[data-finder-compare]");
+    const categorySection = categoryRoot?.closest(".ikea-search-section");
+    const relatedSection = relatedRoot?.closest(".ikea-search-section");
     const toolbarHeading = root.querySelector(".ikea-search-results__toolbar h2");
     const emptyTitle = emptyRoot?.querySelector("h2");
     const emptyDescription = emptyRoot?.querySelector("p");
     const emptyColumnHeadings = emptyRoot?.querySelectorAll(".ikea-search-empty-grid__column h3") || [];
-    const promotedEyebrow = promotedWrap?.querySelector(".ikea-section-heading__eyebrow");
-    const promotedTitle = promotedWrap?.querySelector(".ikea-section-heading__title");
-    const suggestionsEyebrow = suggestionsWrap?.querySelector(".ikea-section-heading__eyebrow");
-    const suggestionsTitle = suggestionsWrap?.querySelector(".ikea-section-heading__title");
-    const categoryEyebrow = categoryRoot?.closest(".ikea-search-section")?.querySelector(".ikea-section-heading__eyebrow");
-    const categoryTitle = categoryRoot?.closest(".ikea-search-section")?.querySelector(".ikea-section-heading__title");
-    const relatedEyebrow = relatedRoot?.closest(".ikea-search-section")?.querySelector(".ikea-section-heading__eyebrow");
-    const relatedTitle = relatedRoot?.closest(".ikea-search-section")?.querySelector(".ikea-section-heading__title");
+    let paginationRoot = root.querySelector("[data-article-pagination]");
+    if (!paginationRoot && resultsRoot) {
+      paginationRoot = createElement("nav", "ikea-article-pagination");
+      paginationRoot.dataset.articlePagination = "true";
+      paginationRoot.setAttribute("aria-label", "記事ページ送り");
+      resultsRoot.insertAdjacentElement("afterend", paginationRoot);
+    }
 
     if (!quickFiltersRoot || !sortSelect || !resultsRoot || !statusRoot) {
       return;
@@ -3035,6 +3039,7 @@
       selectedTags: [],
       sort: "latest",
       mode: "and",
+      page: 1,
     };
 
     const hasActiveFilters = () =>
@@ -3047,6 +3052,7 @@
       pageState.selectedTags = unique(params.getAll("tag"));
       pageState.sort = ARTICLE_SORT_META[params.get("sort") || ""] ? params.get("sort") : "latest";
       pageState.mode = params.get("mode") === "or" ? "or" : "and";
+      pageState.page = Math.max(Number.parseInt(params.get("page") || "1", 10) || 1, 1);
     };
 
     const getArticleStateSnapshot = (overrides = {}) => ({
@@ -3055,6 +3061,7 @@
       selectedTags: unique(overrides.selectedTags ?? pageState.selectedTags),
       sort: overrides.sort ?? pageState.sort,
       mode: overrides.mode ?? pageState.mode,
+      page: Math.max(overrides.page ?? pageState.page, 1),
     });
 
     const filterAndSortArticles = (overrides = {}) => {
@@ -3080,15 +3087,11 @@
       if (emptyColumnHeadings[0]) emptyColumnHeadings[0].textContent = "記事タイプ";
       if (emptyColumnHeadings[1]) emptyColumnHeadings[1].textContent = "最近の特集";
       if (emptyColumnHeadings[2]) emptyColumnHeadings[2].textContent = "助けが必要なとき";
-      if (promotedEyebrow) promotedEyebrow.textContent = "Promoted topics";
-      if (promotedTitle) promotedTitle.textContent = "よく読まれる切り口";
-      if (suggestionsEyebrow) suggestionsEyebrow.textContent = "Nearby articles";
-      if (suggestionsTitle) suggestionsTitle.textContent = "近いテーマの記事";
-      if (categoryEyebrow) categoryEyebrow.textContent = "Article types";
-      if (categoryTitle) categoryTitle.textContent = "記事タイプから探す";
-      if (relatedEyebrow) relatedEyebrow.textContent = "Next topics";
-      if (relatedTitle) relatedTitle.textContent = "次に足す切り口";
       if (compareRoot) compareRoot.hidden = true;
+      if (promotedWrap) promotedWrap.hidden = true;
+      if (suggestionsWrap) suggestionsWrap.hidden = true;
+      if (categorySection) categorySection.hidden = true;
+      if (relatedSection) relatedSection.hidden = true;
     };
 
     const syncSortControl = () => {
@@ -3180,37 +3183,9 @@
 
     const renderSuggestions = (filtered) => {
       if (!suggestionsRoot || !suggestionsWrap) return;
+      suggestionsWrap.hidden = true;
       disposeMediaCyclesWithin(suggestionsRoot);
       suggestionsRoot.textContent = "";
-      if (filtered.length || !hasActiveFilters()) {
-        suggestionsWrap.hidden = true;
-        return;
-      }
-
-      const queryTokens = articleApi.splitSearchTokens ? articleApi.splitSearchTokens(pageState.query) : [];
-      const suggestions = allArticles
-        .map((article) => {
-          const matchedTags = pageState.selectedTags.filter((tag) => ensureArray(article.tags).includes(tag)).length;
-          const matchedType = pageState.selectedTypes.includes(article.type) ? 1 : 0;
-          const matchedTokens = queryTokens.filter((token) =>
-            String(article._normalized?.haystack || "").includes(token)
-          ).length;
-          return {
-            article,
-            score: matchedTags * 3 + matchedType * 2 + matchedTokens,
-          };
-        })
-        .sort((left, right) => {
-          if (right.score !== left.score) return right.score - left.score;
-          return getArticleTimestamp(right.article) - getArticleTimestamp(left.article);
-        })
-        .slice(0, 4)
-        .map((entry) => entry.article);
-
-      suggestionsWrap.hidden = !suggestions.length;
-      suggestions.forEach((article) => {
-        suggestionsRoot.appendChild(createArticleCard({ article, pageState, articleApi }));
-      });
     };
 
     const renderEmptyRecovery = () => {
@@ -3277,81 +3252,105 @@
     };
 
     const renderCategories = () => {
-      if (!categoryRoot) return;
+      if (!categoryRoot || !categorySection) return;
+      categorySection.hidden = true;
       categoryRoot.textContent = "";
-      filterOptions.types.forEach((typeOption, index) => {
-        const count = filterAndSortArticles({
-          selectedTypes: unique([...pageState.selectedTypes, typeOption.value]),
-        }).length;
-        categoryRoot.appendChild(
-          createCategoryBannerCard({
-            href: createArticlesUrl({
-              query: pageState.query,
-              selectedTypes: unique([...pageState.selectedTypes, typeOption.value]),
-              selectedTags: pageState.selectedTags,
-              sort: pageState.sort,
-              mode: pageState.mode,
-            }),
-            label: typeOption.value,
-            description: "カードの見た目は保ったまま、記事だけを横断して見られます。",
-            meta: `${count}件`,
-            variant: categoryVariants[index % categoryVariants.length],
-          })
-        );
-      });
     };
 
     const renderRelatedSearches = (filtered) => {
-      if (!relatedRoot) return;
+      if (!relatedRoot || !relatedSection) return;
+      relatedSection.hidden = true;
       relatedRoot.textContent = "";
-      const source = filtered.length ? filtered : allArticles;
-      const counts = new Map();
+    };
 
-      source.forEach((article) => {
-        ensureArray(article.tags).forEach((tag) => {
-          if (pageState.selectedTags.includes(tag)) return;
-          counts.set(tag, (counts.get(tag) || 0) + 1);
-        });
+    const createArticlePaginationButton = ({
+      label,
+      page,
+      disabled = false,
+      current = false,
+    }) => {
+      const button = createElement(
+        "button",
+        `ikea-article-pagination__button${current ? " is-current" : ""}`,
+        label
+      );
+      button.type = "button";
+      button.disabled = disabled;
+      if (!disabled) {
+        button.dataset.articlePageTarget = String(page);
+      }
+      if (current) button.setAttribute("aria-current", "page");
+      return button;
+    };
+
+    const renderPagination = (totalCount) => {
+      if (!paginationRoot) return;
+      paginationRoot.textContent = "";
+      if (!totalCount) {
+        paginationRoot.hidden = true;
+        return;
+      }
+
+      const totalPages = Math.max(Math.ceil(totalCount / ARTICLE_RESULTS_PER_PAGE), 1);
+      const currentPage = Math.min(Math.max(pageState.page, 1), totalPages);
+      const startIndex = (currentPage - 1) * ARTICLE_RESULTS_PER_PAGE + 1;
+      const endIndex = Math.min(currentPage * ARTICLE_RESULTS_PER_PAGE, totalCount);
+      const summary = createElement(
+        "p",
+        "ikea-article-pagination__summary",
+        `${totalCount}件中 ${startIndex}-${endIndex}件を表示`
+      );
+      const controls = createElement("div", "ikea-article-pagination__controls");
+
+      controls.appendChild(
+        createArticlePaginationButton({
+          label: "前へ",
+          page: currentPage - 1,
+          disabled: currentPage <= 1,
+        })
+      );
+
+      Array.from({ length: totalPages }, (_, index) => index + 1).forEach((pageNumber) => {
+        controls.appendChild(
+          createArticlePaginationButton({
+            label: String(pageNumber),
+            page: pageNumber,
+            current: pageNumber === currentPage,
+          })
+        );
       });
 
-      Array.from(counts.entries())
-        .sort((left, right) => {
-          if (right[1] !== left[1]) return right[1] - left[1];
-          return left[0].localeCompare(right[0], "ja");
+      controls.appendChild(
+        createArticlePaginationButton({
+          label: "次へ",
+          page: currentPage + 1,
+          disabled: currentPage >= totalPages,
         })
-        .slice(0, 10)
-        .forEach(([tag]) => {
-          const count = filterAndSortArticles({
-            selectedTags: unique([...pageState.selectedTags, tag]),
-          }).length;
-          if (!count) return;
-          const listItem = createElement("li", "relatedSearches__list-item");
-          const link = createElement("a", "relatedSearches__link", tag);
-          link.href = createArticlesUrl({
-            query: pageState.query,
-            selectedTypes: pageState.selectedTypes,
-            selectedTags: [...pageState.selectedTags, tag],
-            sort: pageState.sort,
-            mode: pageState.mode,
-          });
-          listItem.append(link, createElement("span", "relatedSearches__count", `(${count})`));
-          relatedRoot.appendChild(listItem);
-        });
+      );
+
+      paginationRoot.hidden = false;
+      paginationRoot.append(summary, controls);
     };
 
     const renderResults = () => {
       const filtered = filterAndSortArticles();
+      const totalPages = Math.max(Math.ceil(filtered.length / ARTICLE_RESULTS_PER_PAGE), 1);
+      pageState.page = Math.min(Math.max(pageState.page, 1), totalPages);
+      const pageItems = filtered.slice(
+        (pageState.page - 1) * ARTICLE_RESULTS_PER_PAGE,
+        pageState.page * ARTICLE_RESULTS_PER_PAGE
+      );
       const headingLabel = pageState.query
         ? `「${pageState.query}」の記事：${filtered.length}件`
         : pageState.selectedTypes.length === 1 && !pageState.selectedTags.length
           ? `${pageState.selectedTypes[0]}：${filtered.length}件`
           : `特集記事：${filtered.length}件`;
 
-      statusRoot.textContent = `${filtered.length}件 | ${getArticleSortMeta(pageState.sort).label} | ${getArticleSearchSummaryLabel(pageState)}`;
+      statusRoot.textContent = `${filtered.length}件 | ${getArticleSortMeta(pageState.sort).label} | ${pageState.page}/${totalPages}ページ | ${getArticleSearchSummaryLabel(pageState)}`;
 
       disposeMediaCyclesWithin(resultsRoot);
       resultsRoot.textContent = "";
-      filtered.forEach((article) => {
+      pageItems.forEach((article) => {
         resultsRoot.appendChild(createArticleCard({ article, pageState, articleApi }));
       });
 
@@ -3364,15 +3363,16 @@
       renderCategories();
       renderRelatedSearches(filtered);
       renderEmptyRecovery();
+      renderPagination(filtered.length);
       refreshCarousels(root);
     };
 
     const applyAndRender = () => {
       applyShellCopy();
       syncSortControl();
-      updateArticlesUrl(pageState);
       renderQuickFilters();
       renderResults();
+      updateArticlesUrl(pageState);
     };
 
     readUrlState();
@@ -3385,6 +3385,7 @@
           pageState.query = "";
           pageState.selectedTypes = [];
           pageState.selectedTags = [];
+          pageState.page = 1;
           applyAndRender();
           return;
         }
@@ -3396,6 +3397,7 @@
           pageState.selectedTypes = pageState.selectedTypes.includes(value)
             ? pageState.selectedTypes.filter((type) => type !== value)
             : unique([...pageState.selectedTypes, value]);
+          pageState.page = 1;
           applyAndRender();
           return;
         }
@@ -3407,7 +3409,20 @@
           pageState.selectedTags = pageState.selectedTags.includes(value)
             ? pageState.selectedTags.filter((tag) => tag !== value)
             : unique([...pageState.selectedTags, value]);
+          pageState.page = 1;
           applyAndRender();
+          return;
+        }
+
+        const pageButton = event.target.closest("[data-article-page-target]");
+        if (pageButton) {
+          const nextPage = Math.max(Number.parseInt(pageButton.dataset.articlePageTarget || "1", 10) || 1, 1);
+          pageState.page = nextPage;
+          applyAndRender();
+          root.querySelector(".ikea-search-results__toolbar")?.scrollIntoView({
+            behavior: "smooth",
+            block: "start",
+          });
           return;
         }
       });
@@ -3416,11 +3431,13 @@
         const queryInput = event.target.closest("[data-article-query]");
         if (!queryInput) return;
         pageState.query = queryInput.value.trim();
+        pageState.page = 1;
         applyAndRender();
       });
 
       sortSelect.addEventListener("change", () => {
         pageState.sort = ARTICLE_SORT_META[sortSelect.value] ? sortSelect.value : "latest";
+        pageState.page = 1;
         applyAndRender();
       });
 

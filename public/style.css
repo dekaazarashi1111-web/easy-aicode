@@ -8653,6 +8653,51 @@ body.history-drawer-open {
   line-height: 1.6;
 }
 
+.ikea-article-pagination {
+  display: grid;
+  gap: 12px;
+  justify-items: center;
+}
+
+.ikea-article-pagination__summary {
+  margin: 0;
+  color: var(--ikea-muted);
+  font-size: 0.88rem;
+  line-height: 1.6;
+}
+
+.ikea-article-pagination__controls {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 10px;
+}
+
+.ikea-article-pagination__button {
+  min-height: 42px;
+  min-width: 42px;
+  padding: 0 16px;
+  border: 1px solid var(--ikea-border);
+  border-radius: 999px;
+  background: #fff;
+  color: var(--ikea-text);
+  font: inherit;
+  font-size: 0.92rem;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.ikea-article-pagination__button.is-current {
+  border-color: var(--ikea-blue);
+  background: rgba(0, 88, 163, 0.08);
+  color: var(--ikea-blue);
+}
+
+.ikea-article-pagination__button:disabled {
+  opacity: 0.45;
+  cursor: default;
+}
+
 .ikea-search-results__pill {
   display: inline-flex;
   align-items: center;
