@@ -6,6 +6,7 @@
   root.FinderStore = factory(root.FINDER_SEED, root.FinderCore);
 })(typeof globalThis !== "undefined" ? globalThis : this, function (seed, core) {
   const STORAGE_KEY = "finder-canvas-state";
+  const RECENT_WORK_LIMIT = 20;
 
   const getStorage = () => {
     if (typeof localStorage !== "undefined") return localStorage;
@@ -313,7 +314,7 @@
 
   const touchRecentWork = (workId) =>
     mutate((state) => {
-      state.ui.recentWorkIds = [workId, ...core.ensureArray(state.ui.recentWorkIds).filter((id) => id !== workId)].slice(0, 8);
+      state.ui.recentWorkIds = [workId, ...core.ensureArray(state.ui.recentWorkIds).filter((id) => id !== workId)].slice(0, RECENT_WORK_LIMIT);
     });
 
   const upsertSavedSearch = (input) =>

@@ -141,6 +141,7 @@ updateBrandCopy();
 const BRAND_NAME = SITE_CONFIG.BRAND_NAME || "Media Canvas";
 const FINDER_STORAGE_KEY = "finder-canvas-state";
 const RECENT_HISTORY_HASH = "#recent-history";
+const RECENT_HISTORY_LIMIT = 20;
 let historyDrawerCloseTimer = null;
 let historyDrawerRestoreFocus = null;
 
@@ -175,7 +176,10 @@ const getRecentHistoryWorks = () => {
       .map((work) => [work.id, work])
   );
 
-  return recentWorkIds.map((workId) => workMap.get(workId)).filter(Boolean).slice(0, 8);
+  return recentWorkIds
+    .map((workId) => workMap.get(workId))
+    .filter(Boolean)
+    .slice(0, RECENT_HISTORY_LIMIT);
 };
 
 const normalizePathname = (pathname) => {
@@ -394,7 +398,7 @@ const createHistoryDrawer = () => {
 
   body.className = "ikea-history-drawer__body";
   lead.className = "ikea-history-drawer__lead";
-  lead.textContent = "作品詳細を開いた順に、直近 8 件まで表示します。";
+  lead.textContent = `作品詳細を開いた順に、直近 ${RECENT_HISTORY_LIMIT} 件まで表示します。`;
   count.className = "ikea-history-drawer__count";
   count.dataset.historyCount = "true";
   list.className = "finder-mini-list ikea-history-drawer__list";
