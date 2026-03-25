@@ -144,6 +144,7 @@ const RECENT_HISTORY_HASH = "#recent-history";
 const RECENT_HISTORY_LIMIT = 20;
 let historyDrawerCloseTimer = null;
 let historyDrawerRestoreFocus = null;
+let searchFilterScreenRestoreFocus = null;
 
 const parseFinderCanvasState = () => {
   if (typeof window === "undefined" || !window.localStorage) {
@@ -407,6 +408,14 @@ const createIcon = (kind, className = "") => {
     search: [
       "M13.9804 15.3946c-1.0361.7502-2.3099 1.1925-3.6869 1.1925C6.8177 16.5871 4 13.7694 4 10.2935 4 6.8177 6.8177 4 10.2935 4c3.4759 0 6.2936 2.8177 6.2936 6.2935 0 1.377-.4423 2.6508-1.1925 3.6869l4.6016 4.6016-1.4142 1.4142-4.6016-4.6016zm.6067-5.1011c0 2.3713-1.9223 4.2936-4.2936 4.2936C7.9223 14.5871 6 12.6648 6 10.2935 6 7.9223 7.9223 6 10.2935 6c2.3713 0 4.2936 1.9223 4.2936 4.2935z",
     ],
+    filter: [
+      "M4 6h16v2H4V6z",
+      "M4 11h16v2H4v-2z",
+      "M4 16h16v2H4v-2z",
+      "M9 4a3 3 0 1 0 0 6 3 3 0 0 0 0-6z",
+      "M15 9a3 3 0 1 0 0 6 3 3 0 0 0 0-6z",
+      "M8 14a3 3 0 1 0 0 6 3 3 0 0 0 0-6z",
+    ],
     compare: [
       "M3 4h8v6H3V4zm10 0h8v6h-8V4zM3 14h8v6H3v-6zm10 3h8v-2h-8v2z",
     ],
@@ -663,6 +672,351 @@ const initHistoryDrawer = () => {
   document.body.dataset.historyDrawerBound = "true";
 };
 
+const getHeaderSearchQuery = (trigger = null) => {
+  const scopedInput = trigger
+    ?.closest("form")
+    ?.querySelector('input[name="q"]');
+  if (scopedInput?.value?.trim()) return scopedInput.value.trim();
+
+  const globalInput = document.querySelector('.ikea-shell__searchForm input[name="q"]');
+  if (globalInput?.value?.trim()) return globalInput.value.trim();
+
+  return new URLSearchParams(window.location.search).get("q") || "";
+};
+
+const createFilterField = ({
+  label,
+  type = "text",
+  placeholder = "",
+  name = "",
+  help = "",
+  value = "",
+} = {}) => {
+  const row = document.createElement("label");
+  const caption = document.createElement("span");
+  const control =
+    type === "select" ? document.createElement("select") : document.createElement("input");
+
+  row.className = "ikea-search-filter-screen__row";
+  caption.className = "ikea-search-filter-screen__label";
+  caption.textContent = label;
+
+  const fieldBody = document.createElement("span");
+  fieldBody.className = "ikea-search-filter-screen__fieldBody";
+
+  if (type === "select") {
+    control.className = "ikea-search-filter-screen__select";
+    [
+      "指定なし",
+      "ダミー1",
+      "ダミー2",
+    ].forEach((optionLabel, index) => {
+      const option = document.createElement("option");
+      option.value = index === 0 ? "" : `dummy-${index}`;
+      option.textContent = optionLabel;
+      control.appendChild(option);
+    });
+  } else {
+    control.type = type;
+    control.placeholder = placeholder;
+    control.className = "ikea-search-filter-screen__input";
+    if (name) control.name = name;
+    if (value) control.value = value;
+    control.autocomplete = "off";
+  }
+
+  fieldBody.appendChild(control);
+
+  if (help) {
+    const note = document.createElement("span");
+    note.className = "ikea-search-filter-screen__help";
+    note.textContent = help;
+    fieldBody.appendChild(note);
+  }
+
+  row.append(caption, fieldBody);
+  return row;
+};
+
+const createSearchFilterScreen = () => {
+  if (typeof document === "undefined" || !document.body) return null;
+  const existing = document.querySelector("[data-search-filter-screen]");
+  if (existing) return existing;
+
+  const screen = document.createElement("div");
+  const backdrop = document.createElement("button");
+  const panel = document.createElement("section");
+  const form = document.createElement("form");
+  const header = document.createElement("div");
+  const title = document.createElement("h2");
+  const closeButton = document.createElement("button");
+  const body = document.createElement("div");
+  const recent = document.createElement("section");
+  const recentTop = document.createElement("div");
+  const recentHeading = document.createElement("strong");
+  const recentClear = document.createElement("button");
+  const recentList = document.createElement("div");
+  const rows = document.createElement("div");
+  const otherRow = document.createElement("div");
+  const otherLabel = document.createElement("span");
+  const otherBody = document.createElement("div");
+  const priceRow = document.createElement("div");
+  const priceLabel = document.createElement("span");
+  const priceBody = document.createElement("div");
+  const priceLabels = document.createElement("div");
+  const priceTrack = document.createElement("div");
+  const priceAccent = document.createElement("span");
+  const priceThumbStart = document.createElement("span");
+  const priceThumbEnd = document.createElement("span");
+  const note = document.createElement("p");
+  const footer = document.createElement("div");
+  const resetButton = document.createElement("button");
+  const submitButton = document.createElement("button");
+
+  screen.className = "ikea-search-filter-screen";
+  screen.hidden = true;
+  screen.dataset.searchFilterScreen = "true";
+  screen.dataset.open = "false";
+  screen.setAttribute("aria-hidden", "true");
+
+  backdrop.className = "ikea-search-filter-screen__backdrop";
+  backdrop.type = "button";
+  backdrop.dataset.searchFilterClose = "true";
+  backdrop.setAttribute("aria-label", "絞り込み画面を閉じる");
+
+  panel.className = "ikea-search-filter-screen__panel";
+  panel.setAttribute("role", "dialog");
+  panel.setAttribute("aria-modal", "true");
+  panel.setAttribute("aria-labelledby", "site-search-filter-title");
+
+  form.className = "ikea-search-filter-screen__form";
+  form.action = "/finder/";
+  form.method = "get";
+
+  header.className = "ikea-search-filter-screen__header";
+  title.className = "ikea-search-filter-screen__title";
+  title.id = "site-search-filter-title";
+  title.textContent = "検索";
+  closeButton.className = "ikea-search-filter-screen__close";
+  closeButton.type = "button";
+  closeButton.dataset.searchFilterClose = "true";
+  closeButton.setAttribute("aria-label", "絞り込み画面を閉じる");
+  closeButton.appendChild(createIcon("close"));
+  header.append(title, closeButton);
+
+  body.className = "ikea-search-filter-screen__body";
+  recent.className = "ikea-search-filter-screen__recent";
+  recentTop.className = "ikea-search-filter-screen__recentTop";
+  recentHeading.className = "ikea-search-filter-screen__recentHeading";
+  recentHeading.textContent = "最近の検索";
+  recentClear.className = "ikea-search-filter-screen__recentClear";
+  recentClear.type = "button";
+  recentClear.dataset.searchFilterRecentClear = "true";
+  recentClear.textContent = "検索履歴をクリア";
+  recentList.className = "ikea-search-filter-screen__recentList";
+  recentList.dataset.searchFilterRecentList = "true";
+  recentTop.append(recentHeading, recentClear);
+  recent.append(recentTop, recentList);
+
+  rows.className = "ikea-search-filter-screen__rows";
+  rows.append(
+    createFilterField({
+      label: "キーワード",
+      placeholder: "作品名 / タグ / 作者 / 気分で探す",
+      name: "q",
+    }),
+    createFilterField({
+      label: "除外キーワード",
+      placeholder: "除外したいキーワードを入力",
+      help: "入力されたキーワードを含む商品を検索結果から除きます。",
+    }),
+    createFilterField({
+      label: "タグ",
+      placeholder: "タグを入力(ジャンルなど)",
+      help: "入力されたタグをすべて含む商品のみ検索結果に表示されます。",
+    }),
+    createFilterField({ label: "カテゴリ", type: "select" }),
+    createFilterField({ label: "サブカテゴリ", type: "select" }),
+    createFilterField({ label: "イベント", type: "select" }),
+    createFilterField({ label: "商品タイプ", type: "select" }),
+    createFilterField({ label: "年齢制限", type: "select" })
+  );
+
+  otherRow.className = "ikea-search-filter-screen__row";
+  otherLabel.className = "ikea-search-filter-screen__label";
+  otherLabel.textContent = "その他";
+  otherBody.className = "ikea-search-filter-screen__fieldBody";
+  [
+    "在庫なし・販売終了を含む",
+    "最近公開された商品のみ",
+  ].forEach((text) => {
+    const item = document.createElement("label");
+    const checkbox = document.createElement("input");
+    const label = document.createElement("span");
+    item.className = "ikea-search-filter-screen__check";
+    checkbox.type = "checkbox";
+    label.textContent = text;
+    item.append(checkbox, label);
+    otherBody.appendChild(item);
+  });
+  otherRow.append(otherLabel, otherBody);
+
+  priceRow.className = "ikea-search-filter-screen__row";
+  priceLabel.className = "ikea-search-filter-screen__label";
+  priceLabel.textContent = "価格";
+  priceBody.className = "ikea-search-filter-screen__fieldBody";
+  priceLabels.className = "ikea-search-filter-screen__priceLabels";
+  priceLabels.append(
+    Object.assign(document.createElement("span"), { textContent: "¥0" }),
+    Object.assign(document.createElement("span"), { textContent: "¥5000+" })
+  );
+  priceTrack.className = "ikea-search-filter-screen__priceTrack";
+  priceAccent.className = "ikea-search-filter-screen__priceAccent";
+  priceThumbStart.className = "ikea-search-filter-screen__priceThumb";
+  priceThumbEnd.className = "ikea-search-filter-screen__priceThumb";
+  priceTrack.append(priceAccent, priceThumbStart, priceThumbEnd);
+  priceBody.append(priceLabels, priceTrack);
+  priceRow.append(priceLabel, priceBody);
+
+  note.className = "ikea-search-filter-screen__note";
+  note.textContent = "この画面はたたき台です。現状はキーワードのみ作品検索へ引き継ぎます。";
+
+  footer.className = "ikea-search-filter-screen__footer";
+  resetButton.className = "ikea-search-filter-screen__secondary";
+  resetButton.type = "button";
+  resetButton.dataset.searchFilterReset = "true";
+  resetButton.textContent = "条件をクリア";
+  submitButton.className = "ikea-search-filter-screen__primary";
+  submitButton.type = "submit";
+  submitButton.textContent = "絞り込む";
+  footer.append(resetButton, submitButton);
+
+  form.append(header, body, footer);
+  body.append(recent, rows, otherRow, priceRow, note);
+  panel.appendChild(form);
+  screen.append(backdrop, panel);
+  document.body.appendChild(screen);
+  return screen;
+};
+
+const renderSearchFilterRecents = (screen, query = "") => {
+  const recentList = screen?.querySelector("[data-search-filter-recent-list]");
+  const recentClear = screen?.querySelector("[data-search-filter-recent-clear]");
+  if (!recentList) return;
+
+  recentList.textContent = "";
+  const recentValues = query ? [query] : ["ケモホモ"];
+  recentValues.forEach((value) => {
+    const chip = document.createElement("button");
+    chip.type = "button";
+    chip.className = "ikea-search-filter-screen__recentChip";
+    chip.dataset.searchFilterRecentValue = value;
+    chip.textContent = value;
+    recentList.appendChild(chip);
+  });
+
+  if (recentClear) {
+    recentClear.hidden = recentValues.length === 0;
+  }
+};
+
+const closeSearchFilterScreen = () => {
+  const screen = document.querySelector("[data-search-filter-screen]");
+  if (!screen || screen.hidden) return;
+
+  screen.hidden = true;
+  screen.dataset.open = "false";
+  screen.setAttribute("aria-hidden", "true");
+  document.body.classList.remove("search-filter-screen-open");
+
+  if (searchFilterScreenRestoreFocus && typeof searchFilterScreenRestoreFocus.focus === "function") {
+    searchFilterScreenRestoreFocus.focus();
+  }
+  searchFilterScreenRestoreFocus = null;
+};
+
+const openSearchFilterScreen = (trigger = null) => {
+  const screen = createSearchFilterScreen();
+  if (!screen) return;
+
+  const query = getHeaderSearchQuery(trigger);
+  const keywordInput = screen.querySelector('input[name="q"]');
+  if (keywordInput) keywordInput.value = query;
+  renderSearchFilterRecents(screen, query);
+
+  searchFilterScreenRestoreFocus =
+    document.activeElement instanceof HTMLElement ? document.activeElement : null;
+  screen.hidden = false;
+  screen.dataset.open = "true";
+  screen.setAttribute("aria-hidden", "false");
+  document.body.classList.add("search-filter-screen-open");
+
+  window.requestAnimationFrame(() => {
+    keywordInput?.focus();
+  });
+};
+
+const initSearchFilterScreen = () => {
+  if (typeof document === "undefined" || !document.body || document.body.dataset.searchFilterScreenBound) {
+    return;
+  }
+
+  createSearchFilterScreen();
+
+  document.body.addEventListener("click", (event) => {
+    const openButton = event.target.closest("[data-header-filter]");
+    if (openButton) {
+      openSearchFilterScreen(openButton);
+      return;
+    }
+
+    const closeButton = event.target.closest("[data-search-filter-close]");
+    if (closeButton) {
+      closeSearchFilterScreen();
+      return;
+    }
+
+    const recentChip = event.target.closest("[data-search-filter-recent-value]");
+    if (recentChip) {
+      const screen = recentChip.closest("[data-search-filter-screen]");
+      const keywordInput = screen?.querySelector('input[name="q"]');
+      if (keywordInput) {
+        keywordInput.value = recentChip.dataset.searchFilterRecentValue || "";
+        keywordInput.focus();
+      }
+      return;
+    }
+
+    const recentClear = event.target.closest("[data-search-filter-recent-clear]");
+    if (recentClear) {
+      const screen = recentClear.closest("[data-search-filter-screen]");
+      const recentList = screen?.querySelector("[data-search-filter-recent-list]");
+      if (recentList) recentList.textContent = "";
+      recentClear.hidden = true;
+      return;
+    }
+
+    const resetButton = event.target.closest("[data-search-filter-reset]");
+    if (resetButton) {
+      const form = resetButton.closest("form");
+      const keywordInput = form?.querySelector('input[name="q"]');
+      form?.reset();
+      if (keywordInput) {
+        keywordInput.value = "";
+        keywordInput.focus();
+      }
+    }
+  });
+
+  document.addEventListener("keydown", (event) => {
+    if (event.key === "Escape") {
+      closeSearchFilterScreen();
+    }
+  });
+
+  document.body.dataset.searchFilterScreenBound = "true";
+};
+
 const renderSiteChrome = () => {
   const currentSection = getCurrentSection();
   const currentQuery = new URLSearchParams(window.location.search).get("q") || "";
@@ -681,6 +1035,7 @@ const renderSiteChrome = () => {
     const searchShell = document.createElement("div");
     const searchInput = document.createElement("input");
     const clearButton = document.createElement("button");
+    const filterButton = document.createElement("button");
     const searchButton = document.createElement("button");
     const actionBar = document.createElement("div");
 
@@ -715,11 +1070,16 @@ const renderSiteChrome = () => {
     clearButton.dataset.headerClear = "true";
     clearButton.setAttribute("aria-label", "検索語を消去");
     clearButton.appendChild(createIcon("close"));
+    filterButton.className = "ikea-shell__searchFilter";
+    filterButton.type = "button";
+    filterButton.dataset.headerFilter = "true";
+    filterButton.setAttribute("aria-label", "絞り込み条件を開く");
+    filterButton.appendChild(createIcon("filter"));
     searchButton.className = "ikea-shell__searchSubmit";
     searchButton.type = "submit";
     searchButton.setAttribute("aria-label", "検索");
     searchButton.appendChild(createIcon("search"));
-    searchShell.append(searchInput, clearButton, searchButton);
+    searchShell.append(searchInput, clearButton, filterButton, searchButton);
     searchForm.appendChild(searchShell);
 
     actionBar.className = "ikea-shell__actions";
@@ -840,6 +1200,7 @@ const renderSiteChrome = () => {
 
 renderSiteChrome();
 initHistoryDrawer();
+initSearchFilterScreen();
 if (typeof document !== "undefined" && document.body && !document.body.dataset.siteChromeBound) {
   document.body.addEventListener("click", (event) => {
     const clearButton = event.target.closest("[data-header-clear]");
