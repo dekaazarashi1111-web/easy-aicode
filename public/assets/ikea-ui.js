@@ -281,6 +281,68 @@
     return art;
   };
 
+  const escapeSvgText = (value) =>
+    String(value || "")
+      .replace(/&/g, "&amp;")
+      .replace(/</g, "&lt;")
+      .replace(/>/g, "&gt;")
+      .replace(/"/g, "&quot;")
+      .replace(/'/g, "&#39;");
+
+  const buildHoverPreviewPlaceholder = (work, meta) => {
+    const palette = {
+      white: { background: "#f4efe6", accent: "#e3d2b6", text: "#181818" },
+      sand: { background: "#e6d2b2", accent: "#c79257", text: "#181818" },
+      sage: { background: "#d8e5d8", accent: "#55785b", text: "#18211b" },
+      blue: { background: "#dbe7f5", accent: "#5a79ac", text: "#182033" },
+      charcoal: { background: "#e5e5e5", accent: "#595959", text: "#181818" },
+    }[meta.tone] || { background: "#f4efe6", accent: "#d1c2aa", text: "#181818" };
+
+    const title = escapeSvgText(work.title || "作品プレビュー");
+    const creator = escapeSvgText(work.creator || "仮画像");
+    const label = escapeSvgText(meta.badge || work.format || "preview");
+    const svg = `
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 480" role="img" aria-label="${title}">
+        <rect width="640" height="480" rx="0" fill="${palette.background}" />
+        <rect x="34" y="34" width="572" height="412" rx="28" fill="rgba(255,255,255,0.66)" />
+        <rect x="68" y="72" width="156" height="34" rx="17" fill="${palette.accent}" />
+        <rect x="68" y="152" width="504" height="180" rx="24" fill="${palette.accent}" opacity="0.28" />
+        <rect x="68" y="350" width="250" height="14" rx="7" fill="${palette.accent}" opacity="0.52" />
+        <rect x="68" y="378" width="196" height="14" rx="7" fill="${palette.accent}" opacity="0.34" />
+        <text x="88" y="95" fill="#ffffff" font-family="Noto Sans JP, Helvetica Neue, Arial, sans-serif" font-size="18" font-weight="700">${label}</text>
+        <text x="68" y="126" fill="${palette.text}" font-family="Noto Sans JP, Helvetica Neue, Arial, sans-serif" font-size="16" opacity="0.72">hover preview</text>
+        <text x="68" y="214" fill="${palette.text}" font-family="Noto Sans JP, Helvetica Neue, Arial, sans-serif" font-size="34" font-weight="800">${title}</text>
+        <text x="68" y="258" fill="${palette.text}" font-family="Noto Sans JP, Helvetica Neue, Arial, sans-serif" font-size="18" opacity="0.8">${creator}</text>
+      </svg>
+    `;
+    return `data:image/svg+xml;charset=UTF-8,${encodeURIComponent(svg)}`;
+  };
+
+  const resolveHoverPreviewImageSrc = (work, meta) =>
+    work.hoverImageUrl ||
+    work.hoverPreviewImageUrl ||
+    work.cardHoverImageUrl ||
+    buildHoverPreviewPlaceholder(work, meta);
+
+  const createProductCardMediaVisual = ({ work, meta }) => {
+    const visuals = createElement("div", "ikea-product-card__mediaVisuals");
+    const base = createElement("div", "ikea-product-card__mediaVisual ikea-product-card__mediaVisual--base");
+    const hover = createElement("div", "ikea-product-card__mediaVisual ikea-product-card__mediaVisual--hover");
+    const hoverImage = document.createElement("img");
+
+    hoverImage.className = "ikea-product-card__hoverImage";
+    hoverImage.src = resolveHoverPreviewImageSrc(work, meta);
+    hoverImage.alt = "";
+    hoverImage.loading = "lazy";
+    hoverImage.decoding = "async";
+    hoverImage.draggable = false;
+
+    base.appendChild(createShelfArtwork(work.id || work.slug || work.title, meta.visual, meta.tone));
+    hover.appendChild(hoverImage);
+    visuals.append(base, hover);
+    return visuals;
+  };
+
   const createMatchTagList = (labels) => {
     const wrap = createElement("div", "ikea-product-card__matchTags");
     labels.forEach((label) => {
@@ -1039,7 +1101,7 @@
     if (meta.badge) {
       media.appendChild(createElement("span", "ikea-product-card__badge", meta.badge));
     }
-    media.appendChild(createShelfArtwork(work.id || work.slug || work.title, meta.visual, meta.tone));
+    media.appendChild(createProductCardMediaVisual({ work, meta }));
     mediaLink.appendChild(media);
 
     meta.metaItems.forEach((item) => {
