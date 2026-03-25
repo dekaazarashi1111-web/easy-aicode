@@ -204,22 +204,7 @@
   ];
   const QUICK_FILTER_AGE_TAG_IDS = QUICK_FILTER_AGE_OPTIONS.map((option) => option.tagId);
   const QUICK_FILTER_AGE_TAG_ID_SET = new Set(QUICK_FILTER_AGE_TAG_IDS);
-
-  const QUICK_FILTER_GLOBAL_INCLUDE_TAG_IDS = [
-    "osu-kemo",
-    "dense-fur",
-    "buddy-energy",
-    "distance-close",
-    "gentle-tone",
-    "light-tone",
-    "format-comic",
-    "format-cg",
-    "format-novel",
-  ];
-
-  const QUICK_FILTER_GLOBAL_EXCLUDE_TAG_IDS = ["no-ntr", "clear-consent", "low-gore"];
-  const QUICK_FILTER_GLOBAL_INCLUDE_SET = new Set(QUICK_FILTER_GLOBAL_INCLUDE_TAG_IDS);
-  const QUICK_FILTER_GLOBAL_EXCLUDE_SET = new Set(QUICK_FILTER_GLOBAL_EXCLUDE_TAG_IDS);
+  const QUICK_FILTER_TAG_PREVIEW_LIMIT = 10;
   const HOVER_GALLERY_INTERVAL_MS = 3000;
 
   const hashString = (value) => {
@@ -1029,12 +1014,12 @@
       if (!labels.length) return;
       parts.push(`キャラ${index + 1}: ${labels.join(" / ")}`);
     });
-    const quickIncludeLabels = state.includeTagIds
-      .filter((tagId) => QUICK_FILTER_GLOBAL_INCLUDE_SET.has(tagId))
-      .map((tagId) => tagMap.get(tagId)?.label || tagId);
-    const quickExcludeLabels = state.excludeTagIds
-      .filter((tagId) => QUICK_FILTER_GLOBAL_EXCLUDE_SET.has(tagId))
-      .map((tagId) => tagMap.get(tagId)?.label || tagId);
+    const quickIncludeLabels = ensureArray(state.includeTagIds).map(
+      (tagId) => tagMap.get(tagId)?.label || tagId
+    );
+    const quickExcludeLabels = ensureArray(state.excludeTagIds).map(
+      (tagId) => tagMap.get(tagId)?.label || tagId
+    );
     if (quickIncludeLabels.length) {
       parts.push(`含める: ${quickIncludeLabels.join(" / ")}`);
     }
@@ -1730,6 +1715,29 @@
       matchMode: "and",
       characters: [createEmptyCharacterState()],
     };
+    const quickTagGroups = groupedTags.map((group) => ({
+      id: group.id,
+      label: FILTER_LABEL_OVERRIDES[group.id] || group.label,
+      tags: ensureArray(group.tags),
+    }));
+    const quickSelectableTags = quickTagGroups.flatMap((group) =>
+      group.tags.map((tag) => ({
+        ...tag,
+        groupLabel: group.label,
+        searchText: normalizeText(
+          [tag.label, ensureArray(tag.synonyms).join(" "), group.label].join(" ")
+        ),
+      }))
+    );
+    const quickSelectableTagMap = new Map(
+      quickSelectableTags.map((tag) => [tag.id, tag])
+    );
+    const tagPickerState = {
+      open: false,
+      mode: "include",
+      query: "",
+    };
+    let tagPickerRestoreFocus = null;
 
     const readUrlState = () => {
       const params = new URLSearchParams(window.location.search);
@@ -1813,6 +1821,202 @@
       if (pageState.includeTagIds.includes(tagId)) return "include";
       if (pageState.excludeTagIds.includes(tagId)) return "exclude";
       return "ignore";
+    };
+
+    const getQuickTagPreview = (mode) => {
+      const selectedTagIds = new Set(
+        mode === "exclude" ? pageState.excludeTagIds : pageState.includeTagIds
+      );
+      const selected = [];
+      const unselected = [];
+      quickSelectableTags.forEach((tag) => {
+        if (selectedTagIds.has(tag.id)) {
+          selected.push(tag);
+          return;
+        }
+        unselected.push(tag);
+      });
+      return [...selected, ...unselected].slice(0, QUICK_FILTER_TAG_PREVIEW_LIMIT);
+    };
+
+    const toggleQuickGlobalTag = (tagId, nextState, wasPressed = false) => {
+      pageState.includeTagIds = pageState.includeTagIds.filter((value) => value !== tagId);
+      pageState.excludeTagIds = pageState.excludeTagIds.filter((value) => value !== tagId);
+      if (nextState === "include" && !wasPressed) {
+        pageState.includeTagIds = unique([...pageState.includeTagIds, tagId]);
+      }
+      if (nextState === "exclude" && !wasPressed) {
+        pageState.excludeTagIds = unique([...pageState.excludeTagIds, tagId]);
+      }
+    };
+
+    const createQuickTagPicker = () => {
+      const existing = document.querySelector("[data-finder-tag-picker]");
+      if (existing) return existing;
+
+      const picker = createElement("div", "ikea-tag-picker");
+      picker.hidden = true;
+      picker.dataset.finderTagPicker = "true";
+      picker.dataset.open = "false";
+      picker.setAttribute("aria-hidden", "true");
+
+      const backdrop = createElement("button", "ikea-tag-picker__backdrop");
+      backdrop.type = "button";
+      backdrop.dataset.tagPickerClose = "true";
+      backdrop.setAttribute("aria-label", "タグ選択を閉じる");
+
+      const panel = createElement("div", "ikea-tag-picker__panel");
+      panel.setAttribute("role", "dialog");
+      panel.setAttribute("aria-modal", "true");
+      panel.setAttribute("aria-labelledby", "finder-tag-picker-title");
+
+      const header = createElement("div", "ikea-tag-picker__header");
+      const heading = createElement("div", "ikea-tag-picker__heading");
+      const eyebrow = createElement("p", "ikea-tag-picker__eyebrow", "タグ選択");
+      const title = createElement("h2", "ikea-tag-picker__title");
+      title.id = "finder-tag-picker-title";
+      title.dataset.tagPickerTitle = "true";
+      const lead = createElement("p", "ikea-tag-picker__lead");
+      lead.dataset.tagPickerLead = "true";
+      heading.append(eyebrow, title, lead);
+
+      const closeButton = createElement("button", "ikea-tag-picker__close");
+      closeButton.type = "button";
+      closeButton.dataset.tagPickerClose = "true";
+      closeButton.setAttribute("aria-label", "タグ選択を閉じる");
+      closeButton.appendChild(createIcon("delete"));
+      header.append(heading, closeButton);
+
+      const body = createElement("div", "ikea-tag-picker__body");
+      const searchField = createElement("label", "ikea-tag-picker__searchField");
+      const searchLabel = createElement("span", "ikea-tag-picker__searchLabel", "タグ検索");
+      const searchInput = createElement("input", "ikea-tag-picker__searchInput");
+      searchInput.type = "search";
+      searchInput.placeholder = "タグ名や関連語で検索";
+      searchInput.dataset.tagPickerQuery = "true";
+      searchInput.setAttribute("aria-label", "タグ検索");
+      searchField.append(searchLabel, searchInput);
+
+      const count = createElement("p", "ikea-tag-picker__count");
+      count.dataset.tagPickerCount = "true";
+      const results = createElement("div", "ikea-tag-picker__results");
+      results.dataset.tagPickerResults = "true";
+      body.append(searchField, count, results);
+
+      panel.append(header, body);
+      picker.append(backdrop, panel);
+      document.body.appendChild(picker);
+      return picker;
+    };
+
+    const closeQuickTagPicker = () => {
+      const picker = createQuickTagPicker();
+      if (picker.hidden) return;
+      tagPickerState.open = false;
+      picker.hidden = true;
+      picker.dataset.open = "false";
+      picker.setAttribute("aria-hidden", "true");
+      document.body.classList.remove("finder-tag-picker-open");
+      if (tagPickerRestoreFocus && typeof tagPickerRestoreFocus.focus === "function") {
+        tagPickerRestoreFocus.focus();
+      }
+      tagPickerRestoreFocus = null;
+    };
+
+    const openQuickTagPicker = (mode, trigger = null) => {
+      const picker = createQuickTagPicker();
+      tagPickerState.mode = mode === "exclude" ? "exclude" : "include";
+      tagPickerState.query = "";
+      tagPickerState.open = true;
+      tagPickerRestoreFocus = trigger instanceof HTMLElement ? trigger : null;
+      picker.hidden = false;
+      picker.dataset.open = "true";
+      picker.setAttribute("aria-hidden", "false");
+      document.body.classList.add("finder-tag-picker-open");
+      renderQuickTagPicker();
+      const searchInput = picker.querySelector("[data-tag-picker-query]");
+      window.requestAnimationFrame(() => {
+        searchInput?.focus();
+      });
+    };
+
+    const renderQuickTagPicker = () => {
+      const picker = createQuickTagPicker();
+      const title = picker.querySelector("[data-tag-picker-title]");
+      const lead = picker.querySelector("[data-tag-picker-lead]");
+      const count = picker.querySelector("[data-tag-picker-count]");
+      const results = picker.querySelector("[data-tag-picker-results]");
+      const searchInput = picker.querySelector("[data-tag-picker-query]");
+      if (!title || !lead || !count || !results || !searchInput) return;
+
+      const isExclude = tagPickerState.mode === "exclude";
+      const normalizedQuery = normalizeText(tagPickerState.query);
+      const selectedTagIds = new Set(
+        isExclude ? pageState.excludeTagIds : pageState.includeTagIds
+      );
+      title.textContent = isExclude ? "除外タグ" : "含めるタグ";
+      lead.textContent = isExclude
+        ? "外したい要素をまとめて選べます。"
+        : "含めたい要素をまとめて選べます。";
+      searchInput.value = tagPickerState.query;
+
+      const filteredGroups = quickTagGroups
+        .map((group) => {
+          const tags = group.tags
+            .map((tag) => quickSelectableTagMap.get(tag.id) || tag)
+            .filter((tag) => !normalizedQuery || tag.searchText.includes(normalizedQuery))
+            .sort((left, right) => {
+              const leftSelected = selectedTagIds.has(left.id) ? 1 : 0;
+              const rightSelected = selectedTagIds.has(right.id) ? 1 : 0;
+              if (leftSelected !== rightSelected) return rightSelected - leftSelected;
+              return left.label.localeCompare(right.label, "ja");
+            });
+          return {
+            ...group,
+            tags,
+          };
+        })
+        .filter((group) => group.tags.length);
+      const totalCount = filteredGroups.reduce((sum, group) => sum + group.tags.length, 0);
+
+      count.textContent = normalizedQuery
+        ? `${totalCount} 件のタグが見つかりました`
+        : `${quickSelectableTags.length} 件のタグを選べます`;
+      results.textContent = "";
+
+      if (!filteredGroups.length) {
+        results.appendChild(
+          createElement("p", "ikea-tag-picker__empty", "一致するタグはありません。")
+        );
+        return;
+      }
+
+      filteredGroups.forEach((group) => {
+        const section = createElement("section", "ikea-tag-picker__group");
+        const groupHeader = createElement("div", "ikea-tag-picker__groupHeader");
+        groupHeader.append(
+          createElement("h3", "ikea-tag-picker__groupTitle", group.label),
+          createElement("p", "ikea-tag-picker__groupCount", `${group.tags.length}件`)
+        );
+
+        const row = createElement("div", "ikea-tag-picker__chipRow");
+        group.tags.forEach((tag) => {
+          row.appendChild(
+            createQuickFilterChip({
+              label: tag.label,
+              selected: selectedTagIds.has(tag.id),
+              className: isExclude ? "plp-filter-chip--exclude" : "",
+              dataset: {
+                tagPickerState: tagPickerState.mode,
+                quickTagId: tag.id,
+              },
+            })
+          );
+        });
+
+        section.append(groupHeader, row);
+        results.appendChild(section);
+      });
     };
 
     const renderQuickFilters = () => {
@@ -1912,43 +2116,45 @@
       characterCard.append(speciesField, bodyField, ageField);
 
       const includeField = createElement("section", "ikea-quick-filter-field");
-      includeField.appendChild(createElement("strong", "ikea-quick-filter-field__label", "全体で含める"));
+      includeField.appendChild(createElement("strong", "ikea-quick-filter-field__label", "含めるタグ"));
       const includeRow = createElement("div", "ikea-quick-filter-chipRow");
-      QUICK_FILTER_GLOBAL_INCLUDE_TAG_IDS.forEach((tagId) => {
-        const tag = tagMap.get(tagId);
-        if (!tag) return;
+      getQuickTagPreview("include").forEach((tag) => {
         includeRow.appendChild(
           createQuickFilterChip({
             label: tag.label,
-            selected: pageState.includeTagIds.includes(tagId),
+            selected: pageState.includeTagIds.includes(tag.id),
             dataset: {
               quickGlobalState: "include",
-              quickTagId: tagId,
+              quickTagId: tag.id,
             },
           })
         );
       });
-      includeField.appendChild(includeRow);
+      const includeMoreButton = createElement("button", "ikea-quick-filter-field__more", "もっと見る");
+      includeMoreButton.type = "button";
+      includeMoreButton.dataset.quickTagPickerOpen = "include";
+      includeField.append(includeRow, includeMoreButton);
 
       const excludeField = createElement("section", "ikea-quick-filter-field");
-      excludeField.appendChild(createElement("strong", "ikea-quick-filter-field__label", "全体で除外"));
+      excludeField.appendChild(createElement("strong", "ikea-quick-filter-field__label", "除外タグ"));
       const excludeRow = createElement("div", "ikea-quick-filter-chipRow");
-      QUICK_FILTER_GLOBAL_EXCLUDE_TAG_IDS.forEach((tagId) => {
-        const tag = tagMap.get(tagId);
-        if (!tag) return;
+      getQuickTagPreview("exclude").forEach((tag) => {
         excludeRow.appendChild(
           createQuickFilterChip({
             label: tag.label,
-            selected: pageState.excludeTagIds.includes(tagId),
+            selected: pageState.excludeTagIds.includes(tag.id),
             className: "plp-filter-chip--exclude",
             dataset: {
               quickGlobalState: "exclude",
-              quickTagId: tagId,
+              quickTagId: tag.id,
             },
           })
         );
       });
-      excludeField.appendChild(excludeRow);
+      const excludeMoreButton = createElement("button", "ikea-quick-filter-field__more", "もっと見る");
+      excludeMoreButton.type = "button";
+      excludeMoreButton.dataset.quickTagPickerOpen = "exclude";
+      excludeField.append(excludeRow, excludeMoreButton);
 
       wrapper.append(header, summary, characterCard, includeField, excludeField);
       quickFiltersRoot.appendChild(wrapper);
@@ -2624,22 +2830,6 @@
       if (collection) conditionFragments.push(`特集: ${collection.title}`);
       const quickFilterSummary = getQuickFilterSummary(pageState, tagMap);
       conditionFragments.push(quickFilterSummary === "条件なし" ? "クイック条件なし" : quickFilterSummary);
-      const nonQuickIncludeIds = pageState.includeTagIds.filter(
-        (tagId) => !QUICK_FILTER_GLOBAL_INCLUDE_SET.has(tagId)
-      );
-      const nonQuickExcludeIds = pageState.excludeTagIds.filter(
-        (tagId) => !QUICK_FILTER_GLOBAL_EXCLUDE_SET.has(tagId)
-      );
-      if (nonQuickIncludeIds.length) {
-        conditionFragments.push(
-          `追加条件: ${nonQuickIncludeIds.map((tagId) => tagMap.get(tagId)?.label || tagId).join(" / ")}`
-        );
-      }
-      if (nonQuickExcludeIds.length) {
-        conditionFragments.push(
-          `追加除外: ${nonQuickExcludeIds.map((tagId) => tagMap.get(tagId)?.label || tagId).join(" / ")}`
-        );
-      }
       statusRoot.textContent = `${filtered.length}件 | ${getSortMeta(pageState.sort).label} | ${conditionFragments.join(" | ")}`;
 
       if (emptyRoot) emptyRoot.hidden = filtered.length !== 0;
@@ -2657,6 +2847,7 @@
       syncControls();
       updateFinderUrl(pageState);
       renderQuickFilters();
+      if (tagPickerState.open) renderQuickTagPicker();
       renderSavedSearches();
       renderBuilderLinks();
       renderPresets();
@@ -2688,19 +2879,23 @@
           return;
         }
 
+        const quickTagPickerButton = event.target.closest("[data-quick-tag-picker-open]");
+        if (quickTagPickerButton) {
+          const mode = quickTagPickerButton.dataset.quickTagPickerOpen || "include";
+          openQuickTagPicker(mode, quickTagPickerButton);
+          return;
+        }
+
         const quickGlobalButton = event.target.closest("[data-quick-global-state]");
         if (quickGlobalButton) {
           const tagId = quickGlobalButton.dataset.quickTagId || "";
           const nextState = quickGlobalButton.dataset.quickGlobalState || "";
           if (!tagId) return;
-          pageState.includeTagIds = pageState.includeTagIds.filter((value) => value !== tagId);
-          pageState.excludeTagIds = pageState.excludeTagIds.filter((value) => value !== tagId);
-          if (nextState === "include" && !quickGlobalButton.matches('[aria-pressed="true"]')) {
-            pageState.includeTagIds = unique([...pageState.includeTagIds, tagId]);
-          }
-          if (nextState === "exclude" && !quickGlobalButton.matches('[aria-pressed="true"]')) {
-            pageState.excludeTagIds = unique([...pageState.excludeTagIds, tagId]);
-          }
+          toggleQuickGlobalTag(
+            tagId,
+            nextState,
+            quickGlobalButton.matches('[aria-pressed="true"]')
+          );
           applyAndRender();
           return;
         }
@@ -2820,6 +3015,39 @@
             store.toggleCompareWork(workId);
           });
           renderResults();
+        }
+      });
+
+      const tagPicker = createQuickTagPicker();
+      tagPicker.addEventListener("click", (event) => {
+        if (event.target.closest("[data-tag-picker-close]")) {
+          closeQuickTagPicker();
+          return;
+        }
+
+        const tagButton = event.target.closest("[data-tag-picker-state]");
+        if (tagButton) {
+          const tagId = tagButton.dataset.quickTagId || "";
+          const nextState = tagButton.dataset.tagPickerState || "include";
+          if (!tagId) return;
+          toggleQuickGlobalTag(
+            tagId,
+            nextState,
+            tagButton.matches('[aria-pressed="true"]')
+          );
+          applyAndRender();
+        }
+      });
+
+      const tagPickerQueryInput = tagPicker.querySelector("[data-tag-picker-query]");
+      tagPickerQueryInput?.addEventListener("input", () => {
+        tagPickerState.query = tagPickerQueryInput.value;
+        renderQuickTagPicker();
+      });
+
+      document.addEventListener("keydown", (event) => {
+        if (event.key === "Escape" && tagPickerState.open) {
+          closeQuickTagPicker();
         }
       });
 

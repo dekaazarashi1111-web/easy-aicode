@@ -7083,6 +7083,10 @@ body.history-drawer-open {
   overflow: hidden;
 }
 
+body.finder-tag-picker-open {
+  overflow: hidden;
+}
+
 .ikea-history-drawer {
   position: fixed;
   inset: 0;
@@ -7207,6 +7211,154 @@ body.history-drawer-open {
   outline-offset: 2px;
 }
 
+.ikea-tag-picker {
+  position: fixed;
+  inset: 0;
+  z-index: 170;
+  display: grid;
+  place-items: center;
+  padding: 24px;
+}
+
+.ikea-tag-picker[hidden] {
+  display: none;
+}
+
+.ikea-tag-picker__backdrop {
+  position: absolute;
+  inset: 0;
+  border: 0;
+  background: rgba(17, 17, 17, 0.32);
+  cursor: pointer;
+}
+
+.ikea-tag-picker__panel {
+  position: relative;
+  width: min(760px, calc(100vw - 32px));
+  max-height: min(80dvh, 860px);
+  display: flex;
+  flex-direction: column;
+  background: #fff;
+  border: 1px solid #ececec;
+  border-radius: 24px;
+  box-shadow: var(--ikea-shadow);
+  overflow: hidden;
+}
+
+.ikea-tag-picker__header {
+  padding: 22px 24px 18px;
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 16px;
+  border-bottom: 1px solid #ececec;
+}
+
+.ikea-tag-picker__heading {
+  display: grid;
+  gap: 6px;
+}
+
+.ikea-tag-picker__eyebrow {
+  margin: 0;
+  color: var(--ikea-blue);
+  font-size: 0.78rem;
+  font-weight: 700;
+}
+
+.ikea-tag-picker__title {
+  margin: 0;
+  font-size: 1.35rem;
+  line-height: 1.2;
+}
+
+.ikea-tag-picker__body {
+  padding: 20px 24px 24px;
+  display: grid;
+  gap: 16px;
+  overflow: hidden;
+}
+
+.ikea-tag-picker__lead,
+.ikea-tag-picker__count,
+.ikea-tag-picker__groupCount,
+.ikea-tag-picker__empty {
+  margin: 0;
+  color: var(--ikea-muted);
+  font-size: 0.88rem;
+  line-height: 1.6;
+}
+
+.ikea-tag-picker__close {
+  width: 40px;
+  height: 40px;
+  flex: 0 0 auto;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border: 1px solid #ececec;
+  border-radius: 50%;
+  background: #fff;
+  color: var(--ikea-text);
+  cursor: pointer;
+}
+
+.ikea-tag-picker__searchField {
+  display: grid;
+  gap: 8px;
+}
+
+.ikea-tag-picker__searchLabel {
+  font-size: 0.82rem;
+  font-weight: 800;
+}
+
+.ikea-tag-picker__searchInput {
+  min-height: 46px;
+  padding: 0 14px;
+  border: 1px solid var(--ikea-border);
+  border-radius: 12px;
+  background: #fff;
+  color: var(--ikea-text);
+  font: inherit;
+}
+
+.ikea-tag-picker__results {
+  display: grid;
+  gap: 18px;
+  overflow-y: auto;
+  padding-right: 4px;
+}
+
+.ikea-tag-picker__group {
+  display: grid;
+  gap: 10px;
+}
+
+.ikea-tag-picker__groupHeader {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.ikea-tag-picker__groupTitle {
+  margin: 0;
+  font-size: 0.96rem;
+}
+
+.ikea-tag-picker__chipRow {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.ikea-tag-picker__close:focus-visible,
+.ikea-tag-picker__searchInput:focus-visible {
+  outline: 2px solid var(--ikea-blue);
+  outline-offset: 2px;
+}
+
 @media (max-width: 640px) {
   .ikea-history-drawer__panel {
     width: 100vw;
@@ -7215,6 +7367,21 @@ body.history-drawer-open {
 
   .ikea-history-drawer__header,
   .ikea-history-drawer__body {
+    padding-left: 18px;
+    padding-right: 18px;
+  }
+
+  .ikea-tag-picker {
+    padding: 16px;
+  }
+
+  .ikea-tag-picker__panel {
+    width: 100%;
+    max-height: calc(100dvh - 32px);
+  }
+
+  .ikea-tag-picker__header,
+  .ikea-tag-picker__body {
     padding-left: 18px;
     padding-right: 18px;
   }
@@ -8338,6 +8505,20 @@ body.history-drawer-open {
   display: flex;
   flex-wrap: wrap;
   gap: 8px;
+}
+
+.ikea-quick-filter-field__more {
+  justify-self: flex-start;
+  min-height: 36px;
+  padding: 0 14px;
+  border: 1px solid var(--ikea-border);
+  border-radius: 999px;
+  background: #fff;
+  color: var(--ikea-text);
+  font: inherit;
+  font-size: 0.82rem;
+  font-weight: 800;
+  cursor: pointer;
 }
 
 .ikea-quick-filter-chip {
