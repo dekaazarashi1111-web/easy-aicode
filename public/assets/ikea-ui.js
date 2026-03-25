@@ -865,43 +865,7 @@
                 </div>
               </div>
             </section>
-            <section class="ikea-search-section ikea-search-section--promoted" data-finder-promoted-wrap>
-              <div class="ikea-section-heading">
-                <div>
-                  <p class="ikea-section-heading__eyebrow">Promoted filters</p>
-                  <h2 class="ikea-section-heading__title">すぐ絞る</h2>
-                </div>
-              </div>
-              <div class="ikea-promoted-filters" data-finder-promoted></div>
-            </section>
             <div class="ikea-product-grid ikea-product-grid--search" id="product-list" data-finder-results></div>
-            <section class="ikea-search-section" data-finder-suggestions-wrap hidden>
-              <div class="ikea-section-heading">
-                <div>
-                  <p class="ikea-section-heading__eyebrow">Nearby conditions</p>
-                  <h2 class="ikea-section-heading__title">近い条件の候補</h2>
-                </div>
-              </div>
-              <div class="ikea-product-grid ikea-product-grid--search" data-finder-suggestions></div>
-            </section>
-            <section class="ikea-search-section">
-              <div class="ikea-section-heading">
-                <div>
-                  <p class="ikea-section-heading__eyebrow">Explore paths</p>
-                  <h2 class="ikea-section-heading__title">探し方別の入口</h2>
-                </div>
-              </div>
-              <div class="ikea-banner-row" data-finder-categories></div>
-            </section>
-            <section class="ikea-search-section">
-              <div class="ikea-section-heading">
-                <div>
-                  <p class="ikea-section-heading__eyebrow">Next filters</p>
-                  <h2 class="ikea-section-heading__title">次に足す条件</h2>
-                </div>
-              </div>
-              <ul class="ikea-related-searches" data-finder-related-searches></ul>
-            </section>
           </section>
         </div>
       </div>
@@ -2714,11 +2678,7 @@
       renderActiveChips();
       renderRescue();
       renderEmptyRecovery();
-      renderPromotedFilters(filtered);
-      renderSuggestions(filtered, uiState);
       renderCompare(uiState);
-      renderCategories(filtered);
-      renderRelatedSearches(filtered);
       renderRecentWorks();
       refreshCarousels(root);
       scheduleLog(filtered.length);
