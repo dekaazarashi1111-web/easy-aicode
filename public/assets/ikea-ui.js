@@ -268,7 +268,6 @@
         ? `一致度 ${matchScore}%`
         : `更新 ${formatDateLabel(work.updatedAt || work.releasedAt)}`;
     const metaItems = [
-      `媒体 ${work.format || "作品"}`,
       `更新 ${formatDateLabel(work.updatedAt || work.releasedAt)}`,
     ].filter(Boolean);
 
@@ -1201,20 +1200,17 @@
     const mediaLink = createElement("a", "ikea-product-card__mediaLink");
     const media = createElement("div", "ikea-product-card__media");
     const body = createElement("div", "ikea-product-card__body");
+    const formatLabel = createElement("p", "ikea-product-card__subtitle", work.format || "作品");
     const title = createElement("a", "ikea-product-card__title", work.title);
     const subtitle = createElement(
       "p",
-      "ikea-product-card__subtitle",
-      [work.creator || "サンプル作者", work.format || "作品"].filter(Boolean).join("、")
-    );
-    const detail = createElement(
-      "p",
       "ikea-product-card__detail",
-      work.highlightPoints?.[0] || work.shortDescription || work.publicNote || ""
+      work.creator || "サンプル作者"
     );
     const metaRow = createElement("div", "ikea-product-card__metaRow");
     const actionRow = createElement("div", "ikea-product-card__actionRow");
     const favoriteSet = new Set(ensureArray(uiState.favoriteWorkIds));
+    const summaryText = reason || work.matchSummary || work.shortDescription || work.publicNote || "";
 
     article.dataset.tone = meta.tone;
     mediaLink.href = `/work/?slug=${encodeURIComponent(work.slug)}`;
@@ -1245,9 +1241,8 @@
       );
     }
 
-    if (meta.matchLabels.length) body.appendChild(createMatchTagList(meta.matchLabels));
-    body.append(title, subtitle, detail, metaRow);
-    if (reason) body.appendChild(createElement("p", "ikea-product-card__reason", reason));
+    body.append(formatLabel, title, subtitle, metaRow);
+    if (summaryText) body.appendChild(createElement("p", "ikea-product-card__reason", summaryText));
     if (showActions) body.appendChild(actionRow);
     article.append(mediaLink, body);
     return article;
