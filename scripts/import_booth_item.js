@@ -4,12 +4,16 @@ const core = require("../public/assets/finder-core.js");
 
 const DEFAULT_PROFILE_IDS = ["kemohomo-main"];
 const DEFAULT_PRIORITY = 65;
+const IMAGE_HEADER_BYTE_LIMIT = 262144;
+const REQUEST_HEADERS = {
+  "user-agent":
+    "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/136.0.0.0 Safari/537.36",
+};
 
 const fetchHtml = async (url) => {
   const response = await fetch(url, {
     headers: {
-      "user-agent":
-        "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/136.0.0.0 Safari/537.36",
+      ...REQUEST_HEADERS,
       accept: "text/html,application/xhtml+xml",
     },
   });
@@ -62,6 +66,152 @@ const extractGalleryImages = (html, fallbackImage = "") => {
   }
   if (fallbackImage) urls.add(fallbackImage);
   return Array.from(urls);
+};
+
+const normalizeImageIdentity = (url) =>
+  String(url || "")
+    .trim()
+    .replace(/https?:\/\/[^/]+/i, "")
+    .replace(/\/c\/[^/]+\//i, "/")
+    .replace(/_base_resized(?=\.[a-z0-9]+$)/i, "");
+
+const getImageVariantScore = (url) => {
+  const value = String(url || "");
+  let score = 0;
+  if (/_base_resized(?=\.[a-z0-9]+$)/i.test(value)) score += 4;
+  if (/\/c\/\d+x\d+/i.test(value)) score += 2;
+  return score;
+};
+
+const collapseGalleryImageUrls = (urls) => {
+  const order = [];
+  const preferredByKey = new Map();
+  core.ensureArray(urls)
+    .filter(Boolean)
+    .forEach((url) => {
+      const key = normalizeImageIdentity(url);
+      if (!key) return;
+      if (!preferredByKey.has(key)) {
+        preferredByKey.set(key, url);
+        order.push(key);
+        return;
+      }
+      const current = preferredByKey.get(key);
+      if (getImageVariantScore(url) > getImageVariantScore(current)) {
+        preferredByKey.set(key, url);
+      }
+    });
+  return order.map((key) => preferredByKey.get(key)).filter(Boolean);
+};
+
+const parsePngSize = (bytes) => {
+  if (bytes.length < 24) return null;
+  if (bytes[0] !== 0x89 || bytes[1] !== 0x50 || bytes[2] !== 0x4e || bytes[3] !== 0x47) return null;
+  return {
+    width: bytes.readUInt32BE(16),
+    height: bytes.readUInt32BE(20),
+  };
+};
+
+const parseGifSize = (bytes) => {
+  if (bytes.length < 10) return null;
+  const signature = bytes.subarray(0, 6).toString("ascii");
+  if (signature !== "GIF87a" && signature !== "GIF89a") return null;
+  return {
+    width: bytes.readUInt16LE(6),
+    height: bytes.readUInt16LE(8),
+  };
+};
+
+const parseWebpSize = (bytes) => {
+  if (bytes.length < 30) return null;
+  if (bytes.subarray(0, 4).toString("ascii") !== "RIFF") return null;
+  if (bytes.subarray(8, 12).toString("ascii") !== "WEBP") return null;
+  const chunk = bytes.subarray(12, 16).toString("ascii");
+  if (chunk === "VP8 ") {
+    if (bytes.length < 30) return null;
+    return {
+      width: bytes.readUInt16LE(26) & 0x3fff,
+      height: bytes.readUInt16LE(28) & 0x3fff,
+    };
+  }
+  if (chunk === "VP8L") {
+    if (bytes.length < 25) return null;
+    const bits =
+      bytes[21] |
+      (bytes[22] << 8) |
+      (bytes[23] << 16) |
+      (bytes[24] << 24);
+    return {
+      width: (bits & 0x3fff) + 1,
+      height: ((bits >> 14) & 0x3fff) + 1,
+    };
+  }
+  if (chunk === "VP8X") {
+    if (bytes.length < 30) return null;
+    return {
+      width: 1 + bytes[24] + (bytes[25] << 8) + (bytes[26] << 16),
+      height: 1 + bytes[27] + (bytes[28] << 8) + (bytes[29] << 16),
+    };
+  }
+  return null;
+};
+
+const parseJpegSize = (bytes) => {
+  if (bytes.length < 4 || bytes[0] !== 0xff || bytes[1] !== 0xd8) return null;
+  let offset = 2;
+  while (offset + 9 <= bytes.length) {
+    while (offset < bytes.length && bytes[offset] === 0xff) offset += 1;
+    const marker = bytes[offset];
+    offset += 1;
+    if (!marker || marker === 0xd8 || marker === 0xd9) continue;
+    if (offset + 2 > bytes.length) return null;
+    const segmentLength = bytes.readUInt16BE(offset);
+    if (segmentLength < 2 || offset + segmentLength > bytes.length) return null;
+    if (
+      [0xc0, 0xc1, 0xc2, 0xc3, 0xc5, 0xc6, 0xc7, 0xc9, 0xca, 0xcb, 0xcd, 0xce, 0xcf].includes(
+        marker
+      )
+    ) {
+      return {
+        width: bytes.readUInt16BE(offset + 5),
+        height: bytes.readUInt16BE(offset + 3),
+      };
+    }
+    offset += segmentLength;
+  }
+  return null;
+};
+
+const parseImageSize = (bytes) =>
+  parsePngSize(bytes) || parseGifSize(bytes) || parseWebpSize(bytes) || parseJpegSize(bytes);
+
+const fetchImageSize = async (url) => {
+  const response = await fetch(url, {
+    headers: {
+      ...REQUEST_HEADERS,
+      accept: "image/avif,image/webp,image/apng,image/*,*/*;q=0.8",
+      range: `bytes=0-${IMAGE_HEADER_BYTE_LIMIT - 1}`,
+    },
+  });
+  if (!response.ok) {
+    throw new Error(`image fetch failed: ${response.status} ${response.statusText}`);
+  }
+  const bytes = Buffer.from(await response.arrayBuffer());
+  const size = parseImageSize(bytes);
+  if (!size) {
+    throw new Error(`image size parse failed for ${url}`);
+  }
+  return size;
+};
+
+const buildImageRecord = async (url) => {
+  const size = await fetchImageSize(url);
+  return {
+    url,
+    width: size.width,
+    height: size.height,
+  };
 };
 
 const detectFormat = (text) => {
@@ -120,7 +270,7 @@ const truncate = (value, max) => {
   return `${normalized.slice(0, max - 1).trim()}…`;
 };
 
-const buildWorkFromBooth = ({ url, html, importedAt }) => {
+const buildWorkFromBooth = async ({ url, html, importedAt }) => {
   const product = extractJsonLdProduct(html);
   if (!product) {
     throw new Error("BOOTH product JSON-LD was not found.");
@@ -138,7 +288,17 @@ const buildWorkFromBooth = ({ url, html, importedAt }) => {
   );
   const description = cleanText(product.description || "");
   const heroImage = product.image || extractMatch(html, /<meta property="og:image" content="([^"]+)"/i);
-  const galleryImageUrls = extractGalleryImages(html, heroImage);
+  const collapsedImageUrls = collapseGalleryImageUrls(extractGalleryImages(html, heroImage));
+  const primaryImageUrl =
+    collapsedImageUrls.find((candidate) => normalizeImageIdentity(candidate) === normalizeImageIdentity(heroImage)) ||
+    collapsedImageUrls[0] ||
+    heroImage ||
+    "";
+  const galleryImageUrls = collapsedImageUrls.filter(
+    (candidate) => normalizeImageIdentity(candidate) !== normalizeImageIdentity(primaryImageUrl)
+  );
+  const primaryImage = primaryImageUrl ? await buildImageRecord(primaryImageUrl) : null;
+  const galleryImages = await Promise.all(galleryImageUrls.map((imageUrl) => buildImageRecord(imageUrl)));
   const textForHeuristics = [title, shopName, description].filter(Boolean).join("\n");
   const format = detectFormat(textForHeuristics);
   const speciesTagId = detectSpeciesTag(textForHeuristics);
@@ -195,8 +355,10 @@ const buildWorkFromBooth = ({ url, html, importedAt }) => {
     priority: DEFAULT_PRIORITY,
     releasedAt: "",
     updatedAt: importedAt,
-    hoverImageUrl: heroImage || "",
-    galleryImageUrls,
+    hoverImageUrl: primaryImage?.url || "",
+    galleryImageUrls: galleryImages.map((image) => image.url),
+    primaryImage,
+    galleryImages,
     sourceUrl: canonical,
     importSource: "booth",
     priceJPY: Number.isFinite(price) ? price : 0,
@@ -220,7 +382,7 @@ const main = async () => {
 
   const importedAt = new Date().toISOString().slice(0, 10);
   const html = await fetchHtml(targetUrl);
-  const work = buildWorkFromBooth({ url: targetUrl, html, importedAt });
+  const work = await buildWorkFromBooth({ url: targetUrl, html, importedAt });
   process.stdout.write(`${JSON.stringify(work, null, 2)}\n`);
 };
 

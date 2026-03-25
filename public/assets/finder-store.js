@@ -263,6 +263,25 @@
     ];
   };
 
+  const normalizeImageRecord = (input) => {
+    if (!input || typeof input !== "object") return null;
+    const url = String(input.url || "").trim();
+    if (!url) return null;
+    const width = Number(input.width || 0);
+    const height = Number(input.height || 0);
+    return {
+      url,
+      width: Number.isFinite(width) && width > 0 ? width : 0,
+      height: Number.isFinite(height) && height > 0 ? height : 0,
+    };
+  };
+
+  const normalizeImageRecords = (records) =>
+    core
+      .ensureArray(records)
+      .map((record) => normalizeImageRecord(record))
+      .filter(Boolean);
+
   const upsertWork = (input) =>
     mutate((state) => {
       const existing = state.works.find((work) => work.id === input.id);
@@ -298,6 +317,9 @@
         galleryImageUrls: core.unique(
           core.ensureArray(input.galleryImageUrls || existing?.galleryImageUrls || [])
         ),
+        primaryImage:
+          normalizeImageRecord(input.primaryImage) || normalizeImageRecord(existing?.primaryImage),
+        galleryImages: normalizeImageRecords(input.galleryImages || existing?.galleryImages || []),
         sourceUrl: (input.sourceUrl || existing?.sourceUrl || "").trim(),
         importSource: (input.importSource || existing?.importSource || "").trim(),
         priceJPY: Number(input.priceJPY ?? existing?.priceJPY ?? 0),

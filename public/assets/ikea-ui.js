@@ -375,7 +375,9 @@
     const order = [];
     const preferredByKey = new Map();
     [
+      work.primaryImage?.url,
       work.hoverImageUrl,
+      ...ensureArray(work.galleryImages).map((image) => image?.url),
       ...ensureArray(work.galleryImageUrls),
       work.hoverPreviewImageUrl,
       work.cardHoverImageUrl,
