@@ -234,13 +234,6 @@
     return value.replace(/-/g, ".");
   };
 
-  const getSearchEntryHref = (work) =>
-    createFinderUrl({
-      includeTagIds: ensureArray(work.primaryTagObjects)
-        .slice(0, 2)
-        .map((tag) => tag.id),
-    });
-
   const getDiscoveryCardMeta = ({
     work,
     tagMap,
@@ -257,7 +250,6 @@
     const tokenMatches = ensureArray(work.matchContext?.tokenMatches);
     const primaryTags = ensureArray(work.primaryTagObjects);
     const primaryLabels = primaryTags.map((tag) => tag.label);
-    const avoidTag = ensureArray(work.tagObjects).find((tag) => tag.groupId === "avoid");
     const badge =
       matchedTagLabels[0] ||
       primaryLabels[0] ||
@@ -278,32 +270,7 @@
     const metaItems = [
       `媒体 ${work.format || "作品"}`,
       `更新 ${formatDateLabel(work.updatedAt || work.releasedAt)}`,
-      primaryLabels[0] ? `起点 ${primaryLabels[0]}` : "",
     ].filter(Boolean);
-    const relatedLinks = [];
-    const usedLabels = new Set();
-    [...matchedTagLabels, ...primaryTags.map((tag) => tag.label)].forEach((label, index) => {
-      const tag = primaryTags.find((item) => item.label === label) ||
-        ensureArray(work.tagObjects).find((item) => item.label === label);
-      if (!tag || usedLabels.has(label) || index > 2) return;
-      usedLabels.add(label);
-      relatedLinks.push({
-        label,
-        href: createFinderUrl({ includeTagIds: [tag.id] }),
-      });
-    });
-    if (work.creator && relatedLinks.length < 3) {
-      relatedLinks.push({
-        label: `${work.creator}から探す`,
-        href: createFinderUrl({ creatorQuery: work.creator }),
-      });
-    }
-    if (avoidTag && relatedLinks.length < 3) {
-      relatedLinks.push({
-        label: `${avoidTag.label}で絞る`,
-        href: createFinderUrl({ includeTagIds: [avoidTag.id] }),
-      });
-    }
 
     return {
       badge,
@@ -312,10 +279,6 @@
       highlightLabel,
       metaItems,
       matchLabels: unique([...matchedTagLabels, ...primaryLabels]).slice(0, 4),
-      relatedLinks: relatedLinks.slice(0, 3),
-      startHref: getSearchEntryHref(work),
-      cautionHref: avoidTag ? createFinderUrl({ includeTagIds: [avoidTag.id] }) : "",
-      cautionLabel: avoidTag ? `${avoidTag.label}で探す` : work.creator ? `${work.creator}から探す` : "",
     };
   };
 
@@ -1250,8 +1213,6 @@
       work.highlightPoints?.[0] || work.shortDescription || work.publicNote || ""
     );
     const metaRow = createElement("div", "ikea-product-card__metaRow");
-    const swatchLabel = createElement("p", "ikea-product-card__swatchLabel", "近い条件や次の起点");
-    const affinityLinks = createAffinityLinks(meta.relatedLinks);
     const actionRow = createElement("div", "ikea-product-card__actionRow");
     const favoriteSet = new Set(ensureArray(uiState.favoriteWorkIds));
 
@@ -1288,7 +1249,6 @@
     body.append(title, subtitle, detail, metaRow);
     if (reason) body.appendChild(createElement("p", "ikea-product-card__reason", reason));
     if (showActions) body.appendChild(actionRow);
-    body.append(swatchLabel, affinityLinks);
     article.append(mediaLink, body);
     return article;
   };
