@@ -145,17 +145,131 @@ const RECENT_HISTORY_LIMIT = 20;
 let historyDrawerCloseTimer = null;
 let historyDrawerRestoreFocus = null;
 
-const readFinderCanvasState = () => {
-  if (typeof window === "undefined" || !window.localStorage) return null;
+const parseFinderCanvasState = () => {
+  if (typeof window === "undefined" || !window.localStorage) {
+    return { raw: "", parsed: null };
+  }
   try {
     const raw = window.localStorage.getItem(FINDER_STORAGE_KEY);
-    if (!raw) return null;
+    if (!raw) return { raw: "", parsed: null };
     const parsed = JSON.parse(raw);
-    return parsed && typeof parsed === "object" ? parsed : null;
+    return {
+      raw,
+      parsed: parsed && typeof parsed === "object" ? parsed : null,
+    };
+  } catch (error) {
+    return { raw: "", parsed: null };
+  }
+};
+
+const uniqueFinderValues = (values) =>
+  Array.from(new Set((Array.isArray(values) ? values : []).filter(Boolean)));
+
+const normalizeFinderCharacters = (value) =>
+  (Array.isArray(value) ? value : []).map((item, index) => ({
+    id: item?.id || `character-${index + 1}`,
+    speciesTagIds: uniqueFinderValues(item?.speciesTagIds),
+    bodyTypeTagIds: uniqueFinderValues(item?.bodyTypeTagIds),
+    ageFeelTagIds: uniqueFinderValues(item?.ageFeelTagIds),
+  }));
+
+const cloneFinderSeedState = () => {
+  if (typeof window === "undefined" || !window.FINDER_SEED || typeof window.FINDER_SEED !== "object") {
+    return null;
+  }
+  try {
+    return JSON.parse(JSON.stringify(window.FINDER_SEED));
   } catch (error) {
     return null;
   }
 };
+
+const composeFinderCanvasState = (rawState) => {
+  const seedState = cloneFinderSeedState();
+  if (!seedState) {
+    return rawState && typeof rawState === "object" ? rawState : null;
+  }
+
+  const next = seedState;
+  const stored = rawState && typeof rawState === "object" ? rawState : {};
+  const storedUi = stored.ui && typeof stored.ui === "object" ? stored.ui : {};
+  const storedLogs = stored.logs && typeof stored.logs === "object" ? stored.logs : {};
+  const validProfileIds = new Set(
+    (Array.isArray(next.siteProfiles) ? next.siteProfiles : [])
+      .map((profile) => profile?.id)
+      .filter(Boolean)
+  );
+  const validWorkIds = new Set(
+    (Array.isArray(next.works) ? next.works : []).map((work) => work?.id).filter(Boolean)
+  );
+  const validTagIds = new Set(
+    (Array.isArray(next.tags) ? next.tags : []).map((tag) => tag?.id).filter(Boolean)
+  );
+  const validCollectionIds = new Set(
+    (Array.isArray(next.collections) ? next.collections : [])
+      .map((collection) => collection?.id)
+      .filter(Boolean)
+  );
+  const fallbackProfileId = validProfileIds.has(next.activeProfileId)
+    ? next.activeProfileId
+    : next.siteProfiles?.[0]?.id || "";
+
+  next.activeProfileId = validProfileIds.has(stored.activeProfileId)
+    ? stored.activeProfileId
+    : fallbackProfileId;
+  next.logs = {
+    ...storedLogs,
+    events: Array.isArray(storedLogs.events) ? storedLogs.events : [],
+  };
+  next.ui = {
+    compareWorkIds: uniqueFinderValues(storedUi.compareWorkIds).filter((id) => validWorkIds.has(id)),
+    favoriteWorkIds: uniqueFinderValues(storedUi.favoriteWorkIds).filter((id) => validWorkIds.has(id)),
+    recentWorkIds: uniqueFinderValues(storedUi.recentWorkIds)
+      .filter((id) => validWorkIds.has(id))
+      .slice(0, RECENT_HISTORY_LIMIT),
+    savedSearches: (Array.isArray(storedUi.savedSearches) ? storedUi.savedSearches : []).map((item) => ({
+      id: item?.id || `search-${Date.now()}`,
+      label: `${item?.label || ""}`.trim(),
+      query: `${item?.query || ""}`.trim(),
+      creatorQuery: `${item?.creatorQuery || ""}`.trim(),
+      characters: normalizeFinderCharacters(item?.characters).map((character, index) => ({
+        id: character.id || `character-${index + 1}`,
+        speciesTagIds: character.speciesTagIds.filter((tagId) => validTagIds.has(tagId)),
+        bodyTypeTagIds: character.bodyTypeTagIds.filter((tagId) => validTagIds.has(tagId)),
+        ageFeelTagIds: character.ageFeelTagIds.filter((tagId) => validTagIds.has(tagId)),
+      })),
+      sort: item?.sort || "recommended",
+      collectionId: validCollectionIds.has(item?.collectionId) ? item.collectionId : "",
+      matchMode: item?.matchMode === "or" ? "or" : "and",
+      includeTagIds: uniqueFinderValues(item?.includeTagIds).filter((tagId) => validTagIds.has(tagId)),
+      excludeTagIds: uniqueFinderValues(item?.excludeTagIds).filter((tagId) => validTagIds.has(tagId)),
+      createdAt: item?.createdAt || "",
+    })),
+  };
+  return next;
+};
+
+const readFinderCanvasState = () => {
+  if (typeof window === "undefined") return null;
+  if (window.FinderStore && typeof window.FinderStore.loadState === "function") {
+    return window.FinderStore.loadState();
+  }
+
+  const { raw, parsed } = parseFinderCanvasState();
+  const next = composeFinderCanvasState(parsed);
+  if (
+    next &&
+    typeof window.localStorage !== "undefined"
+  ) {
+    const serialized = JSON.stringify(next);
+    if (raw !== serialized) {
+      window.localStorage.setItem(FINDER_STORAGE_KEY, serialized);
+    }
+  }
+  return next;
+};
+
+readFinderCanvasState();
 
 const formatHistoryUpdatedAt = (value) => {
   if (!value) return "";

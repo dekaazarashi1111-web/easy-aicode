@@ -69,26 +69,81 @@
     return next;
   };
 
+  const reconcileState = (state) => {
+    const next = ensureStateShape(state);
+    const validProfileIds = new Set(
+      next.siteProfiles.map((profile) => profile?.id).filter(Boolean)
+    );
+    const validWorkIds = new Set(next.works.map((work) => work?.id).filter(Boolean));
+    const validTagIds = new Set(next.tags.map((tag) => tag?.id).filter(Boolean));
+    const validCollectionIds = new Set(
+      next.collections.map((collection) => collection?.id).filter(Boolean)
+    );
+    const fallbackProfileId = validProfileIds.has(seed.activeProfileId)
+      ? seed.activeProfileId
+      : next.siteProfiles[0]?.id || "";
+
+    next.activeProfileId = validProfileIds.has(next.activeProfileId)
+      ? next.activeProfileId
+      : fallbackProfileId;
+    next.ui.compareWorkIds = next.ui.compareWorkIds.filter((id) => validWorkIds.has(id));
+    next.ui.favoriteWorkIds = next.ui.favoriteWorkIds.filter((id) => validWorkIds.has(id));
+    next.ui.recentWorkIds = next.ui.recentWorkIds
+      .filter((id) => validWorkIds.has(id))
+      .slice(0, RECENT_WORK_LIMIT);
+    next.ui.savedSearches = next.ui.savedSearches.map((item) => ({
+      ...item,
+      characters: normalizeSearchCharacters(item.characters).map((character, index) => ({
+        id: character.id || `character-${index + 1}`,
+        speciesTagIds: character.speciesTagIds.filter((tagId) => validTagIds.has(tagId)),
+        bodyTypeTagIds: character.bodyTypeTagIds.filter((tagId) => validTagIds.has(tagId)),
+        ageFeelTagIds: character.ageFeelTagIds.filter((tagId) => validTagIds.has(tagId)),
+      })),
+      includeTagIds: item.includeTagIds.filter((tagId) => validTagIds.has(tagId)),
+      excludeTagIds: item.excludeTagIds.filter((tagId) => validTagIds.has(tagId)),
+      collectionId: validCollectionIds.has(item.collectionId) ? item.collectionId : "",
+    }));
+    return next;
+  };
+
+  // Public works/tags/collections always come from the bundled seed so deploys
+  // automatically reflect additions and deletions without clearing localStorage.
+  const mergeSeedWithStoredState = (storedState) => {
+    const base = ensureStateShape(buildSeedState());
+    const stored = ensureStateShape(storedState);
+    return reconcileState({
+      ...base,
+      activeProfileId: stored.activeProfileId || base.activeProfileId,
+      logs: stored.logs,
+      ui: stored.ui,
+    });
+  };
+
   const loadState = () => {
     const storage = getStorage();
     const raw = storage.getItem(STORAGE_KEY);
     if (!raw) {
-      const seeded = ensureStateShape(buildSeedState());
+      const seeded = reconcileState(buildSeedState());
       storage.setItem(STORAGE_KEY, JSON.stringify(seeded));
       return seeded;
     }
 
     try {
-      return ensureStateShape(JSON.parse(raw));
+      const merged = mergeSeedWithStoredState(JSON.parse(raw));
+      const serialized = JSON.stringify(merged);
+      if (raw !== serialized) {
+        storage.setItem(STORAGE_KEY, serialized);
+      }
+      return merged;
     } catch (error) {
-      const seeded = ensureStateShape(buildSeedState());
+      const seeded = reconcileState(buildSeedState());
       storage.setItem(STORAGE_KEY, JSON.stringify(seeded));
       return seeded;
     }
   };
 
   const saveState = (state) => {
-    const next = ensureStateShape(core.cloneData(state));
+    const next = reconcileState(core.cloneData(state));
     getStorage().setItem(STORAGE_KEY, JSON.stringify(next));
     return next;
   };
