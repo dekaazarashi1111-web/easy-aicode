@@ -149,7 +149,7 @@
     entrance: "入口条件",
     species: "種族",
     "body-type": "体型",
-    "age-feel": "年齢感",
+    "age-feel": "年齢",
     style: "雰囲気",
     transformation: "変化要素",
     relationship: "関係性",
@@ -198,7 +198,12 @@
     },
   ];
 
-  const QUICK_FILTER_AGE_TAG_IDS = ["age-young", "age-adult", "age-older"];
+  const QUICK_FILTER_AGE_OPTIONS = [
+    { tagId: "age-adult", label: "成年" },
+    { tagId: "age-older", label: "熟年" },
+  ];
+  const QUICK_FILTER_AGE_TAG_IDS = QUICK_FILTER_AGE_OPTIONS.map((option) => option.tagId);
+  const QUICK_FILTER_AGE_TAG_ID_SET = new Set(QUICK_FILTER_AGE_TAG_IDS);
 
   const QUICK_FILTER_GLOBAL_INCLUDE_TAG_IDS = [
     "osu-kemo",
@@ -232,6 +237,12 @@
   const formatDateLabel = (value) => {
     if (!value) return "日付未設定";
     return value.replace(/-/g, ".");
+  };
+
+  const getQuickFilterTagLabel = (tagId, tagMap) => {
+    const ageOption = QUICK_FILTER_AGE_OPTIONS.find((option) => option.tagId === tagId);
+    if (ageOption) return ageOption.label;
+    return tagMap.get(tagId)?.label || tagId;
   };
 
   const getDiscoveryCardMeta = ({
@@ -940,7 +951,9 @@
     id: value?.id || fallbackId,
     speciesTagIds: unique(value?.speciesTagIds),
     bodyTypeTagIds: unique(value?.bodyTypeTagIds),
-    ageFeelTagIds: unique(value?.ageFeelTagIds),
+    ageFeelTagIds: unique(value?.ageFeelTagIds).filter((tagId) =>
+      QUICK_FILTER_AGE_TAG_ID_SET.has(tagId)
+    ),
   });
 
   const normalizeCharacters = (characters) => {
@@ -1009,9 +1022,9 @@
     const parts = [];
     normalizeCharacters(state.characters).forEach((character, index) => {
       const labels = [
-        ...ensureArray(character.speciesTagIds).map((tagId) => tagMap.get(tagId)?.label || tagId),
-        ...ensureArray(character.bodyTypeTagIds).map((tagId) => tagMap.get(tagId)?.label || tagId),
-        ...ensureArray(character.ageFeelTagIds).map((tagId) => tagMap.get(tagId)?.label || tagId),
+        ...ensureArray(character.speciesTagIds).map((tagId) => getQuickFilterTagLabel(tagId, tagMap)),
+        ...ensureArray(character.bodyTypeTagIds).map((tagId) => getQuickFilterTagLabel(tagId, tagMap)),
+        ...ensureArray(character.ageFeelTagIds).map((tagId) => getQuickFilterTagLabel(tagId, tagMap)),
       ];
       if (!labels.length) return;
       parts.push(`キャラ${index + 1}: ${labels.join(" / ")}`);
@@ -1813,8 +1826,8 @@
       const header = createElement("div", "ikea-quick-filters__header");
       const headingBlock = createElement("div", "ikea-quick-filters__heading");
       headingBlock.append(
-        createElement("p", "ikea-quick-filters__eyebrow", "Quick filters"),
-        createElement("h2", "", "すばやく絞る")
+        createElement("p", "ikea-quick-filters__eyebrow", "フィルター"),
+        createElement("h2", "", "キャラクターフィルター")
       );
       header.append(
         headingBlock,
@@ -1878,18 +1891,18 @@
       bodyField.appendChild(bodyGrid);
 
       const ageField = createElement("section", "ikea-quick-filter-field");
-      ageField.appendChild(createElement("strong", "ikea-quick-filter-field__label", "年齢感"));
+      ageField.appendChild(createElement("strong", "ikea-quick-filter-field__label", "年齢"));
       const ageRow = createElement("div", "ikea-quick-filter-chipRow");
-      QUICK_FILTER_AGE_TAG_IDS.forEach((tagId) => {
-        const tag = tagMap.get(tagId);
+      QUICK_FILTER_AGE_OPTIONS.forEach((option) => {
+        const tag = tagMap.get(option.tagId);
         if (!tag) return;
         ageRow.appendChild(
           createQuickFilterChip({
-            label: tag.label,
-            selected: character.ageFeelTagIds.includes(tagId),
+            label: option.label,
+            selected: character.ageFeelTagIds.includes(option.tagId),
             dataset: {
               quickCharacterField: "age",
-              quickTagId: tagId,
+              quickTagId: option.tagId,
             },
           })
         );
