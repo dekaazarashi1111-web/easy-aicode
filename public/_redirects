@@ -19,8 +19,8 @@
 /outbound /finder/ 301
 /outbound/ /finder/ 301
 /outbound/index.html /finder/ 301
-/apply /apply/ 301
-/apply/index.html /apply/ 301
+/apply /apply/?v=20260325 302
+/apply/index.html /apply/?v=20260325 302
 /privacy /privacy.html 301
 /work /work/ 301
 /work/index.html /work/ 301
