@@ -60,24 +60,6 @@ if (Get-Command dotnet -ErrorAction SilentlyContinue) {
     }
 }
 
-if ((Get-Command node -ErrorAction SilentlyContinue) -and (Test-Path (Join-Path $root "scripts\\capture_local_ui_screenshots.js"))) {
-    Write-Host "[verify] node scripts\\capture_local_ui_screenshots.js"
-    node (Join-Path $root "scripts\\capture_local_ui_screenshots.js")
-    if ($LASTEXITCODE -ne 0) {
-        exit $LASTEXITCODE
-    }
-    $ranCheck = $true
-}
-
-if ((Get-Command node -ErrorAction SilentlyContinue) -and (Test-Path (Join-Path $root "scripts\\capture_live_screenshots.js"))) {
-    Write-Host "[verify] node scripts\\capture_live_screenshots.js"
-    node (Join-Path $root "scripts\\capture_live_screenshots.js")
-    if ($LASTEXITCODE -ne 0) {
-        exit $LASTEXITCODE
-    }
-    $ranCheck = $true
-}
-
 if (-not $ranCheck) {
     Write-Host "[verify] No project-specific checks configured."
     Write-Host "[verify] Edit scripts\\verify_windows.ps1 to add your project's verify commands."
