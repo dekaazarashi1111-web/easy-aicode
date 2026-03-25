@@ -3088,10 +3088,10 @@
       if (emptyColumnHeadings[1]) emptyColumnHeadings[1].textContent = "最近の特集";
       if (emptyColumnHeadings[2]) emptyColumnHeadings[2].textContent = "助けが必要なとき";
       if (compareRoot) compareRoot.hidden = true;
-      if (promotedWrap) promotedWrap.hidden = true;
-      if (suggestionsWrap) suggestionsWrap.hidden = true;
-      if (categorySection) categorySection.hidden = true;
-      if (relatedSection) relatedSection.hidden = true;
+      promotedWrap?.remove();
+      suggestionsWrap?.remove();
+      categorySection?.remove();
+      relatedSection?.remove();
     };
 
     const syncSortControl = () => {
