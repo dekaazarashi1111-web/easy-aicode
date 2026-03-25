@@ -8300,16 +8300,32 @@ body.finder-tag-picker-open {
   display: inline-flex;
   align-items: center;
   justify-content: center;
+  padding: 0;
   border: 1px solid var(--ikea-border);
   border-radius: 50%;
   background: #fff;
   color: var(--ikea-black);
   cursor: pointer;
+  line-height: 0;
+  flex-shrink: 0;
+  appearance: none;
+}
+
+.ikea-product-card__iconButton svg {
+  display: block;
+  flex-shrink: 0;
 }
 
 .ikea-product-card__iconButton--favorite svg {
-  width: 20px;
-  height: 20px;
+  width: 18px;
+  height: 18px;
+}
+
+.ikea-product-card__iconButton--favorite path {
+  fill: #fff;
+  transition:
+    fill 160ms ease,
+    stroke 160ms ease;
 }
 
 .ikea-product-card__iconButton--compare {
@@ -8323,6 +8339,11 @@ body.finder-tag-picker-open {
   background: #fff5f7;
   color: #c92a4a;
   box-shadow: 0 0 0 2px rgba(201, 42, 74, 0.12);
+}
+
+.ikea-product-card__iconButton--favorite[aria-pressed="true"] path {
+  fill: currentColor;
+  stroke: currentColor;
 }
 
 .ikea-product-card__iconButton--compare[aria-pressed="true"] {
