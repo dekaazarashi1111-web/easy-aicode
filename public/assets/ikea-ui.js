@@ -1,6 +1,6 @@
 (function (root, factory) {
-  root.IkeaFinderUi = factory(root.FinderStore, root.FinderCore);
-})(typeof globalThis !== "undefined" ? globalThis : this, function (store, core) {
+  root.IkeaFinderUi = factory(root.FinderStore, root.FinderCore, root.ArticleSearch, root.ARTICLE_INDEX);
+})(typeof globalThis !== "undefined" ? globalThis : this, function (store, core, articleSearch, articleIndex) {
   if (!store || !core || typeof document === "undefined") return {};
 
   const SORT_META = {
@@ -19,6 +19,25 @@
     title: {
       label: "名前順",
       description: "タイトルの五十音順に並びます。",
+    },
+  };
+
+  const ARTICLE_SORT_META = {
+    latest: {
+      label: "新しい順",
+      description: "公開日が新しい順に並びます。",
+    },
+    oldest: {
+      label: "古い順",
+      description: "公開日が古い順に並びます。",
+    },
+    title: {
+      label: "名前順",
+      description: "記事タイトルの五十音順に並びます。",
+    },
+    type: {
+      label: "種別順",
+      description: "比較記事やガイドなど、記事種別ごとに並びます。",
     },
   };
 
@@ -911,6 +930,22 @@
     return `/finder/${params.toString() ? `?${params.toString()}` : ""}`;
   };
 
+  const createArticlesUrl = ({
+    query = "",
+    selectedTypes = [],
+    selectedTags = [],
+    sort = "latest",
+    mode = "and",
+  } = {}) => {
+    const params = new URLSearchParams();
+    if (query) params.set("q", query);
+    unique(selectedTypes).forEach((value) => params.append("type", value));
+    unique(selectedTags).forEach((value) => params.append("tag", value));
+    if (sort && sort !== "latest") params.set("sort", sort);
+    if (mode === "or") params.set("mode", "or");
+    return `/articles/${params.toString() ? `?${params.toString()}` : ""}`;
+  };
+
   const getUiState = (state) => state?.ui || {};
 
   const getDecoratedWorkMap = (state, profileId) =>
@@ -931,6 +966,7 @@
     );
 
   const getSortMeta = (sort) => SORT_META[sort] || SORT_META.recommended;
+  const getArticleSortMeta = (sort) => ARTICLE_SORT_META[sort] || ARTICLE_SORT_META.latest;
 
   const getSearchSummaryLabel = (search, tagMap) => {
     const parts = [];
@@ -1122,6 +1158,11 @@
     window.history.replaceState({}, "", `${window.location.pathname}${nextUrl.search}${window.location.hash}`);
   };
 
+  const updateArticlesUrl = (state) => {
+    const nextUrl = new URL(createArticlesUrl(state), window.location.origin);
+    window.history.replaceState({}, "", `${window.location.pathname}${nextUrl.search}${window.location.hash}`);
+  };
+
   const createPillLink = ({ label, href, className = "hri-pill" }) => {
     const link = createElement("a", className);
     link.href = href;
@@ -1283,6 +1324,145 @@
     body.append(swatchLabel, affinityLinks);
     article.append(mediaLink, body);
     return article;
+  };
+
+  const getArticleTimestamp = (article) => {
+    const timestamp = Date.parse(article?.publishedAt || "");
+    return Number.isFinite(timestamp) ? timestamp : 0;
+  };
+
+  const sortArticles = (articles, sort = "latest") => {
+    const items = ensureArray(articles).slice();
+    if (sort === "oldest") {
+      return items.sort((left, right) => getArticleTimestamp(left) - getArticleTimestamp(right));
+    }
+    if (sort === "title") {
+      return items.sort((left, right) => {
+        const titleOrder = String(left?.title || "").localeCompare(String(right?.title || ""), "ja");
+        if (titleOrder !== 0) return titleOrder;
+        return getArticleTimestamp(right) - getArticleTimestamp(left);
+      });
+    }
+    if (sort === "type") {
+      return items.sort((left, right) => {
+        const typeOrder = String(left?.type || "").localeCompare(String(right?.type || ""), "ja");
+        if (typeOrder !== 0) return typeOrder;
+        return getArticleTimestamp(right) - getArticleTimestamp(left);
+      });
+    }
+    return items.sort((left, right) => getArticleTimestamp(right) - getArticleTimestamp(left));
+  };
+
+  const getArticleSearchSummaryLabel = (state) => {
+    const parts = [];
+    if (state.query) parts.push(`検索語: ${state.query}`);
+    if (ensureArray(state.selectedTypes).length) {
+      parts.push(`種別: ${ensureArray(state.selectedTypes).join(" / ")}`);
+    }
+    if (ensureArray(state.selectedTags).length) {
+      parts.push(`タグ: ${ensureArray(state.selectedTags).join(" / ")}`);
+    }
+    if (state.mode === "or") parts.push("いずれか一致");
+    return parts.join(" | ") || "条件なし";
+  };
+
+  const getArticleMatchReason = (article, pageState, articleApi) => {
+    const reasons = [];
+    const queryTokens = articleApi?.splitSearchTokens ? articleApi.splitSearchTokens(pageState.query) : [];
+    const haystack = article?._normalized?.haystack || normalizeText([
+      article?.title,
+      article?.summary,
+      ensureArray(article?.tags).join(" "),
+      ensureArray(article?.keywords).join(" "),
+    ].join(" "));
+    const matchedTokens = queryTokens.filter((token) => haystack.includes(token));
+    const matchedTypes = ensureArray(pageState.selectedTypes).filter((type) => type === article.type);
+    const matchedTags = ensureArray(pageState.selectedTags).filter((tag) => ensureArray(article.tags).includes(tag));
+
+    if (matchedTokens.length) reasons.push(`検索語 ${matchedTokens.join(" / ")}`);
+    if (matchedTypes.length) reasons.push(`種別 ${matchedTypes.join(" / ")}`);
+    if (matchedTags.length) reasons.push(`タグ ${matchedTags.join(" / ")}`);
+    return reasons.join(" | ");
+  };
+
+  const getArticleCardMeta = ({ article, pageState = {} }) => {
+    const hash = hashString(article.slug || article.title || article.url);
+    const tone = ["white", "sand", "sage", "blue", "charcoal"][hash % 5];
+    const visual = ["ladder", "cube", "wide", "frame", "grid"][hash % 5];
+    const matchedTypes = ensureArray(pageState.selectedTypes).filter((type) => type === article.type);
+    const matchedTags = ensureArray(pageState.selectedTags).filter((tag) => ensureArray(article.tags).includes(tag));
+    const badge = matchedTypes[0] || article.type || "特集記事";
+    const metaItems = [
+      article.type ? `種別 ${article.type}` : "",
+      article.publishedAt ? `公開 ${formatDateLabel(article.publishedAt)}` : "",
+      article.tags?.[0] ? `タグ ${article.tags[0]}` : "",
+    ].filter(Boolean);
+    const relatedLinks = [];
+    if (article.type) {
+      relatedLinks.push({
+        label: `${article.type}を見る`,
+        href: createArticlesUrl({ selectedTypes: [article.type] }),
+      });
+    }
+    ensureArray(article.tags)
+      .slice(0, 2)
+      .forEach((tag) => {
+        relatedLinks.push({
+          label: tag,
+          href: createArticlesUrl({ selectedTags: [tag] }),
+        });
+      });
+
+    return {
+      badge,
+      tone,
+      visual,
+      metaItems,
+      matchLabels: unique([...matchedTypes, ...matchedTags, ...ensureArray(article.tags).slice(0, 2)]).slice(0, 4),
+      relatedLinks: relatedLinks.slice(0, 3),
+    };
+  };
+
+  const createArticleCard = ({ article, pageState = {}, articleApi }) => {
+    const meta = getArticleCardMeta({ article, pageState });
+    const reason = getArticleMatchReason(article, pageState, articleApi);
+    const card = createElement("article", "plp-product-card ikea-product-card");
+    const mediaLink = createElement("a", "ikea-product-card__mediaLink");
+    const media = createElement("div", "ikea-product-card__media");
+    const body = createElement("div", "ikea-product-card__body");
+    const title = createElement("a", "ikea-product-card__title", article.title || "記事タイトル");
+    const subtitle = createElement(
+      "p",
+      "ikea-product-card__subtitle",
+      [article.type || "特集記事", article.publishedAt ? `公開 ${formatDateLabel(article.publishedAt)}` : ""]
+        .filter(Boolean)
+        .join("、")
+    );
+    const detail = createElement("p", "ikea-product-card__detail", article.summary || "");
+    const metaRow = createElement("div", "ikea-product-card__metaRow");
+    const swatchLabel = createElement("p", "ikea-product-card__swatchLabel", "近い切り口や次に読む記事");
+    const affinityLinks = createAffinityLinks(meta.relatedLinks);
+    const href = article.url || createArticlesUrl();
+
+    mediaLink.href = href;
+    title.href = href;
+
+    if (meta.badge) {
+      media.appendChild(createElement("span", "ikea-product-card__badge", meta.badge));
+    }
+    media.appendChild(createProductCardMediaVisual({ work: article, meta, card }));
+    mediaLink.appendChild(media);
+
+    meta.metaItems.forEach((item) => {
+      metaRow.appendChild(createElement("span", "ikea-product-card__metaItem", item));
+    });
+
+    if (meta.matchLabels.length) body.appendChild(createMatchTagList(meta.matchLabels));
+    body.append(title, subtitle, detail, metaRow);
+    if (reason) body.appendChild(createElement("p", "ikea-product-card__reason", reason));
+    if (meta.relatedLinks.length) body.append(swatchLabel, affinityLinks);
+    card.append(mediaLink, body);
+    return card;
   };
 
   const refreshCarousels = (scope = document) => {
@@ -2801,6 +2981,485 @@
     });
   };
 
+  const renderArticlesPage = () => {
+    const root = document.querySelector("[data-articles-ikea-page]");
+    if (!root) return;
+
+    const articleApi = articleSearch || globalThis.ArticleSearch;
+    const sourceArticles = ensureArray(Array.isArray(articleIndex) ? articleIndex : globalThis.ARTICLE_INDEX);
+    if (!articleApi || !sourceArticles.length) return;
+
+    mountFinderSkeleton(root);
+
+    const quickFiltersRoot = root.querySelector("[data-finder-quick-filters]");
+    const sortSelect = root.querySelector("[data-finder-sort]");
+    const sortNoteRoot = root.querySelector("[data-finder-sort-note]");
+    const resultsRoot = root.querySelector("[data-finder-results]");
+    const statusRoot = root.querySelector("[data-finder-status]");
+    const emptyRoot = root.querySelector("[data-finder-empty]");
+    const emptyCollectionsRoot = root.querySelector("[data-finder-empty-collections]");
+    const emptyRecentRoot = root.querySelector("[data-finder-empty-recent]");
+    const emptyHelpRoot = root.querySelector("[data-finder-empty-help]");
+    const promotedRoot = root.querySelector("[data-finder-promoted]");
+    const promotedWrap = root.querySelector("[data-finder-promoted-wrap]");
+    const suggestionsRoot = root.querySelector("[data-finder-suggestions]");
+    const suggestionsWrap = root.querySelector("[data-finder-suggestions-wrap]");
+    const categoryRoot = root.querySelector("[data-finder-categories]");
+    const relatedRoot = root.querySelector("[data-finder-related-searches]");
+    const compareRoot = root.querySelector("[data-finder-compare]");
+    const toolbarHeading = root.querySelector(".ikea-search-results__toolbar h2");
+    const emptyTitle = emptyRoot?.querySelector("h2");
+    const emptyDescription = emptyRoot?.querySelector("p");
+    const emptyColumnHeadings = emptyRoot?.querySelectorAll(".ikea-search-empty-grid__column h3") || [];
+    const promotedEyebrow = promotedWrap?.querySelector(".ikea-section-heading__eyebrow");
+    const promotedTitle = promotedWrap?.querySelector(".ikea-section-heading__title");
+    const suggestionsEyebrow = suggestionsWrap?.querySelector(".ikea-section-heading__eyebrow");
+    const suggestionsTitle = suggestionsWrap?.querySelector(".ikea-section-heading__title");
+    const categoryEyebrow = categoryRoot?.closest(".ikea-search-section")?.querySelector(".ikea-section-heading__eyebrow");
+    const categoryTitle = categoryRoot?.closest(".ikea-search-section")?.querySelector(".ikea-section-heading__title");
+    const relatedEyebrow = relatedRoot?.closest(".ikea-search-section")?.querySelector(".ikea-section-heading__eyebrow");
+    const relatedTitle = relatedRoot?.closest(".ikea-search-section")?.querySelector(".ikea-section-heading__title");
+
+    if (!quickFiltersRoot || !sortSelect || !resultsRoot || !statusRoot) {
+      return;
+    }
+
+    const allArticles = articleApi.decorateArticles ? articleApi.decorateArticles(sourceArticles) : sourceArticles.slice();
+    const filterOptions = articleApi.collectFilterOptions
+      ? articleApi.collectFilterOptions(sourceArticles)
+      : { types: [], tags: [] };
+    const categoryVariants = ["storage", "table", "box", "frame", "desk"];
+    const pageState = {
+      query: "",
+      selectedTypes: [],
+      selectedTags: [],
+      sort: "latest",
+      mode: "and",
+    };
+
+    const hasActiveFilters = () =>
+      Boolean(pageState.query || pageState.selectedTypes.length || pageState.selectedTags.length);
+
+    const readUrlState = () => {
+      const params = new URLSearchParams(window.location.search);
+      pageState.query = params.get("q") || "";
+      pageState.selectedTypes = unique(params.getAll("type"));
+      pageState.selectedTags = unique(params.getAll("tag"));
+      pageState.sort = ARTICLE_SORT_META[params.get("sort") || ""] ? params.get("sort") : "latest";
+      pageState.mode = params.get("mode") === "or" ? "or" : "and";
+    };
+
+    const getArticleStateSnapshot = (overrides = {}) => ({
+      query: overrides.query ?? pageState.query,
+      selectedTypes: unique(overrides.selectedTypes ?? pageState.selectedTypes),
+      selectedTags: unique(overrides.selectedTags ?? pageState.selectedTags),
+      sort: overrides.sort ?? pageState.sort,
+      mode: overrides.mode ?? pageState.mode,
+    });
+
+    const filterAndSortArticles = (overrides = {}) => {
+      const searchState = getArticleStateSnapshot(overrides);
+      const filtered = articleApi.filterArticles
+        ? articleApi.filterArticles({
+            articles: allArticles,
+            query: searchState.query,
+            mode: searchState.mode,
+            selectedTypes: searchState.selectedTypes,
+            selectedTags: searchState.selectedTags,
+          })
+        : allArticles.slice();
+      return sortArticles(filtered, searchState.sort);
+    };
+
+    const applyShellCopy = () => {
+      if (toolbarHeading) toolbarHeading.textContent = "記事リスト";
+      if (emptyTitle) emptyTitle.textContent = "一致する記事が見つかりません";
+      if (emptyDescription) {
+        emptyDescription.textContent = "条件を緩めるか、下の入口から近い切り口の記事を探してください。";
+      }
+      if (emptyColumnHeadings[0]) emptyColumnHeadings[0].textContent = "記事タイプ";
+      if (emptyColumnHeadings[1]) emptyColumnHeadings[1].textContent = "最近の特集";
+      if (emptyColumnHeadings[2]) emptyColumnHeadings[2].textContent = "助けが必要なとき";
+      if (promotedEyebrow) promotedEyebrow.textContent = "Promoted topics";
+      if (promotedTitle) promotedTitle.textContent = "よく読まれる切り口";
+      if (suggestionsEyebrow) suggestionsEyebrow.textContent = "Nearby articles";
+      if (suggestionsTitle) suggestionsTitle.textContent = "近いテーマの記事";
+      if (categoryEyebrow) categoryEyebrow.textContent = "Article types";
+      if (categoryTitle) categoryTitle.textContent = "記事タイプから探す";
+      if (relatedEyebrow) relatedEyebrow.textContent = "Next topics";
+      if (relatedTitle) relatedTitle.textContent = "次に足す切り口";
+      if (compareRoot) compareRoot.hidden = true;
+    };
+
+    const syncSortControl = () => {
+      sortSelect.textContent = "";
+      Object.entries(ARTICLE_SORT_META).forEach(([value, meta]) => {
+        const option = document.createElement("option");
+        option.value = value;
+        option.textContent = meta.label;
+        sortSelect.appendChild(option);
+      });
+      sortSelect.value = pageState.sort;
+      if (sortNoteRoot) {
+        sortNoteRoot.textContent = getArticleSortMeta(pageState.sort).description;
+      }
+    };
+
+    const renderQuickFilters = () => {
+      quickFiltersRoot.textContent = "";
+
+      const wrapper = createElement("div", "ikea-quick-filters");
+      const header = createElement("div", "ikea-quick-filters__header");
+      const headingBlock = createElement("div", "ikea-quick-filters__heading");
+      headingBlock.append(
+        createElement("p", "ikea-quick-filters__eyebrow", "Quick filters"),
+        createElement("h2", "", "記事を絞る")
+      );
+      header.append(
+        headingBlock,
+        createActionButton({
+          label: "すべて解除",
+          className: "ikea-quick-filters__clear",
+          dataset: { articleClear: "true" },
+        })
+      );
+
+      const summary = createElement("p", "ikea-quick-filters__summary", getArticleSearchSummaryLabel(pageState));
+
+      const queryField = createElement("label", "ikea-search-sidebar__field");
+      const queryLabel = createElement("span", "", "記事名・タグ");
+      const queryInput = document.createElement("input");
+      queryInput.type = "search";
+      queryInput.autocomplete = "off";
+      queryInput.placeholder = "例: 比較 / CTA / 構成";
+      queryInput.value = pageState.query;
+      queryInput.dataset.articleQuery = "true";
+      queryField.append(queryLabel, queryInput);
+
+      const typeField = createElement("section", "ikea-quick-filter-field");
+      typeField.appendChild(createElement("strong", "ikea-quick-filter-field__label", "記事タイプ"));
+      const typeRow = createElement("div", "ikea-quick-filter-chipRow");
+      filterOptions.types.forEach((typeOption) => {
+        typeRow.appendChild(
+          createQuickFilterChip({
+            label: `${typeOption.value} (${typeOption.count})`,
+            selected: pageState.selectedTypes.includes(typeOption.value),
+            dataset: {
+              articleType: typeOption.value,
+            },
+          })
+        );
+      });
+      typeField.appendChild(typeRow);
+
+      const tagField = createElement("section", "ikea-quick-filter-field");
+      tagField.appendChild(createElement("strong", "ikea-quick-filter-field__label", "タグ"));
+      const tagRow = createElement("div", "ikea-quick-filter-chipRow");
+      filterOptions.tags.slice(0, 14).forEach((tagOption) => {
+        tagRow.appendChild(
+          createQuickFilterChip({
+            label: `${tagOption.value} (${tagOption.count})`,
+            selected: pageState.selectedTags.includes(tagOption.value),
+            dataset: {
+              articleTag: tagOption.value,
+            },
+          })
+        );
+      });
+      tagField.appendChild(tagRow);
+
+      wrapper.append(header, summary, queryField, typeField, tagField);
+      quickFiltersRoot.appendChild(wrapper);
+    };
+
+    const renderPromotedFilters = (filtered) => {
+      if (!promotedRoot || !promotedWrap) return;
+      promotedRoot.textContent = "";
+      const source = filtered.length ? filtered : allArticles;
+      const counts = new Map();
+
+      source.forEach((article) => {
+        ensureArray(article.tags).forEach((tag) => {
+          if (pageState.selectedTags.includes(tag)) return;
+          counts.set(tag, (counts.get(tag) || 0) + 1);
+        });
+      });
+
+      const items = Array.from(counts.entries())
+        .sort((left, right) => {
+          if (right[1] !== left[1]) return right[1] - left[1];
+          return left[0].localeCompare(right[0], "ja");
+        })
+        .slice(0, 8);
+
+      promotedWrap.hidden = !items.length;
+      items.forEach(([tag]) => {
+        promotedRoot.appendChild(
+          createPillLink({
+            label: tag,
+            href: createArticlesUrl({
+              query: pageState.query,
+              selectedTypes: pageState.selectedTypes,
+              selectedTags: [...pageState.selectedTags, tag],
+              sort: pageState.sort,
+              mode: pageState.mode,
+            }),
+            className: "ikea-pill",
+          })
+        );
+      });
+    };
+
+    const renderSuggestions = (filtered) => {
+      if (!suggestionsRoot || !suggestionsWrap) return;
+      disposeMediaCyclesWithin(suggestionsRoot);
+      suggestionsRoot.textContent = "";
+      if (filtered.length || !hasActiveFilters()) {
+        suggestionsWrap.hidden = true;
+        return;
+      }
+
+      const queryTokens = articleApi.splitSearchTokens ? articleApi.splitSearchTokens(pageState.query) : [];
+      const suggestions = allArticles
+        .map((article) => {
+          const matchedTags = pageState.selectedTags.filter((tag) => ensureArray(article.tags).includes(tag)).length;
+          const matchedType = pageState.selectedTypes.includes(article.type) ? 1 : 0;
+          const matchedTokens = queryTokens.filter((token) =>
+            String(article._normalized?.haystack || "").includes(token)
+          ).length;
+          return {
+            article,
+            score: matchedTags * 3 + matchedType * 2 + matchedTokens,
+          };
+        })
+        .sort((left, right) => {
+          if (right.score !== left.score) return right.score - left.score;
+          return getArticleTimestamp(right.article) - getArticleTimestamp(left.article);
+        })
+        .slice(0, 4)
+        .map((entry) => entry.article);
+
+      suggestionsWrap.hidden = !suggestions.length;
+      suggestions.forEach((article) => {
+        suggestionsRoot.appendChild(createArticleCard({ article, pageState, articleApi }));
+      });
+    };
+
+    const renderEmptyRecovery = () => {
+      if (!emptyRoot) return;
+      const filtered = filterAndSortArticles();
+      emptyRoot.hidden = filtered.length !== 0;
+      if (filtered.length) return;
+
+      if (emptyCollectionsRoot) {
+        emptyCollectionsRoot.textContent = "";
+        filterOptions.types.forEach((typeOption) => {
+          emptyCollectionsRoot.appendChild(
+            createMiniLink({
+              label: typeOption.value,
+              href: createArticlesUrl({ selectedTypes: [typeOption.value], sort: pageState.sort }),
+              meta: `${typeOption.count}件`,
+              icon: "collection",
+            })
+          );
+        });
+      }
+
+      if (emptyRecentRoot) {
+        emptyRecentRoot.textContent = "";
+        sortArticles(allArticles, "latest")
+          .slice(0, 4)
+          .forEach((article) => {
+            emptyRecentRoot.appendChild(
+              createMiniLink({
+                label: article.title,
+                href: article.url,
+                meta: [article.type, article.publishedAt ? `公開 ${formatDateLabel(article.publishedAt)}` : ""]
+                  .filter(Boolean)
+                  .join(" / "),
+                icon: "work",
+              })
+            );
+          });
+      }
+
+      if (emptyHelpRoot) {
+        emptyHelpRoot.textContent = "";
+        emptyHelpRoot.append(
+          createMiniLink({
+            label: "記事一覧へ戻る",
+            href: createArticlesUrl({ sort: pageState.sort }),
+            meta: "絞り込みを外して記事一覧から再開します。",
+            icon: "search",
+          }),
+          createMiniLink({
+            label: "作品を探す",
+            href: "/finder/",
+            meta: "記事ではなく作品一覧から探したい時の入口です。",
+            icon: "collection",
+          }),
+          createMiniLink({
+            label: "お問い合わせ",
+            href: "/contact/",
+            meta: "追加してほしいテーマや記事案を送れます。",
+            icon: "save",
+          })
+        );
+      }
+    };
+
+    const renderCategories = () => {
+      if (!categoryRoot) return;
+      categoryRoot.textContent = "";
+      filterOptions.types.forEach((typeOption, index) => {
+        const count = filterAndSortArticles({
+          selectedTypes: unique([...pageState.selectedTypes, typeOption.value]),
+        }).length;
+        categoryRoot.appendChild(
+          createCategoryBannerCard({
+            href: createArticlesUrl({
+              query: pageState.query,
+              selectedTypes: unique([...pageState.selectedTypes, typeOption.value]),
+              selectedTags: pageState.selectedTags,
+              sort: pageState.sort,
+              mode: pageState.mode,
+            }),
+            label: typeOption.value,
+            description: "カードの見た目は保ったまま、記事だけを横断して見られます。",
+            meta: `${count}件`,
+            variant: categoryVariants[index % categoryVariants.length],
+          })
+        );
+      });
+    };
+
+    const renderRelatedSearches = (filtered) => {
+      if (!relatedRoot) return;
+      relatedRoot.textContent = "";
+      const source = filtered.length ? filtered : allArticles;
+      const counts = new Map();
+
+      source.forEach((article) => {
+        ensureArray(article.tags).forEach((tag) => {
+          if (pageState.selectedTags.includes(tag)) return;
+          counts.set(tag, (counts.get(tag) || 0) + 1);
+        });
+      });
+
+      Array.from(counts.entries())
+        .sort((left, right) => {
+          if (right[1] !== left[1]) return right[1] - left[1];
+          return left[0].localeCompare(right[0], "ja");
+        })
+        .slice(0, 10)
+        .forEach(([tag]) => {
+          const count = filterAndSortArticles({
+            selectedTags: unique([...pageState.selectedTags, tag]),
+          }).length;
+          if (!count) return;
+          const listItem = createElement("li", "relatedSearches__list-item");
+          const link = createElement("a", "relatedSearches__link", tag);
+          link.href = createArticlesUrl({
+            query: pageState.query,
+            selectedTypes: pageState.selectedTypes,
+            selectedTags: [...pageState.selectedTags, tag],
+            sort: pageState.sort,
+            mode: pageState.mode,
+          });
+          listItem.append(link, createElement("span", "relatedSearches__count", `(${count})`));
+          relatedRoot.appendChild(listItem);
+        });
+    };
+
+    const renderResults = () => {
+      const filtered = filterAndSortArticles();
+      const headingLabel = pageState.query
+        ? `「${pageState.query}」の記事：${filtered.length}件`
+        : pageState.selectedTypes.length === 1 && !pageState.selectedTags.length
+          ? `${pageState.selectedTypes[0]}：${filtered.length}件`
+          : `特集記事：${filtered.length}件`;
+
+      statusRoot.textContent = `${filtered.length}件 | ${getArticleSortMeta(pageState.sort).label} | ${getArticleSearchSummaryLabel(pageState)}`;
+
+      disposeMediaCyclesWithin(resultsRoot);
+      resultsRoot.textContent = "";
+      filtered.forEach((article) => {
+        resultsRoot.appendChild(createArticleCard({ article, pageState, articleApi }));
+      });
+
+      if (toolbarHeading) {
+        toolbarHeading.textContent = headingLabel;
+      }
+
+      renderPromotedFilters(filtered);
+      renderSuggestions(filtered);
+      renderCategories();
+      renderRelatedSearches(filtered);
+      renderEmptyRecovery();
+      refreshCarousels(root);
+    };
+
+    const applyAndRender = () => {
+      applyShellCopy();
+      syncSortControl();
+      updateArticlesUrl(pageState);
+      renderQuickFilters();
+      renderResults();
+    };
+
+    readUrlState();
+    applyAndRender();
+
+    if (!root.dataset.articlesBound) {
+      root.addEventListener("click", (event) => {
+        const clearButton = event.target.closest("[data-article-clear]");
+        if (clearButton) {
+          pageState.query = "";
+          pageState.selectedTypes = [];
+          pageState.selectedTags = [];
+          applyAndRender();
+          return;
+        }
+
+        const typeButton = event.target.closest("[data-article-type]");
+        if (typeButton) {
+          const value = typeButton.dataset.articleType || "";
+          if (!value) return;
+          pageState.selectedTypes = pageState.selectedTypes.includes(value)
+            ? pageState.selectedTypes.filter((type) => type !== value)
+            : unique([...pageState.selectedTypes, value]);
+          applyAndRender();
+          return;
+        }
+
+        const tagButton = event.target.closest("[data-article-tag]");
+        if (tagButton) {
+          const value = tagButton.dataset.articleTag || "";
+          if (!value) return;
+          pageState.selectedTags = pageState.selectedTags.includes(value)
+            ? pageState.selectedTags.filter((tag) => tag !== value)
+            : unique([...pageState.selectedTags, value]);
+          applyAndRender();
+          return;
+        }
+      });
+
+      root.addEventListener("input", (event) => {
+        const queryInput = event.target.closest("[data-article-query]");
+        if (!queryInput) return;
+        pageState.query = queryInput.value.trim();
+        applyAndRender();
+      });
+
+      sortSelect.addEventListener("change", () => {
+        pageState.sort = ARTICLE_SORT_META[sortSelect.value] ? sortSelect.value : "latest";
+        applyAndRender();
+      });
+
+      root.dataset.articlesBound = "true";
+    }
+  };
+
   const renderBuilderPage = () => {
     const root = document.querySelector("[data-builder-ikea-page]");
     if (!root) return;
@@ -3101,6 +3760,7 @@
   const init = () => {
     renderHomePage();
     renderFinderPage();
+    renderArticlesPage();
     renderBuilderPage();
   };
 
