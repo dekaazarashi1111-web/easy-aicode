@@ -3903,12 +3903,23 @@ h3 {
 }
 
 .input,
+.textarea,
 .select {
   min-height: 52px;
   border-radius: 14px;
   border: 1px solid var(--retail-line);
   background: #ffffff;
   color: var(--retail-text);
+}
+
+.apply-form .input::placeholder,
+.apply-form .textarea::placeholder {
+  color: #5a5f66;
+  opacity: 1;
+}
+
+.apply-form .help {
+  color: #333333;
 }
 
 .storefront-eyebrow {
