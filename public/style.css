@@ -7010,6 +7010,147 @@ body {
   display: none;
 }
 
+body.history-drawer-open {
+  overflow: hidden;
+}
+
+.ikea-history-drawer {
+  position: fixed;
+  inset: 0;
+  z-index: 160;
+}
+
+.ikea-history-drawer[hidden] {
+  display: none;
+}
+
+.ikea-history-drawer__backdrop {
+  position: absolute;
+  inset: 0;
+  border: 0;
+  background: rgba(17, 17, 17, 0.28);
+  opacity: 0;
+  cursor: pointer;
+  transition: opacity 180ms ease;
+}
+
+.ikea-history-drawer__panel {
+  position: absolute;
+  top: 0;
+  right: 0;
+  width: min(420px, 100vw);
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  background: #fff;
+  border-left: 1px solid #ececec;
+  box-shadow: var(--ikea-shadow);
+  transform: translateX(100%);
+  transition: transform 220ms ease;
+}
+
+.ikea-history-drawer[data-open="true"] .ikea-history-drawer__backdrop {
+  opacity: 1;
+}
+
+.ikea-history-drawer[data-open="true"] .ikea-history-drawer__panel {
+  transform: translateX(0);
+}
+
+.ikea-history-drawer__header {
+  padding: 22px 24px 18px;
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 16px;
+  border-bottom: 1px solid #ececec;
+}
+
+.ikea-history-drawer__heading {
+  display: grid;
+  gap: 6px;
+}
+
+.ikea-history-drawer__eyebrow {
+  margin: 0;
+  color: var(--ikea-blue);
+  font-size: 0.78rem;
+  font-weight: 700;
+}
+
+.ikea-history-drawer__title {
+  margin: 0;
+  font-size: 1.4rem;
+  line-height: 1.2;
+}
+
+.ikea-history-drawer__close {
+  width: 40px;
+  height: 40px;
+  flex: 0 0 auto;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border: 1px solid #ececec;
+  border-radius: 50%;
+  background: #fff;
+  color: var(--ikea-text);
+  cursor: pointer;
+}
+
+.ikea-history-drawer__body {
+  padding: 20px 24px 28px;
+  display: grid;
+  gap: 16px;
+  overflow-y: auto;
+}
+
+.ikea-history-drawer__lead,
+.ikea-history-drawer__count,
+.ikea-history-drawer__empty {
+  margin: 0;
+}
+
+.ikea-history-drawer__lead,
+.ikea-history-drawer__count,
+.ikea-history-drawer__updated {
+  color: var(--retail-muted);
+  font-size: 0.88rem;
+}
+
+.ikea-history-drawer__list {
+  gap: 12px;
+}
+
+.ikea-history-drawer__link {
+  align-items: flex-start;
+}
+
+.ikea-history-drawer__updated {
+  flex: 0 0 auto;
+  padding-top: 2px;
+  text-align: right;
+}
+
+.ikea-history-drawer__close:focus-visible,
+.ikea-history-drawer__link:focus-visible {
+  outline: 2px solid var(--ikea-blue);
+  outline-offset: 2px;
+}
+
+@media (max-width: 640px) {
+  .ikea-history-drawer__panel {
+    width: 100vw;
+    border-left: 0;
+  }
+
+  .ikea-history-drawer__header,
+  .ikea-history-drawer__body {
+    padding-left: 18px;
+    padding-right: 18px;
+  }
+}
+
 .ikea-main {
   padding: 18px 0 64px;
 }

@@ -139,6 +139,44 @@ const updateBrandCopy = () => {
 updateBrandCopy();
 
 const BRAND_NAME = SITE_CONFIG.BRAND_NAME || "Media Canvas";
+const FINDER_STORAGE_KEY = "finder-canvas-state";
+const RECENT_HISTORY_HASH = "#recent-history";
+let historyDrawerCloseTimer = null;
+let historyDrawerRestoreFocus = null;
+
+const readFinderCanvasState = () => {
+  if (typeof window === "undefined" || !window.localStorage) return null;
+  try {
+    const raw = window.localStorage.getItem(FINDER_STORAGE_KEY);
+    if (!raw) return null;
+    const parsed = JSON.parse(raw);
+    return parsed && typeof parsed === "object" ? parsed : null;
+  } catch (error) {
+    return null;
+  }
+};
+
+const formatHistoryUpdatedAt = (value) => {
+  if (!value) return "";
+  const normalized = `${value}`.trim();
+  if (/^\d{4}-\d{2}-\d{2}$/.test(normalized)) {
+    return `更新 ${normalized.replace(/-/g, ".")}`;
+  }
+  return normalized;
+};
+
+const getRecentHistoryWorks = () => {
+  const state = readFinderCanvasState();
+  const recentWorkIds = Array.isArray(state?.ui?.recentWorkIds) ? state.ui.recentWorkIds : [];
+  const works = Array.isArray(state?.works) ? state.works : [];
+  const workMap = new Map(
+    works
+      .filter((work) => work && typeof work === "object" && work.id)
+      .map((work) => [work.id, work])
+  );
+
+  return recentWorkIds.map((workId) => workMap.get(workId)).filter(Boolean).slice(0, 8);
+};
 
 const normalizePathname = (pathname) => {
   if (!pathname) return "/";
@@ -304,6 +342,207 @@ const createChromeLink = ({ href, label, className = "", current = false, icon =
   if (className) link.className = className;
   if (current) link.setAttribute("aria-current", "page");
   return link;
+};
+
+const createHistoryDrawer = () => {
+  if (typeof document === "undefined" || !document.body) return null;
+  const existing = document.querySelector("[data-history-drawer]");
+  if (existing) return existing;
+
+  const drawer = document.createElement("div");
+  const backdrop = document.createElement("button");
+  const panel = document.createElement("aside");
+  const header = document.createElement("div");
+  const headingGroup = document.createElement("div");
+  const eyebrow = document.createElement("p");
+  const title = document.createElement("h2");
+  const closeButton = document.createElement("button");
+  const body = document.createElement("div");
+  const lead = document.createElement("p");
+  const count = document.createElement("p");
+  const list = document.createElement("div");
+
+  drawer.className = "ikea-history-drawer";
+  drawer.hidden = true;
+  drawer.dataset.historyDrawer = "true";
+  drawer.dataset.open = "false";
+
+  backdrop.className = "ikea-history-drawer__backdrop";
+  backdrop.type = "button";
+  backdrop.dataset.historyClose = "true";
+  backdrop.setAttribute("aria-label", "閲覧履歴を閉じる");
+
+  panel.className = "ikea-history-drawer__panel";
+  panel.setAttribute("role", "dialog");
+  panel.setAttribute("aria-modal", "true");
+  panel.setAttribute("aria-labelledby", "recent-history-title");
+
+  header.className = "ikea-history-drawer__header";
+  headingGroup.className = "ikea-history-drawer__heading";
+  eyebrow.className = "ikea-history-drawer__eyebrow";
+  eyebrow.textContent = "このブラウザだけに保存";
+  title.className = "ikea-history-drawer__title";
+  title.id = "recent-history-title";
+  title.textContent = "閲覧履歴";
+  closeButton.className = "ikea-history-drawer__close";
+  closeButton.type = "button";
+  closeButton.dataset.historyClose = "true";
+  closeButton.setAttribute("aria-label", "閲覧履歴を閉じる");
+  closeButton.appendChild(createIcon("close"));
+  headingGroup.append(eyebrow, title);
+  header.append(headingGroup, closeButton);
+
+  body.className = "ikea-history-drawer__body";
+  lead.className = "ikea-history-drawer__lead";
+  lead.textContent = "作品詳細を開いた順に、直近 8 件まで表示します。";
+  count.className = "ikea-history-drawer__count";
+  count.dataset.historyCount = "true";
+  list.className = "finder-mini-list ikea-history-drawer__list";
+  list.dataset.historyList = "true";
+  body.append(lead, count, list);
+
+  panel.append(header, body);
+  drawer.append(backdrop, panel);
+  document.body.appendChild(drawer);
+  return drawer;
+};
+
+const renderHistoryDrawer = () => {
+  const drawer = createHistoryDrawer();
+  if (!drawer) return null;
+
+  const count = drawer.querySelector("[data-history-count]");
+  const list = drawer.querySelector("[data-history-list]");
+  const works = getRecentHistoryWorks();
+
+  if (count) {
+    count.textContent = works.length ? `${works.length} 件の履歴` : "履歴はまだありません";
+  }
+
+  if (list) {
+    list.textContent = "";
+    if (!works.length) {
+      const empty = document.createElement("p");
+      empty.className = "ikea-history-drawer__empty";
+      empty.textContent = "まだ閲覧履歴はありません。作品詳細を開くとここにたまります。";
+      list.appendChild(empty);
+    } else {
+      works.forEach((work) => {
+        const link = document.createElement("a");
+        const body = document.createElement("div");
+        const title = document.createElement("strong");
+        const meta = document.createElement("span");
+        const updatedAt = document.createElement("span");
+
+        link.className = "finder-mini-link ikea-history-drawer__link";
+        link.href = `/work/?slug=${encodeURIComponent(work.slug || "")}`;
+        body.className = "finder-mini-link__body";
+        title.textContent = work.title || "作品";
+
+        const metaParts = [work.format, work.creator].filter(Boolean);
+        if (metaParts.length) {
+          meta.className = "help";
+          meta.textContent = metaParts.join(" / ");
+          body.append(title, meta);
+        } else {
+          body.append(title);
+        }
+
+        link.appendChild(body);
+
+        const updatedLabel = formatHistoryUpdatedAt(work.updatedAt);
+        if (updatedLabel) {
+          updatedAt.className = "ikea-history-drawer__updated";
+          updatedAt.textContent = updatedLabel;
+          link.appendChild(updatedAt);
+        }
+
+        list.appendChild(link);
+      });
+    }
+  }
+
+  return drawer;
+};
+
+const closeHistoryDrawer = () => {
+  const drawer = document.querySelector("[data-history-drawer]");
+  if (!drawer || drawer.hidden) return;
+
+  drawer.dataset.open = "false";
+  drawer.setAttribute("aria-hidden", "true");
+  document.body.classList.remove("history-drawer-open");
+
+  if (historyDrawerCloseTimer) window.clearTimeout(historyDrawerCloseTimer);
+  historyDrawerCloseTimer = window.setTimeout(() => {
+    if (drawer.dataset.open === "true") return;
+    drawer.hidden = true;
+    if (historyDrawerRestoreFocus && typeof historyDrawerRestoreFocus.focus === "function") {
+      historyDrawerRestoreFocus.focus();
+    }
+    historyDrawerRestoreFocus = null;
+  }, 220);
+};
+
+const openHistoryDrawer = ({ clearHash = false } = {}) => {
+  const drawer = renderHistoryDrawer();
+  if (!drawer) return;
+
+  if (historyDrawerCloseTimer) {
+    window.clearTimeout(historyDrawerCloseTimer);
+    historyDrawerCloseTimer = null;
+  }
+
+  historyDrawerRestoreFocus =
+    document.activeElement instanceof HTMLElement ? document.activeElement : null;
+  drawer.hidden = false;
+  drawer.dataset.open = "true";
+  drawer.setAttribute("aria-hidden", "false");
+  document.body.classList.add("history-drawer-open");
+
+  const closeButton = drawer.querySelector(".ikea-history-drawer__close");
+  window.requestAnimationFrame(() => {
+    closeButton?.focus();
+  });
+
+  if (clearHash && window.location.hash === RECENT_HISTORY_HASH) {
+    window.history.replaceState({}, "", `${window.location.pathname}${window.location.search}`);
+  }
+};
+
+const initHistoryDrawer = () => {
+  if (typeof document === "undefined" || !document.body || document.body.dataset.historyDrawerBound) {
+    return;
+  }
+
+  createHistoryDrawer();
+
+  document.body.addEventListener("click", (event) => {
+    const historyLink = event.target.closest(`a[href$="${RECENT_HISTORY_HASH}"]`);
+    if (historyLink) {
+      event.preventDefault();
+      openHistoryDrawer({ clearHash: true });
+      return;
+    }
+
+    const closeTrigger = event.target.closest("[data-history-close]");
+    if (closeTrigger) {
+      event.preventDefault();
+      closeHistoryDrawer();
+    }
+  });
+
+  document.addEventListener("keydown", (event) => {
+    if (event.key === "Escape") {
+      closeHistoryDrawer();
+    }
+  });
+
+  if (window.location.hash === RECENT_HISTORY_HASH) {
+    openHistoryDrawer({ clearHash: true });
+  }
+
+  document.body.dataset.historyDrawerBound = "true";
 };
 
 const renderSiteChrome = () => {
@@ -482,6 +721,7 @@ const renderSiteChrome = () => {
 };
 
 renderSiteChrome();
+initHistoryDrawer();
 if (typeof document !== "undefined" && document.body && !document.body.dataset.siteChromeBound) {
   document.body.addEventListener("click", (event) => {
     const clearButton = event.target.closest("[data-header-clear]");
