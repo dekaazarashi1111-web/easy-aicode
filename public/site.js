@@ -330,7 +330,6 @@ const NAV_ITEMS = [
 
 const HEADER_ACTIONS = [
   { href: "/finder/#saved-searches", label: "保存検索", icon: "save" },
-  { href: "/finder/#compare-tray", label: "比較", icon: "compare" },
   { href: "/finder/#recent-history", label: "閲覧履歴", icon: "recent" },
 ];
 
