@@ -1,0 +1,179 @@
+<!doctype html>
+<html lang="ja">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>掲載申請 | ケモホモ作品ファインダー</title>
+  <meta
+    name="description"
+    content="当サイトへの作品掲載申請を受け付けるためのページです。著作者ご本人または掲載許諾権限を有する方からの申請のみ受け付けます。"
+  />
+  <link rel="canonical" href="/apply/" />
+  <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
+  <link rel="apple-touch-icon" href="/assets/logo.png" />
+  <meta name="robots" content="index,follow,max-image-preview:large" />
+  <meta name="author" content="Media Canvas" />
+  <meta name="theme-color" content="#ffffff" />
+  <meta property="og:site_name" content="Media Canvas" />
+  <meta property="og:title" content="掲載申請 | ケモホモ作品ファインダー" />
+  <meta
+    property="og:description"
+    content="作品掲載申請を受け付けるための独立ページです。ご本人確認後に掲載可否をご案内します。"
+  />
+  <meta property="og:type" content="website" />
+  <meta property="og:url" content="/apply/" />
+  <meta property="og:locale" content="ja_JP" />
+  <meta property="og:image" content="/assets/og-default.png" />
+  <meta property="og:image:secure_url" content="/assets/og-default.png" />
+  <meta property="og:image:alt" content="掲載申請ページのOG画像" />
+  <meta property="og:image:width" content="1200" />
+  <meta property="og:image:height" content="630" />
+  <meta name="twitter:card" content="summary_large_image" />
+  <meta name="twitter:title" content="掲載申請 | ケモホモ作品ファインダー" />
+  <meta
+    name="twitter:description"
+    content="作品掲載申請を受け付けるためのページです。"
+  />
+  <meta name="twitter:image" content="/assets/og-default.png" />
+  <meta name="twitter:image:alt" content="掲載申請ページのOG画像" />
+  <link rel="stylesheet" href="/style.css" />
+  <script src="/assets/site-config.js"></script>
+  <script src="/assets/finder-seed.js"></script>
+  <script src="/site.js" defer></script>
+  <script src="/assets/apply-form.js" defer></script>
+</head>
+<body>
+<a class="hnf-skip-to-content" href="#main">メインに進む</a>
+
+<nav class="nav"></nav>
+
+<main id="main">
+  <section class="section section--tight">
+    <div class="container stack stack--lg">
+      <div class="card page-hero page-hero--support stack">
+        <p class="kicker">Apply</p>
+        <h1 class="h1">掲載申請</h1>
+        <div class="stack stack--sm">
+          <p class="lead">
+            当サイトへの作品掲載は無料で行っております。
+            掲載申請は、著作者ご本人または掲載許諾権限を有する方からの申請に限らせていただきます。
+          </p>
+          <p class="lead">
+            申請内容を確認後、ご入力いただいたSNSアカウント宛にDMにてご連絡いたします。
+            ご本人確認および掲載可否の確認が取れ次第、掲載を進めさせていただきます。
+          </p>
+          <p class="lead">
+            原則24時間以内にご連絡いたしますが、状況により前後する場合がございます。
+            あらかじめご了承ください。
+          </p>
+        </div>
+      </div>
+
+      <div class="page-layout">
+        <div class="page-main stack stack--lg">
+          <section class="card stack stack--lg">
+            <div class="stack stack--sm">
+              <p class="kicker">Application form</p>
+              <h2 class="h2">掲載申請フォーム</h2>
+            </div>
+
+            <form class="form apply-form" data-apply-form>
+              <label class="field">
+                <span class="label">クリエイター名 / サークル名</span>
+                <input class="input" type="text" name="creator_name" autocomplete="organization" />
+              </label>
+
+              <section class="field">
+                <div class="apply-field-header">
+                  <div>
+                    <span class="label">掲載申請作品名・作品URL</span>
+                    <p class="help">複数作品を申請する場合は、+ ボタンで入力欄を追加してください。</p>
+                  </div>
+                  <button
+                    class="btn btn--secondary btn--sm apply-add-button"
+                    type="button"
+                    data-apply-add-work
+                    aria-label="作品入力欄を追加"
+                  >
+                    ＋
+                  </button>
+                </div>
+
+                <div class="apply-work-list" data-apply-work-list>
+                  <div class="apply-work-item" data-apply-work-item>
+                    <div class="apply-work-item__header">
+                      <strong>作品 1</strong>
+                    </div>
+                    <div class="apply-work-grid">
+                      <label class="field">
+                        <span class="label">作品名</span>
+                        <input class="input" type="text" name="work_title[]" />
+                      </label>
+                      <label class="field">
+                        <span class="label">作品URL</span>
+                        <input class="input" type="url" name="work_url[]" inputmode="url" placeholder="https://example.com/..." />
+                      </label>
+                    </div>
+                  </div>
+                </div>
+              </section>
+
+              <label class="field">
+                <span class="label">SNSアカウント</span>
+                <textarea
+                  class="textarea"
+                  name="sns_account"
+                  placeholder="活動実態が確認でき、DMでご連絡可能なアカウントをご入力ください。プラットフォームは問いません。"
+                ></textarea>
+                <span class="help">活動実態が確認でき、DMでご連絡可能なアカウントをご入力ください。プラットフォームは問いません。</span>
+              </label>
+
+              <div class="apply-form__actions">
+                <button class="btn btn--primary" type="button">送信する</button>
+              </div>
+            </form>
+          </section>
+        </div>
+
+        <aside class="page-rail">
+          <div class="card rail-card booking-sticky-card stack">
+            <p class="kicker">Check</p>
+            <h2 class="h3">申請前の確認</h2>
+            <ul class="list list--compact">
+              <li>著作者ご本人、または掲載許諾権限を有する方のみ申請してください。</li>
+              <li>SNSアカウントは、DMでご連絡可能なものをご入力ください。</li>
+              <li>作品が複数ある場合は、作品ごとにタイトルと URL を追加してください。</li>
+            </ul>
+            <div class="divider"></div>
+            <a class="btn btn--secondary btn--sm" href="/contact/">お問い合わせページへ</a>
+          </div>
+        </aside>
+      </div>
+    </div>
+  </section>
+</main>
+
+<footer class="footer"></footer>
+
+<template data-apply-work-template>
+  <div class="apply-work-item" data-apply-work-item>
+    <div class="apply-work-item__header">
+      <strong>作品</strong>
+      <button class="btn btn--secondary btn--sm apply-remove-button" type="button" data-apply-remove-work>
+        削除
+      </button>
+    </div>
+    <div class="apply-work-grid">
+      <label class="field">
+        <span class="label">作品名</span>
+        <input class="input" type="text" name="work_title[]" />
+      </label>
+      <label class="field">
+        <span class="label">作品URL</span>
+        <input class="input" type="url" name="work_url[]" inputmode="url" placeholder="https://example.com/..." />
+      </label>
+    </div>
+  </div>
+</template>
+</body>
+</html>
