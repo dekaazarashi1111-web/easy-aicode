@@ -3174,40 +3174,8 @@
 
     const renderPromotedFilters = (filtered) => {
       if (!promotedRoot || !promotedWrap) return;
+      promotedWrap.hidden = true;
       promotedRoot.textContent = "";
-      const source = filtered.length ? filtered : allArticles;
-      const counts = new Map();
-
-      source.forEach((article) => {
-        ensureArray(article.tags).forEach((tag) => {
-          if (pageState.selectedTags.includes(tag)) return;
-          counts.set(tag, (counts.get(tag) || 0) + 1);
-        });
-      });
-
-      const items = Array.from(counts.entries())
-        .sort((left, right) => {
-          if (right[1] !== left[1]) return right[1] - left[1];
-          return left[0].localeCompare(right[0], "ja");
-        })
-        .slice(0, 8);
-
-      promotedWrap.hidden = !items.length;
-      items.forEach(([tag]) => {
-        promotedRoot.appendChild(
-          createPillLink({
-            label: tag,
-            href: createArticlesUrl({
-              query: pageState.query,
-              selectedTypes: pageState.selectedTypes,
-              selectedTags: [...pageState.selectedTags, tag],
-              sort: pageState.sort,
-              mode: pageState.mode,
-            }),
-            className: "ikea-pill",
-          })
-        );
-      });
     };
 
     const renderSuggestions = (filtered) => {
