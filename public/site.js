@@ -321,10 +321,7 @@ const getCurrentSection = (pathname = window.location.pathname) => {
 };
 
 const NAV_ITEMS = [
-  { href: "/finder/", label: "条件から探す", section: "finder" },
-  { href: "/collections/", label: "探し方別", section: "collections" },
-  { href: "/builder/", label: "詳細条件ビルダー", section: "builder" },
-  { href: "/articles/", label: "ガイド・方針", section: "articles" },
+  { href: "/finder/", label: "作品を探す", section: "finder" },
 ];
 
 const HEADER_ACTIONS = [
