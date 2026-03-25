@@ -142,8 +142,34 @@ const BRAND_NAME = SITE_CONFIG.BRAND_NAME || "Media Canvas";
 const FINDER_STORAGE_KEY = "finder-canvas-state";
 const RECENT_HISTORY_HASH = "#recent-history";
 const RECENT_HISTORY_LIMIT = 20;
-const SEARCH_FILTER_TAG_PREVIEW_LIMIT = 10;
-const SEARCH_FILTER_HIDDEN_GROUP_IDS = new Set(["species", "body-type", "age-feel"]);
+const HEADER_FILTER_SPECIES_TAG_IDS = [
+  "species-wolf",
+  "species-dog",
+  "species-fox",
+  "species-cat",
+  "species-bear",
+];
+const HEADER_FILTER_BODY_OPTIONS = [
+  {
+    tagId: "body-normal",
+    label: "普通体型",
+    imageSrc: "/assets/quick-filters/body-normal.png",
+  },
+  {
+    tagId: "body-muscular",
+    label: "筋肉",
+    imageSrc: "/assets/quick-filters/body-muscular.png",
+  },
+  {
+    tagId: "body-fat",
+    label: "デブ",
+    imageSrc: "/assets/quick-filters/body-fat.png",
+  },
+];
+const HEADER_FILTER_AGE_OPTIONS = [
+  { tagId: "age-adult", label: "成年" },
+  { tagId: "age-older", label: "熟年" },
+];
 let historyDrawerCloseTimer = null;
 let historyDrawerRestoreFocus = null;
 let searchFilterScreenRestoreFocus = null;
@@ -686,132 +712,189 @@ const getHeaderSearchQuery = (trigger = null) => {
   return new URLSearchParams(window.location.search).get("q") || "";
 };
 
-const createFilterField = ({
-  label,
-  type = "text",
-  placeholder = "",
-  name = "",
-  help = "",
-  value = "",
-} = {}) => {
-  const row = document.createElement("label");
-  const caption = document.createElement("span");
-  const control =
-    type === "select" ? document.createElement("select") : document.createElement("input");
+const getHeaderFilterTagMap = () =>
+  new Map(
+    (Array.isArray(window.FINDER_SEED?.tags) ? window.FINDER_SEED.tags : [])
+      .filter((tag) => tag && tag.id)
+      .map((tag) => [tag.id, tag])
+  );
 
-  row.className = "ikea-search-filter-screen__row";
-  caption.className = "ikea-search-filter-screen__label";
-  caption.textContent = label;
+const getHeaderFilterTagLabel = (tagId, fallback = "") =>
+  getHeaderFilterTagMap().get(tagId)?.label || fallback || tagId;
 
-  const fieldBody = document.createElement("span");
-  fieldBody.className = "ikea-search-filter-screen__fieldBody";
+const normalizeSearchFilterCharacterState = (value = {}) => ({
+  speciesTagIds: uniqueFinderValues(value.speciesTagIds),
+  bodyTypeTagIds: uniqueFinderValues(value.bodyTypeTagIds),
+  ageFeelTagIds: uniqueFinderValues(value.ageFeelTagIds),
+});
 
-  if (type === "select") {
-    control.className = "ikea-search-filter-screen__select";
-    [
-      "指定なし",
-      "ダミー1",
-      "ダミー2",
-    ].forEach((optionLabel, index) => {
-      const option = document.createElement("option");
-      option.value = index === 0 ? "" : `dummy-${index}`;
-      option.textContent = optionLabel;
-      control.appendChild(option);
-    });
-  } else {
-    control.type = type;
-    control.placeholder = placeholder;
-    control.className = "ikea-search-filter-screen__input";
-    if (name) control.name = name;
-    if (value) control.value = value;
-    control.autocomplete = "off";
-  }
+const getSearchFilterCharacterState = (screen) =>
+  normalizeSearchFilterCharacterState(screen?._characterFilterState);
 
-  fieldBody.appendChild(control);
-
-  if (help) {
-    const note = document.createElement("span");
-    note.className = "ikea-search-filter-screen__help";
-    note.textContent = help;
-    fieldBody.appendChild(note);
-  }
-
-  row.append(caption, fieldBody);
-  return row;
-};
-
-const getSearchFilterTagOptions = () => {
-  const seedTags = Array.isArray(window.FINDER_SEED?.tags) ? window.FINDER_SEED.tags : [];
-  const visibleTags = seedTags.filter((tag) => {
-    if (!tag || !tag.id || !tag.label) return false;
-    if (tag.isPublic === false) return false;
-    return !SEARCH_FILTER_HIDDEN_GROUP_IDS.has(tag.groupId);
-  });
-
-  if (visibleTags.length) return visibleTags;
-
-  return [
-    { id: "kemo-entry", label: "ケモホモ入口" },
-    { id: "osu-kemo", label: "オスケモ寄り" },
-    { id: "dense-fur", label: "ケモ率高め" },
-    { id: "gentle-tone", label: "やさしめ" },
-    { id: "light-tone", label: "軽め" },
-    { id: "tf-present", label: "TFあり" },
-    { id: "tf-soft", label: "変化は軽め" },
-    { id: "mind-stable", label: "精神変化なし" },
-    { id: "buddy-energy", label: "相棒感" },
-    { id: "format-comic", label: "漫画" },
-    { id: "format-cg", label: "CG・イラスト" },
-    { id: "no-ntr", label: "NTRなし" },
-  ];
-};
-
-const getSearchFilterSelectedTagIds = (screen) =>
-  Array.isArray(screen?._selectedIncludeTagIds) ? screen._selectedIncludeTagIds : [];
-
-const syncSearchFilterIncludeInputs = (screen) => {
-  const container = screen?.querySelector("[data-search-filter-include-inputs]");
+const syncSearchFilterCharacterInputs = (screen) => {
+  const container = screen?.querySelector("[data-search-filter-character-inputs]");
   if (!container) return;
+
+  const characterState = getSearchFilterCharacterState(screen);
   container.textContent = "";
-  getSearchFilterSelectedTagIds(screen).forEach((tagId) => {
+  characterState.speciesTagIds.forEach((tagId) => {
     const input = document.createElement("input");
     input.type = "hidden";
-    input.name = "include";
+    input.name = "c1_species";
+    input.value = tagId;
+    container.appendChild(input);
+  });
+  characterState.bodyTypeTagIds.forEach((tagId) => {
+    const input = document.createElement("input");
+    input.type = "hidden";
+    input.name = "c1_body";
+    input.value = tagId;
+    container.appendChild(input);
+  });
+  characterState.ageFeelTagIds.forEach((tagId) => {
+    const input = document.createElement("input");
+    input.type = "hidden";
+    input.name = "c1_age";
     input.value = tagId;
     container.appendChild(input);
   });
 };
 
-const setSearchFilterSelectedTagIds = (screen, tagIds) => {
+const setSearchFilterCharacterState = (screen, nextState) => {
   if (!screen) return;
-  const uniqueTagIds = Array.from(new Set((Array.isArray(tagIds) ? tagIds : []).filter(Boolean)));
-  screen._selectedIncludeTagIds = uniqueTagIds;
-  syncSearchFilterIncludeInputs(screen);
+  screen._characterFilterState = normalizeSearchFilterCharacterState(nextState);
+  syncSearchFilterCharacterInputs(screen);
 };
 
-const renderSearchFilterTagOptions = (screen) => {
-  const list = screen?.querySelector("[data-search-filter-tag-list]");
-  const moreButton = screen?.querySelector("[data-search-filter-tag-more]");
-  if (!list || !moreButton) return;
+const getSearchFilterCharacterSummary = (screen) => {
+  const characterState = getSearchFilterCharacterState(screen);
+  const labels = [
+    ...characterState.speciesTagIds.map((tagId) => getHeaderFilterTagLabel(tagId)),
+    ...characterState.bodyTypeTagIds.map((tagId) =>
+      HEADER_FILTER_BODY_OPTIONS.find((option) => option.tagId === tagId)?.label || tagId
+    ),
+    ...characterState.ageFeelTagIds.map((tagId) =>
+      HEADER_FILTER_AGE_OPTIONS.find((option) => option.tagId === tagId)?.label || tagId
+    ),
+  ].filter(Boolean);
+  return labels.length ? `キャラ1: ${labels.join(" / ")}` : "条件なし";
+};
 
-  const allTags = getSearchFilterTagOptions();
-  const expanded = screen.dataset.searchFilterTagsExpanded === "true";
-  const selectedTagIds = new Set(getSearchFilterSelectedTagIds(screen));
-  const visibleTags = expanded ? allTags : allTags.slice(0, SEARCH_FILTER_TAG_PREVIEW_LIMIT);
+const createSearchFilterChipButton = ({ label, selected = false, dataset = {} }) => {
+  const button = document.createElement("button");
+  button.type = "button";
+  button.className = "ikea-quick-filter-chip";
+  button.textContent = label;
+  button.setAttribute("aria-pressed", String(selected));
+  Object.entries(dataset).forEach(([key, value]) => {
+    button.dataset[key] = value;
+  });
+  return button;
+};
 
-  list.textContent = "";
-  visibleTags.forEach((tag) => {
-    const button = document.createElement("button");
-    button.type = "button";
-    button.className = "ikea-search-filter-screen__tagChip";
-    button.dataset.searchFilterTagId = tag.id;
-    button.setAttribute("aria-pressed", String(selectedTagIds.has(tag.id)));
-    button.textContent = tag.label;
-    list.appendChild(button);
+const createSearchFilterBodyButton = ({ label, imageSrc = "", selected = false, dataset = {} }) => {
+  const button = document.createElement("button");
+  button.type = "button";
+  button.className = "ikea-quick-filter-bodyButton";
+  button.setAttribute("aria-pressed", String(selected));
+  Object.entries(dataset).forEach(([key, value]) => {
+    button.dataset[key] = value;
   });
 
-  moreButton.hidden = allTags.length <= SEARCH_FILTER_TAG_PREVIEW_LIMIT;
-  moreButton.textContent = expanded ? "閉じる" : "もっと見る";
+  const imageWrap = document.createElement("span");
+  imageWrap.className = "ikea-quick-filter-bodyButton__image";
+  if (imageSrc) {
+    const image = document.createElement("img");
+    image.src = imageSrc;
+    image.alt = "";
+    image.loading = "lazy";
+    image.decoding = "async";
+    imageWrap.appendChild(image);
+  } else {
+    const fallback = document.createElement("span");
+    fallback.className = "ikea-quick-filter-bodyButton__fallback";
+    fallback.textContent = label;
+    imageWrap.appendChild(fallback);
+  }
+
+  const labelNode = document.createElement("span");
+  labelNode.className = "ikea-quick-filter-bodyButton__label";
+  labelNode.textContent = label;
+  button.append(imageWrap, labelNode);
+  return button;
+};
+
+const toggleSearchFilterCharacterValue = (screen, field, tagId) => {
+  const characterState = getSearchFilterCharacterState(screen);
+  const nextState = {
+    speciesTagIds: characterState.speciesTagIds.slice(),
+    bodyTypeTagIds: characterState.bodyTypeTagIds.slice(),
+    ageFeelTagIds: characterState.ageFeelTagIds.slice(),
+  };
+  const key =
+    field === "species"
+      ? "speciesTagIds"
+      : field === "body"
+        ? "bodyTypeTagIds"
+        : "ageFeelTagIds";
+  nextState[key] = nextState[key].includes(tagId)
+    ? nextState[key].filter((value) => value !== tagId)
+    : uniqueFinderValues([...nextState[key], tagId]);
+  setSearchFilterCharacterState(screen, nextState);
+};
+
+const renderSearchFilterCharacterFields = (screen) => {
+  const summary = screen?.querySelector("[data-search-filter-summary]");
+  const speciesRow = screen?.querySelector("[data-search-filter-species-row]");
+  const bodyGrid = screen?.querySelector("[data-search-filter-body-grid]");
+  const ageRow = screen?.querySelector("[data-search-filter-age-row]");
+  if (!summary || !speciesRow || !bodyGrid || !ageRow) return;
+
+  const characterState = getSearchFilterCharacterState(screen);
+  summary.textContent = getSearchFilterCharacterSummary(screen);
+
+  speciesRow.textContent = "";
+  HEADER_FILTER_SPECIES_TAG_IDS.forEach((tagId) => {
+    speciesRow.appendChild(
+      createSearchFilterChipButton({
+        label: getHeaderFilterTagLabel(tagId, tagId),
+        selected: characterState.speciesTagIds.includes(tagId),
+        dataset: {
+          searchFilterCharacterField: "species",
+          searchFilterTagId: tagId,
+        },
+      })
+    );
+  });
+
+  bodyGrid.textContent = "";
+  HEADER_FILTER_BODY_OPTIONS.forEach((option) => {
+    bodyGrid.appendChild(
+      createSearchFilterBodyButton({
+        label: option.label,
+        imageSrc: option.imageSrc,
+        selected: characterState.bodyTypeTagIds.includes(option.tagId),
+        dataset: {
+          searchFilterCharacterField: "body",
+          searchFilterTagId: option.tagId,
+        },
+      })
+    );
+  });
+
+  ageRow.textContent = "";
+  HEADER_FILTER_AGE_OPTIONS.forEach((option) => {
+    ageRow.appendChild(
+      createSearchFilterChipButton({
+        label: option.label,
+        selected: characterState.ageFeelTagIds.includes(option.tagId),
+        dataset: {
+          searchFilterCharacterField: "age",
+          searchFilterTagId: option.tagId,
+        },
+      })
+    );
+  });
 };
 
 const createSearchFilterScreen = () => {
@@ -823,32 +906,28 @@ const createSearchFilterScreen = () => {
   const backdrop = document.createElement("button");
   const panel = document.createElement("section");
   const form = document.createElement("form");
+  const queryInput = document.createElement("input");
+  const characterInputs = document.createElement("div");
   const header = document.createElement("div");
   const title = document.createElement("h2");
   const closeButton = document.createElement("button");
   const body = document.createElement("div");
-  const recent = document.createElement("section");
-  const recentTop = document.createElement("div");
-  const recentHeading = document.createElement("strong");
-  const recentClear = document.createElement("button");
-  const recentList = document.createElement("div");
-  const rows = document.createElement("div");
-  const includeTagRow = document.createElement("div");
-  const includeTagLabel = document.createElement("span");
-  const includeTagBody = document.createElement("div");
-  const includeTagHeader = document.createElement("div");
-  const includeTagMore = document.createElement("button");
-  const includeTagList = document.createElement("div");
-  const includeTagInputs = document.createElement("div");
-  const includeTagHelp = document.createElement("p");
-  const priceRow = document.createElement("div");
-  const priceLabel = document.createElement("span");
-  const priceBody = document.createElement("div");
-  const priceLabels = document.createElement("div");
-  const priceTrack = document.createElement("div");
-  const priceAccent = document.createElement("span");
-  const priceThumbStart = document.createElement("span");
-  const priceThumbEnd = document.createElement("span");
+  const wrapper = document.createElement("div");
+  const summary = document.createElement("p");
+  const characterCard = document.createElement("section");
+  const characterHeader = document.createElement("div");
+  const characterTitle = document.createElement("strong");
+  const speciesField = document.createElement("section");
+  const speciesLabelRow = document.createElement("div");
+  const speciesLabel = document.createElement("strong");
+  const speciesLink = document.createElement("a");
+  const speciesRow = document.createElement("div");
+  const bodyField = document.createElement("section");
+  const bodyLabel = document.createElement("strong");
+  const bodyGrid = document.createElement("div");
+  const ageField = document.createElement("section");
+  const ageLabel = document.createElement("strong");
+  const ageRow = document.createElement("div");
   const note = document.createElement("p");
   const footer = document.createElement("div");
   const resetButton = document.createElement("button");
@@ -874,10 +953,16 @@ const createSearchFilterScreen = () => {
   form.action = "/finder/";
   form.method = "get";
 
+  queryInput.type = "hidden";
+  queryInput.name = "q";
+  queryInput.dataset.searchFilterQueryInput = "true";
+  characterInputs.hidden = true;
+  characterInputs.dataset.searchFilterCharacterInputs = "true";
+
   header.className = "ikea-search-filter-screen__header";
   title.className = "ikea-search-filter-screen__title";
   title.id = "site-search-filter-title";
-  title.textContent = "検索";
+  title.textContent = "キャラクターフィルター";
   closeButton.className = "ikea-search-filter-screen__close";
   closeButton.type = "button";
   closeButton.dataset.searchFilterClose = "true";
@@ -886,115 +971,67 @@ const createSearchFilterScreen = () => {
   header.append(title, closeButton);
 
   body.className = "ikea-search-filter-screen__body";
-  recent.className = "ikea-search-filter-screen__recent";
-  recentTop.className = "ikea-search-filter-screen__recentTop";
-  recentHeading.className = "ikea-search-filter-screen__recentHeading";
-  recentHeading.textContent = "最近の検索";
-  recentClear.className = "ikea-search-filter-screen__recentClear";
-  recentClear.type = "button";
-  recentClear.dataset.searchFilterRecentClear = "true";
-  recentClear.textContent = "検索履歴をクリア";
-  recentList.className = "ikea-search-filter-screen__recentList";
-  recentList.dataset.searchFilterRecentList = "true";
-  recentTop.append(recentHeading, recentClear);
-  recent.append(recentTop, recentList);
+  wrapper.className = "ikea-quick-filters";
+  summary.className = "ikea-quick-filters__summary";
+  summary.dataset.searchFilterSummary = "true";
 
-  includeTagRow.className = "ikea-search-filter-screen__row";
-  includeTagLabel.className = "ikea-search-filter-screen__label";
-  includeTagLabel.textContent = "含めるタグ";
-  includeTagBody.className = "ikea-search-filter-screen__fieldBody";
-  includeTagHeader.className = "ikea-search-filter-screen__tagHeader";
-  includeTagMore.className = "ikea-search-filter-screen__tagMore";
-  includeTagMore.type = "button";
-  includeTagMore.dataset.searchFilterTagMore = "true";
-  includeTagMore.textContent = "もっと見る";
-  includeTagHeader.appendChild(includeTagMore);
-  includeTagList.className = "ikea-search-filter-screen__tagList";
-  includeTagList.dataset.searchFilterTagList = "true";
-  includeTagInputs.hidden = true;
-  includeTagInputs.dataset.searchFilterIncludeInputs = "true";
-  includeTagHelp.className = "ikea-search-filter-screen__help";
-  includeTagHelp.textContent = "含めたいタグを選ぶと、作品検索へそのまま引き継ぎます。";
-  includeTagBody.append(includeTagHeader, includeTagList, includeTagInputs, includeTagHelp);
-  includeTagRow.append(includeTagLabel, includeTagBody);
+  characterCard.className = "ikea-quick-character-card";
+  characterHeader.className = "ikea-quick-character-card__header";
+  characterTitle.className = "ikea-quick-character-card__title";
+  characterTitle.textContent = "キャラ 1";
+  characterHeader.appendChild(characterTitle);
+  characterCard.appendChild(characterHeader);
 
-  rows.className = "ikea-search-filter-screen__rows";
-  rows.append(
-    createFilterField({
-      label: "キーワード",
-      placeholder: "作品名 / タグ / 作者 / 気分で探す",
-      name: "q",
-    }),
-    createFilterField({
-      label: "除外キーワード",
-      placeholder: "除外したいキーワードを入力",
-      help: "入力されたキーワードを含む商品を検索結果から除きます。",
-    }),
-    includeTagRow,
-    createFilterField({ label: "カテゴリ", type: "select" }),
-    createFilterField({ label: "年齢制限", type: "select" })
-  );
+  speciesField.className = "ikea-quick-filter-field";
+  speciesLabelRow.className = "ikea-quick-filter-field__labelRow";
+  speciesLabel.className = "ikea-quick-filter-field__label";
+  speciesLabel.textContent = "種族";
+  speciesLink.className = "ikea-quick-filter-field__link";
+  speciesLink.href = "/finder/";
+  speciesLink.textContent = "もっと探す";
+  speciesLabelRow.append(speciesLabel, speciesLink);
+  speciesRow.className = "ikea-quick-filter-chipRow";
+  speciesRow.dataset.searchFilterSpeciesRow = "true";
+  speciesField.append(speciesLabelRow, speciesRow);
 
-  priceRow.className = "ikea-search-filter-screen__row";
-  priceLabel.className = "ikea-search-filter-screen__label";
-  priceLabel.textContent = "価格";
-  priceBody.className = "ikea-search-filter-screen__fieldBody";
-  priceLabels.className = "ikea-search-filter-screen__priceLabels";
-  priceLabels.append(
-    Object.assign(document.createElement("span"), { textContent: "¥0" }),
-    Object.assign(document.createElement("span"), { textContent: "¥5000+" })
-  );
-  priceTrack.className = "ikea-search-filter-screen__priceTrack";
-  priceAccent.className = "ikea-search-filter-screen__priceAccent";
-  priceThumbStart.className = "ikea-search-filter-screen__priceThumb";
-  priceThumbEnd.className = "ikea-search-filter-screen__priceThumb";
-  priceTrack.append(priceAccent, priceThumbStart, priceThumbEnd);
-  priceBody.append(priceLabels, priceTrack);
-  priceRow.append(priceLabel, priceBody);
+  bodyField.className = "ikea-quick-filter-field";
+  bodyLabel.className = "ikea-quick-filter-field__label";
+  bodyLabel.textContent = "体型";
+  bodyGrid.className = "ikea-quick-filter-bodyGrid";
+  bodyGrid.dataset.searchFilterBodyGrid = "true";
+  bodyField.append(bodyLabel, bodyGrid);
+
+  ageField.className = "ikea-quick-filter-field";
+  ageLabel.className = "ikea-quick-filter-field__label";
+  ageLabel.textContent = "年齢";
+  ageRow.className = "ikea-quick-filter-chipRow";
+  ageRow.dataset.searchFilterAgeRow = "true";
+  ageField.append(ageLabel, ageRow);
+
+  characterCard.append(speciesField, bodyField, ageField);
 
   note.className = "ikea-search-filter-screen__note";
-  note.textContent = "この画面はたたき台です。現状はキーワードと含めるタグのみ作品検索へ引き継ぎます。";
+  note.textContent = "この条件で作品検索へ移動します。";
 
   footer.className = "ikea-search-filter-screen__footer";
   resetButton.className = "ikea-search-filter-screen__secondary";
   resetButton.type = "button";
   resetButton.dataset.searchFilterReset = "true";
-  resetButton.textContent = "条件をクリア";
+  resetButton.textContent = "すべて解除";
   submitButton.className = "ikea-search-filter-screen__primary";
   submitButton.type = "submit";
-  submitButton.textContent = "絞り込む";
+  submitButton.textContent = "この条件で探す";
   footer.append(resetButton, submitButton);
 
-  form.append(header, body, footer);
-  body.append(recent, rows, priceRow, note);
+  wrapper.append(summary, characterCard);
+  body.append(wrapper, note);
+  form.append(header, queryInput, characterInputs, body, footer);
   panel.appendChild(form);
   screen.append(backdrop, panel);
   document.body.appendChild(screen);
-  screen.dataset.searchFilterTagsExpanded = "false";
-  setSearchFilterSelectedTagIds(screen, []);
-  renderSearchFilterTagOptions(screen);
+  setSearchFilterCharacterState(screen, {});
+  renderSearchFilterCharacterFields(screen);
   return screen;
-};
-
-const renderSearchFilterRecents = (screen, query = "") => {
-  const recentList = screen?.querySelector("[data-search-filter-recent-list]");
-  const recentClear = screen?.querySelector("[data-search-filter-recent-clear]");
-  if (!recentList) return;
-
-  recentList.textContent = "";
-  const recentValues = query ? [query] : ["ケモホモ"];
-  recentValues.forEach((value) => {
-    const chip = document.createElement("button");
-    chip.type = "button";
-    chip.className = "ikea-search-filter-screen__recentChip";
-    chip.dataset.searchFilterRecentValue = value;
-    chip.textContent = value;
-    recentList.appendChild(chip);
-  });
-
-  if (recentClear) {
-    recentClear.hidden = recentValues.length === 0;
-  }
 };
 
 const closeSearchFilterScreen = () => {
@@ -1018,12 +1055,14 @@ const openSearchFilterScreen = (trigger = null) => {
 
   const params = new URLSearchParams(window.location.search);
   const query = getHeaderSearchQuery(trigger);
-  const keywordInput = screen.querySelector('input[name="q"]');
-  if (keywordInput) keywordInput.value = query;
-  screen.dataset.searchFilterTagsExpanded = "false";
-  setSearchFilterSelectedTagIds(screen, params.getAll("include"));
-  renderSearchFilterTagOptions(screen);
-  renderSearchFilterRecents(screen, query);
+  const queryInput = screen.querySelector("[data-search-filter-query-input]");
+  if (queryInput) queryInput.value = query;
+  setSearchFilterCharacterState(screen, {
+    speciesTagIds: params.getAll("c1_species"),
+    bodyTypeTagIds: params.getAll("c1_body"),
+    ageFeelTagIds: params.getAll("c1_age"),
+  });
+  renderSearchFilterCharacterFields(screen);
 
   searchFilterScreenRestoreFocus =
     document.activeElement instanceof HTMLElement ? document.activeElement : null;
@@ -1032,8 +1071,11 @@ const openSearchFilterScreen = (trigger = null) => {
   screen.setAttribute("aria-hidden", "false");
   document.body.classList.add("search-filter-screen-open");
 
+  const firstButton =
+    screen.querySelector("[data-search-filter-character-field]") ||
+    screen.querySelector("[data-search-filter-reset]");
   window.requestAnimationFrame(() => {
-    keywordInput?.focus();
+    firstButton?.focus();
   });
 };
 
@@ -1057,67 +1099,34 @@ const initSearchFilterScreen = () => {
       return;
     }
 
-    const recentChip = event.target.closest("[data-search-filter-recent-value]");
-    if (recentChip) {
-      const screen = recentChip.closest("[data-search-filter-screen]");
-      const keywordInput = screen?.querySelector('input[name="q"]');
-      if (keywordInput) {
-        keywordInput.value = recentChip.dataset.searchFilterRecentValue || "";
-        keywordInput.focus();
-      }
-      return;
-    }
-
-    const recentClear = event.target.closest("[data-search-filter-recent-clear]");
-    if (recentClear) {
-      const screen = recentClear.closest("[data-search-filter-screen]");
-      const recentList = screen?.querySelector("[data-search-filter-recent-list]");
-      if (recentList) recentList.textContent = "";
-      recentClear.hidden = true;
-      return;
-    }
-
-    const tagMoreButton = event.target.closest("[data-search-filter-tag-more]");
-    if (tagMoreButton) {
-      const screen = tagMoreButton.closest("[data-search-filter-screen]");
-      if (!screen) return;
-      screen.dataset.searchFilterTagsExpanded = String(
-        screen.dataset.searchFilterTagsExpanded !== "true"
-      );
-      renderSearchFilterTagOptions(screen);
-      return;
-    }
-
-    const tagChip = event.target.closest("[data-search-filter-tag-id]");
-    if (tagChip) {
-      const screen = tagChip.closest("[data-search-filter-screen]");
-      if (!screen) return;
-      const tagId = tagChip.dataset.searchFilterTagId || "";
-      const selectedTagIds = getSearchFilterSelectedTagIds(screen);
-      const nextTagIds = selectedTagIds.includes(tagId)
-        ? selectedTagIds.filter((value) => value !== tagId)
-        : [...selectedTagIds, tagId];
-      setSearchFilterSelectedTagIds(screen, nextTagIds);
-      renderSearchFilterTagOptions(screen);
+    const characterButton = event.target.closest("[data-search-filter-character-field]");
+    if (characterButton) {
+      const screen = characterButton.closest("[data-search-filter-screen]");
+      const field = characterButton.dataset.searchFilterCharacterField || "";
+      const tagId = characterButton.dataset.searchFilterTagId || "";
+      if (!screen || !field || !tagId) return;
+      toggleSearchFilterCharacterValue(screen, field, tagId);
+      renderSearchFilterCharacterFields(screen);
       return;
     }
 
     const resetButton = event.target.closest("[data-search-filter-reset]");
     if (resetButton) {
-      const form = resetButton.closest("form");
       const screen = resetButton.closest("[data-search-filter-screen]");
-      const keywordInput = form?.querySelector('input[name="q"]');
-      form?.reset();
-      if (screen) {
-        screen.dataset.searchFilterTagsExpanded = "false";
-        setSearchFilterSelectedTagIds(screen, []);
-        renderSearchFilterTagOptions(screen);
-      }
-      if (keywordInput) {
-        keywordInput.value = "";
-        keywordInput.focus();
-      }
+      if (!screen) return;
+      setSearchFilterCharacterState(screen, {});
+      renderSearchFilterCharacterFields(screen);
+      resetButton.focus();
     }
+  });
+
+  document.body.addEventListener("submit", (event) => {
+    const form = event.target.closest("[data-search-filter-screen] form");
+    if (!form) return;
+    const queryInput = form.querySelector("[data-search-filter-query-input]");
+    if (!(queryInput instanceof HTMLInputElement)) return;
+    queryInput.value = getHeaderSearchQuery(form) || "";
+    queryInput.disabled = queryInput.value.trim() === "";
   });
 
   document.addEventListener("keydown", (event) => {
