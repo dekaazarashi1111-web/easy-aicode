@@ -8335,10 +8335,9 @@ body.finder-tag-picker-open {
 }
 
 .ikea-product-card__iconButton--favorite[aria-pressed="true"] {
-  border-color: #f0b8c4;
-  background: #fff5f7;
+  border-color: var(--ikea-border);
+  background: #fff;
   color: #c92a4a;
-  box-shadow: 0 0 0 2px rgba(201, 42, 74, 0.12);
 }
 
 .ikea-product-card__iconButton--favorite[aria-pressed="true"] path {
