@@ -1283,7 +1283,7 @@
       parts.push(`タグ: ${ensureArray(state.selectedTags).join(" / ")}`);
     }
     if (state.mode === "or") parts.push("いずれか一致");
-    return parts.join(" | ") || "条件なし";
+    return parts.join(" | ") || "キーワード・種別・タグから記事を絞れます。";
   };
 
   const getArticleMatchReason = (article, pageState, articleApi) => {
@@ -3269,12 +3269,12 @@
     const renderQuickFilters = () => {
       quickFiltersRoot.textContent = "";
 
-      const wrapper = createElement("div", "ikea-quick-filters");
+      const wrapper = createElement("div", "ikea-quick-filters ikea-quick-filters--articles");
       const header = createElement("div", "ikea-quick-filters__header");
       const headingBlock = createElement("div", "ikea-quick-filters__heading");
       headingBlock.append(
-        createElement("p", "ikea-quick-filters__eyebrow", "Quick filters"),
-        createElement("h2", "", "記事を絞る")
+        createElement("p", "ikea-quick-filters__eyebrow", "フィルター"),
+        createElement("h2", "", "記事フィルター")
       );
       header.append(
         headingBlock,
@@ -3287,11 +3287,12 @@
 
       const summary = createElement("p", "ikea-quick-filters__summary", getArticleSearchSummaryLabel(pageState));
 
-      const queryField = createElement("label", "ikea-search-sidebar__field");
-      const queryLabel = createElement("span", "", "記事名・タグ");
+      const queryField = createElement("section", "ikea-quick-filter-field");
+      const queryLabel = createElement("strong", "ikea-quick-filter-field__label", "記事名・タグ");
       const queryInput = document.createElement("input");
       queryInput.type = "search";
       queryInput.autocomplete = "off";
+      queryInput.className = "ikea-quick-filter-input";
       queryInput.placeholder = "例: 比較 / CTA / 構成";
       queryInput.value = pageState.query;
       queryInput.dataset.articleQuery = "true";

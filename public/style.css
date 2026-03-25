@@ -8887,6 +8887,21 @@ body.finder-tag-picker-open {
   cursor: pointer;
 }
 
+.ikea-quick-filter-input {
+  width: 100%;
+  min-height: 44px;
+  padding: 0 14px;
+  border: 1px solid var(--ikea-border);
+  border-radius: 12px;
+  background: #fff;
+  color: var(--ikea-text);
+  font: inherit;
+}
+
+.ikea-quick-filter-input::placeholder {
+  color: var(--ikea-muted);
+}
+
 .ikea-quick-filter-chip {
   min-height: 36px;
   padding: 0 12px;
@@ -8966,6 +8981,15 @@ body.finder-tag-picker-open {
   font-size: 0.8rem;
   font-weight: 800;
   text-align: center;
+}
+
+.ikea-quick-filters--articles {
+  gap: 18px;
+}
+
+.ikea-quick-filters--articles .ikea-search-sidebar__field,
+.ikea-search-sidebar__card--compact .ikea-search-sidebar__field {
+  margin-top: 0;
 }
 
 .ikea-search-sidebar__details {
