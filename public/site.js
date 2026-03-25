@@ -142,6 +142,8 @@ const BRAND_NAME = SITE_CONFIG.BRAND_NAME || "Media Canvas";
 const FINDER_STORAGE_KEY = "finder-canvas-state";
 const RECENT_HISTORY_HASH = "#recent-history";
 const RECENT_HISTORY_LIMIT = 20;
+const SEARCH_FILTER_TAG_PREVIEW_LIMIT = 10;
+const SEARCH_FILTER_HIDDEN_GROUP_IDS = new Set(["species", "body-type", "age-feel"]);
 let historyDrawerCloseTimer = null;
 let historyDrawerRestoreFocus = null;
 let searchFilterScreenRestoreFocus = null;
@@ -738,6 +740,80 @@ const createFilterField = ({
   return row;
 };
 
+const getSearchFilterTagOptions = () => {
+  const seedTags = Array.isArray(window.FINDER_SEED?.tags) ? window.FINDER_SEED.tags : [];
+  const visibleTags = seedTags.filter((tag) => {
+    if (!tag || !tag.id || !tag.label) return false;
+    if (tag.isPublic === false) return false;
+    return !SEARCH_FILTER_HIDDEN_GROUP_IDS.has(tag.groupId);
+  });
+
+  if (visibleTags.length) return visibleTags;
+
+  return [
+    { id: "kemo-entry", label: "ケモホモ入口" },
+    { id: "osu-kemo", label: "オスケモ寄り" },
+    { id: "dense-fur", label: "ケモ率高め" },
+    { id: "gentle-tone", label: "やさしめ" },
+    { id: "light-tone", label: "軽め" },
+    { id: "tf-present", label: "TFあり" },
+    { id: "tf-soft", label: "変化は軽め" },
+    { id: "mind-stable", label: "精神変化なし" },
+    { id: "buddy-energy", label: "相棒感" },
+    { id: "format-comic", label: "漫画" },
+    { id: "format-cg", label: "CG・イラスト" },
+    { id: "no-ntr", label: "NTRなし" },
+  ];
+};
+
+const getSearchFilterSelectedTagIds = (screen) =>
+  Array.isArray(screen?._selectedIncludeTagIds) ? screen._selectedIncludeTagIds : [];
+
+const syncSearchFilterIncludeInputs = (screen) => {
+  const container = screen?.querySelector("[data-search-filter-include-inputs]");
+  if (!container) return;
+  container.textContent = "";
+  getSearchFilterSelectedTagIds(screen).forEach((tagId) => {
+    const input = document.createElement("input");
+    input.type = "hidden";
+    input.name = "include";
+    input.value = tagId;
+    container.appendChild(input);
+  });
+};
+
+const setSearchFilterSelectedTagIds = (screen, tagIds) => {
+  if (!screen) return;
+  const uniqueTagIds = Array.from(new Set((Array.isArray(tagIds) ? tagIds : []).filter(Boolean)));
+  screen._selectedIncludeTagIds = uniqueTagIds;
+  syncSearchFilterIncludeInputs(screen);
+};
+
+const renderSearchFilterTagOptions = (screen) => {
+  const list = screen?.querySelector("[data-search-filter-tag-list]");
+  const moreButton = screen?.querySelector("[data-search-filter-tag-more]");
+  if (!list || !moreButton) return;
+
+  const allTags = getSearchFilterTagOptions();
+  const expanded = screen.dataset.searchFilterTagsExpanded === "true";
+  const selectedTagIds = new Set(getSearchFilterSelectedTagIds(screen));
+  const visibleTags = expanded ? allTags : allTags.slice(0, SEARCH_FILTER_TAG_PREVIEW_LIMIT);
+
+  list.textContent = "";
+  visibleTags.forEach((tag) => {
+    const button = document.createElement("button");
+    button.type = "button";
+    button.className = "ikea-search-filter-screen__tagChip";
+    button.dataset.searchFilterTagId = tag.id;
+    button.setAttribute("aria-pressed", String(selectedTagIds.has(tag.id)));
+    button.textContent = tag.label;
+    list.appendChild(button);
+  });
+
+  moreButton.hidden = allTags.length <= SEARCH_FILTER_TAG_PREVIEW_LIMIT;
+  moreButton.textContent = expanded ? "閉じる" : "もっと見る";
+};
+
 const createSearchFilterScreen = () => {
   if (typeof document === "undefined" || !document.body) return null;
   const existing = document.querySelector("[data-search-filter-screen]");
@@ -757,9 +833,14 @@ const createSearchFilterScreen = () => {
   const recentClear = document.createElement("button");
   const recentList = document.createElement("div");
   const rows = document.createElement("div");
-  const otherRow = document.createElement("div");
-  const otherLabel = document.createElement("span");
-  const otherBody = document.createElement("div");
+  const includeTagRow = document.createElement("div");
+  const includeTagLabel = document.createElement("span");
+  const includeTagBody = document.createElement("div");
+  const includeTagHeader = document.createElement("div");
+  const includeTagMore = document.createElement("button");
+  const includeTagList = document.createElement("div");
+  const includeTagInputs = document.createElement("div");
+  const includeTagHelp = document.createElement("p");
   const priceRow = document.createElement("div");
   const priceLabel = document.createElement("span");
   const priceBody = document.createElement("div");
@@ -818,6 +899,25 @@ const createSearchFilterScreen = () => {
   recentTop.append(recentHeading, recentClear);
   recent.append(recentTop, recentList);
 
+  includeTagRow.className = "ikea-search-filter-screen__row";
+  includeTagLabel.className = "ikea-search-filter-screen__label";
+  includeTagLabel.textContent = "含めるタグ";
+  includeTagBody.className = "ikea-search-filter-screen__fieldBody";
+  includeTagHeader.className = "ikea-search-filter-screen__tagHeader";
+  includeTagMore.className = "ikea-search-filter-screen__tagMore";
+  includeTagMore.type = "button";
+  includeTagMore.dataset.searchFilterTagMore = "true";
+  includeTagMore.textContent = "もっと見る";
+  includeTagHeader.appendChild(includeTagMore);
+  includeTagList.className = "ikea-search-filter-screen__tagList";
+  includeTagList.dataset.searchFilterTagList = "true";
+  includeTagInputs.hidden = true;
+  includeTagInputs.dataset.searchFilterIncludeInputs = "true";
+  includeTagHelp.className = "ikea-search-filter-screen__help";
+  includeTagHelp.textContent = "含めたいタグを選ぶと、作品検索へそのまま引き継ぎます。";
+  includeTagBody.append(includeTagHeader, includeTagList, includeTagInputs, includeTagHelp);
+  includeTagRow.append(includeTagLabel, includeTagBody);
+
   rows.className = "ikea-search-filter-screen__rows";
   rows.append(
     createFilterField({
@@ -830,36 +930,10 @@ const createSearchFilterScreen = () => {
       placeholder: "除外したいキーワードを入力",
       help: "入力されたキーワードを含む商品を検索結果から除きます。",
     }),
-    createFilterField({
-      label: "タグ",
-      placeholder: "タグを入力(ジャンルなど)",
-      help: "入力されたタグをすべて含む商品のみ検索結果に表示されます。",
-    }),
+    includeTagRow,
     createFilterField({ label: "カテゴリ", type: "select" }),
-    createFilterField({ label: "サブカテゴリ", type: "select" }),
-    createFilterField({ label: "イベント", type: "select" }),
-    createFilterField({ label: "商品タイプ", type: "select" }),
     createFilterField({ label: "年齢制限", type: "select" })
   );
-
-  otherRow.className = "ikea-search-filter-screen__row";
-  otherLabel.className = "ikea-search-filter-screen__label";
-  otherLabel.textContent = "その他";
-  otherBody.className = "ikea-search-filter-screen__fieldBody";
-  [
-    "在庫なし・販売終了を含む",
-    "最近公開された商品のみ",
-  ].forEach((text) => {
-    const item = document.createElement("label");
-    const checkbox = document.createElement("input");
-    const label = document.createElement("span");
-    item.className = "ikea-search-filter-screen__check";
-    checkbox.type = "checkbox";
-    label.textContent = text;
-    item.append(checkbox, label);
-    otherBody.appendChild(item);
-  });
-  otherRow.append(otherLabel, otherBody);
 
   priceRow.className = "ikea-search-filter-screen__row";
   priceLabel.className = "ikea-search-filter-screen__label";
@@ -879,7 +953,7 @@ const createSearchFilterScreen = () => {
   priceRow.append(priceLabel, priceBody);
 
   note.className = "ikea-search-filter-screen__note";
-  note.textContent = "この画面はたたき台です。現状はキーワードのみ作品検索へ引き継ぎます。";
+  note.textContent = "この画面はたたき台です。現状はキーワードと含めるタグのみ作品検索へ引き継ぎます。";
 
   footer.className = "ikea-search-filter-screen__footer";
   resetButton.className = "ikea-search-filter-screen__secondary";
@@ -892,10 +966,13 @@ const createSearchFilterScreen = () => {
   footer.append(resetButton, submitButton);
 
   form.append(header, body, footer);
-  body.append(recent, rows, otherRow, priceRow, note);
+  body.append(recent, rows, priceRow, note);
   panel.appendChild(form);
   screen.append(backdrop, panel);
   document.body.appendChild(screen);
+  screen.dataset.searchFilterTagsExpanded = "false";
+  setSearchFilterSelectedTagIds(screen, []);
+  renderSearchFilterTagOptions(screen);
   return screen;
 };
 
@@ -939,9 +1016,13 @@ const openSearchFilterScreen = (trigger = null) => {
   const screen = createSearchFilterScreen();
   if (!screen) return;
 
+  const params = new URLSearchParams(window.location.search);
   const query = getHeaderSearchQuery(trigger);
   const keywordInput = screen.querySelector('input[name="q"]');
   if (keywordInput) keywordInput.value = query;
+  screen.dataset.searchFilterTagsExpanded = "false";
+  setSearchFilterSelectedTagIds(screen, params.getAll("include"));
+  renderSearchFilterTagOptions(screen);
   renderSearchFilterRecents(screen, query);
 
   searchFilterScreenRestoreFocus =
@@ -996,11 +1077,42 @@ const initSearchFilterScreen = () => {
       return;
     }
 
+    const tagMoreButton = event.target.closest("[data-search-filter-tag-more]");
+    if (tagMoreButton) {
+      const screen = tagMoreButton.closest("[data-search-filter-screen]");
+      if (!screen) return;
+      screen.dataset.searchFilterTagsExpanded = String(
+        screen.dataset.searchFilterTagsExpanded !== "true"
+      );
+      renderSearchFilterTagOptions(screen);
+      return;
+    }
+
+    const tagChip = event.target.closest("[data-search-filter-tag-id]");
+    if (tagChip) {
+      const screen = tagChip.closest("[data-search-filter-screen]");
+      if (!screen) return;
+      const tagId = tagChip.dataset.searchFilterTagId || "";
+      const selectedTagIds = getSearchFilterSelectedTagIds(screen);
+      const nextTagIds = selectedTagIds.includes(tagId)
+        ? selectedTagIds.filter((value) => value !== tagId)
+        : [...selectedTagIds, tagId];
+      setSearchFilterSelectedTagIds(screen, nextTagIds);
+      renderSearchFilterTagOptions(screen);
+      return;
+    }
+
     const resetButton = event.target.closest("[data-search-filter-reset]");
     if (resetButton) {
       const form = resetButton.closest("form");
+      const screen = resetButton.closest("[data-search-filter-screen]");
       const keywordInput = form?.querySelector('input[name="q"]');
       form?.reset();
+      if (screen) {
+        screen.dataset.searchFilterTagsExpanded = "false";
+        setSearchFilterSelectedTagIds(screen, []);
+        renderSearchFilterTagOptions(screen);
+      }
       if (keywordInput) {
         keywordInput.value = "";
         keywordInput.focus();
