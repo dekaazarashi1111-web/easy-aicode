@@ -1715,11 +1715,13 @@
       matchMode: "and",
       characters: [createEmptyCharacterState()],
     };
-    const quickTagGroups = groupedTags.map((group) => ({
-      id: group.id,
-      label: FILTER_LABEL_OVERRIDES[group.id] || group.label,
-      tags: ensureArray(group.tags),
-    }));
+    const quickTagGroups = groupedTags
+      .filter((group) => !QUICK_FILTER_GROUP_IDS.has(group.id))
+      .map((group) => ({
+        id: group.id,
+        label: FILTER_LABEL_OVERRIDES[group.id] || group.label,
+        tags: ensureArray(group.tags),
+      }));
     const quickSelectableTags = quickTagGroups.flatMap((group) =>
       group.tags.map((tag) => ({
         ...tag,
