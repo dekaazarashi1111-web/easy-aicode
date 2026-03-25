@@ -39,6 +39,36 @@
     return element;
   };
 
+  let mediaCycleSequence = 0;
+  const mediaCycleCleanupMap = new Map();
+
+  const registerMediaCycleCleanup = (element, cleanup) => {
+    if (!element || typeof cleanup !== "function") return;
+    const cycleId = `media-cycle-${++mediaCycleSequence}`;
+    element.dataset.mediaCycleId = cycleId;
+    mediaCycleCleanupMap.set(cycleId, cleanup);
+  };
+
+  const disposeMediaCycleCleanup = (element) => {
+    if (!element) return;
+    const cycleId = element.dataset.mediaCycleId;
+    if (!cycleId) return;
+    const cleanup = mediaCycleCleanupMap.get(cycleId);
+    if (cleanup) cleanup();
+    mediaCycleCleanupMap.delete(cycleId);
+    delete element.dataset.mediaCycleId;
+  };
+
+  const disposeMediaCyclesWithin = (root) => {
+    if (!root) return;
+    if (root instanceof Element && root.dataset.mediaCycleId) {
+      disposeMediaCycleCleanup(root);
+    }
+    root.querySelectorAll?.("[data-media-cycle-id]").forEach((element) => {
+      disposeMediaCycleCleanup(element);
+    });
+  };
+
   const createIcon = (kind, className = "") => {
     const svg = document.createElementNS("http://www.w3.org/2000/svg", "svg");
     svg.setAttribute("viewBox", "0 0 24 24");
@@ -165,6 +195,7 @@
   const QUICK_FILTER_GLOBAL_EXCLUDE_TAG_IDS = ["no-ntr", "clear-consent", "low-gore"];
   const QUICK_FILTER_GLOBAL_INCLUDE_SET = new Set(QUICK_FILTER_GLOBAL_INCLUDE_TAG_IDS);
   const QUICK_FILTER_GLOBAL_EXCLUDE_SET = new Set(QUICK_FILTER_GLOBAL_EXCLUDE_TAG_IDS);
+  const HOVER_GALLERY_INTERVAL_MS = 3000;
 
   const hashString = (value) => {
     let hash = 0;
@@ -318,27 +349,151 @@
     return `data:image/svg+xml;charset=UTF-8,${encodeURIComponent(svg)}`;
   };
 
-  const resolveHoverPreviewImageSrc = (work, meta) =>
-    work.hoverImageUrl ||
-    work.hoverPreviewImageUrl ||
-    work.cardHoverImageUrl ||
-    buildHoverPreviewPlaceholder(work, meta);
+  const getImageVariantScore = (url) => {
+    const value = String(url || "");
+    let score = 0;
+    if (/_base_resized(?=\.[a-z0-9]+$)/i.test(value)) score += 4;
+    if (/\/c\/\d+x\d+\//i.test(value)) score += 2;
+    return score;
+  };
 
-  const createProductCardMediaVisual = ({ work, meta }) => {
+  const normalizeGalleryImageKey = (url) => {
+    const value = String(url || "").trim();
+    if (!value) return "";
+    try {
+      const parsed = new URL(value, window.location.href);
+      const normalizedPath = parsed.pathname
+        .replace(/\/c\/[^/]+\//i, "/")
+        .replace(/_base_resized(?=\.[a-z0-9]+$)/i, "");
+      return `${parsed.origin}${normalizedPath}`;
+    } catch (error) {
+      return value.replace(/_base_resized(?=\.[a-z0-9]+$)/i, "");
+    }
+  };
+
+  const resolveCardImageUrls = (work) => {
+    const order = [];
+    const preferredByKey = new Map();
+    [
+      work.hoverImageUrl,
+      ...ensureArray(work.galleryImageUrls),
+      work.hoverPreviewImageUrl,
+      work.cardHoverImageUrl,
+    ]
+      .filter(Boolean)
+      .forEach((url) => {
+        const key = normalizeGalleryImageKey(url);
+        if (!key) return;
+        if (!preferredByKey.has(key)) {
+          preferredByKey.set(key, url);
+          order.push(key);
+          return;
+        }
+        const current = preferredByKey.get(key);
+        if (getImageVariantScore(url) > getImageVariantScore(current)) {
+          preferredByKey.set(key, url);
+        }
+      });
+    return order.map((key) => preferredByKey.get(key)).filter(Boolean);
+  };
+
+  const createProductCardImage = (className, src) => {
+    const image = document.createElement("img");
+    image.className = className;
+    image.src = src;
+    image.alt = "";
+    image.loading = "lazy";
+    image.decoding = "async";
+    image.draggable = false;
+    return image;
+  };
+
+  const bindHoverGalleryCycle = ({ card, hoverImage, hoverImageUrls }) => {
+    if (!card || !hoverImage || hoverImageUrls.length < 2) return;
+
+    let intervalId = 0;
+    let currentIndex = 0;
+
+    const applyFrame = (index) => {
+      currentIndex = index;
+      hoverImage.src = hoverImageUrls[currentIndex];
+    };
+
+    const stopCycle = () => {
+      if (intervalId) {
+        window.clearInterval(intervalId);
+        intervalId = 0;
+      }
+      applyFrame(0);
+    };
+
+    const startCycle = () => {
+      applyFrame(0);
+      if (intervalId) return;
+      intervalId = window.setInterval(() => {
+        applyFrame((currentIndex + 1) % hoverImageUrls.length);
+      }, HOVER_GALLERY_INTERVAL_MS);
+    };
+
+    const handleFocusOut = (event) => {
+      if (card.contains(event.relatedTarget)) return;
+      stopCycle();
+    };
+
+    const handleVisibilityChange = () => {
+      if (document.hidden) stopCycle();
+    };
+
+    card.addEventListener("mouseenter", startCycle);
+    card.addEventListener("mouseleave", stopCycle);
+    card.addEventListener("focusin", startCycle);
+    card.addEventListener("focusout", handleFocusOut);
+    document.addEventListener("visibilitychange", handleVisibilityChange);
+    window.addEventListener("pagehide", stopCycle);
+
+    registerMediaCycleCleanup(card, () => {
+      stopCycle();
+      card.removeEventListener("mouseenter", startCycle);
+      card.removeEventListener("mouseleave", stopCycle);
+      card.removeEventListener("focusin", startCycle);
+      card.removeEventListener("focusout", handleFocusOut);
+      document.removeEventListener("visibilitychange", handleVisibilityChange);
+      window.removeEventListener("pagehide", stopCycle);
+    });
+  };
+
+  const createProductCardMediaVisual = ({ work, meta, card }) => {
     const visuals = createElement("div", "ikea-product-card__mediaVisuals");
     const base = createElement("div", "ikea-product-card__mediaVisual ikea-product-card__mediaVisual--base");
     const hover = createElement("div", "ikea-product-card__mediaVisual ikea-product-card__mediaVisual--hover");
-    const hoverImage = document.createElement("img");
+    const distinctImageUrls = resolveCardImageUrls(work);
+    const primaryImageUrl = distinctImageUrls[0] || "";
+    const alternateImageUrls = distinctImageUrls.slice(1);
 
-    hoverImage.className = "ikea-product-card__hoverImage";
-    hoverImage.src = resolveHoverPreviewImageSrc(work, meta);
-    hoverImage.alt = "";
-    hoverImage.loading = "lazy";
-    hoverImage.decoding = "async";
-    hoverImage.draggable = false;
+    if (primaryImageUrl) {
+      base.appendChild(createProductCardImage("ikea-product-card__mainImage", primaryImageUrl));
+    } else {
+      base.appendChild(createShelfArtwork(work.id || work.slug || work.title, meta.visual, meta.tone));
+    }
 
-    base.appendChild(createShelfArtwork(work.id || work.slug || work.title, meta.visual, meta.tone));
-    hover.appendChild(hoverImage);
+    if (alternateImageUrls.length) {
+      const hoverImage = createProductCardImage(
+        "ikea-product-card__hoverImage",
+        alternateImageUrls[0]
+      );
+      visuals.classList.add("ikea-product-card__mediaVisuals--hoverSwap");
+      hover.appendChild(hoverImage);
+      bindHoverGalleryCycle({ card, hoverImage, hoverImageUrls: alternateImageUrls });
+    } else if (!primaryImageUrl) {
+      visuals.classList.add("ikea-product-card__mediaVisuals--hoverSwap");
+      hover.appendChild(
+        createProductCardImage(
+          "ikea-product-card__hoverImage",
+          buildHoverPreviewPlaceholder(work, meta)
+        )
+      );
+    }
+
     visuals.append(base, hover);
     return visuals;
   };
@@ -1101,7 +1256,7 @@
     if (meta.badge) {
       media.appendChild(createElement("span", "ikea-product-card__badge", meta.badge));
     }
-    media.appendChild(createProductCardMediaVisual({ work, meta }));
+    media.appendChild(createProductCardMediaVisual({ work, meta, card: article }));
     mediaLink.appendChild(media);
 
     meta.metaItems.forEach((item) => {
@@ -1272,6 +1427,7 @@
     }
 
     if (workRoot) {
+      disposeMediaCyclesWithin(workRoot);
       workRoot.textContent = "";
       featuredWorks.forEach((work) => {
         workRoot.appendChild(
@@ -2071,6 +2227,7 @@
 
     const renderSuggestions = (filtered, uiState) => {
       if (!suggestionsRoot || !suggestionsWrap) return;
+      disposeMediaCyclesWithin(suggestionsRoot);
       suggestionsRoot.textContent = "";
       suggestionsWrap.hidden = filtered.length !== 0;
       if (filtered.length) return;
@@ -2323,6 +2480,7 @@
         a11yLive.textContent = `${headingLabel} が見つかりました。`;
       }
 
+      disposeMediaCyclesWithin(resultsRoot);
       resultsRoot.textContent = "";
       displayedWorks.forEach((work) => {
         resultsRoot.appendChild(
