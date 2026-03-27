@@ -1298,11 +1298,121 @@
 
     const params = new URLSearchParams(window.location.search);
     const slug = params.get("slug") || "";
+    const findPublishedWorkBySlug = (currentState, currentSlug) =>
+      core
+        .ensureArray(currentState?.works)
+        .find((item) => item.status === "published" && item.slug === currentSlug) || null;
+    const resolveDetailProfile = (currentState, siteProfileIds) => {
+      const activeProfile = core.getActiveProfile(currentState);
+      const profileIds = core.ensureArray(siteProfileIds);
+      if (activeProfile && profileIds.includes(activeProfile.id)) return activeProfile;
+      return (
+        profileIds
+          .map((profileId) => core.getProfile(currentState, profileId))
+          .find(Boolean) ||
+        activeProfile
+      );
+    };
+    const collectWorkMediaUrls = (currentWork) =>
+      unique([
+        currentWork?.primaryImage?.url,
+        currentWork?.hoverImageUrl,
+        ...core.ensureArray(currentWork?.galleryImages).map((item) => item?.url),
+        ...core.ensureArray(currentWork?.galleryImageUrls),
+      ].filter(Boolean));
+    const renderWorkGallery = (currentWork) => {
+      const heroRoot = root.querySelector("[data-work-hero-media]");
+      const thumbsRoot = root.querySelector("[data-work-gallery-thumbs]");
+      const captionRoot = root.querySelector("[data-work-hero-caption]");
+      if (!heroRoot || !thumbsRoot) return;
+
+      const mediaUrls = collectWorkMediaUrls(currentWork);
+      heroRoot.textContent = "";
+      thumbsRoot.textContent = "";
+      heroRoot.classList.toggle("pdp-gallery__visual--image", mediaUrls.length > 0);
+
+      if (mediaUrls.length) {
+        const image = document.createElement("img");
+        const overlay = document.createElement("div");
+        image.className = "pdp-gallery__image";
+        image.src = mediaUrls[0];
+        image.alt = `${currentWork.title} のプレビュー画像`;
+        image.loading = "eager";
+        image.decoding = "async";
+
+        overlay.className = "pdp-gallery__overlay";
+        overlay.append(
+          createText("span", "pdp-gallery__badge", currentWork.format || "WORK"),
+          createText("strong", "", currentWork.title),
+          createText(
+            "p",
+            "",
+            currentWork.publicNote ||
+              currentWork.matchSummary ||
+              currentWork.shortDescription ||
+              "この作品のビジュアルと要点を置くための仮レイアウトです。"
+          )
+        );
+        heroRoot.append(image, overlay);
+
+        mediaUrls.slice(0, 4).forEach((url, index) => {
+          const thumb = document.createElement("div");
+          const thumbImage = document.createElement("img");
+          const thumbLabel = createText(
+            "span",
+            "pdp-gallery__thumb-label",
+            index === 0 ? "メイン画像" : `画像 ${index + 1}`
+          );
+          thumb.className = "pdp-gallery__thumb";
+          if (index === 0) thumb.dataset.active = "true";
+          thumbImage.src = url;
+          thumbImage.alt = `${currentWork.title} のサムネイル ${index + 1}`;
+          thumbImage.loading = "lazy";
+          thumbImage.decoding = "async";
+          thumb.append(thumbImage, thumbLabel);
+          thumbsRoot.appendChild(thumb);
+        });
+
+        if (captionRoot) {
+          captionRoot.textContent = `${mediaUrls.length}枚のメディアを置ける前提の仮ギャラリーレイアウトです。`;
+        }
+        return;
+      }
+
+      const overlay = document.createElement("div");
+      overlay.className = "pdp-gallery__overlay";
+      overlay.append(
+        createText("span", "pdp-gallery__badge", currentWork.format || "WORK"),
+        createText("strong", "", currentWork.title),
+        createText(
+          "p",
+          "",
+          currentWork.matchSummary ||
+            currentWork.shortDescription ||
+            "画像未登録の作品でも、詳細ページの見せ方を先に詰められるよう仮表示しています。"
+        )
+      );
+      heroRoot.appendChild(overlay);
+
+      [
+        currentWork.format || "作品",
+        core.ensureArray(currentWork.highlightPoints)[0] || "主要ポイント",
+        currentWork.releasedAt ? `公開 ${currentWork.releasedAt}` : "公開日未設定",
+      ].forEach((label) => {
+        const thumb = document.createElement("div");
+        thumb.className = "pdp-gallery__thumb pdp-gallery__thumb--placeholder";
+        thumb.appendChild(createText("strong", "", label));
+        thumbsRoot.appendChild(thumb);
+      });
+
+      if (captionRoot) {
+        captionRoot.textContent = "画像未登録の作品でも、作品詳細ページの器を先に確認できる仮表示です。";
+      }
+    };
+
     let state = store.loadState();
-    const profile = core.getActiveProfile(state);
-    const work = core
-      .getProfileWorks(state, profile?.id, { publicOnly: true })
-      .find((item) => item.slug === slug);
+    const work = findPublishedWorkBySlug(state, slug);
+    const profile = resolveDetailProfile(state, work?.siteProfileIds);
     const notFound = root.querySelector("[data-work-not-found]");
     const content = root.querySelector("[data-work-content]");
     if (!work) {
@@ -1341,6 +1451,9 @@
     const breadcrumbRoot = root.querySelector("[data-work-breadcrumb]");
     const releaseRoot = root.querySelector("[data-work-release]");
     const tagCountRoot = root.querySelector("[data-work-tag-count]");
+    const updatedRoot = root.querySelector("[data-work-updated]");
+    const linkCountRoot = root.querySelector("[data-work-link-count]");
+    const collectionCountRoot = root.querySelector("[data-work-collection-count]");
 
     if (titleRoot) titleRoot.textContent = work.title;
     if (summaryRoot) summaryRoot.textContent = work.shortDescription;
@@ -1354,6 +1467,11 @@
     if (tagCountRoot) {
       tagCountRoot.textContent = `主要タグ: ${core.ensureArray(decoratedWork?.primaryTagObjects).length}件`;
     }
+    if (updatedRoot) updatedRoot.textContent = work.updatedAt || work.releasedAt || "未設定";
+    if (linkCountRoot) linkCountRoot.textContent = `${core.ensureArray(work.externalLinks).length}件`;
+    if (collectionCountRoot) collectionCountRoot.textContent = `${core.ensureArray(work.collectionIds).length}件`;
+
+    renderWorkGallery(work);
 
     if (pointsRoot) {
       fillTextList(pointsRoot, work.highlightPoints, (item) => createText("li", "", item));
@@ -1439,6 +1557,11 @@
         anchor.textContent = link.label || "外部リンクを見る";
         linksRoot.appendChild(anchor);
       });
+      if (!linksRoot.childElementCount) {
+        linksRoot.appendChild(
+          createText("p", "help", "外部リンクはまだ未設定です。仮導線としてこの枠だけ確保しています。")
+        );
+      }
     }
 
     if (collectionRoot) {
@@ -1453,6 +1576,11 @@
           })
         );
       });
+      if (!collectionRoot.childElementCount) {
+        collectionRoot.appendChild(
+          createText("p", "help", "関連特集はまだ未設定です。")
+        );
+      }
     }
 
     if (similarRoot) {
@@ -1553,10 +1681,23 @@
     const params = new URLSearchParams(window.location.search);
     const slug = params.get("slug") || "";
     const state = store.loadState();
-    const profile = core.getActiveProfile(state);
-    const collection = core
-      .getProfileCollections(state, profile?.id, { publicOnly: true })
-      .find((item) => item.slug === slug);
+    const findPublicCollectionBySlug = (currentState, currentSlug) =>
+      core
+        .ensureArray(currentState?.collections)
+        .find((item) => item.isPublic !== false && item.slug === currentSlug) || null;
+    const resolveDetailProfile = (currentState, siteProfileIds) => {
+      const activeProfile = core.getActiveProfile(currentState);
+      const profileIds = core.ensureArray(siteProfileIds);
+      if (activeProfile && profileIds.includes(activeProfile.id)) return activeProfile;
+      return (
+        profileIds
+          .map((profileId) => core.getProfile(currentState, profileId))
+          .find(Boolean) ||
+        activeProfile
+      );
+    };
+    const collection = findPublicCollectionBySlug(state, slug);
+    const profile = resolveDetailProfile(state, collection?.siteProfileIds);
 
     const notFound = root.querySelector("[data-collection-not-found]");
     const content = root.querySelector("[data-collection-content]");

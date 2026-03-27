@@ -1,0 +1,31 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 675" role="img" aria-labelledby="title desc">
+  <title id="title">Article Layout Test</title>
+  <desc id="desc">Placeholder illustration for testing article detail layouts.</desc>
+  <defs>
+    <linearGradient id="bg" x1="0" x2="1" y1="0" y2="1">
+      <stop offset="0%" stop-color="#e9dcc8" />
+      <stop offset="55%" stop-color="#f6efe5" />
+      <stop offset="100%" stop-color="#d6e6dd" />
+    </linearGradient>
+    <linearGradient id="card" x1="0" x2="1" y1="0" y2="1">
+      <stop offset="0%" stop-color="#123228" />
+      <stop offset="100%" stop-color="#27605a" />
+    </linearGradient>
+  </defs>
+  <rect width="1200" height="675" fill="url(#bg)" />
+  <circle cx="164" cy="146" r="92" fill="#d3b172" opacity=".38" />
+  <circle cx="1050" cy="118" r="74" fill="#8fb6a6" opacity=".36" />
+  <rect x="112" y="110" width="976" height="455" rx="36" fill="#fbf7f1" opacity=".94" />
+  <rect x="152" y="150" width="436" height="375" rx="28" fill="url(#card)" />
+  <rect x="628" y="166" width="360" height="26" rx="13" fill="#1b4137" opacity=".16" />
+  <rect x="628" y="216" width="308" height="18" rx="9" fill="#1b4137" opacity=".12" />
+  <rect x="628" y="268" width="392" height="18" rx="9" fill="#1b4137" opacity=".12" />
+  <rect x="628" y="300" width="324" height="18" rx="9" fill="#1b4137" opacity=".12" />
+  <rect x="628" y="352" width="212" height="96" rx="24" fill="#efe6d7" />
+  <rect x="860" y="352" width="212" height="96" rx="24" fill="#efe6d7" />
+  <rect x="628" y="470" width="444" height="22" rx="11" fill="#1b4137" opacity=".12" />
+  <rect x="628" y="506" width="286" height="22" rx="11" fill="#1b4137" opacity=".12" />
+  <text x="190" y="216" fill="#f9f6f1" font-family="Avenir Next, Arial, sans-serif" font-size="28" font-weight="700" letter-spacing=".12em">LAYOUT TEST</text>
+  <text x="190" y="280" fill="#f9f6f1" font-family="Avenir Next, Arial, sans-serif" font-size="72" font-weight="700">Finder Article</text>
+  <text x="190" y="338" fill="#d9ece2" font-family="Avenir Next, Arial, sans-serif" font-size="28">Placeholder visual for image and spacing checks</text>
+</svg>

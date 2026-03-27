@@ -12,7 +12,12 @@ assert.equal(articles.length >= 3, true, "sample articles should include at leas
 
 assert.deepEqual(
   slugs(articleSearch.filterArticles({ articles })),
-  ["content-planning-checklist", "comparison-template", "review-structure"],
+  [
+    "content-planning-checklist",
+    "comparison-template",
+    "review-structure",
+    "article-layout-test",
+  ],
   "no filters should return all articles in source order"
 );
 

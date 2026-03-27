@@ -1,0 +1,182 @@
+<!doctype html>
+<html lang="ja">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>記事レイアウト確認用テスト | Media Canvas</title>
+  <meta
+    name="description"
+    content="画像、図版、要点カードを含む記事詳細ページの仮レイアウト確認用テスト記事です。"
+  />
+  <link rel="canonical" href="/articles/article-layout-test/" />
+  <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
+  <link rel="apple-touch-icon" href="/assets/logo.png" />
+  <meta name="robots" content="index,follow,max-image-preview:large" />
+  <meta name="author" content="Media Canvas" />
+  <meta name="theme-color" content="#ffffff" />
+  <meta property="og:site_name" content="Media Canvas" />
+  <meta property="og:title" content="記事レイアウト確認用テスト | Media Canvas" />
+  <meta
+    property="og:description"
+    content="画像、図版、要点カードを含む記事詳細ページの仮レイアウト確認用テスト記事です。"
+  />
+  <meta property="og:type" content="article" />
+  <meta property="og:url" content="/articles/article-layout-test/" />
+  <meta property="og:locale" content="ja_JP" />
+  <meta property="og:image" content="/assets/article-layout-test.svg" />
+  <meta property="og:image:secure_url" content="/assets/article-layout-test.svg" />
+  <meta property="og:image:alt" content="記事レイアウト確認用のテスト画像" />
+  <meta property="og:image:width" content="1200" />
+  <meta property="og:image:height" content="675" />
+  <meta name="twitter:card" content="summary_large_image" />
+  <meta name="twitter:title" content="記事レイアウト確認用テスト | Media Canvas" />
+  <meta
+    name="twitter:description"
+    content="画像、図版、要点カードを含む記事詳細ページの仮レイアウト確認用テスト記事です。"
+  />
+  <meta name="twitter:image" content="/assets/article-layout-test.svg" />
+  <meta name="twitter:image:alt" content="記事レイアウト確認用のテスト画像" />
+  <link rel="stylesheet" href="/style.css" />
+  <script src="/assets/site-config.js"></script>
+  <script src="/assets/finder-seed.js"></script>
+  <script src="/assets/article-search.js"></script>
+  <script src="/assets/articles.js"></script>
+  <script src="/site.js" defer></script>
+</head>
+<body>
+<a class="skip-link" href="#main">本文へスキップ</a>
+
+<nav class="nav">
+  <div class="container nav__inner">
+    <a class="nav__brand" data-site-brand href="/">Media Canvas</a>
+
+    <div class="nav__links">
+      <a class="nav__link" href="/">ホーム</a>
+      <a class="nav__link" href="/articles/" aria-current="page">記事一覧</a>
+      <a class="nav__link" href="/about/">運営者情報</a>
+      <a class="nav__link" href="/contact/">お問い合わせ</a>
+    </div>
+  </div>
+</nav>
+
+<main id="main">
+  <section class="section section--tight">
+    <div class="container guide-detail-layout" data-article-detail data-article-slug="article-layout-test">
+      <div class="guide-detail-main stack stack--lg">
+        <div class="card page-hero page-hero--article stack">
+          <div class="article-meta-strip">
+            <span class="pill" data-article-type-label>使い方ガイド</span>
+            <span class="help" data-article-published>公開日</span>
+          </div>
+          <p class="kicker">Layout test</p>
+          <h1 class="h1">記事レイアウト確認用テスト</h1>
+          <p class="lead">
+            記事を開いたときの「見出し、画像、要点カード、本文」の入れ物を先に確認するためのテストページです。
+          </p>
+          <div class="tag-list" data-article-meta-tags></div>
+        </div>
+
+        <section class="card guide-hero-media">
+          <div class="guide-hero-media__frame">
+            <img src="/assets/article-layout-test.svg" alt="記事レイアウト確認用のテストビジュアル" />
+          </div>
+          <div class="guide-hero-media__caption">
+            <p class="muted">アイキャッチ、余白、画像比率、本文との接続をまとめて確認するための仮ビジュアルです。</p>
+            <a class="btn btn--secondary btn--sm" href="/articles/">記事一覧へ戻る</a>
+          </div>
+        </section>
+
+        <section class="guide-feature-grid">
+          <div class="card guide-feature-card">
+            <p class="kicker">Check 01</p>
+            <h2 class="h3">冒頭で見せるもの</h2>
+            <p class="muted">記事タイプ、公開日、短い要約、主要タグを先に見せる前提の枠です。</p>
+          </div>
+          <div class="card guide-feature-card">
+            <p class="kicker">Check 02</p>
+            <h2 class="h3">画像の置き方</h2>
+            <p class="muted">アイキャッチ1枚だけでなく、本文中の図版や比較画像も追加しやすいようにしています。</p>
+          </div>
+          <div class="card guide-feature-card">
+            <p class="kicker">Check 03</p>
+            <h2 class="h3">次の行動</h2>
+            <p class="muted">記事を読み終えたあと、一覧へ戻るか、別記事へ進むかの導線を下部に残します。</p>
+          </div>
+        </section>
+
+        <article class="card prose guide-article-card">
+          <p class="guide-inline-note">
+            ここは本文の途中に差し込むメモ枠のテストです。運営メモ、補足、広告表記、更新メモなどを置く前提で余白感を見ています。
+          </p>
+
+          <h2>画像を含む段落の確認</h2>
+          <p>
+            まずは画像の上に十分な余白があるか、画像の下に続く本文が詰まりすぎないかを見ます。実データ投入前でも、カード、本文、図版のリズムだけは先に決めておくと後の差し替えが速くなります。
+          </p>
+
+          <figure class="guide-article-figure">
+            <img src="/assets/article-layout-test.svg" alt="本文中に差し込む図版のサンプル" />
+            <figcaption>本文中の図版サンプル。スクリーンショットや比較表画像を置く場所としての仮枠です。</figcaption>
+          </figure>
+
+          <h2>要点カードと本文の切り替え</h2>
+          <p>
+            記事詳細ページでは、要点カードだけで終わると薄く見え、本文だけだと重く見えます。そこで、短いカード群とまとまった本文を交互に置けるようにしておくと、将来の運用で調整しやすくなります。
+          </p>
+
+          <ul>
+            <li>冒頭で記事の役割を即読できること</li>
+            <li>画像や表を追加しても横幅が破綻しないこと</li>
+            <li>最後に関連記事や一覧へ自然に戻れること</li>
+          </ul>
+
+          <h2>今は中身より器を優先する</h2>
+          <p>
+            今回は仮の文章と画像で十分です。重要なのは、記事を開いたときに「まだ何もないページ」ではなく、あとからコンテンツを流し込める器として成立していることです。
+          </p>
+        </article>
+
+        <div class="card guide-action-row">
+          <a class="btn btn--primary" href="/articles/">記事一覧へ戻る</a>
+          <a class="btn btn--secondary" href="/articles/content-planning-checklist/">既存ガイドを見る</a>
+        </div>
+      </div>
+
+      <aside class="guide-detail-aside">
+        <div class="card booking-sticky-card stack">
+          <p class="kicker">Guide Context</p>
+          <h2 class="h3">このテストで見ること</h2>
+          <ul class="list list--compact">
+            <li>記事冒頭の情報量が多すぎないか</li>
+            <li>画像込みでも本文の読み筋が崩れないか</li>
+            <li>関連記事導線と一覧復帰が自然か</li>
+          </ul>
+          <div class="divider"></div>
+          <h3 class="h3">関連ガイド</h3>
+          <div class="guide-related-list" data-guide-related></div>
+          <div class="divider"></div>
+          <h3 class="h3">サイト導線</h3>
+          <a class="btn btn--primary btn--sm" href="/articles/">ガイド一覧へ</a>
+          <a class="btn btn--secondary btn--sm" href="/finder/">作品検索へ</a>
+          <a class="btn btn--secondary btn--sm" href="/collections/">特集一覧へ</a>
+        </div>
+      </aside>
+    </div>
+  </section>
+</main>
+
+<footer class="footer">
+  <div class="container footer__inner">
+    <p class="muted" data-site-copyright>© Media Canvas</p>
+    <div class="footer__links">
+      <a href="/">ホーム</a>
+      <a href="/articles/">記事一覧</a>
+      <a href="/about/">運営者情報</a>
+      <a href="/contact/">お問い合わせ</a>
+      <a href="/privacy.html">プライバシー</a>
+      <a href="/disclaimer.html">免責事項</a>
+    </div>
+  </div>
+</footer>
+</body>
+</html>
