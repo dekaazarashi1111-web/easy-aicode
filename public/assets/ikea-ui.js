@@ -1906,6 +1906,7 @@
       let heroDotLockIndex = null;
       let heroDotLockTarget = 0;
       let heroDotLockFrame = 0;
+      let heroDotIdleTimer = 0;
 
       const getHeroRailPaddingStart = () => {
         if (!heroRail) return 0;
@@ -1973,9 +1974,17 @@
         }
       };
 
+      const stopHeroDotIdleSync = () => {
+        if (heroDotIdleTimer) {
+          window.clearTimeout(heroDotIdleTimer);
+          heroDotIdleTimer = 0;
+        }
+      };
+
       const watchHeroDotLock = () => {
         if (!heroRail || heroDotLockIndex === null) return;
         if (Math.abs(heroRail.scrollLeft - heroDotLockTarget) <= 2) {
+          currentSnapIndex = heroDotLockIndex;
           heroDotLockIndex = null;
           heroDotLockTarget = 0;
           heroDotLockFrame = 0;
@@ -1988,25 +1997,17 @@
       const scrollToHeroIndex = (index) => {
         if (!heroRail || !heroSnapPositions.length) return;
         const wrappedIndex = ((index % heroSnapPositions.length) + heroSnapPositions.length) % heroSnapPositions.length;
-        const didWrap = index !== wrappedIndex;
         currentSnapIndex = wrappedIndex;
         stopHeroDotLockWatch();
-        if (didWrap) {
-          heroDotLockIndex = wrappedIndex;
-          heroDotLockTarget = heroSnapPositions[wrappedIndex];
-          applyHeroDots(wrappedIndex);
-        } else {
-          heroDotLockIndex = null;
-          heroDotLockTarget = 0;
-          applyHeroDots(wrappedIndex);
-        }
+        stopHeroDotIdleSync();
+        heroDotLockIndex = wrappedIndex;
+        heroDotLockTarget = heroSnapPositions[wrappedIndex];
+        applyHeroDots(wrappedIndex);
         heroRail.scrollTo({
           left: heroSnapPositions[wrappedIndex],
           behavior: "smooth",
         });
-        if (didWrap) {
-          heroDotLockFrame = window.requestAnimationFrame(watchHeroDotLock);
-        }
+        heroDotLockFrame = window.requestAnimationFrame(watchHeroDotLock);
       };
 
       const syncHeroDots = () => {
@@ -2019,10 +2020,23 @@
         applyHeroDots(currentSnapIndex);
       };
 
+      const scheduleHeroDotSync = () => {
+        if (heroDotLockIndex !== null) {
+          applyHeroDots(heroDotLockIndex);
+          return;
+        }
+        stopHeroDotIdleSync();
+        heroDotIdleTimer = window.setTimeout(() => {
+          heroDotIdleTimer = 0;
+          syncHeroDots();
+        }, 90);
+      };
+
       const refreshHeroSnapModel = () => {
         heroSnapPositions = buildHeroSnapPositions();
         const previousCount = root.querySelectorAll("[data-hero-dot]").length;
         stopHeroDotLockWatch();
+        stopHeroDotIdleSync();
         heroDotLockIndex = null;
         heroDotLockTarget = 0;
         currentSnapIndex = getNearestHeroSnapIndex();
@@ -2033,7 +2047,7 @@
       };
 
       heroRail?.addEventListener("scroll", () => {
-        window.requestAnimationFrame(syncHeroDots);
+        scheduleHeroDotSync();
       });
 
       heroDotsRoot?.addEventListener("click", (event) => {
