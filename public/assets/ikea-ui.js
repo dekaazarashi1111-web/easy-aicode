@@ -1833,14 +1833,6 @@
 
       if (heroDotsRoot) {
         heroDotsRoot.textContent = "";
-        slides.forEach((_, index) => {
-          const button = createElement("button", "home-showcase-hero__dot");
-          button.type = "button";
-          button.dataset.heroDot = String(index);
-          button.setAttribute("aria-label", `スライド ${index + 1} を表示`);
-          button.setAttribute("aria-pressed", index === 0 ? "true" : "false");
-          heroDotsRoot.appendChild(button);
-        });
       }
     }
 
@@ -1905,65 +1897,117 @@
 
     if (!root.dataset.homeHeroBound) {
       const heroRail = root.querySelector("[data-home-hero-rail]");
-      const heroDots = Array.from(root.querySelectorAll("[data-hero-dot]"));
       const heroItems = Array.from(root.querySelectorAll("[data-hero-slide]"));
+      const heroDotsRoot = root.querySelector("[data-home-hero-dots]");
       const prevButton = root.querySelector("[data-home-hero-prev]");
       const nextButton = root.querySelector("[data-home-hero-next]");
-      let activeIndex = 0;
+      let currentSnapIndex = 0;
+      let heroSnapPositions = [];
+
+      const getHeroRailPaddingStart = () => {
+        if (!heroRail) return 0;
+        const railStyle = window.getComputedStyle(heroRail);
+        return Number.parseFloat(railStyle.paddingInlineStart || railStyle.paddingLeft || "0") || 0;
+      };
+
+      const buildHeroSnapPositions = () => {
+        if (!heroRail || !heroItems.length) return [0];
+        const maxScroll = Math.max(heroRail.scrollWidth - heroRail.clientWidth, 0);
+        const railPaddingStart = getHeroRailPaddingStart();
+        const positions = [];
+
+        heroItems.forEach((item) => {
+          const position = Math.min(Math.max(item.offsetLeft - railPaddingStart, 0), maxScroll);
+          if (!positions.some((value) => Math.abs(value - position) < 2)) {
+            positions.push(position);
+          }
+        });
+
+        return positions.length ? positions : [0];
+      };
+
+      const getNearestHeroSnapIndex = () => {
+        if (!heroRail || !heroSnapPositions.length) return 0;
+        const currentLeft = heroRail.scrollLeft;
+        let nearestIndex = 0;
+        let nearestDistance = Number.POSITIVE_INFINITY;
+
+        heroSnapPositions.forEach((position, index) => {
+          const distance = Math.abs(position - currentLeft);
+          if (distance < nearestDistance) {
+            nearestDistance = distance;
+            nearestIndex = index;
+          }
+        });
+
+        return nearestIndex;
+      };
+
+      const renderHeroDots = () => {
+        if (!heroDotsRoot) return;
+        heroDotsRoot.textContent = "";
+        heroSnapPositions.forEach((_, index) => {
+          const button = createElement("button", "home-showcase-hero__dot");
+          button.type = "button";
+          button.dataset.heroDot = String(index);
+          button.setAttribute("aria-label", `バナー ${index + 1} を表示`);
+          button.setAttribute("aria-pressed", index === currentSnapIndex ? "true" : "false");
+          heroDotsRoot.appendChild(button);
+        });
+      };
 
       const scrollToHeroIndex = (index) => {
-        if (!heroRail || !heroItems.length) return;
-        const wrappedIndex = ((index % heroItems.length) + heroItems.length) % heroItems.length;
-        const target = heroItems[wrappedIndex];
-        if (!target) return;
-        const railStyle = window.getComputedStyle(heroRail);
-        const railPaddingStart =
-          Number.parseFloat(railStyle.paddingInlineStart || railStyle.paddingLeft || "0") || 0;
+        if (!heroRail || !heroSnapPositions.length) return;
+        const wrappedIndex = ((index % heroSnapPositions.length) + heroSnapPositions.length) % heroSnapPositions.length;
         heroRail.scrollTo({
-          left: Math.max(target.offsetLeft - railPaddingStart, 0),
+          left: heroSnapPositions[wrappedIndex],
           behavior: "smooth",
         });
       };
 
       const syncHeroDots = () => {
-        if (!heroRail || !heroItems.length || !heroDots.length) return;
-        const railCenter = heroRail.scrollLeft + heroRail.clientWidth / 2;
-        let nextActiveIndex = 0;
-        let activeDistance = Number.POSITIVE_INFINITY;
-        heroItems.forEach((item, index) => {
-          const itemCenter = item.offsetLeft + item.offsetWidth / 2;
-          const distance = Math.abs(itemCenter - railCenter);
-          if (distance < activeDistance) {
-            activeDistance = distance;
-            nextActiveIndex = index;
-          }
-        });
-        activeIndex = nextActiveIndex;
+        if (!heroRail || !heroSnapPositions.length) return;
+        currentSnapIndex = getNearestHeroSnapIndex();
+        const heroDots = Array.from(root.querySelectorAll("[data-hero-dot]"));
         heroDots.forEach((dot, index) => {
-          dot.setAttribute("aria-pressed", index === activeIndex ? "true" : "false");
+          dot.setAttribute("aria-pressed", index === currentSnapIndex ? "true" : "false");
         });
+      };
+
+      const refreshHeroSnapModel = () => {
+        heroSnapPositions = buildHeroSnapPositions();
+        const previousCount = root.querySelectorAll("[data-hero-dot]").length;
+        currentSnapIndex = getNearestHeroSnapIndex();
+        if (previousCount !== heroSnapPositions.length) {
+          renderHeroDots();
+        }
+        syncHeroDots();
       };
 
       heroRail?.addEventListener("scroll", () => {
         window.requestAnimationFrame(syncHeroDots);
       });
 
-      heroDots.forEach((dot) => {
-        dot.addEventListener("click", () => {
-          const index = Number(dot.dataset.heroDot || 0);
-          scrollToHeroIndex(index);
-        });
+      heroDotsRoot?.addEventListener("click", (event) => {
+        const dot = event.target.closest("[data-hero-dot]");
+        if (!(dot instanceof HTMLElement)) return;
+        const index = Number(dot.dataset.heroDot || 0);
+        scrollToHeroIndex(index);
       });
 
       prevButton?.addEventListener("click", () => {
-        scrollToHeroIndex(activeIndex - 1);
+        scrollToHeroIndex(currentSnapIndex - 1);
       });
 
       nextButton?.addEventListener("click", () => {
-        scrollToHeroIndex(activeIndex + 1);
+        scrollToHeroIndex(currentSnapIndex + 1);
       });
 
-      syncHeroDots();
+      window.addEventListener("resize", () => {
+        window.requestAnimationFrame(refreshHeroSnapModel);
+      });
+
+      refreshHeroSnapModel();
       root.dataset.homeHeroBound = "true";
     }
   };
