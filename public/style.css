@@ -10858,19 +10858,15 @@ body.finder-tag-picker-open {
 }
 
 .editorial-page--work .detail-title {
-  max-width: none;
-  font-size: clamp(1.9rem, 3.2vw, 2.65rem);
+  max-width: 16ch;
+  font-size: clamp(2.15rem, 3.7vw, 3rem);
   line-height: 1.08;
+  text-wrap: balance;
 }
 
 .editorial-page--work .detail-lead {
   font-size: 0.95rem;
   line-height: 1.78;
-}
-
-.editorial-page--work .detail-work-hero {
-  grid-template-columns: 248px minmax(0, 1fr);
-  gap: 1.25rem;
 }
 
 .editorial-page--work .detail-work-cover {
@@ -10879,8 +10875,12 @@ body.finder-tag-picker-open {
   box-shadow: none;
 }
 
+.editorial-page--work .detail-work-cover--article {
+  padding: 0.9rem;
+}
+
 .editorial-page--work .pdp-gallery__hero {
-  min-height: 308px;
+  min-height: 360px;
 }
 
 .editorial-page--work .pdp-gallery__thumbs,
