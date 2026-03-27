@@ -1959,6 +1959,8 @@
       const scrollToHeroIndex = (index) => {
         if (!heroRail || !heroSnapPositions.length) return;
         const wrappedIndex = ((index % heroSnapPositions.length) + heroSnapPositions.length) % heroSnapPositions.length;
+        currentSnapIndex = wrappedIndex;
+        syncHeroDots();
         heroRail.scrollTo({
           left: heroSnapPositions[wrappedIndex],
           behavior: "smooth",
@@ -1989,7 +1991,9 @@
       });
 
       heroDotsRoot?.addEventListener("click", (event) => {
-        const dot = event.target.closest("[data-hero-dot]");
+        const target = event.target;
+        if (!(target instanceof Element)) return;
+        const dot = target.closest("[data-hero-dot]");
         if (!(dot instanceof HTMLElement)) return;
         const index = Number(dot.dataset.heroDot || 0);
         scrollToHeroIndex(index);
