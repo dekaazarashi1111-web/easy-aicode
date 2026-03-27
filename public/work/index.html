@@ -44,7 +44,7 @@
   <script src="/assets/finder-public.js" defer></script>
   <script src="/site.js" defer></script>
 </head>
-<body>
+<body class="editorial-page editorial-page--work">
 <a class="skip-link" href="#main">本文へスキップ</a>
 
 <nav class="nav">
@@ -73,121 +73,180 @@
         </div>
       </div>
 
-      <div class="pdp-layout" data-work-content>
-        <div class="pdp-main stack stack--lg">
-          <p class="pdp-breadcrumb" data-work-breadcrumb>ホーム / 作品検索 / 作品詳細</p>
+      <div class="detail-shell detail-shell--work" data-work-content>
+        <aside class="detail-share" aria-label="作品ページを共有">
+          <p class="detail-share__label">Share</p>
+          <a class="detail-share__button" data-share-x href="#">X</a>
+          <button class="detail-share__button" type="button" data-share-copy>Copy</button>
+          <a class="detail-share__button" href="/finder/">Find</a>
+        </aside>
 
-          <div class="pdp-overview">
-            <div class="card pdp-gallery">
-              <div class="pdp-gallery__hero">
-                <div class="pdp-gallery__visual" data-work-hero-media>
-                  <span class="pdp-gallery__badge">SEARCH START</span>
-                  <strong>Finder Item</strong>
-                  <p>Visual placeholder</p>
+        <div class="detail-primary">
+          <p class="detail-breadcrumb" data-work-breadcrumb>ホーム / 作品検索 / 作品詳細</p>
+
+          <header class="detail-header">
+            <div class="detail-work-hero">
+              <section class="detail-work-card detail-work-cover">
+                <div class="pdp-gallery__hero">
+                  <div class="pdp-gallery__visual" data-work-hero-media>
+                    <span class="pdp-gallery__badge">SEARCH START</span>
+                    <strong>Finder Item</strong>
+                    <p>Visual placeholder</p>
+                  </div>
+                </div>
+                <div class="pdp-gallery__thumbs" data-work-gallery-thumbs>
+                  <div class="pdp-gallery__thumb"></div>
+                  <div class="pdp-gallery__thumb"></div>
+                  <div class="pdp-gallery__thumb"></div>
+                </div>
+                <p class="pdp-gallery__caption" data-work-hero-caption>作品画像や視覚メモを置くための仮スペースです。</p>
+              </section>
+
+              <div class="detail-work-summary">
+                <div class="detail-badges">
+                  <span class="detail-badge" data-work-format>漫画</span>
+                  <span class="detail-badge detail-badge--muted" data-work-release>公開日</span>
+                </div>
+                <h1 class="detail-title" data-work-title>作品名</h1>
+                <p class="detail-lead" data-work-summary>作品の一言説明</p>
+                <div class="detail-byline">
+                  <span class="detail-byline__avatar" data-work-creator-initial>作</span>
+                  <div class="detail-byline__body">
+                    <strong data-work-creator>作者名</strong>
+                    <span data-work-byline-meta>作品紹介ページ</span>
+                  </div>
+                </div>
+                <div class="detail-tag-row" data-work-tags></div>
+
+                <div class="detail-fact-grid">
+                  <div class="detail-fact">
+                    <span>更新</span>
+                    <strong data-work-updated>更新日</strong>
+                  </div>
+                  <div class="detail-fact">
+                    <span>外部導線</span>
+                    <strong data-work-link-count>0件</strong>
+                  </div>
+                  <div class="detail-fact">
+                    <span>関連特集</span>
+                    <strong data-work-collection-count>0件</strong>
+                  </div>
                 </div>
               </div>
-              <div class="pdp-gallery__thumbs" data-work-gallery-thumbs>
-                <div class="pdp-gallery__thumb"></div>
-                <div class="pdp-gallery__thumb"></div>
-                <div class="pdp-gallery__thumb"></div>
-              </div>
-              <p class="help pdp-gallery__caption" data-work-hero-caption>作品画像や視覚メモを置くための仮スペースです。</p>
             </div>
+          </header>
 
-            <div class="pdp-summary stack">
-              <div class="cluster">
-                <span class="pill" data-work-format>漫画</span>
-                <span class="help" data-work-creator>作者名</span>
-              </div>
-              <h1 class="h1" data-work-title>作品名</h1>
-              <p class="lead" data-work-summary>作品の一言説明</p>
-              <div class="pdp-summary-metrics">
-                <div class="pdp-summary-metric">
-                  <span>更新</span>
-                  <strong data-work-updated>更新日</strong>
-                </div>
-                <div class="pdp-summary-metric">
-                  <span>外部導線</span>
-                  <strong data-work-link-count>0件</strong>
-                </div>
-                <div class="pdp-summary-metric">
-                  <span>関連特集</span>
-                  <strong data-work-collection-count>0件</strong>
-                </div>
-              </div>
-              <div class="cluster work-meta-strip">
-                <span class="tag" data-work-release>公開日</span>
-                <span class="tag" data-work-tag-count>主要タグ</span>
-              </div>
-              <div class="tag-list" data-work-tags></div>
-              <div class="card pdp-highlight-box stack">
-                <h2 class="h3">この作品が合いやすい人</h2>
-                <p class="muted" data-work-reason></p>
-                <p class="help" data-work-note></p>
-              </div>
-            </div>
-          </div>
-
-          <div class="pdp-detail-grid">
-            <section class="card stack">
-              <h2 class="h3">苦手な人向け注意</h2>
-              <p class="muted" data-work-caution></p>
-            </section>
-
-            <section class="card stack">
-              <h2 class="h3">起点にしやすい条件</h2>
-              <ul class="list" data-work-points></ul>
-            </section>
-          </div>
-
-          <section class="card stack">
-            <h2 class="h3">この作品から次に行ける入口</h2>
-            <div class="tag-list" data-work-collections></div>
+          <section class="detail-callout">
+            <p class="detail-callout__eyebrow">この作品が合いやすい人</p>
+            <p data-work-reason></p>
+            <p class="muted" data-work-note></p>
           </section>
 
-          <section class="stack">
-            <div class="storefront-section__head">
-              <div class="stack">
-                <p class="storefront-eyebrow">Similar search starts</p>
-                <h2 class="h3">近い条件で探しやすい作品</h2>
-              </div>
-            </div>
-            <div class="storefront-product-grid" data-work-similar></div>
+          <div class="detail-section-grid">
+            <section class="detail-work-card">
+              <p class="detail-section__eyebrow">Caution</p>
+              <h2>苦手な人向け注意</h2>
+              <p data-work-caution></p>
+            </section>
+
+            <section class="detail-work-card">
+              <p class="detail-section__eyebrow">Key Points</p>
+              <h2>起点にしやすい条件</h2>
+              <ul data-work-points></ul>
+            </section>
+          </div>
+
+          <section class="detail-work-card">
+            <p class="detail-section__eyebrow">Collections</p>
+            <h2>この作品から次に行ける入口</h2>
+            <p>関連特集から、近い温度感や条件の作品を横断できるようにしています。</p>
+            <div class="detail-tag-row" data-work-collections></div>
+          </section>
+
+          <section class="detail-related">
+            <p class="detail-related__eyebrow">Similar Works</p>
+            <h2>近い条件で探しやすい作品</h2>
+            <p>同じタグや近い温度感を持つ作品を、次の候補として並べています。</p>
+            <div class="storefront-product-grid detail-related-grid--works" data-work-similar></div>
           </section>
         </div>
 
-        <aside class="pdp-side">
-          <div class="card pdp-buybox stack">
-            <p class="storefront-eyebrow">Start from this work</p>
-            <h2 class="h3">この作品を起点に次を探す</h2>
-            <p class="muted">保存や比較に加え、主要タグや作者から再検索して次の探索へつなげます。</p>
-            <div class="stack" data-work-actions></div>
-            <div class="divider"></div>
-            <div class="stack" data-work-search-links></div>
-            <div class="divider"></div>
-            <div class="stack" data-work-links></div>
-            <div class="divider"></div>
-            <div class="stack">
+        <aside class="detail-sidebar">
+          <section class="detail-widget detail-widget--cta">
+            <p class="detail-widget__eyebrow">Start From This Work</p>
+            <h2 class="detail-widget__title">この作品を起点に次を探す</h2>
+            <p class="detail-widget__text">外部導線、保存、比較、主要タグ検索を1本の縦導線にまとめています。</p>
+            <div class="detail-work-links" data-work-links></div>
+          </section>
+
+          <section class="detail-widget">
+            <h3 class="detail-widget__title">保存と比較</h3>
+            <div class="detail-work-actions" data-work-actions></div>
+          </section>
+
+          <section class="detail-widget">
+            <h3 class="detail-widget__title">次の検索導線</h3>
+            <div class="detail-work-search-links" data-work-search-links></div>
+          </section>
+
+          <section class="detail-widget">
+            <h3 class="detail-widget__title">ページ導線</h3>
+            <div class="detail-widget__actions">
               <a class="btn btn--secondary btn--sm" href="/finder/">一覧検索へ戻る</a>
               <a class="btn btn--secondary btn--sm" href="/builder/">詳細条件ビルダーへ</a>
             </div>
-          </div>
+          </section>
         </aside>
       </div>
     </div>
   </section>
 </main>
 
-<footer class="footer">
-  <div class="container footer__inner">
-    <p class="muted" data-site-copyright>© Media Canvas</p>
-    <div class="footer__links">
+<footer class="footer editorial-footer">
+  <div class="container editorial-footer__inner">
+    <section class="editorial-footer__brand">
+      <p class="editorial-footer__eyebrow">Feature Finder</p>
+      <h2 data-site-brand>Media Canvas</h2>
+      <p>特集記事、作品紹介、条件検索をまたいで、次に読むものと次に探す条件をひと続きにするための土台です。</p>
+      <a class="btn btn--primary btn--sm" href="/finder/">作品検索へ</a>
+    </section>
+
+    <div class="editorial-footer__column">
+      <h3>探す</h3>
+      <ul class="editorial-footer__links">
+        <li><a href="/finder/">作品検索</a></li>
+        <li><a href="/builder/">詳細条件ビルダー</a></li>
+        <li><a href="/collections/">特集一覧</a></li>
+      </ul>
+    </div>
+
+    <div class="editorial-footer__column">
+      <h3>読む</h3>
+      <ul class="editorial-footer__links">
+        <li><a href="/articles/">特集記事</a></li>
+        <li><a href="/work/">作品紹介</a></li>
+        <li><a href="/collection/">特集詳細</a></li>
+      </ul>
+    </div>
+
+    <div class="editorial-footer__column">
+      <h3>運営</h3>
+      <ul class="editorial-footer__links">
+        <li><a href="/about/">運営方針</a></li>
+        <li><a href="/contact/">お問い合わせ</a></li>
+        <li><a href="/privacy.html">プライバシー</a></li>
+        <li><a href="/disclaimer.html">免責事項</a></li>
+      </ul>
+    </div>
+  </div>
+
+  <div class="container editorial-footer__bottom">
+    <p class="editorial-footer__legal" data-site-copyright>© Media Canvas</p>
+    <div class="editorial-footer__bottom-links">
       <a href="/">ホーム</a>
       <a href="/finder/">作品検索</a>
-      <a href="/collections/">特集</a>
+      <a href="/articles/">特集記事</a>
       <a href="/contact/">お問い合わせ</a>
-      <a href="/privacy.html">プライバシー</a>
-      <a href="/disclaimer.html">免責事項</a>
     </div>
   </div>
 </footer>

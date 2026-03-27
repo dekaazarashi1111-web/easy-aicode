@@ -34,7 +34,7 @@
   <script src="/assets/articles.js"></script>
   <script src="/site.js" defer></script>
 </head>
-<body>
+<body class="editorial-page editorial-page--article">
 <a class="skip-link" href="#main">本文へスキップ</a>
 
 <nav class="nav">
@@ -52,28 +52,53 @@
 
 <main id="main">
   <section class="section section--tight">
-    <div class="container guide-detail-layout" data-article-detail data-article-slug="review-structure">
-      <div class="guide-detail-main stack stack--lg">
-        <div class="card page-hero page-hero--article stack">
-          <div class="article-meta-strip">
-            <span class="pill" data-article-type-label>レビュー記事</span>
-            <span class="help" data-article-published>公開日</span>
-          </div>
-          <p class="kicker">レビュー記事サンプル</p>
-          <h1 class="h1">レビュー記事で抜けやすい確認項目</h1>
-          <p class="lead">良い点だけで終わらないレビュー記事にするための観点と、広告表記の基本位置をまとめた見本です。</p>
-          <div class="tag-list" data-article-meta-tags></div>
-        </div>
+    <div class="container detail-shell detail-shell--article" data-article-detail data-article-slug="review-structure">
+      <aside class="detail-share" aria-label="この記事を共有">
+        <p class="detail-share__label">Share</p>
+        <a class="detail-share__button" data-share-x href="#">X</a>
+        <button class="detail-share__button" type="button" data-share-copy>Copy</button>
+        <a class="detail-share__button" href="/articles/">All</a>
+      </aside>
 
-        <div class="card stack guide-callout">
-          <p class="muted">レビュー記事では、「この記事には広告を含む場合があります」といった表記を、読者が本文を読む前に確認できる位置へ入れるのが無難です。</p>
-          <div class="cluster">
+      <div class="detail-primary">
+        <p class="detail-breadcrumb"><a href="/">ホーム</a> / <a href="/articles/">特集記事</a> / レビュー記事で抜けやすい確認項目</p>
+
+        <header class="detail-header">
+          <div class="detail-badges">
+            <span class="detail-badge" data-article-type-label>レビュー記事</span>
+            <span class="detail-badge detail-badge--muted">Review</span>
+          </div>
+          <h1 class="detail-title">レビュー記事で抜けやすい確認項目</h1>
+          <p class="detail-lead">良い点だけで終わらないレビュー記事にするための観点と、広告表記の基本位置をまとめた見本です。</p>
+          <div class="detail-byline">
+            <span class="detail-byline__avatar">MC</span>
+            <div class="detail-byline__body">
+              <strong data-article-author>Media Canvas 編集部</strong>
+              <span data-article-published>公開日</span>
+            </div>
+          </div>
+          <div class="detail-tag-row" data-article-meta-tags></div>
+        </header>
+
+        <section class="detail-callout">
+          <p class="detail-callout__eyebrow">レビューで先に出すこと</p>
+          <ul class="detail-summary-list">
+            <li>誰向けのレビューか、どの条件で見た評価か、結論は何かを最初に示す</li>
+            <li>メリットだけでなく、合わない人や注意点を同じ粒度で書く</li>
+            <li>広告表記は本文前、ボタン付近、免責事項導線の3点で隠さず置く</li>
+          </ul>
+        </section>
+
+        <section class="detail-callout">
+          <p class="detail-callout__eyebrow">公開前の差し替え項目</p>
+          <p>レビュー記事では、「この記事には広告を含む場合があります」といった表記を、読者が本文を読む前に確認できる位置へ入れるのが無難です。</p>
+          <div class="detail-widget__actions">
             <a class="btn btn--primary" href="#" aria-disabled="true">レビュー案件リンクをここに配置</a>
             <a class="btn btn--secondary" href="/disclaimer.html">免責事項を見る</a>
           </div>
-        </div>
+        </section>
 
-        <article class="card prose guide-article-card">
+        <article class="detail-prose guide-article-card">
           <h2>最初に書くと読みやすい項目</h2>
           <ul>
             <li>どんな読者向けの記事か</li>
@@ -98,56 +123,102 @@
           </ul>
         </article>
 
-        <div class="stack guide-faq-stack">
-          <details class="faq">
-            <summary>レビュー記事に比較表は必要ですか？</summary>
-            <p>必須ではありませんが、比較されやすい商品やサービスを扱う場合は、簡単でも差分が分かる表や一覧を入れると理解しやすくなります。</p>
-          </details>
-          <details class="faq">
-            <summary>体験していない案件でもレビューできますか？</summary>
-            <p>可能ですが、その場合はレビューではなく情報整理記事として位置づけ、体験ベースの表現を避けるほうが安全です。</p>
-          </details>
-        </div>
+        <section class="detail-author-card">
+          <span class="detail-author-card__avatar">評</span>
+          <div class="detail-author-card__body">
+            <strong>レビュー設計メモ</strong>
+            <p>単体評価でも、比較軸と注意点を入れておくと広告色だけが前に出にくくなります。信頼性は「良い点の量」ではなく「抜けの少なさ」で決まります。</p>
+          </div>
+        </section>
 
-        <div class="card guide-action-row">
-          <a class="btn btn--primary" href="/articles/">記事一覧へ戻る</a>
-          <a class="btn btn--secondary" href="/articles/comparison-template/">比較記事サンプルを見る</a>
-        </div>
+        <section class="detail-cta-band">
+          <p class="detail-section__eyebrow">Next Step</p>
+          <h2>レビューの次は比較導線へ</h2>
+          <p>単体の評価基準を整えたら、候補同士の見せ分けは比較記事テンプレートへつなげるとスムーズです。</p>
+          <div class="detail-widget__actions">
+            <a class="btn btn--primary" href="/articles/">記事一覧へ戻る</a>
+            <a class="btn btn--secondary" href="/articles/comparison-template/">比較記事サンプルを見る</a>
+          </div>
+        </section>
+
+        <section class="detail-related" id="related-articles">
+          <p class="detail-related__eyebrow">Related</p>
+          <h2>関連記事</h2>
+          <p>比較や構成設計とつながる関連記事をまとめています。</p>
+          <div class="detail-related-grid" data-guide-related></div>
+        </section>
       </div>
 
-      <aside class="guide-detail-aside">
-        <div class="card booking-sticky-card stack">
-          <p class="kicker">Guide Context</p>
-          <h2 class="h3">このガイドの位置づけ</h2>
-          <ul class="list list--compact">
-            <li>レビュー導線の信頼性を整えたい時の確認用</li>
-            <li>良い点と注意点のバランスを崩さないための基準</li>
-            <li>比較記事へつなぐ前の単体評価テンプレート</li>
-          </ul>
-          <div class="divider"></div>
-          <h3 class="h3">関連ガイド</h3>
-          <div class="guide-related-list" data-guide-related></div>
-          <div class="divider"></div>
-          <h3 class="h3">サイト導線</h3>
-          <a class="btn btn--primary btn--sm" href="/articles/">ガイド一覧へ</a>
-          <a class="btn btn--secondary btn--sm" href="/finder/">作品検索へ</a>
-          <a class="btn btn--secondary btn--sm" href="/disclaimer.html">免責事項へ</a>
-        </div>
+      <aside class="detail-sidebar">
+        <section class="detail-widget detail-widget--cta">
+          <p class="detail-widget__eyebrow">Guide Hub</p>
+          <h2 class="detail-widget__title">レビューから次の判断へ</h2>
+          <p class="detail-widget__text">レビュー導線の信頼性を整えたあと、比較記事や条件検索へ自然に枝分かれさせるための右サイドです。</p>
+          <div class="detail-widget__actions">
+            <a class="btn btn--primary" href="/articles/">記事一覧へ</a>
+            <a class="btn btn--secondary" href="/finder/">作品検索へ</a>
+          </div>
+        </section>
+
+        <section class="detail-widget">
+          <h3 class="detail-widget__title">最近公開した記事</h3>
+          <div class="detail-link-list" data-article-recent></div>
+        </section>
+
+        <section class="detail-widget">
+          <h3 class="detail-widget__title">記事カテゴリ</h3>
+          <div class="detail-category-list" data-article-categories></div>
+        </section>
       </aside>
     </div>
   </section>
 </main>
 
-<footer class="footer">
-  <div class="container footer__inner">
-    <p class="muted" data-site-copyright>© Media Canvas</p>
-    <div class="footer__links">
+<footer class="footer editorial-footer">
+  <div class="container editorial-footer__inner">
+    <section class="editorial-footer__brand">
+      <p class="editorial-footer__eyebrow">Feature Finder</p>
+      <h2 data-site-brand>Media Canvas</h2>
+      <p>特集記事、作品紹介、条件検索をまたいで、次に読むものと次に探す条件をひと続きにするための土台です。</p>
+      <a class="btn btn--primary btn--sm" href="/finder/">作品検索へ</a>
+    </section>
+
+    <div class="editorial-footer__column">
+      <h3>探す</h3>
+      <ul class="editorial-footer__links">
+        <li><a href="/finder/">作品検索</a></li>
+        <li><a href="/builder/">詳細条件ビルダー</a></li>
+        <li><a href="/collections/">特集一覧</a></li>
+      </ul>
+    </div>
+
+    <div class="editorial-footer__column">
+      <h3>読む</h3>
+      <ul class="editorial-footer__links">
+        <li><a href="/articles/">特集記事</a></li>
+        <li><a href="/articles/comparison-template/">比較記事</a></li>
+        <li><a href="/articles/review-structure/">レビュー記事</a></li>
+      </ul>
+    </div>
+
+    <div class="editorial-footer__column">
+      <h3>運営</h3>
+      <ul class="editorial-footer__links">
+        <li><a href="/about/">運営方針</a></li>
+        <li><a href="/contact/">お問い合わせ</a></li>
+        <li><a href="/privacy.html">プライバシー</a></li>
+        <li><a href="/disclaimer.html">免責事項</a></li>
+      </ul>
+    </div>
+  </div>
+
+  <div class="container editorial-footer__bottom">
+    <p class="editorial-footer__legal" data-site-copyright>© Media Canvas</p>
+    <div class="editorial-footer__bottom-links">
       <a href="/">ホーム</a>
       <a href="/articles/">記事一覧</a>
-      <a href="/about/">運営者情報</a>
+      <a href="/finder/">作品検索</a>
       <a href="/contact/">お問い合わせ</a>
-      <a href="/privacy.html">プライバシー</a>
-      <a href="/disclaimer.html">免責事項</a>
     </div>
   </div>
 </footer>

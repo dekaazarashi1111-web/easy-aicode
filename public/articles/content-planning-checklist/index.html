@@ -34,7 +34,7 @@
   <script src="/assets/articles.js"></script>
   <script src="/site.js" defer></script>
 </head>
-<body>
+<body class="editorial-page editorial-page--article">
 <a class="skip-link" href="#main">本文へスキップ</a>
 
 <nav class="nav">
@@ -52,24 +52,44 @@
 
 <main id="main">
   <section class="section section--tight">
-    <div class="container guide-detail-layout" data-article-detail data-article-slug="content-planning-checklist">
-      <div class="guide-detail-main stack stack--lg">
-        <div class="card page-hero page-hero--article stack">
-          <div class="article-meta-strip">
-            <span class="pill" data-article-type-label>使い方ガイド</span>
-            <span class="help" data-article-published>公開日</span>
+    <div class="container detail-shell detail-shell--article" data-article-detail data-article-slug="content-planning-checklist">
+      <aside class="detail-share" aria-label="この記事を共有">
+        <p class="detail-share__label">Share</p>
+        <a class="detail-share__button" data-share-x href="#">X</a>
+        <button class="detail-share__button" type="button" data-share-copy>Copy</button>
+        <a class="detail-share__button" href="/articles/">All</a>
+      </aside>
+
+      <div class="detail-primary">
+        <p class="detail-breadcrumb"><a href="/">ホーム</a> / <a href="/articles/">特集記事</a> / 記事構成を先に決めるチェックリスト</p>
+
+        <header class="detail-header">
+          <div class="detail-badges">
+            <span class="detail-badge" data-article-type-label>使い方ガイド</span>
+            <span class="detail-badge detail-badge--muted">Planning</span>
           </div>
-          <p class="kicker">使い方ガイドサンプル</p>
-          <h1 class="h1">記事構成を先に決めるチェックリスト</h1>
-          <p class="lead">検索意図、見出し、内部リンク、CTA の置き場を先に決めるための見本記事です。</p>
-          <div class="tag-list" data-article-meta-tags></div>
-        </div>
+          <h1 class="detail-title">記事構成を先に決めるチェックリスト</h1>
+          <p class="detail-lead">検索意図、見出し、内部リンク、CTA の置き場を先に決めてから本文へ入るための、編集前チェック用ガイドです。</p>
+          <div class="detail-byline">
+            <span class="detail-byline__avatar">MC</span>
+            <div class="detail-byline__body">
+              <strong data-article-author>Media Canvas 編集部</strong>
+              <span data-article-published>公開日</span>
+            </div>
+          </div>
+          <div class="detail-tag-row" data-article-meta-tags></div>
+        </header>
 
-        <div class="card stack guide-callout">
-          <p class="muted">この記事は、記事設計を先に固めてから本文を書くためのチェックリスト雛形です。実運用ではジャンルに合わせて項目を差し替えてください。</p>
-        </div>
+        <section class="detail-callout">
+          <p class="detail-callout__eyebrow">先に決める項目</p>
+          <ul class="detail-summary-list">
+            <li>誰に向けた記事かを一文で定義し、タイトルと導入の軸を固定する</li>
+            <li>結論先出しか、前提説明先行かを記事タイプごとに選ぶ</li>
+            <li>内部リンクと CTA を本文後付けではなく設計段階で置いておく</li>
+          </ul>
+        </section>
 
-        <article class="card prose guide-article-card">
+        <article class="detail-prose guide-article-card">
           <h2>1. 検索意図を一言で決める</h2>
           <p>誰が、何に困っていて、何を知りたいのかを先に一言で決めておくと、見出しがぶれにくくなります。検索意図が曖昧だと、記事全体が情報の寄せ集めになりやすいです。</p>
 
@@ -90,45 +110,102 @@
           <p>CTA は記事の結論直後、比較表直後、記事末尾のように、読者が判断しやすい地点へ置くのが基本です。数だけ増やすより、根拠の直後に置くほうが強くなります。</p>
         </article>
 
-        <div class="card guide-action-row">
-          <a class="btn btn--primary" href="/articles/">記事一覧へ戻る</a>
-          <a class="btn btn--secondary" href="/articles/comparison-template/">比較記事サンプルを見る</a>
-        </div>
+        <section class="detail-author-card">
+          <span class="detail-author-card__avatar">設</span>
+          <div class="detail-author-card__body">
+            <strong>構成設計メモ</strong>
+            <p>本文を書き始める前に、「何を先に読ませるか」「どこで次の導線を置くか」を決めておくと、記事全体の温度感が安定します。</p>
+          </div>
+        </section>
+
+        <section class="detail-cta-band">
+          <p class="detail-section__eyebrow">Action</p>
+          <h2>次は比較記事の型とつなげる</h2>
+          <p>構成の骨組みが固まったら、次は結論の出し方と広告導線の置き方を比較記事の見本で確認できます。</p>
+          <div class="detail-widget__actions">
+            <a class="btn btn--primary" href="/articles/">記事一覧へ戻る</a>
+            <a class="btn btn--secondary" href="/articles/comparison-template/">比較記事サンプルを見る</a>
+          </div>
+        </section>
+
+        <section class="detail-related" id="related-articles">
+          <p class="detail-related__eyebrow">Related</p>
+          <h2>関連記事</h2>
+          <p>同じ編集工程の前後に読むとつながりやすい記事を並べています。</p>
+          <div class="detail-related-grid" data-guide-related></div>
+        </section>
       </div>
 
-      <aside class="guide-detail-aside">
-        <div class="card booking-sticky-card stack">
-          <p class="kicker">Guide Context</p>
-          <h2 class="h3">このガイドの位置づけ</h2>
-          <ul class="list list--compact">
-            <li>本文を書く前に骨組みを決めたい時の確認用</li>
-            <li>検索意図と見出し設計がぶれないようにする土台</li>
-            <li>比較記事やレビュー記事へ枝分かれする前の整理</li>
-          </ul>
-          <div class="divider"></div>
-          <h3 class="h3">関連ガイド</h3>
-          <div class="guide-related-list" data-guide-related></div>
-          <div class="divider"></div>
-          <h3 class="h3">サイト導線</h3>
-          <a class="btn btn--primary btn--sm" href="/articles/">ガイド一覧へ</a>
-          <a class="btn btn--secondary btn--sm" href="/finder/">作品検索へ</a>
-          <a class="btn btn--secondary btn--sm" href="/about/">運営方針へ</a>
-        </div>
+      <aside class="detail-sidebar">
+        <section class="detail-widget detail-widget--cta">
+          <p class="detail-widget__eyebrow">Guide Hub</p>
+          <h2 class="detail-widget__title">記事設計を整えてから本文へ入る</h2>
+          <p class="detail-widget__text">比較、レビュー、使い方ガイドの順に横断しながら、書く前に構成の土台を整えるための導線です。</p>
+          <div class="detail-widget__actions">
+            <a class="btn btn--primary" href="/articles/">記事一覧へ</a>
+            <a class="btn btn--secondary" href="/finder/">作品検索へ</a>
+          </div>
+        </section>
+
+        <section class="detail-widget">
+          <h3 class="detail-widget__title">最近公開した記事</h3>
+          <div class="detail-link-list" data-article-recent></div>
+        </section>
+
+        <section class="detail-widget">
+          <h3 class="detail-widget__title">記事カテゴリ</h3>
+          <div class="detail-category-list" data-article-categories></div>
+        </section>
       </aside>
     </div>
   </section>
 </main>
 
-<footer class="footer">
-  <div class="container footer__inner">
-    <p class="muted" data-site-copyright>© Media Canvas</p>
-    <div class="footer__links">
+<footer class="footer editorial-footer">
+  <div class="container editorial-footer__inner">
+    <section class="editorial-footer__brand">
+      <p class="editorial-footer__eyebrow">Feature Finder</p>
+      <h2 data-site-brand>Media Canvas</h2>
+      <p>特集記事、作品紹介、条件検索をまたいで、次に読むものと次に探す条件をひと続きにするための土台です。</p>
+      <a class="btn btn--primary btn--sm" href="/finder/">作品検索へ</a>
+    </section>
+
+    <div class="editorial-footer__column">
+      <h3>探す</h3>
+      <ul class="editorial-footer__links">
+        <li><a href="/finder/">作品検索</a></li>
+        <li><a href="/builder/">詳細条件ビルダー</a></li>
+        <li><a href="/collections/">特集一覧</a></li>
+      </ul>
+    </div>
+
+    <div class="editorial-footer__column">
+      <h3>読む</h3>
+      <ul class="editorial-footer__links">
+        <li><a href="/articles/">特集記事</a></li>
+        <li><a href="/articles/comparison-template/">比較記事</a></li>
+        <li><a href="/articles/review-structure/">レビュー記事</a></li>
+      </ul>
+    </div>
+
+    <div class="editorial-footer__column">
+      <h3>運営</h3>
+      <ul class="editorial-footer__links">
+        <li><a href="/about/">運営方針</a></li>
+        <li><a href="/contact/">お問い合わせ</a></li>
+        <li><a href="/privacy.html">プライバシー</a></li>
+        <li><a href="/disclaimer.html">免責事項</a></li>
+      </ul>
+    </div>
+  </div>
+
+  <div class="container editorial-footer__bottom">
+    <p class="editorial-footer__legal" data-site-copyright>© Media Canvas</p>
+    <div class="editorial-footer__bottom-links">
       <a href="/">ホーム</a>
       <a href="/articles/">記事一覧</a>
-      <a href="/about/">運営者情報</a>
+      <a href="/finder/">作品検索</a>
       <a href="/contact/">お問い合わせ</a>
-      <a href="/privacy.html">プライバシー</a>
-      <a href="/disclaimer.html">免責事項</a>
     </div>
   </div>
 </footer>

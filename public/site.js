@@ -2261,6 +2261,70 @@ const createFilterBadge = (label, href) => {
   return badge;
 };
 
+const createArticleTeaserCard = (article) => {
+  const link = document.createElement("a");
+  const thumb = document.createElement("div");
+  const thumbLabel = document.createElement("span");
+  const body = document.createElement("div");
+  const meta = document.createElement("span");
+  const title = document.createElement("strong");
+  const summary = document.createElement("p");
+
+  link.className = "detail-related-card";
+  link.href = article.url;
+  link.dataset.articleType = article.type;
+
+  thumb.className = "detail-related-card__thumb";
+  thumbLabel.textContent = article.type;
+  thumb.appendChild(thumbLabel);
+
+  body.className = "detail-related-card__body";
+  meta.className = "detail-related-card__meta";
+  meta.textContent = `${article.type} | ${article.publishedAt}`;
+  title.textContent = article.title;
+  summary.textContent = article.summary;
+  body.append(meta, title, summary);
+
+  link.append(thumb, body);
+  return link;
+};
+
+const createArticleListLink = (article) => {
+  const link = document.createElement("a");
+  const title = document.createElement("strong");
+  const meta = document.createElement("span");
+
+  link.className = "detail-list-link";
+  link.href = article.url;
+  title.textContent = article.title;
+  meta.textContent = `${article.type} | ${article.publishedAt}`;
+  link.append(title, meta);
+  return link;
+};
+
+const createArticleCategoryChip = (option) => {
+  const chip = document.createElement("a");
+  const label = document.createElement("strong");
+  const count = document.createElement("span");
+
+  chip.className = "detail-category-chip";
+  chip.href = toFilterUrl({ type: option.value });
+  label.textContent = option.value;
+  count.textContent = `${option.count}件`;
+  chip.append(label, count);
+  return chip;
+};
+
+const scoreRelatedArticle = (baseArticle, candidateArticle) => {
+  let score = 0;
+  if (baseArticle.type === candidateArticle.type) score += 6;
+  const tagSet = new Set(baseArticle.tags || []);
+  (candidateArticle.tags || []).forEach((tag) => {
+    if (tagSet.has(tag)) score += 3;
+  });
+  return score;
+};
+
 const initArticleDetailMeta = () => {
   const root = document.querySelector("[data-article-detail]");
   const slug = root?.dataset.articleSlug;
@@ -2287,26 +2351,76 @@ const initArticleDetailMeta = () => {
   const publishedRoot = root.querySelector("[data-article-published]");
   if (publishedRoot) publishedRoot.textContent = `公開: ${article.publishedAt}`;
 
+  const authorRoot = root.querySelector("[data-article-author]");
+  if (authorRoot) authorRoot.textContent = `${BRAND_NAME} 編集部`;
+
+  const decoratedArticles = api.decorateArticles(articles);
   const relatedRoot = root.querySelector("[data-guide-related]");
   if (relatedRoot) {
     relatedRoot.textContent = "";
-    api
-      .decorateArticles(articles)
+    decoratedArticles
       .filter((item) => item.slug !== article.slug)
+      .sort((left, right) => {
+        const scoreDiff = scoreRelatedArticle(article, right) - scoreRelatedArticle(article, left);
+        if (scoreDiff !== 0) return scoreDiff;
+        return `${right.publishedAt}`.localeCompare(`${left.publishedAt}`);
+      })
       .slice(0, 3)
-      .forEach((item) => {
-        const link = document.createElement("a");
-        const title = document.createElement("strong");
-        const meta = document.createElement("span");
-        link.className = "guide-mini-link";
-        link.href = item.url;
-        title.textContent = item.title;
-        meta.className = "help";
-        meta.textContent = `${item.type} | ${item.publishedAt}`;
-        link.append(title, meta);
-        relatedRoot.appendChild(link);
-      });
+      .forEach((item) => relatedRoot.appendChild(createArticleTeaserCard(item)));
   }
+
+  const recentRoot = root.querySelector("[data-article-recent]");
+  if (recentRoot) {
+    recentRoot.textContent = "";
+    decoratedArticles
+      .filter((item) => item.slug !== article.slug)
+      .sort((left, right) => `${right.publishedAt}`.localeCompare(`${left.publishedAt}`))
+      .slice(0, 4)
+      .forEach((item) => recentRoot.appendChild(createArticleListLink(item)));
+  }
+
+  const categoryRoot = root.querySelector("[data-article-categories]");
+  if (categoryRoot) {
+    categoryRoot.textContent = "";
+    api
+      .collectFilterOptions(decoratedArticles)
+      .types.forEach((option) => categoryRoot.appendChild(createArticleCategoryChip(option)));
+  }
+};
+
+const initDetailShareButtons = () => {
+  const pageTitle = document.title;
+  const pageUrl = window.location.href;
+  const shareText = encodeURIComponent(pageTitle);
+  const shareUrl = encodeURIComponent(pageUrl);
+
+  document.querySelectorAll("[data-share-x]").forEach((link) => {
+    link.setAttribute("href", `https://x.com/intent/tweet?text=${shareText}&url=${shareUrl}`);
+    link.setAttribute("target", "_blank");
+    link.setAttribute("rel", "noopener noreferrer");
+  });
+
+  document.querySelectorAll("[data-share-copy]").forEach((button) => {
+    if (button.dataset.shareBound === "true") return;
+    button.addEventListener("click", async () => {
+      const originalLabel = button.textContent;
+      try {
+        if (navigator.clipboard && typeof navigator.clipboard.writeText === "function") {
+          await navigator.clipboard.writeText(pageUrl);
+          button.textContent = "Done";
+        } else {
+          window.prompt("URL をコピーしてください", pageUrl);
+          button.textContent = "Copy";
+        }
+      } catch (error) {
+        window.prompt("URL をコピーしてください", pageUrl);
+      }
+      window.setTimeout(() => {
+        button.textContent = originalLabel;
+      }, 1400);
+    });
+    button.dataset.shareBound = "true";
+  });
 };
 
 const initArticleSearch = () => {
@@ -2510,6 +2624,7 @@ const initArticleSearch = () => {
 
 initArticleDetailMeta();
 initArticleSearch();
+initDetailShareButtons();
 
 document.addEventListener("click", (event) => {
   const target = event.target.closest("a, button");

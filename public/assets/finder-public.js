@@ -1444,6 +1444,8 @@
     const similarRoot = root.querySelector("[data-work-similar]");
     const collectionRoot = root.querySelector("[data-work-collections]");
     const creatorRoot = root.querySelector("[data-work-creator]");
+    const creatorInitialRoot = root.querySelector("[data-work-creator-initial]");
+    const bylineMetaRoot = root.querySelector("[data-work-byline-meta]");
     const formatRoot = root.querySelector("[data-work-format]");
     const reasonRoot = root.querySelector("[data-work-reason]");
     const cautionRoot = root.querySelector("[data-work-caution]");
@@ -1459,6 +1461,13 @@
     if (summaryRoot) summaryRoot.textContent = work.shortDescription;
     if (noteRoot) noteRoot.textContent = work.publicNote;
     if (creatorRoot) creatorRoot.textContent = work.creator || "サンプル作者";
+    if (creatorInitialRoot) {
+      const initialSource = `${work.creator || work.title || "作"}`.trim();
+      creatorInitialRoot.textContent = initialSource.slice(0, 1) || "作";
+    }
+    if (bylineMetaRoot) {
+      bylineMetaRoot.textContent = `最終更新 ${work.updatedAt || work.releasedAt || "未設定"}`;
+    }
     if (formatRoot) formatRoot.textContent = work.format || "作品";
     if (reasonRoot) reasonRoot.textContent = work.matchSummary || work.publicNote;
     if (cautionRoot) cautionRoot.textContent = work.cautionNote || "強い注意点はまだ登録されていません。";

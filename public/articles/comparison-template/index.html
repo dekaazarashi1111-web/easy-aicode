@@ -34,7 +34,7 @@
   <script src="/assets/articles.js"></script>
   <script src="/site.js" defer></script>
 </head>
-<body>
+<body class="editorial-page editorial-page--article">
 <a class="skip-link" href="#main">本文へスキップ</a>
 
 <nav class="nav">
@@ -52,28 +52,53 @@
 
 <main id="main">
   <section class="section section--tight">
-    <div class="container guide-detail-layout" data-article-detail data-article-slug="comparison-template">
-      <div class="guide-detail-main stack stack--lg">
-        <div class="card page-hero page-hero--article stack">
-          <div class="article-meta-strip">
-            <span class="pill" data-article-type-label>比較記事</span>
-            <span class="help" data-article-published>公開日</span>
-          </div>
-          <p class="kicker">比較記事サンプル</p>
-          <h1 class="h1">比較記事ページの組み方</h1>
-          <p class="lead">結論を先に出しつつ、比較軸、対象読者、広告導線まで整理するための見本記事です。</p>
-          <div class="tag-list" data-article-meta-tags></div>
-        </div>
+    <div class="container detail-shell detail-shell--article" data-article-detail data-article-slug="comparison-template">
+      <aside class="detail-share" aria-label="この記事を共有">
+        <p class="detail-share__label">Share</p>
+        <a class="detail-share__button" data-share-x href="#">X</a>
+        <button class="detail-share__button" type="button" data-share-copy>Copy</button>
+        <a class="detail-share__button" href="/articles/">All</a>
+      </aside>
 
-        <div class="card stack guide-callout">
-          <p class="muted">このページは雛形です。公開時には、商品名・サービス名・価格・案件リンク・広告表記を実データへ差し替えてください。</p>
-          <div class="cluster">
+      <div class="detail-primary">
+        <p class="detail-breadcrumb"><a href="/">ホーム</a> / <a href="/articles/">特集記事</a> / 比較記事ページの組み方</p>
+
+        <header class="detail-header">
+          <div class="detail-badges">
+            <span class="detail-badge" data-article-type-label>比較記事</span>
+            <span class="detail-badge detail-badge--muted">Comparison</span>
+          </div>
+          <h1 class="detail-title">比較記事ページの組み方</h1>
+          <p class="detail-lead">結論を先に出しつつ、比較軸、判断基準、広告導線まで整理して、読者が迷わず選べる比較記事にするための見本です。</p>
+          <div class="detail-byline">
+            <span class="detail-byline__avatar">MC</span>
+            <div class="detail-byline__body">
+              <strong data-article-author>Media Canvas 編集部</strong>
+              <span data-article-published>公開日</span>
+            </div>
+          </div>
+          <div class="detail-tag-row" data-article-meta-tags></div>
+        </header>
+
+        <section class="detail-callout">
+          <p class="detail-callout__eyebrow">比較記事の型</p>
+          <ul class="detail-summary-list">
+            <li>最初に「誰にどれが向いているか」を返し、比較表の前に結論を置く</li>
+            <li>価格、機能、サポート、向いている人を同じ順序で並べて差分を見せる</li>
+            <li>広告導線は判断材料のあとに置き、根拠より先に CTA を出しすぎない</li>
+          </ul>
+        </section>
+
+        <section class="detail-callout">
+          <p class="detail-callout__eyebrow">公開前の差し替え項目</p>
+          <p>このページは雛形です。商品名・価格・案件リンク・広告表記・比較表の具体値は、公開前に実データへ差し替えてください。</p>
+          <div class="detail-widget__actions">
             <a class="btn btn--primary" href="#" aria-disabled="true">案件リンクをここに配置</a>
             <a class="btn btn--secondary" href="/disclaimer.html">広告表記の考え方</a>
           </div>
-        </div>
+        </section>
 
-        <article class="card prose guide-article-card">
+        <article class="detail-prose guide-article-card">
           <h2>結論ブロック</h2>
           <p>比較記事では、最初に「誰にどれが向いているか」を一文で返すと離脱しにくくなります。読者は比較表より先に結論を見たがることが多いためです。</p>
 
@@ -100,56 +125,102 @@
           </ul>
         </article>
 
-        <div class="stack guide-faq-stack">
-          <details class="faq">
-            <summary>比較記事で案件リンクは何個まで置くべきですか？</summary>
-            <p>記事の長さと比較対象数によりますが、結論直後、比較表直後、各候補末尾のように、読む流れを壊さない配置に絞るのが無難です。</p>
-          </details>
-          <details class="faq">
-            <summary>比較表がなくても成り立ちますか？</summary>
-            <p>可能ですが、比較記事としての理解速度は落ちやすくなります。最低限、価格と主要な違いがひと目で分かる一覧はあると扱いやすいです。</p>
-          </details>
-        </div>
+        <section class="detail-author-card">
+          <span class="detail-author-card__avatar">比</span>
+          <div class="detail-author-card__body">
+            <strong>比較設計メモ</strong>
+            <p>比較対象を増やしすぎると判断が散るため、導入では結論を、本文では比較軸を、末尾では次の導線を受ける順序で組みます。</p>
+          </div>
+        </section>
 
-        <div class="card guide-action-row">
-          <a class="btn btn--primary" href="/articles/">記事一覧へ戻る</a>
-          <a class="btn btn--secondary" href="/articles/review-structure/">レビュー記事サンプルを見る</a>
-        </div>
+        <section class="detail-cta-band">
+          <p class="detail-section__eyebrow">Next Step</p>
+          <h2>比較の次はレビューの書き分けへ</h2>
+          <p>比較記事で全体像を見せたあと、個別評価の粒度をどう整えるかはレビュー記事の見本へつなげると滑らかです。</p>
+          <div class="detail-widget__actions">
+            <a class="btn btn--primary" href="/articles/">記事一覧へ戻る</a>
+            <a class="btn btn--secondary" href="/articles/review-structure/">レビュー記事サンプルを見る</a>
+          </div>
+        </section>
+
+        <section class="detail-related" id="related-articles">
+          <p class="detail-related__eyebrow">Related</p>
+          <h2>関連記事</h2>
+          <p>比較、レビュー、構成設計の近い記事を並べています。</p>
+          <div class="detail-related-grid" data-guide-related></div>
+        </section>
       </div>
 
-      <aside class="guide-detail-aside">
-        <div class="card booking-sticky-card stack">
-          <p class="kicker">Guide Context</p>
-          <h2 class="h3">このガイドの位置づけ</h2>
-          <ul class="list list--compact">
-            <li>比較記事の型を揃えたい時の土台</li>
-            <li>広告導線より先に判断基準を置く時の確認用</li>
-            <li>レビュー記事や使い方ガイドへ枝分かれする前提作り</li>
-          </ul>
-          <div class="divider"></div>
-          <h3 class="h3">関連ガイド</h3>
-          <div class="guide-related-list" data-guide-related></div>
-          <div class="divider"></div>
-          <h3 class="h3">サイト導線</h3>
-          <a class="btn btn--primary btn--sm" href="/finder/">作品検索へ</a>
-          <a class="btn btn--secondary btn--sm" href="/collections/">特集一覧へ</a>
-          <a class="btn btn--secondary btn--sm" href="/contact/">お問い合わせ</a>
-        </div>
+      <aside class="detail-sidebar">
+        <section class="detail-widget detail-widget--cta">
+          <p class="detail-widget__eyebrow">Guide Hub</p>
+          <h2 class="detail-widget__title">比較から次の判断へつなぐ</h2>
+          <p class="detail-widget__text">比較記事の土台を作り、レビュー記事や作品検索へ流すための右サイド導線です。</p>
+          <div class="detail-widget__actions">
+            <a class="btn btn--primary" href="/articles/">記事一覧へ</a>
+            <a class="btn btn--secondary" href="/finder/">作品検索へ</a>
+          </div>
+        </section>
+
+        <section class="detail-widget">
+          <h3 class="detail-widget__title">最近公開した記事</h3>
+          <div class="detail-link-list" data-article-recent></div>
+        </section>
+
+        <section class="detail-widget">
+          <h3 class="detail-widget__title">記事カテゴリ</h3>
+          <div class="detail-category-list" data-article-categories></div>
+        </section>
       </aside>
     </div>
   </section>
 </main>
 
-<footer class="footer">
-  <div class="container footer__inner">
-    <p class="muted" data-site-copyright>© Media Canvas</p>
-    <div class="footer__links">
+<footer class="footer editorial-footer">
+  <div class="container editorial-footer__inner">
+    <section class="editorial-footer__brand">
+      <p class="editorial-footer__eyebrow">Feature Finder</p>
+      <h2 data-site-brand>Media Canvas</h2>
+      <p>特集記事、作品紹介、条件検索をまたいで、次に読むものと次に探す条件をひと続きにするための土台です。</p>
+      <a class="btn btn--primary btn--sm" href="/finder/">作品検索へ</a>
+    </section>
+
+    <div class="editorial-footer__column">
+      <h3>探す</h3>
+      <ul class="editorial-footer__links">
+        <li><a href="/finder/">作品検索</a></li>
+        <li><a href="/builder/">詳細条件ビルダー</a></li>
+        <li><a href="/collections/">特集一覧</a></li>
+      </ul>
+    </div>
+
+    <div class="editorial-footer__column">
+      <h3>読む</h3>
+      <ul class="editorial-footer__links">
+        <li><a href="/articles/">特集記事</a></li>
+        <li><a href="/articles/comparison-template/">比較記事</a></li>
+        <li><a href="/articles/review-structure/">レビュー記事</a></li>
+      </ul>
+    </div>
+
+    <div class="editorial-footer__column">
+      <h3>運営</h3>
+      <ul class="editorial-footer__links">
+        <li><a href="/about/">運営方針</a></li>
+        <li><a href="/contact/">お問い合わせ</a></li>
+        <li><a href="/privacy.html">プライバシー</a></li>
+        <li><a href="/disclaimer.html">免責事項</a></li>
+      </ul>
+    </div>
+  </div>
+
+  <div class="container editorial-footer__bottom">
+    <p class="editorial-footer__legal" data-site-copyright>© Media Canvas</p>
+    <div class="editorial-footer__bottom-links">
       <a href="/">ホーム</a>
       <a href="/articles/">記事一覧</a>
-      <a href="/about/">運営者情報</a>
+      <a href="/finder/">作品検索</a>
       <a href="/contact/">お問い合わせ</a>
-      <a href="/privacy.html">プライバシー</a>
-      <a href="/disclaimer.html">免責事項</a>
     </div>
   </div>
 </footer>
