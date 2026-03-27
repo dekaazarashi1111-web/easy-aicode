@@ -621,6 +621,59 @@
 
   const getPrimaryWorkImageUrl = (work) => resolveCardImageUrls(work)[0] || "";
 
+  const buildHomeShowcasePlaceholderImage = (work, variant = "card") => {
+    const paletteSet = [
+      { background: "#2f1f55", accent: "#ff7f94", accentSoft: "#4b347e", text: "#ffffff" },
+      { background: "#143c63", accent: "#6bc6ff", accentSoft: "#27547f", text: "#ffffff" },
+      { background: "#5f3a12", accent: "#ffd56a", accentSoft: "#85592c", text: "#fff9ef" },
+      { background: "#22443d", accent: "#76d7b0", accentSoft: "#356258", text: "#f3fffb" },
+      { background: "#74254c", accent: "#f6a9d0", accentSoft: "#9a476f", text: "#fff5fb" },
+    ];
+    const palette = paletteSet[Math.abs(hashString(work.id || work.slug || work.title || "work")) % paletteSet.length];
+    const title = String(work.title || "作品紹介").replace(/\s+/g, " ").trim();
+    const creator = String(work.creator || "掲載候補").replace(/\s+/g, " ").trim();
+    const label = String(work.format || "作品").replace(/\s+/g, " ").trim();
+    const width = variant === "thumb" ? 480 : 720;
+    const height = variant === "thumb" ? 360 : 900;
+    const lines = (title.match(/.{1,10}/gu) || [title]).slice(0, 3);
+    const textStartY = variant === "thumb" ? 150 : 240;
+    const lineGap = variant === "thumb" ? 44 : 68;
+    const svg = `
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 ${width} ${height}" role="img" aria-label="${escapeSvgText(title)}">
+        <defs>
+          <linearGradient id="bg" x1="0%" y1="0%" x2="100%" y2="100%">
+            <stop offset="0%" stop-color="${palette.background}" />
+            <stop offset="100%" stop-color="${palette.accentSoft}" />
+          </linearGradient>
+        </defs>
+        <rect width="${width}" height="${height}" fill="url(#bg)" rx="${variant === "thumb" ? 24 : 32}" />
+        <rect x="${variant === "thumb" ? 22 : 34}" y="${variant === "thumb" ? 22 : 34}" width="${width - (variant === "thumb" ? 44 : 68)}" height="${height - (variant === "thumb" ? 44 : 68)}" rx="${variant === "thumb" ? 22 : 28}" fill="rgba(255,255,255,0.08)" />
+        <rect x="${variant === "thumb" ? 30 : 44}" y="${variant === "thumb" ? 32 : 46}" width="${variant === "thumb" ? 120 : 154}" height="${variant === "thumb" ? 28 : 34}" rx="17" fill="${palette.accent}" />
+        <circle cx="${width - (variant === "thumb" ? 72 : 104)}" cy="${variant === "thumb" ? 74 : 110}" r="${variant === "thumb" ? 42 : 68}" fill="rgba(255,255,255,0.1)" />
+        <path d="M ${variant === "thumb" ? 32 : 46} ${height - (variant === "thumb" ? 120 : 188)} Q ${width / 2} ${height - (variant === "thumb" ? 210 : 300)} ${width - (variant === "thumb" ? 32 : 46)} ${height - (variant === "thumb" ? 130 : 176)} L ${width - (variant === "thumb" ? 32 : 46)} ${height - (variant === "thumb" ? 32 : 46)} L ${variant === "thumb" ? 32 : 46} ${height - (variant === "thumb" ? 32 : 46)} Z" fill="rgba(255,255,255,0.12)" />
+        <text x="${variant === "thumb" ? 46 : 60}" y="${variant === "thumb" ? 51 : 69}" fill="${palette.background}" font-family="Noto Sans JP, Helvetica Neue, Arial, sans-serif" font-size="${variant === "thumb" ? 15 : 18}" font-weight="800">${escapeSvgText(label)}</text>
+        ${lines
+          .map(
+            (line, index) => `
+              <text x="${variant === "thumb" ? 42 : 58}" y="${textStartY + index * lineGap}" fill="${palette.text}" font-family="Noto Sans JP, Helvetica Neue, Arial, sans-serif" font-size="${variant === "thumb" ? 34 : 52}" font-weight="900" letter-spacing="-1.5">${escapeSvgText(line)}</text>
+            `
+          )
+          .join("")}
+        <text x="${variant === "thumb" ? 44 : 60}" y="${height - (variant === "thumb" ? 56 : 74)}" fill="rgba(255,255,255,0.78)" font-family="Noto Sans JP, Helvetica Neue, Arial, sans-serif" font-size="${variant === "thumb" ? 18 : 24}" font-weight="600">${escapeSvgText(creator)}</text>
+      </svg>
+    `;
+    return `data:image/svg+xml;charset=UTF-8,${encodeURIComponent(svg)}`;
+  };
+
+  const createHomeShowcaseWorkImage = ({ work, className, variant = "card" }) => {
+    const image = createProductCardImage(
+      className,
+      getPrimaryWorkImageUrl(work) || buildHomeShowcasePlaceholderImage(work, variant)
+    );
+    image.alt = work.title || "";
+    return image;
+  };
+
   const createHomeShowcaseAction = ({ label, href, accent = false }) => {
     const link = createElement(
       "a",
@@ -638,13 +691,18 @@
     return link;
   };
 
-  const createHomeShowcaseThumb = (work, className = "home-showcase-collage__tile") => {
+  const createHomeShowcaseThumb = (workOrUrl, className = "home-showcase-collage__tile") => {
     const wrap = createElement("span", className);
-    const imageUrl = getPrimaryWorkImageUrl(work);
-    if (imageUrl) {
-      wrap.appendChild(createProductCardImage("home-showcase-collage__image", imageUrl));
+    if (typeof workOrUrl === "string") {
+      wrap.appendChild(createProductCardImage("home-showcase-collage__image", workOrUrl));
     } else {
-      wrap.appendChild(createShelfArtwork(work.id || work.slug || work.title, "frame", "sand"));
+      wrap.appendChild(
+        createHomeShowcaseWorkImage({
+          work: workOrUrl,
+          className: "home-showcase-collage__image",
+          variant: className === "home-showcase-poster__thumb" ? "card" : "thumb",
+        })
+      );
     }
     return wrap;
   };
@@ -655,11 +713,16 @@
     const scrim = createElement("span", "home-showcase-banner__scrim");
     const copy = createElement("div", "home-showcase-banner__copy");
     const chips = createElement("div", "home-showcase-banner__chipRow");
-    const imageUrl = work ? getPrimaryWorkImageUrl(work) : "";
-
+    const title = createElement("strong", "home-showcase-banner__title");
     link.href = collection ? `/collection/?slug=${encodeURIComponent(collection.slug)}` : "/finder/";
-    if (imageUrl) {
-      media.appendChild(createProductCardImage("home-showcase-banner__image", imageUrl));
+    if (work) {
+      media.appendChild(
+        createHomeShowcaseWorkImage({
+          work,
+          className: "home-showcase-banner__image",
+          variant: "card",
+        })
+      );
     } else {
       media.appendChild(createShelfArtwork(profile.id || profile.slug || profile.name, "frame", "charcoal"));
     }
@@ -674,9 +737,14 @@
         chips.appendChild(createElement("span", "home-showcase-banner__chip", label));
       });
 
+    title.append(
+      createElement("span", "home-showcase-banner__titleLine", profile.shortName || "ケモホモ"),
+      createElement("span", "home-showcase-banner__titleLine", "作品ファインダー")
+    );
+
     copy.append(
       createElement("span", "home-showcase-banner__badge", "Feature Finder"),
-      createElement("strong", "home-showcase-banner__title", profile.name || "ケモホモ作品ファインダー"),
+      title,
       createElement(
         "p",
         "home-showcase-banner__description",
@@ -758,16 +826,16 @@
       "home-showcase-product__detail",
       `${Math.max(1, resolveCardImageUrls(work).length)}枚`
     );
-    const imageUrl = getPrimaryWorkImageUrl(work);
-
     mediaLink.href = `/work/?slug=${encodeURIComponent(work.slug)}`;
     title.href = mediaLink.href;
 
-    if (imageUrl) {
-      mediaLink.appendChild(createProductCardImage("home-showcase-product__image", imageUrl));
-    } else {
-      mediaLink.appendChild(createShelfArtwork(work.id || work.slug || work.title, "frame", "white"));
-    }
+    mediaLink.appendChild(
+      createHomeShowcaseWorkImage({
+        work,
+        className: "home-showcase-product__image",
+        variant: "card",
+      })
+    );
     mediaLink.appendChild(badge);
 
     footer.append(price, detail);
@@ -1640,8 +1708,15 @@
         if (priorityOrder !== 0) return priorityOrder;
         return Date.parse(right.updatedAt || 0) - Date.parse(left.updatedAt || 0);
       });
-    const recommendedWorks = allWorks.slice(0, 10);
-    const heroWorks = allWorks.slice(0, 7);
+    const imageReadyWorks = allWorks
+      .filter((work) => getPrimaryWorkImageUrl(work))
+      .sort((left, right) => resolveCardImageUrls(right).length - resolveCardImageUrls(left).length);
+    const recommendedWorks = [...imageReadyWorks, ...allWorks.filter((work) => !imageReadyWorks.includes(work))].slice(0, 10);
+    const heroWorks = recommendedWorks.slice(0, 7);
+    const collageSourceWork = imageReadyWorks[0] || recommendedWorks[0];
+    const collageItems = collageSourceWork
+      ? resolveCardImageUrls(collageSourceWork).slice(0, 6)
+      : heroWorks.slice(0, 6);
     const introCollection = featuredCollections.find((collection) => collection.id === "start-here") || featuredCollections[0];
     const tfCollection = featuredCollections.find((collection) => collection.id === "tf-gateway") || featuredCollections[1] || introCollection;
 
@@ -1670,7 +1745,7 @@
       collageRoot.appendChild(
         createHomeShowcaseCollageBanner({
           collection: tfCollection,
-          works: heroWorks.slice(0, 6),
+          works: collageItems,
         })
       );
     }

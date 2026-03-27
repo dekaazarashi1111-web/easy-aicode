@@ -10023,9 +10023,16 @@ body.finder-tag-picker-open {
 }
 
 .home-showcase-banner__title {
+  display: grid;
+  gap: 0.1rem;
+  max-width: 8.5ch;
   font-size: clamp(2.4rem, 4.2vw, 4.4rem);
   line-height: 0.9;
   letter-spacing: -0.05em;
+}
+
+.home-showcase-banner__titleLine {
+  display: block;
 }
 
 .home-showcase-banner__description,
