@@ -9939,7 +9939,7 @@ body.finder-tag-picker-open {
   gap: 10px;
   width: 100vw;
   margin-left: calc(50% - 50vw);
-  padding: 0 8px 2px;
+  padding: 0 0 2px;
   overflow-x: auto;
   scroll-snap-type: x proximity;
   scrollbar-width: none;
@@ -9955,15 +9955,15 @@ body.finder-tag-picker-open {
 }
 
 .home-showcase-hero__item--wide {
-  width: calc((100vw - 36px) / 3);
+  width: calc((100vw - 20px) / 3);
 }
 
 .home-showcase-hero__item--medium {
-  width: calc((100vw - 36px) / 3);
+  width: calc((100vw - 20px) / 3);
 }
 
 .home-showcase-hero__item--poster {
-  width: calc((100vw - 36px) / 3);
+  width: calc((100vw - 20px) / 3);
 }
 
 .home-showcase-hero__footer {
