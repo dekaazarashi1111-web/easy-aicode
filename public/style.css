@@ -9925,12 +9925,12 @@ body.finder-tag-picker-open {
   margin: 0 auto;
   padding: 16px 0 72px;
   display: grid;
-  gap: 42px;
+  gap: 28px;
 }
 
 .home-showcase-hero {
   display: grid;
-  gap: 12px;
+  gap: 8px;
 }
 
 .home-showcase-hero__rail {
@@ -10271,8 +10271,8 @@ body.finder-tag-picker-open {
 .home-showcase-micro {
   display: grid;
   justify-items: center;
-  gap: 10px;
-  padding: 0 0 4px;
+  gap: 8px;
+  padding: 0;
 }
 
 .home-showcase-micro__eyebrow {
@@ -10314,7 +10314,7 @@ body.finder-tag-picker-open {
 
 .home-showcase-section {
   display: grid;
-  gap: 14px;
+  gap: 12px;
 }
 
 .home-showcase-section__head {
@@ -10324,7 +10324,7 @@ body.finder-tag-picker-open {
 .home-showcase-section__head h2 {
   margin: 0;
   color: #2e3544;
-  font-size: clamp(1.55rem, 2.4vw, 2rem);
+  font-size: clamp(1.4rem, 2vw, 1.8rem);
   letter-spacing: -0.04em;
 }
 
@@ -10577,7 +10577,7 @@ body.finder-tag-picker-open {
 
 @media (max-width: 720px) {
   .home-showcase-shell {
-    gap: 30px;
+    gap: 24px;
   }
 
   .home-showcase-banner__copy,

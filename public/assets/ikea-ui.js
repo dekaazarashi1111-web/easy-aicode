@@ -1012,13 +1012,13 @@
           <div class="home-showcase-hero__footer">
             <div class="home-showcase-hero__dots" data-home-hero-dots></div>
           </div>
-        </section>
-        <div class="home-showcase-micro">
-          <p class="home-showcase-micro__eyebrow">まずは入口特集から</p>
-          <div class="home-showcase-micro__actions">
-            <a class="home-showcase-micro__action home-showcase-micro__action--accent" href="/articles/">特集記事</a>
+          <div class="home-showcase-micro">
+            <p class="home-showcase-micro__eyebrow">まずは入口特集から</p>
+            <div class="home-showcase-micro__actions">
+              <a class="home-showcase-micro__action home-showcase-micro__action--accent" href="/articles/">特集記事</a>
+            </div>
           </div>
-        </div>
+        </section>
         <section class="home-showcase-section">
           <div class="home-showcase-section__head">
             <h2>注目のリンク</h2>
