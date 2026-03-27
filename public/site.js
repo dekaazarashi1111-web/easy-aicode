@@ -2113,15 +2113,6 @@ const renderSiteChrome = () => {
     shell.appendChild(inner);
     footer.appendChild(shell);
   });
-
-  if (document.body && !document.querySelector(".ikea-help-fab")) {
-    const fab = document.createElement("a");
-    fab.className = "ikea-help-fab";
-    fab.href = "/contact/";
-    fab.setAttribute("aria-label", "お問い合わせ");
-    fab.appendChild(createIcon("chat"));
-    document.body.appendChild(fab);
-  }
 };
 
 renderSiteChrome();
