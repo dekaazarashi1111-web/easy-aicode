@@ -1903,6 +1903,9 @@
       const nextButton = root.querySelector("[data-home-hero-next]");
       let currentSnapIndex = 0;
       let heroSnapPositions = [];
+      let heroDotLockIndex = null;
+      let heroDotLockTarget = 0;
+      let heroDotLockFrame = 0;
 
       const getHeroRailPaddingStart = () => {
         if (!heroRail) return 0;
@@ -1956,29 +1959,72 @@
         });
       };
 
+      const applyHeroDots = (activeIndex) => {
+        const heroDots = Array.from(root.querySelectorAll("[data-hero-dot]"));
+        heroDots.forEach((dot, index) => {
+          dot.setAttribute("aria-pressed", index === activeIndex ? "true" : "false");
+        });
+      };
+
+      const stopHeroDotLockWatch = () => {
+        if (heroDotLockFrame) {
+          window.cancelAnimationFrame(heroDotLockFrame);
+          heroDotLockFrame = 0;
+        }
+      };
+
+      const watchHeroDotLock = () => {
+        if (!heroRail || heroDotLockIndex === null) return;
+        if (Math.abs(heroRail.scrollLeft - heroDotLockTarget) <= 2) {
+          heroDotLockIndex = null;
+          heroDotLockTarget = 0;
+          heroDotLockFrame = 0;
+          syncHeroDots();
+          return;
+        }
+        heroDotLockFrame = window.requestAnimationFrame(watchHeroDotLock);
+      };
+
       const scrollToHeroIndex = (index) => {
         if (!heroRail || !heroSnapPositions.length) return;
         const wrappedIndex = ((index % heroSnapPositions.length) + heroSnapPositions.length) % heroSnapPositions.length;
+        const didWrap = index !== wrappedIndex;
         currentSnapIndex = wrappedIndex;
-        syncHeroDots();
+        stopHeroDotLockWatch();
+        if (didWrap) {
+          heroDotLockIndex = wrappedIndex;
+          heroDotLockTarget = heroSnapPositions[wrappedIndex];
+          applyHeroDots(wrappedIndex);
+        } else {
+          heroDotLockIndex = null;
+          heroDotLockTarget = 0;
+          applyHeroDots(wrappedIndex);
+        }
         heroRail.scrollTo({
           left: heroSnapPositions[wrappedIndex],
           behavior: "smooth",
         });
+        if (didWrap) {
+          heroDotLockFrame = window.requestAnimationFrame(watchHeroDotLock);
+        }
       };
 
       const syncHeroDots = () => {
         if (!heroRail || !heroSnapPositions.length) return;
+        if (heroDotLockIndex !== null) {
+          applyHeroDots(heroDotLockIndex);
+          return;
+        }
         currentSnapIndex = getNearestHeroSnapIndex();
-        const heroDots = Array.from(root.querySelectorAll("[data-hero-dot]"));
-        heroDots.forEach((dot, index) => {
-          dot.setAttribute("aria-pressed", index === currentSnapIndex ? "true" : "false");
-        });
+        applyHeroDots(currentSnapIndex);
       };
 
       const refreshHeroSnapModel = () => {
         heroSnapPositions = buildHeroSnapPositions();
         const previousCount = root.querySelectorAll("[data-hero-dot]").length;
+        stopHeroDotLockWatch();
+        heroDotLockIndex = null;
+        heroDotLockTarget = 0;
         currentSnapIndex = getNearestHeroSnapIndex();
         if (previousCount !== heroSnapPositions.length) {
           renderHeroDots();
