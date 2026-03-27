@@ -10369,7 +10369,7 @@ body.finder-tag-picker-open {
   grid-template-columns: minmax(0, 1fr) minmax(250px, 300px);
   gap: clamp(2rem, 4vw, 4rem);
   align-items: start;
-  justify-content: space-between;
+  justify-content: center;
 }
 
 .detail-shell--article {
@@ -10685,7 +10685,7 @@ body.finder-tag-picker-open {
 
 .editorial-page--article .detail-shell--article {
   grid-template-columns: minmax(0, 700px) minmax(250px, 288px);
-  gap: 2.8rem;
+  gap: 1.35rem;
 }
 
 .editorial-page--article .detail-primary {
@@ -10844,7 +10844,7 @@ body.finder-tag-picker-open {
 
 .editorial-page--work .detail-shell--work {
   grid-template-columns: minmax(0, 720px) minmax(250px, 288px);
-  gap: 2.6rem;
+  gap: 1.35rem;
 }
 
 .editorial-page--work .detail-primary {
