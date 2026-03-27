@@ -1773,6 +1773,14 @@
       ...supplementalImageReadyWorks,
       ...supplementalWorks.filter((work) => !supplementalImageReadyWorks.includes(work)),
     ].slice(0, 10);
+    const filledRecommendedGridWorks = [];
+    if (recommendedGridWorks.length) {
+      while (filledRecommendedGridWorks.length < 10) {
+        filledRecommendedGridWorks.push(
+          recommendedGridWorks[filledRecommendedGridWorks.length % recommendedGridWorks.length]
+        );
+      }
+    }
     const heroWorks = prioritizedProfileWorks.slice(0, 7);
     const collageSourceWork = imageReadyWorks[0] || prioritizedProfileWorks[0];
     const collageItems = collageSourceWork
@@ -1870,7 +1878,7 @@
 
     if (recommendedRoot) {
       recommendedRoot.textContent = "";
-      recommendedGridWorks.forEach((work) => {
+      filledRecommendedGridWorks.forEach((work) => {
         recommendedRoot.appendChild(createHomeShowcaseProductCard({ work, uiState, tagMap }));
       });
     }
