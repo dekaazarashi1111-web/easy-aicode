@@ -2332,6 +2332,43 @@ const scoreRelatedArticle = (baseArticle, candidateArticle) => {
   return score;
 };
 
+const populateArticleSidebarFeeds = ({ recentRoot, categoryRoot, excludeSlug = "" } = {}) => {
+  const api = window.ArticleSearch;
+  const articles = Array.isArray(window.ARTICLE_INDEX) ? window.ARTICLE_INDEX : [];
+  if (!api || !articles.length) return;
+
+  const decoratedArticles = api.decorateArticles(articles);
+  const visibleArticles = excludeSlug
+    ? decoratedArticles.filter((item) => item.slug !== excludeSlug)
+    : decoratedArticles;
+
+  if (recentRoot) {
+    recentRoot.textContent = "";
+    visibleArticles
+      .slice()
+      .sort((left, right) => `${right.publishedAt}`.localeCompare(`${left.publishedAt}`))
+      .slice(0, 4)
+      .forEach((item) => recentRoot.appendChild(createArticleListLink(item)));
+  }
+
+  if (categoryRoot) {
+    categoryRoot.textContent = "";
+    api
+      .collectFilterOptions(decoratedArticles)
+      .types.forEach((option) => categoryRoot.appendChild(createArticleCategoryChip(option)));
+  }
+};
+
+const initSharedArticleSidebars = () => {
+  document.querySelectorAll("[data-article-sidebar]").forEach((root) => {
+    populateArticleSidebarFeeds({
+      recentRoot: root.querySelector("[data-article-recent]"),
+      categoryRoot: root.querySelector("[data-article-categories]"),
+      excludeSlug: root.dataset.articleSidebarExcludeSlug || "",
+    });
+  });
+};
+
 const initArticleDetailMeta = () => {
   const root = document.querySelector("[data-article-detail]");
   const slug = root?.dataset.articleSlug;
@@ -2376,23 +2413,11 @@ const initArticleDetailMeta = () => {
       .forEach((item) => relatedRoot.appendChild(createArticleTeaserCard(item)));
   }
 
-  const recentRoot = root.querySelector("[data-article-recent]");
-  if (recentRoot) {
-    recentRoot.textContent = "";
-    decoratedArticles
-      .filter((item) => item.slug !== article.slug)
-      .sort((left, right) => `${right.publishedAt}`.localeCompare(`${left.publishedAt}`))
-      .slice(0, 4)
-      .forEach((item) => recentRoot.appendChild(createArticleListLink(item)));
-  }
-
-  const categoryRoot = root.querySelector("[data-article-categories]");
-  if (categoryRoot) {
-    categoryRoot.textContent = "";
-    api
-      .collectFilterOptions(decoratedArticles)
-      .types.forEach((option) => categoryRoot.appendChild(createArticleCategoryChip(option)));
-  }
+  populateArticleSidebarFeeds({
+    recentRoot: root.querySelector("[data-article-recent]"),
+    categoryRoot: root.querySelector("[data-article-categories]"),
+    excludeSlug: article.slug,
+  });
 };
 
 const initArticleSearch = () => {
@@ -2595,6 +2620,7 @@ const initArticleSearch = () => {
 };
 
 initArticleDetailMeta();
+initSharedArticleSidebars();
 initArticleSearch();
 
 document.addEventListener("click", (event) => {
