@@ -10701,7 +10701,7 @@ body.finder-tag-picker-open {
 
 .editorial-page--article .detail-title {
   max-width: none;
-  font-size: clamp(1.95rem, 3.2vw, 2.6rem);
+  font-size: clamp(1.8rem, 2.9vw, 2.35rem);
   line-height: 1.04;
   letter-spacing: -0.035em;
 }
@@ -11443,6 +11443,12 @@ body.finder-tag-picker-open {
 
   .detail-work-hero {
     grid-template-columns: 1fr;
+  }
+}
+
+@media (min-width: 981px) {
+  .editorial-page--article .detail-title {
+    white-space: nowrap;
   }
 }
 
