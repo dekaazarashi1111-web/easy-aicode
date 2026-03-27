@@ -30,9 +30,10 @@
 - 公開フロントは、作品 / タグ / コレクション / サイトプロファイル / ログの共通データ構造を意識して編集します。
 - 記事追加は UI では行わず、`public/assets/articles.js` に一覧データを追加し、対応する記事HTMLを `public/articles/<slug>/index.html` として増やします。
 - UI を大きく触る作業では、完了時だけでなく各 major pass の途中でも `node scripts/capture_local_ui_screenshots.js` を実行し、ローカル描画を見てから次の修正へ進みます。
-- 各作業の完了前と GitHub 同期前には、まず `node scripts/capture_live_screenshots.js` の `quick` モードで `https://wintergator.com/` の主要ページスクリーンショットを更新します。
-- GitHub 同期後にも、`node scripts/capture_live_screenshots.js --quick` を再実行し、`https://wintergator.com/` の実URLで反映結果を確認します。
-- 導線を広く触った作業や公開前確認では、`node scripts/capture_live_screenshots.js --full` を実行し、`public/` のHTMLルート、`https://wintergator.com/sitemap.xml`、ライブ描画後DOMの内部リンクまで含めた網羅巡回を行います。
+- 通常作業の live 確認は `node scripts/capture_live_screenshots.js --quick --target <path>` を原則とし、その作業で触ったページ、今まさに見たいページ、今回確認したい query 付き詳細ページだけを動的に選んで撮影します。`--target` は複数回指定でき、例として `node scripts/capture_live_screenshots.js --quick --target /articles/article-layout-test/ --target '/work/?slug=pocket-shift-memo'` の形で使います。
+- 各作業の完了前と GitHub 同期前には、まず上記の targeted live スクリーンショットで、今回触ったページの `https://wintergator.com/` 実URL確認を行います。
+- GitHub 同期後にも、同じ `--target` 群で `node scripts/capture_live_screenshots.js --quick ...` を再実行し、実URLで反映結果を確認します。
+- 導線を広く触った作業、どこまで影響したか読み切れない作業、公開前の総点検でのみ、`node scripts/capture_live_screenshots.js --full` を実行し、`public/` のHTMLルート、`https://wintergator.com/sitemap.xml`、ライブ描画後DOMの内部リンクまで含めた網羅巡回を行います。
 - ローカルUIスクリーンショットは `scripts/capture_local_ui_screenshots.js` を使い、ホーム・検索・ビルダー・詳細の主要画面を最低限毎回確認します。
 - スクリーンショットの出力先は `artifacts/live-screenshots/latest/` とし、取得失敗を残したまま完了扱いにしません。
 - スクリーンショット取得は確認工程であり、取得しただけでは完了扱いにしません。問題が残っている限り、修正、GitHub 同期、ローカルUI確認、`https://wintergator.com/` の実URL確認を必要な回数だけ繰り返して調整します。

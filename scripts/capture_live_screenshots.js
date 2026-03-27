@@ -52,11 +52,19 @@ function getIntEnv(name, fallback) {
   return Number.isFinite(value) && value > 0 ? value : fallback;
 }
 
+function parseDelimitedTargets(rawValue) {
+  return `${rawValue || ""}`
+    .split(/[\n,]/)
+    .map((value) => value.trim())
+    .filter(Boolean);
+}
+
 function parseCliArgs(rawArgs) {
   const result = {
     showHelp: false,
     mode: "",
     baseUrl: "",
+    targets: [],
   };
 
   for (let index = 0; index < rawArgs.length; index += 1) {
@@ -82,6 +90,15 @@ function parseCliArgs(rawArgs) {
       result.mode = arg.slice("--mode=".length);
       continue;
     }
+    if (arg === "--target") {
+      result.targets.push(...parseDelimitedTargets(rawArgs[index + 1] || ""));
+      index += 1;
+      continue;
+    }
+    if (arg.startsWith("--target=")) {
+      result.targets.push(...parseDelimitedTargets(arg.slice("--target=".length)));
+      continue;
+    }
     if (!arg.startsWith("-") && !result.baseUrl) {
       result.baseUrl = arg;
       continue;
@@ -98,10 +115,12 @@ function printHelp() {
       "usage: node scripts/capture_live_screenshots.js [base-url]",
       "       node scripts/capture_live_screenshots.js --quick [base-url]",
       "       node scripts/capture_live_screenshots.js --full [base-url]",
+      "       node scripts/capture_live_screenshots.js --quick --target /articles/article-layout-test/ --target '/work/?slug=pocket-shift-memo'",
       "",
       "env:",
       "  LIVE_SCREENSHOT_BASE_URL        default: https://wintergator.com/",
       "  LIVE_SCREENSHOT_MODE            quick | full (default: quick)",
+      "  LIVE_SCREENSHOT_TARGETS         comma/newline separated explicit paths or same-origin URLs",
       "  LIVE_SCREENSHOT_OUTPUT_DIR      default: artifacts/live-screenshots/latest",
       "  LIVE_SCREENSHOT_BROWSER         chromium executable path",
       "  LIVE_SCREENSHOT_MAX_PAGES       mode default: quick=40 full=200",
@@ -111,6 +130,7 @@ function printHelp() {
       "  LIVE_SCREENSHOT_TIMEOUT_MS      mode default: quick=30000 full=60000",
       "",
       "notes:",
+      "  --target を使うと、指定したURL/パスだけを撮影します。",
       "  quick は public/ と sitemap.xml の静的入口だけを軽く撮ります。",
       "  full は描画後 DOM の内部リンクも辿る従来の網羅モードです。",
     ].join("\n") + "\n"
@@ -424,6 +444,14 @@ function normalizeSameOriginUrl(rawHref, currentUrl) {
   return target.toString();
 }
 
+function normalizeExplicitTarget(rawTarget) {
+  const normalized = normalizeSameOriginUrl(rawTarget, baseUrl.toString());
+  if (!normalized) {
+    fail(`--target に解釈できないURL/パスがあります: ${rawTarget}`);
+  }
+  return normalized;
+}
+
 function shouldEnqueueDiscoveredLink(currentUrl, nextUrl) {
   const current = new URL(currentUrl);
   const next = new URL(nextUrl);
@@ -548,21 +576,37 @@ function resetOutputDirectory() {
 async function main() {
   resetOutputDirectory();
 
+  const explicitTargets = Array.from(
+    new Set(
+      [
+        ...parseDelimitedTargets(process.env.LIVE_SCREENSHOT_TARGETS || ""),
+        ...cliArgs.targets,
+      ].map(normalizeExplicitTarget)
+    )
+  );
+  const allowDiscoveredLinkQueue = explicitTargets.length === 0 && modeConfig.discoverRenderedLinks;
+
   log(`base URL: ${baseUrl.toString()}`);
   log(`mode: ${modeConfig.label}`);
   log(`browser: ${browserPath}`);
   log(`output: ${path.relative(ROOT, outputDir) || "."}`);
 
-  const localSeeds = collectLocalSeedUrls();
-  const sitemapSeeds = await collectSitemapSeedUrls();
-  const seedSet = new Set([...localSeeds, ...sitemapSeeds]);
-  const queue = Array.from(seedSet).sort();
+  const localSeeds = explicitTargets.length > 0 ? [] : collectLocalSeedUrls();
+  const sitemapSeeds = explicitTargets.length > 0 ? [] : await collectSitemapSeedUrls();
+  const seedSet = explicitTargets.length > 0 ? new Set(explicitTargets) : new Set([...localSeeds, ...sitemapSeeds]);
+  const queue = Array.from(seedSet);
+  if (explicitTargets.length === 0) {
+    queue.sort();
+  }
   const queued = new Set(queue);
   const discoveredBy = new Map();
   const visited = new Set();
   const pages = [];
   const failures = [];
 
+  for (const url of explicitTargets) {
+    discoveredBy.set(url, "explicit-target");
+  }
   for (const url of localSeeds) {
     discoveredBy.set(url, "local-seed");
   }
@@ -574,7 +618,11 @@ async function main() {
     }
   }
 
-  log(`初期URL数: ${queue.length}`);
+  if (explicitTargets.length > 0) {
+    log(`明示ターゲット数: ${queue.length}`);
+  } else {
+    log(`初期URL数: ${queue.length}`);
+  }
 
   while (queue.length > 0 && pages.length < maxPages) {
     const currentUrl = queue.shift();
@@ -615,7 +663,7 @@ async function main() {
       continue;
     }
 
-    if (modeConfig.discoverRenderedLinks) {
+    if (allowDiscoveredLinkQueue) {
       for (const link of discoveredLinks) {
         if (!shouldEnqueueDiscoveredLink(currentUrl, link)) {
           continue;
@@ -655,6 +703,7 @@ async function main() {
     browser: browserPath,
     outputDir: path.relative(ROOT, outputDir),
     maxPages,
+    explicitTargetCount: explicitTargets.length,
     localSeedCount: localSeeds.length,
     sitemapSeedCount: sitemapSeeds.length,
     pageCount: pages.length,
@@ -672,6 +721,7 @@ async function main() {
     `browser: ${manifest.browser}`,
     `pageCount: ${manifest.pageCount}`,
     `failureCount: ${manifest.failureCount}`,
+    `explicitTargetCount: ${manifest.explicitTargetCount}`,
     "",
     "pages:",
     ...pages.map((page) => `- ${page.url} -> ${page.screenshot}`),
