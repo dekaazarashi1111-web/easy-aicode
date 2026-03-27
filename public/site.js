@@ -468,6 +468,15 @@ const HEADER_ACTIONS = [
   { href: "/finder/#recent-history", label: "閲覧履歴", icon: "recent" },
 ];
 
+const FOOTER_LEGAL_LINKS = [
+  { href: "/about/", label: "運営方針" },
+  { href: "/articles/", label: "ガイド一覧" },
+  { href: "/builder/", label: "詳細条件ビルダー" },
+  { href: "/privacy.html", label: "プライバシーポリシー" },
+  { href: "/disclaimer.html", label: "免責事項" },
+  { href: "/contact/", label: "お問い合わせ" },
+];
+
 const createIcon = (kind, className = "") => {
   const svg = document.createElementNS("http://www.w3.org/2000/svg", "svg");
   svg.setAttribute("viewBox", "0 0 24 24");
@@ -2080,14 +2089,26 @@ const renderSiteChrome = () => {
     const inner = document.createElement("div");
     const legalRow = document.createElement("div");
     const copyright = document.createElement("p");
+    const legalLinks = document.createElement("div");
 
-    shell.className = "ikea-footer ikea-footer--minimal";
-    inner.className = "ikea-footer__inner ikea-footer__inner--minimal";
-    legalRow.className = "ikea-footer__legalRow ikea-footer__legalRow--minimal";
+    shell.className = "ikea-footer";
+    inner.className = "ikea-footer__inner ikea-footer__inner--legal-only";
+    legalRow.className = "ikea-footer__legalRow ikea-footer__legalRow--legal-only";
     copyright.className = "ikea-footer__copyright";
     copyright.textContent = `© ${BRAND_NAME}`;
+    legalLinks.className = "ikea-footer__legalLinks";
 
-    legalRow.appendChild(copyright);
+    FOOTER_LEGAL_LINKS.forEach((item) => {
+      legalLinks.appendChild(
+        createChromeLink({
+          href: item.href,
+          label: item.label,
+          className: "ikea-footer__legalLink",
+        })
+      );
+    });
+
+    legalRow.append(copyright, legalLinks);
     inner.appendChild(legalRow);
     shell.appendChild(inner);
     footer.appendChild(shell);
