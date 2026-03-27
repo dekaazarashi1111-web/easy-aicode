@@ -825,6 +825,30 @@
     return link;
   };
 
+  const createHomeShowcaseCompactBanner = ({
+    badge = "Topics",
+    title = "",
+    description = "",
+    href = "/",
+    tone = "light",
+  }) => {
+    const link = createElement(
+      "a",
+      `home-showcase-banner home-showcase-banner--compact${tone === "dark" ? " home-showcase-banner--compactDark" : ""}`
+    );
+    const titleBlock = createElement("div", "home-showcase-compact__title");
+    link.href = href;
+    title.split("\n").forEach((line) => {
+      titleBlock.appendChild(createElement("span", "", line));
+    });
+    link.append(
+      createElement("span", "home-showcase-banner__badge home-showcase-banner__badge--light", badge),
+      titleBlock,
+      createElement("p", "home-showcase-banner__sideDescription", description)
+    );
+    return link;
+  };
+
   const createHomeShowcaseProductCard = ({ work }) => {
     const article = createElement("article", "home-showcase-product");
     const mediaLink = createElement("a", "home-showcase-product__media");
@@ -984,14 +1008,10 @@
     root.innerHTML = `
       <div class="home-showcase-shell">
         <section class="home-showcase-hero">
-          <div class="home-showcase-hero__grid">
-            <div data-home-banner-spotlight></div>
-            <div data-home-banner-collage></div>
-            <div data-home-banner-poster></div>
-          </div>
-          <div class="home-showcase-micro">
-            <p class="home-showcase-micro__eyebrow">入口をひとつ選んでから深掘りする</p>
-            <div class="home-showcase-micro__actions" data-home-micro-actions></div>
+          <div class="home-showcase-hero__rail" data-home-hero-rail></div>
+          <div class="home-showcase-hero__footer">
+            <div class="home-showcase-hero__dots" data-home-hero-dots></div>
+            <a class="home-showcase-hero__guideLink" href="/articles/">特集記事</a>
           </div>
         </section>
         <section class="home-showcase-section">
@@ -1737,57 +1757,80 @@
       : heroWorks.slice(0, 6);
     const introCollection = featuredCollections.find((collection) => collection.id === "start-here") || featuredCollections[0];
     const tfCollection = featuredCollections.find((collection) => collection.id === "tf-gateway") || featuredCollections[1] || introCollection;
+    const safeCollection = featuredCollections.find((collection) => collection.id === "safe-filters") || featuredCollections[2] || introCollection;
 
-    const spotlightRoot = root.querySelector("[data-home-banner-spotlight]");
-    const collageRoot = root.querySelector("[data-home-banner-collage]");
-    const posterRoot = root.querySelector("[data-home-banner-poster]");
-    const microActionsRoot = root.querySelector("[data-home-micro-actions]");
+    const heroRailRoot = root.querySelector("[data-home-hero-rail]");
+    const heroDotsRoot = root.querySelector("[data-home-hero-dots]");
     const featuredLinksRoot = root.querySelector("[data-home-featured-links]");
     const recommendedRoot = root.querySelector("[data-home-recommended-works]");
     const categoryRoot = root.querySelector("[data-home-category-grid]");
     const tagRoot = root.querySelector("[data-home-tag-cloud]");
 
-    if (spotlightRoot) {
-      spotlightRoot.textContent = "";
-      spotlightRoot.appendChild(
-        createHomeShowcaseSpotlightBanner({
-          profile,
-          collection: introCollection,
-          work: featuredWorks[0] || heroWorks[0],
-          relatedWorks: heroWorks,
-        })
-      );
-    }
+    if (heroRailRoot) {
+      heroRailRoot.textContent = "";
+      const slides = [
+        {
+          size: "wide",
+          element: createHomeShowcaseSpotlightBanner({
+            profile,
+            collection: introCollection,
+            work: featuredWorks[0] || heroWorks[0],
+            relatedWorks: heroWorks,
+          }),
+        },
+        {
+          size: "medium",
+          element: createHomeShowcaseCollageBanner({
+            collection: tfCollection,
+            works: collageItems,
+          }),
+        },
+        {
+          size: "poster",
+          element: createHomeShowcasePosterBanner({
+            article: recentArticle,
+            work: heroWorks[6] || heroWorks[1] || featuredWorks[0],
+          }),
+        },
+        {
+          size: "wide",
+          element: createHomeShowcaseCompactBanner({
+            badge: "Builder",
+            title: "DETAIL\nBUILDER",
+            description: "タグ、作者、除外条件をまとめて組み立てる詳細条件ビルダー。",
+            href: "/builder/",
+            tone: "dark",
+          }),
+        },
+        {
+          size: "medium",
+          element: createHomeShowcaseCompactBanner({
+            badge: "Collection",
+            title: "SAFE\nFILTER",
+            description: safeCollection?.title || "強い地雷を避けたい時の入口特集。",
+            href: safeCollection ? `/collection/?slug=${encodeURIComponent(safeCollection.slug)}` : "/collections/",
+          }),
+        },
+      ];
 
-    if (collageRoot) {
-      collageRoot.textContent = "";
-      collageRoot.appendChild(
-        createHomeShowcaseCollageBanner({
-          collection: tfCollection,
-          works: collageItems,
-        })
-      );
-    }
-
-    if (posterRoot) {
-      posterRoot.textContent = "";
-      posterRoot.appendChild(
-        createHomeShowcasePosterBanner({
-          article: recentArticle,
-          work: heroWorks[6] || heroWorks[1] || featuredWorks[0],
-        })
-      );
-    }
-
-    if (microActionsRoot) {
-      microActionsRoot.textContent = "";
-      [
-        { label: "特集記事", href: "/articles/", accent: true },
-        { label: "作品検索", href: "/finder/" },
-        { label: "詳細条件ビルダー", href: "/builder/" },
-      ].forEach((item) => {
-        microActionsRoot.appendChild(createHomeShowcaseAction(item));
+      slides.forEach((slide, index) => {
+        const item = createElement("div", `home-showcase-hero__item home-showcase-hero__item--${slide.size}`);
+        item.dataset.heroSlide = String(index);
+        item.appendChild(slide.element);
+        heroRailRoot.appendChild(item);
       });
+
+      if (heroDotsRoot) {
+        heroDotsRoot.textContent = "";
+        slides.forEach((_, index) => {
+          const button = createElement("button", "home-showcase-hero__dot");
+          button.type = "button";
+          button.dataset.heroDot = String(index);
+          button.setAttribute("aria-label", `スライド ${index + 1} を表示`);
+          button.setAttribute("aria-pressed", index === 0 ? "true" : "false");
+          heroDotsRoot.appendChild(button);
+        });
+      }
     }
 
     if (featuredLinksRoot) {
@@ -1847,6 +1890,49 @@
           })
         );
       });
+    }
+
+    if (!root.dataset.homeHeroBound) {
+      const heroRail = root.querySelector("[data-home-hero-rail]");
+      const heroDots = Array.from(root.querySelectorAll("[data-hero-dot]"));
+      const heroItems = Array.from(root.querySelectorAll("[data-hero-slide]"));
+
+      const syncHeroDots = () => {
+        if (!heroRail || !heroItems.length || !heroDots.length) return;
+        const railCenter = heroRail.scrollLeft + heroRail.clientWidth / 2;
+        let activeIndex = 0;
+        let activeDistance = Number.POSITIVE_INFINITY;
+        heroItems.forEach((item, index) => {
+          const itemCenter = item.offsetLeft + item.offsetWidth / 2;
+          const distance = Math.abs(itemCenter - railCenter);
+          if (distance < activeDistance) {
+            activeDistance = distance;
+            activeIndex = index;
+          }
+        });
+        heroDots.forEach((dot, index) => {
+          dot.setAttribute("aria-pressed", index === activeIndex ? "true" : "false");
+        });
+      };
+
+      heroRail?.addEventListener("scroll", () => {
+        window.requestAnimationFrame(syncHeroDots);
+      });
+
+      heroDots.forEach((dot) => {
+        dot.addEventListener("click", () => {
+          const index = Number(dot.dataset.heroDot || 0);
+          const target = heroItems[index];
+          if (!target || !heroRail) return;
+          heroRail.scrollTo({
+            left: target.offsetLeft - 12,
+            behavior: "smooth",
+          });
+        });
+      });
+
+      syncHeroDots();
+      root.dataset.homeHeroBound = "true";
     }
   };
 
