@@ -1018,18 +1018,6 @@
           <div class="home-showcase-hero__footer">
             <div class="home-showcase-hero__dots" data-home-hero-dots></div>
           </div>
-          <div class="home-showcase-micro">
-            <p class="home-showcase-micro__eyebrow">まずは入口特集から</p>
-            <div class="home-showcase-micro__actions">
-              <a class="home-showcase-micro__action home-showcase-micro__action--accent" href="/articles/">特集記事</a>
-            </div>
-          </div>
-        </section>
-        <section class="home-showcase-section">
-          <div class="home-showcase-section__head">
-            <h2>注目のリンク</h2>
-          </div>
-          <div class="home-showcase-linkGrid" data-home-featured-links></div>
         </section>
         <section class="home-showcase-section">
           <div class="home-showcase-section__head">
@@ -1792,7 +1780,6 @@
 
     const heroRailRoot = root.querySelector("[data-home-hero-rail]");
     const heroDotsRoot = root.querySelector("[data-home-hero-dots]");
-    const featuredLinksRoot = root.querySelector("[data-home-featured-links]");
     const recommendedRoot = root.querySelector("[data-home-recommended-works]");
     const categoryRoot = root.querySelector("[data-home-category-grid]");
     const tagRoot = root.querySelector("[data-home-tag-cloud]");
@@ -1854,26 +1841,6 @@
       if (heroDotsRoot) {
         heroDotsRoot.textContent = "";
       }
-    }
-
-    if (featuredLinksRoot) {
-      featuredLinksRoot.textContent = "";
-      [
-        { label: "漫画入口", href: createFinderUrl({ includeTagIds: ["format-comic"] }), tone: "rose" },
-        { label: "CG・イラスト", href: createFinderUrl({ includeTagIds: ["format-cg"] }), tone: "blue" },
-        { label: "TFあり", href: createFinderUrl({ includeTagIds: ["tf-present"] }), tone: "green" },
-        { label: "相棒感", href: createFinderUrl({ includeTagIds: ["buddy-energy"] }), tone: "violet" },
-        { label: "ケモ率高め", href: createFinderUrl({ includeTagIds: ["dense-fur"] }), tone: "yellow" },
-        { label: "NTRなし", href: createFinderUrl({ includeTagIds: ["no-ntr"] }), tone: "orange" },
-        {
-          label: introCollection?.title || "まずここから",
-          href: introCollection ? `/collection/?slug=${encodeURIComponent(introCollection.slug)}` : "/collections/",
-          tone: "pink",
-        },
-        { label: "詳細条件", href: "/builder/", tone: "sky" },
-      ].forEach((item) => {
-        featuredLinksRoot.appendChild(createHomeShowcaseChip(item));
-      });
     }
 
     if (recommendedRoot) {
