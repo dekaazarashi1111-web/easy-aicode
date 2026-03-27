@@ -9934,6 +9934,7 @@ body.finder-tag-picker-open {
 }
 
 .home-showcase-hero__rail {
+  box-sizing: border-box;
   display: flex;
   gap: 10px;
   width: 100vw;
