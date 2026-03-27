@@ -9734,6 +9734,21 @@ body.finder-tag-picker-open {
   border-top: 1px solid #dddddd;
 }
 
+.ikea-footer--minimal {
+  background: #f5f5f5;
+}
+
+.ikea-footer__inner--minimal {
+  padding: 18px 0 20px;
+  gap: 0;
+}
+
+.ikea-footer__legalRow--minimal {
+  padding-top: 0;
+  border-top: 0;
+  justify-content: flex-start;
+}
+
 .ikea-help-fab {
   position: fixed;
   right: 28px;

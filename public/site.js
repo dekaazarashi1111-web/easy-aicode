@@ -468,55 +468,6 @@ const HEADER_ACTIONS = [
   { href: "/finder/#recent-history", label: "閲覧履歴", icon: "recent" },
 ];
 
-const FOOTER_FEATURED = {
-  title: "まずここから探す",
-  text:
-    "広い入口はトップと特集、細かい組み合わせは詳細条件ビルダーへ。IKEA型の見やすさを保ったまま、探索導線の意味に差し替えた土台です。",
-  detailLabel: "条件検索へ",
-  buttonLabel: "入口特集を見る",
-};
-
-const FOOTER_GROUPS = [
-  {
-    title: "",
-    links: [
-      { href: "/finder/", label: "条件から探す" },
-      { href: "/finder/?collection=start-here", label: "まずここから" },
-      { href: "/finder/?include=tf-present", label: "TFありから探す" },
-      { href: "/finder/?include=no-ntr", label: "NTRなしで探す" },
-      { href: "/collections/", label: "特集一覧" },
-    ],
-  },
-  {
-    title: "",
-    links: [
-      { href: "/builder/", label: "詳細条件ビルダー" },
-      { href: "/articles/", label: "探し方ガイド" },
-      { href: "/about/", label: "運営方針" },
-      { href: "/contact/", label: "お問い合わせ" },
-      { href: "/privacy.html", label: "プライバシー" },
-      { href: "/disclaimer.html", label: "免責事項" },
-    ],
-  },
-  {
-    title: "",
-    links: [
-      { href: "/finder/#saved-searches", label: "保存検索" },
-      { href: "/finder/#compare-tray", label: "比較トレイ" },
-      { href: "/finder/#recent-history", label: "閲覧履歴" },
-    ],
-  },
-];
-
-const FOOTER_LEGAL_LINKS = [
-  { href: "/about/", label: "運営方針" },
-  { href: "/articles/", label: "ガイド一覧" },
-  { href: "/builder/", label: "詳細条件ビルダー" },
-  { href: "/privacy.html", label: "プライバシーポリシー" },
-  { href: "/disclaimer.html", label: "免責事項" },
-  { href: "/contact/", label: "お問い合わせ" },
-];
-
 const createIcon = (kind, className = "") => {
   const svg = document.createElementNS("http://www.w3.org/2000/svg", "svg");
   svg.setAttribute("viewBox", "0 0 24 24");
@@ -2122,7 +2073,24 @@ const renderSiteChrome = () => {
   });
 
   document.querySelectorAll(".footer").forEach((footer) => {
-    footer.remove();
+    if (footer.classList.contains("editorial-footer")) return;
+    footer.textContent = "";
+
+    const shell = document.createElement("div");
+    const inner = document.createElement("div");
+    const legalRow = document.createElement("div");
+    const copyright = document.createElement("p");
+
+    shell.className = "ikea-footer ikea-footer--minimal";
+    inner.className = "ikea-footer__inner ikea-footer__inner--minimal";
+    legalRow.className = "ikea-footer__legalRow ikea-footer__legalRow--minimal";
+    copyright.className = "ikea-footer__copyright";
+    copyright.textContent = `© ${BRAND_NAME}`;
+
+    legalRow.appendChild(copyright);
+    inner.appendChild(legalRow);
+    shell.appendChild(inner);
+    footer.appendChild(shell);
   });
 
   if (document.body && !document.querySelector(".ikea-help-fab")) {
