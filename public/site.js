@@ -468,40 +468,54 @@ const HEADER_ACTIONS = [
   { href: "/finder/#recent-history", label: "閲覧履歴", icon: "recent" },
 ];
 
-const EDITORIAL_FOOTER_COLUMNS = [
-  {
-    title: "探す",
-    links: [
-      { href: "/finder/", label: "作品検索" },
-      { href: "/builder/", label: "詳細条件ビルダー" },
-      { href: "/collections/", label: "特集一覧" },
-    ],
-  },
-  {
-    title: "読む",
-    links: [
-      { href: "/articles/", label: "特集記事" },
-      { href: "/articles/comparison-template/", label: "比較記事" },
-      { href: "/articles/review-structure/", label: "レビュー記事" },
-    ],
-  },
-  {
-    title: "運営",
-    links: [
-      { href: "/about/", label: "運営方針" },
-      { href: "/contact/", label: "お問い合わせ" },
-      { href: "/privacy.html", label: "プライバシー" },
-      { href: "/disclaimer.html", label: "免責事項" },
-    ],
-  },
-];
+const EDITORIAL_FOOTER_TEMPLATE = (brandName) => `
+  <div class="container editorial-footer__inner">
+    <section class="editorial-footer__brand">
+      <p class="editorial-footer__eyebrow">Feature Finder</p>
+      <h2 data-site-brand>${brandName}</h2>
+      <p>特集記事、作品紹介、条件検索をまたいで、次に読むものと次に探す条件をひと続きにするための土台です。</p>
+      <a class="btn btn--primary btn--sm" href="/finder/">作品検索へ</a>
+    </section>
 
-const EDITORIAL_FOOTER_BOTTOM_LINKS = [
-  { href: "/", label: "ホーム" },
-  { href: "/articles/", label: "記事一覧" },
-  { href: "/finder/", label: "作品検索" },
-  { href: "/contact/", label: "お問い合わせ" },
-];
+    <div class="editorial-footer__column">
+      <h3>探す</h3>
+      <ul class="editorial-footer__links">
+        <li><a href="/finder/">作品検索</a></li>
+        <li><a href="/builder/">詳細条件ビルダー</a></li>
+        <li><a href="/collections/">特集一覧</a></li>
+      </ul>
+    </div>
+
+    <div class="editorial-footer__column">
+      <h3>読む</h3>
+      <ul class="editorial-footer__links">
+        <li><a href="/articles/">特集記事</a></li>
+        <li><a href="/articles/comparison-template/">比較記事</a></li>
+        <li><a href="/articles/review-structure/">レビュー記事</a></li>
+      </ul>
+    </div>
+
+    <div class="editorial-footer__column">
+      <h3>運営</h3>
+      <ul class="editorial-footer__links">
+        <li><a href="/about/">運営方針</a></li>
+        <li><a href="/contact/">お問い合わせ</a></li>
+        <li><a href="/privacy.html">プライバシー</a></li>
+        <li><a href="/disclaimer.html">免責事項</a></li>
+      </ul>
+    </div>
+  </div>
+
+  <div class="container editorial-footer__bottom">
+    <p class="editorial-footer__legal" data-site-copyright>© ${brandName}</p>
+    <div class="editorial-footer__bottom-links">
+      <a href="/">ホーム</a>
+      <a href="/articles/">記事一覧</a>
+      <a href="/finder/">作品検索</a>
+      <a href="/contact/">お問い合わせ</a>
+    </div>
+  </div>
+`;
 
 const createIcon = (kind, className = "") => {
   const svg = document.createElementNS("http://www.w3.org/2000/svg", "svg");
@@ -588,14 +602,6 @@ const createChromeLink = ({ href, label, className = "", current = false, icon =
   link.appendChild(Object.assign(document.createElement("span"), { textContent: label }));
   if (className) link.className = className;
   if (current) link.setAttribute("aria-current", "page");
-  return link;
-};
-
-const createTextLink = ({ href, label, className = "" }) => {
-  const link = document.createElement("a");
-  link.href = href;
-  link.textContent = label;
-  if (className) link.className = className;
   return link;
 };
 
@@ -2117,65 +2123,8 @@ const renderSiteChrome = () => {
 
   document.querySelectorAll(".footer").forEach((footer) => {
     if (footer.classList.contains("editorial-footer")) return;
-    footer.textContent = "";
-    footer.classList.add("editorial-footer");
-
-    const inner = document.createElement("div");
-    const brand = document.createElement("section");
-    const eyebrow = document.createElement("p");
-    const heading = document.createElement("h2");
-    const description = document.createElement("p");
-    const cta = document.createElement("a");
-    const bottom = document.createElement("div");
-    const copyright = document.createElement("p");
-    const bottomLinks = document.createElement("div");
-
-    inner.className = "container editorial-footer__inner";
-    brand.className = "editorial-footer__brand";
-    eyebrow.className = "editorial-footer__eyebrow";
-    eyebrow.textContent = "Feature Finder";
-    heading.dataset.siteBrand = "";
-    heading.textContent = BRAND_NAME;
-    description.textContent =
-      "特集記事、作品紹介、条件検索をまたいで、次に読むものと次に探す条件をひと続きにするための土台です。";
-    cta.className = "btn btn--primary btn--sm";
-    cta.href = "/finder/";
-    cta.textContent = "作品検索へ";
-
-    brand.append(eyebrow, heading, description, cta);
-    inner.appendChild(brand);
-
-    EDITORIAL_FOOTER_COLUMNS.forEach((group) => {
-      const column = document.createElement("div");
-      const title = document.createElement("h3");
-      const list = document.createElement("ul");
-
-      column.className = "editorial-footer__column";
-      title.textContent = group.title;
-      list.className = "editorial-footer__links";
-
-      group.links.forEach((item) => {
-        const listItem = document.createElement("li");
-        listItem.appendChild(createTextLink(item));
-        list.appendChild(listItem);
-      });
-
-      column.append(title, list);
-      inner.appendChild(column);
-    });
-
-    bottom.className = "container editorial-footer__bottom";
-    copyright.className = "editorial-footer__legal";
-    copyright.dataset.siteCopyright = "";
-    copyright.textContent = `© ${BRAND_NAME}`;
-    bottomLinks.className = "editorial-footer__bottom-links";
-
-    EDITORIAL_FOOTER_BOTTOM_LINKS.forEach((item) => {
-      bottomLinks.appendChild(createTextLink(item));
-    });
-
-    bottom.append(copyright, bottomLinks);
-    footer.append(inner, bottom);
+    footer.className = "footer editorial-footer";
+    footer.innerHTML = EDITORIAL_FOOTER_TEMPLATE(BRAND_NAME);
   });
 };
 
