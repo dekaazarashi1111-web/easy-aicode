@@ -9955,15 +9955,15 @@ body.finder-tag-picker-open {
 }
 
 .home-showcase-hero__item--wide {
-  width: calc((100vw - 20px) / 3);
+  width: calc((100vw - 17px) / 3);
 }
 
 .home-showcase-hero__item--medium {
-  width: calc((100vw - 20px) / 3);
+  width: calc((100vw - 17px) / 3);
 }
 
 .home-showcase-hero__item--poster {
-  width: calc((100vw - 20px) / 3);
+  width: calc((100vw - 17px) / 3);
 }
 
 .home-showcase-hero__footer {
