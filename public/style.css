@@ -3107,7 +3107,7 @@ body {
   box-shadow: none;
 }
 
-.card a,
+.card a:not(.btn),
 .collection-card__title,
 .work-card__title {
   color: #111111;
