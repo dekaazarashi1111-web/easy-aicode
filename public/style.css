@@ -9734,16 +9734,6 @@ body.finder-tag-picker-open {
   border-top: 1px solid #dddddd;
 }
 
-.ikea-footer__inner--legal-only {
-  padding: 22px 0 24px;
-  gap: 0;
-}
-
-.ikea-footer__legalRow--legal-only {
-  padding-top: 0;
-  border-top: 0;
-}
-
 @media (max-width: 1320px) {
   .ikea-home-categories__grid,
   .ikea-product-grid--home,

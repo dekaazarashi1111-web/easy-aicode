@@ -468,12 +468,38 @@ const HEADER_ACTIONS = [
   { href: "/finder/#recent-history", label: "閲覧履歴", icon: "recent" },
 ];
 
-const FOOTER_LEGAL_LINKS = [
-  { href: "/about/", label: "運営方針" },
-  { href: "/articles/", label: "ガイド一覧" },
-  { href: "/builder/", label: "詳細条件ビルダー" },
-  { href: "/privacy.html", label: "プライバシーポリシー" },
-  { href: "/disclaimer.html", label: "免責事項" },
+const EDITORIAL_FOOTER_COLUMNS = [
+  {
+    title: "探す",
+    links: [
+      { href: "/finder/", label: "作品検索" },
+      { href: "/builder/", label: "詳細条件ビルダー" },
+      { href: "/collections/", label: "特集一覧" },
+    ],
+  },
+  {
+    title: "読む",
+    links: [
+      { href: "/articles/", label: "特集記事" },
+      { href: "/articles/comparison-template/", label: "比較記事" },
+      { href: "/articles/review-structure/", label: "レビュー記事" },
+    ],
+  },
+  {
+    title: "運営",
+    links: [
+      { href: "/about/", label: "運営方針" },
+      { href: "/contact/", label: "お問い合わせ" },
+      { href: "/privacy.html", label: "プライバシー" },
+      { href: "/disclaimer.html", label: "免責事項" },
+    ],
+  },
+];
+
+const EDITORIAL_FOOTER_BOTTOM_LINKS = [
+  { href: "/", label: "ホーム" },
+  { href: "/articles/", label: "記事一覧" },
+  { href: "/finder/", label: "作品検索" },
   { href: "/contact/", label: "お問い合わせ" },
 ];
 
@@ -562,6 +588,14 @@ const createChromeLink = ({ href, label, className = "", current = false, icon =
   link.appendChild(Object.assign(document.createElement("span"), { textContent: label }));
   if (className) link.className = className;
   if (current) link.setAttribute("aria-current", "page");
+  return link;
+};
+
+const createTextLink = ({ href, label, className = "" }) => {
+  const link = document.createElement("a");
+  link.href = href;
+  link.textContent = label;
+  if (className) link.className = className;
   return link;
 };
 
@@ -2084,34 +2118,64 @@ const renderSiteChrome = () => {
   document.querySelectorAll(".footer").forEach((footer) => {
     if (footer.classList.contains("editorial-footer")) return;
     footer.textContent = "";
+    footer.classList.add("editorial-footer");
 
-    const shell = document.createElement("div");
     const inner = document.createElement("div");
-    const legalRow = document.createElement("div");
+    const brand = document.createElement("section");
+    const eyebrow = document.createElement("p");
+    const heading = document.createElement("h2");
+    const description = document.createElement("p");
+    const cta = document.createElement("a");
+    const bottom = document.createElement("div");
     const copyright = document.createElement("p");
-    const legalLinks = document.createElement("div");
+    const bottomLinks = document.createElement("div");
 
-    shell.className = "ikea-footer";
-    inner.className = "ikea-footer__inner ikea-footer__inner--legal-only";
-    legalRow.className = "ikea-footer__legalRow ikea-footer__legalRow--legal-only";
-    copyright.className = "ikea-footer__copyright";
-    copyright.textContent = `© ${BRAND_NAME}`;
-    legalLinks.className = "ikea-footer__legalLinks";
+    inner.className = "container editorial-footer__inner";
+    brand.className = "editorial-footer__brand";
+    eyebrow.className = "editorial-footer__eyebrow";
+    eyebrow.textContent = "Feature Finder";
+    heading.dataset.siteBrand = "";
+    heading.textContent = BRAND_NAME;
+    description.textContent =
+      "特集記事、作品紹介、条件検索をまたいで、次に読むものと次に探す条件をひと続きにするための土台です。";
+    cta.className = "btn btn--primary btn--sm";
+    cta.href = "/finder/";
+    cta.textContent = "作品検索へ";
 
-    FOOTER_LEGAL_LINKS.forEach((item) => {
-      legalLinks.appendChild(
-        createChromeLink({
-          href: item.href,
-          label: item.label,
-          className: "ikea-footer__legalLink",
-        })
-      );
+    brand.append(eyebrow, heading, description, cta);
+    inner.appendChild(brand);
+
+    EDITORIAL_FOOTER_COLUMNS.forEach((group) => {
+      const column = document.createElement("div");
+      const title = document.createElement("h3");
+      const list = document.createElement("ul");
+
+      column.className = "editorial-footer__column";
+      title.textContent = group.title;
+      list.className = "editorial-footer__links";
+
+      group.links.forEach((item) => {
+        const listItem = document.createElement("li");
+        listItem.appendChild(createTextLink(item));
+        list.appendChild(listItem);
+      });
+
+      column.append(title, list);
+      inner.appendChild(column);
     });
 
-    legalRow.append(copyright, legalLinks);
-    inner.appendChild(legalRow);
-    shell.appendChild(inner);
-    footer.appendChild(shell);
+    bottom.className = "container editorial-footer__bottom";
+    copyright.className = "editorial-footer__legal";
+    copyright.dataset.siteCopyright = "";
+    copyright.textContent = `© ${BRAND_NAME}`;
+    bottomLinks.className = "editorial-footer__bottom-links";
+
+    EDITORIAL_FOOTER_BOTTOM_LINKS.forEach((item) => {
+      bottomLinks.appendChild(createTextLink(item));
+    });
+
+    bottom.append(copyright, bottomLinks);
+    footer.append(inner, bottom);
   });
 };
 
