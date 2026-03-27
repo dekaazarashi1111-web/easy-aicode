@@ -1913,8 +1913,8 @@
 
       const scrollToHeroIndex = (index) => {
         if (!heroRail || !heroItems.length) return;
-        const clampedIndex = Math.max(0, Math.min(heroItems.length - 1, index));
-        const target = heroItems[clampedIndex];
+        const wrappedIndex = ((index % heroItems.length) + heroItems.length) % heroItems.length;
+        const target = heroItems[wrappedIndex];
         if (!target) return;
         const railStyle = window.getComputedStyle(heroRail);
         const railPaddingStart =
@@ -1942,8 +1942,6 @@
         heroDots.forEach((dot, index) => {
           dot.setAttribute("aria-pressed", index === activeIndex ? "true" : "false");
         });
-        if (prevButton) prevButton.disabled = activeIndex <= 0;
-        if (nextButton) nextButton.disabled = activeIndex >= heroItems.length - 1;
       };
 
       heroRail?.addEventListener("scroll", () => {

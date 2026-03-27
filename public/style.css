@@ -9969,11 +9969,6 @@ body.finder-tag-picker-open {
   right: calc(50% - 50vw + 12px);
 }
 
-.home-showcase-hero__nav:disabled {
-  opacity: 0.42;
-  cursor: default;
-}
-
 .home-showcase-hero__rail {
   box-sizing: border-box;
   display: flex;
