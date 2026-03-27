@@ -613,6 +613,192 @@
     return card;
   };
 
+  const formatPriceJPY = (value) => {
+    const amount = Number(value);
+    if (!Number.isFinite(amount) || amount <= 0) return "価格未登録";
+    return `¥${new Intl.NumberFormat("ja-JP").format(amount)}`;
+  };
+
+  const getPrimaryWorkImageUrl = (work) => resolveCardImageUrls(work)[0] || "";
+
+  const createHomeShowcaseAction = ({ label, href, accent = false }) => {
+    const link = createElement(
+      "a",
+      `home-showcase-micro__action${accent ? " home-showcase-micro__action--accent" : ""}`,
+      label
+    );
+    link.href = href;
+    return link;
+  };
+
+  const createHomeShowcaseChip = ({ label, href, tone = "rose" }) => {
+    const link = createElement("a", "home-showcase-linkChip", label);
+    link.href = href;
+    link.dataset.tone = tone;
+    return link;
+  };
+
+  const createHomeShowcaseThumb = (work, className = "home-showcase-collage__tile") => {
+    const wrap = createElement("span", className);
+    const imageUrl = getPrimaryWorkImageUrl(work);
+    if (imageUrl) {
+      wrap.appendChild(createProductCardImage("home-showcase-collage__image", imageUrl));
+    } else {
+      wrap.appendChild(createShelfArtwork(work.id || work.slug || work.title, "frame", "sand"));
+    }
+    return wrap;
+  };
+
+  const createHomeShowcaseSpotlightBanner = ({ profile, collection, work }) => {
+    const link = createElement("a", "home-showcase-banner home-showcase-banner--spotlight");
+    const media = createElement("div", "home-showcase-banner__media");
+    const scrim = createElement("span", "home-showcase-banner__scrim");
+    const copy = createElement("div", "home-showcase-banner__copy");
+    const chips = createElement("div", "home-showcase-banner__chipRow");
+    const imageUrl = work ? getPrimaryWorkImageUrl(work) : "";
+
+    link.href = collection ? `/collection/?slug=${encodeURIComponent(collection.slug)}` : "/finder/";
+    if (imageUrl) {
+      media.appendChild(createProductCardImage("home-showcase-banner__image", imageUrl));
+    } else {
+      media.appendChild(createShelfArtwork(profile.id || profile.slug || profile.name, "frame", "charcoal"));
+    }
+
+    [
+      collection?.title || "入口特集",
+      work?.format || "作品紹介",
+      ensureArray(work?.highlightPoints)[0] || "導入向け",
+    ]
+      .filter(Boolean)
+      .forEach((label) => {
+        chips.appendChild(createElement("span", "home-showcase-banner__chip", label));
+      });
+
+    copy.append(
+      createElement("span", "home-showcase-banner__badge", "Feature Finder"),
+      createElement("strong", "home-showcase-banner__title", profile.name || "ケモホモ作品ファインダー"),
+      createElement(
+        "p",
+        "home-showcase-banner__description",
+        "特集と条件検索をまたぎながら、入口の作品から自然に次の一作へ進めるトップ導線です。"
+      ),
+      chips
+    );
+
+    link.append(media, scrim, copy);
+    return link;
+  };
+
+  const createHomeShowcaseCollageBanner = ({ collection, works = [] }) => {
+    const link = createElement("a", "home-showcase-banner home-showcase-banner--collage");
+    const intro = createElement("div", "home-showcase-banner__intro");
+    const collage = createElement("div", "home-showcase-collage");
+
+    link.href = collection ? `/collection/?slug=${encodeURIComponent(collection.slug)}` : "/collections/";
+    intro.append(
+      createElement("span", "home-showcase-banner__badge home-showcase-banner__badge--light", "Topics"),
+      createElement("strong", "home-showcase-banner__sideTitle", collection?.title || "入口作品をまとめて見る"),
+      createElement(
+        "p",
+        "home-showcase-banner__sideDescription",
+        collection?.description || collection?.lead || "複数の入口を一度に見比べて、好みの温度感から入り直せる導線です。"
+      )
+    );
+
+    works.slice(0, 6).forEach((work) => {
+      collage.appendChild(createHomeShowcaseThumb(work));
+    });
+
+    link.append(intro, collage);
+    return link;
+  };
+
+  const createHomeShowcasePosterBanner = ({ article, work }) => {
+    const link = createElement("a", "home-showcase-banner home-showcase-banner--poster");
+    const badge = createElement("span", "home-showcase-banner__badge home-showcase-banner__badge--pink", "Guide");
+    const headline = createElement("div", "home-showcase-poster__headline");
+    const note = createElement("p", "home-showcase-poster__note");
+    const footer = createElement("div", "home-showcase-poster__footer");
+    const footerText = createElement(
+      "p",
+      "home-showcase-poster__footerText",
+      article?.title || "特集記事から探し方を決める"
+    );
+
+    link.href = article?.url || "/articles/";
+    ["START", "GUIDE"].forEach((line) => {
+      headline.appendChild(createElement("span", "", line));
+    });
+    note.textContent = "検索に入る前に、特集とレビューから入口を決めたい人向けの読み物導線。";
+    footer.append(footerText);
+    if (work) {
+      footer.appendChild(createHomeShowcaseThumb(work, "home-showcase-poster__thumb"));
+    }
+
+    link.append(badge, headline, note, footer);
+    return link;
+  };
+
+  const createHomeShowcaseProductCard = ({ work }) => {
+    const article = createElement("article", "home-showcase-product");
+    const mediaLink = createElement("a", "home-showcase-product__media");
+    const badge = createElement("span", "home-showcase-product__badge", work.format || "作品");
+    const body = createElement("div", "home-showcase-product__body");
+    const creator = createElement("p", "home-showcase-product__creator", work.creator || "作者未設定");
+    const title = createElement("a", "home-showcase-product__title", work.title);
+    const meta = createElement(
+      "p",
+      "home-showcase-product__meta",
+      [ensureArray(work.highlightPoints)[0], ensureArray(work.highlightPoints)[1]].filter(Boolean).join(" / ")
+    );
+    const footer = createElement("div", "home-showcase-product__footer");
+    const price = createElement("strong", "home-showcase-product__price", formatPriceJPY(work.priceJPY));
+    const detail = createElement(
+      "span",
+      "home-showcase-product__detail",
+      `${Math.max(1, resolveCardImageUrls(work).length)}枚`
+    );
+    const imageUrl = getPrimaryWorkImageUrl(work);
+
+    mediaLink.href = `/work/?slug=${encodeURIComponent(work.slug)}`;
+    title.href = mediaLink.href;
+
+    if (imageUrl) {
+      mediaLink.appendChild(createProductCardImage("home-showcase-product__image", imageUrl));
+    } else {
+      mediaLink.appendChild(createShelfArtwork(work.id || work.slug || work.title, "frame", "white"));
+    }
+    mediaLink.appendChild(badge);
+
+    footer.append(price, detail);
+    body.append(creator, title);
+    if (meta.textContent) body.appendChild(meta);
+    body.appendChild(footer);
+
+    article.append(mediaLink, body);
+    return article;
+  };
+
+  const createHomeShowcaseCategoryCard = ({ label, meta, href, icon = "tag" }) => {
+    const link = createElement("a", "home-showcase-category");
+    const iconWrap = createElement("span", "home-showcase-category__icon");
+    const text = createElement("span", "home-showcase-category__text");
+    const heading = createElement("strong", "home-showcase-category__title", label);
+    const description = createElement("span", "home-showcase-category__meta", meta);
+
+    link.href = href;
+    iconWrap.appendChild(createIcon(icon));
+    text.append(heading, description);
+    link.append(iconWrap, text);
+    return link;
+  };
+
+  const createHomeShowcaseTagLink = ({ label, href }) => {
+    const link = createElement("a", "home-showcase-tag", label);
+    link.href = href;
+    return link;
+  };
+
   const mountBuilderSkeleton = (root) => {
     if (root.dataset.builderMounted) return;
     root.className = "main ikea-main ikea-builder-page";
@@ -708,72 +894,43 @@
 
   const mountHomeSkeleton = (root) => {
     if (root.dataset.homeMounted) return;
-    root.className = "main ikea-main ikea-home-page";
+    root.className = "main home-showcase-page";
     root.innerHTML = `
-      <div class="ikea-page-shell ikea-home-shell">
-        <section class="ikea-home-categories">
-          <div class="ikea-home-categories__grid" data-home-top-categories></div>
-        </section>
-        <section class="ikea-home-heroGrid">
-          <div data-home-promo-primary></div>
-          <div class="ikea-home-heroGrid__stack" data-home-promo-secondary></div>
-        </section>
-        <section class="ikea-home-section">
-          <div class="ikea-section-heading">
-            <div>
-              <p class="ikea-section-heading__eyebrow">Start points</p>
-              <h2 class="ikea-section-heading__title">入口として使いやすい作品</h2>
-            </div>
-            <a href="/finder/" class="ikea-section-heading__link">もっと見る</a>
+      <div class="home-showcase-shell">
+        <section class="home-showcase-hero">
+          <div class="home-showcase-hero__grid">
+            <div data-home-banner-spotlight></div>
+            <div data-home-banner-collage></div>
+            <div data-home-banner-poster></div>
           </div>
-          <div class="ikea-product-grid ikea-product-grid--home" data-home-featured-works></div>
-        </section>
-        <section class="ikea-home-section">
-          <div class="ikea-section-heading">
-            <div>
-              <p class="ikea-section-heading__eyebrow">Explore paths</p>
-              <h2 class="ikea-section-heading__title">探し方別の入口</h2>
-            </div>
-          </div>
-          <div class="ikea-banner-row" data-home-featured-collections></div>
-        </section>
-        <section class="ikea-home-section ikea-home-assist">
-          <div>
-            <div class="ikea-section-heading">
-              <div>
-                <p class="ikea-section-heading__eyebrow">Quick entries</p>
-                <h2 class="ikea-section-heading__title">よく使う入口</h2>
-              </div>
-            </div>
-            <div class="ikea-pill-cloud" data-home-popular-searches></div>
-          </div>
-          <div>
-            <div class="ikea-section-heading">
-              <div>
-                <p class="ikea-section-heading__eyebrow">Continue</p>
-                <h2 class="ikea-section-heading__title">保存した検索</h2>
-              </div>
-            </div>
-            <div class="ikea-mini-stack" data-home-saved-searches></div>
-          </div>
-          <div>
-            <div class="ikea-section-heading">
-              <div>
-                <p class="ikea-section-heading__eyebrow">Builder</p>
-                <h2 class="ikea-section-heading__title">詳細条件で探す</h2>
-              </div>
-            </div>
-            <div class="ikea-mini-stack" data-home-builder-tools></div>
+          <div class="home-showcase-micro">
+            <p class="home-showcase-micro__eyebrow">入口をひとつ選んでから深掘りする</p>
+            <div class="home-showcase-micro__actions" data-home-micro-actions></div>
           </div>
         </section>
-        <section class="ikea-home-section">
-          <div class="ikea-section-heading">
-            <div>
-              <p class="ikea-section-heading__eyebrow">Search grammar</p>
-              <h2 class="ikea-section-heading__title">条件から枝分かれする</h2>
-            </div>
+        <section class="home-showcase-section">
+          <div class="home-showcase-section__head">
+            <h2>注目のリンク</h2>
           </div>
-          <div class="ikea-banner-row" data-home-tag-groups></div>
+          <div class="home-showcase-linkGrid" data-home-featured-links></div>
+        </section>
+        <section class="home-showcase-section">
+          <div class="home-showcase-section__head">
+            <h2>あなたにおすすめの商品</h2>
+          </div>
+          <div class="home-showcase-productGrid" data-home-recommended-works></div>
+        </section>
+        <section class="home-showcase-section">
+          <div class="home-showcase-section__head">
+            <h2>カテゴリ</h2>
+          </div>
+          <div class="home-showcase-categoryGrid" data-home-category-grid></div>
+        </section>
+        <section class="home-showcase-section">
+          <div class="home-showcase-section__head">
+            <h2>人気のタグ</h2>
+          </div>
+          <div class="home-showcase-tagCloud" data-home-tag-cloud></div>
         </section>
       </div>
     `;
@@ -1459,10 +1616,8 @@
 
     const tagMap = core.getTagMap(state);
     const uiState = getUiState(state);
-    const summary = core.aggregateLogs(state);
     const workMap = getDecoratedWorkMap(state, profile.id);
     const visibleTags = core.getVisibleTags(state, profile.id);
-    const groupedTags = core.groupTags(visibleTags, state.tagGroups);
     const featuredCollections = core
       .getProfileCollections(state, profile.id, { publicOnly: true })
       .filter((collection) => ensureArray(profile.featuredCollectionIds).includes(collection.id))
@@ -1472,194 +1627,132 @@
       .filter((work) => ensureArray(profile.featuredWorkIds).includes(work.id))
       .map((work) => workMap.get(work.id))
       .filter(Boolean);
-    const recentWorks = ensureArray(uiState.recentWorkIds)
-      .map((workId) => workMap.get(workId))
+    const sourceArticles = ensureArray(Array.isArray(articleIndex) ? articleIndex : globalThis.ARTICLE_INDEX);
+    const recentArticle = sourceArticles
+      .slice()
+      .sort((left, right) => Date.parse(right?.publishedAt || 0) - Date.parse(left?.publishedAt || 0))[0];
+    const allWorks = core
+      .getProfileWorks(state, profile.id, { publicOnly: true })
+      .map((work) => workMap.get(work.id))
       .filter(Boolean)
-      .slice(0, 4);
-    const popularSearches = summary.topSearches.length
-      ? summary.topSearches
-      : featuredCollections.slice(0, 4).map((collection) => ({
-          label: collection.title,
-          query: "",
-          creatorQuery: "",
-          includeTagIds: [],
-          excludeTagIds: [],
-          collectionId: collection.id,
-          matchMode: "and",
-          sort: "recommended",
-        }));
-
-    const topCategoryRoot = root.querySelector("[data-home-top-categories]");
-    const promoPrimaryRoot = root.querySelector("[data-home-promo-primary]");
-    const promoSecondaryRoot = root.querySelector("[data-home-promo-secondary]");
-    const popularRoot = root.querySelector("[data-home-popular-searches]");
-    const savedRoot = root.querySelector("[data-home-saved-searches]");
-    const builderRoot = root.querySelector("[data-home-builder-tools]");
-    const tagGroupsRoot = root.querySelector("[data-home-tag-groups]");
-    const collectionRoot = root.querySelector("[data-home-featured-collections]");
-    const workRoot = root.querySelector("[data-home-featured-works]");
-
-    if (topCategoryRoot) {
-      topCategoryRoot.textContent = "";
-      [
-        { label: "まずここから", href: createFinderUrl({ collectionId: "start-here" }), visual: "storage" },
-        { label: "TFあり", href: createFinderUrl({ includeTagIds: ["tf-present"] }), visual: "bed" },
-        { label: "媒体から探す", href: createFinderUrl({ includeTagIds: ["format-comic"] }), visual: "desk" },
-        { label: "苦手条件を外す", href: createFinderUrl({ includeTagIds: ["no-ntr"] }), visual: "table" },
-        { label: "相棒感から入る", href: createFinderUrl({ includeTagIds: ["buddy-energy"] }), visual: "sofa" },
-        { label: "ケモ率高め", href: createFinderUrl({ includeTagIds: ["dense-fur"] }), visual: "box" },
-        { label: "探し方ガイド", href: "/articles/", visual: "bowl" },
-      ].forEach((item) => {
-        topCategoryRoot.appendChild(createTopCategoryCard(item));
+      .sort((left, right) => {
+        const priorityOrder = Number(right.priority || 0) - Number(left.priority || 0);
+        if (priorityOrder !== 0) return priorityOrder;
+        return Date.parse(right.updatedAt || 0) - Date.parse(left.updatedAt || 0);
       });
-    }
+    const recommendedWorks = allWorks.slice(0, 10);
+    const heroWorks = allWorks.slice(0, 7);
+    const introCollection = featuredCollections.find((collection) => collection.id === "start-here") || featuredCollections[0];
+    const tfCollection = featuredCollections.find((collection) => collection.id === "tf-gateway") || featuredCollections[1] || introCollection;
 
-    if (promoPrimaryRoot) {
-      promoPrimaryRoot.textContent = "";
-      promoPrimaryRoot.appendChild(createHomeSearchHero({ profile }));
-    }
+    const spotlightRoot = root.querySelector("[data-home-banner-spotlight]");
+    const collageRoot = root.querySelector("[data-home-banner-collage]");
+    const posterRoot = root.querySelector("[data-home-banner-poster]");
+    const microActionsRoot = root.querySelector("[data-home-micro-actions]");
+    const featuredLinksRoot = root.querySelector("[data-home-featured-links]");
+    const recommendedRoot = root.querySelector("[data-home-recommended-works]");
+    const categoryRoot = root.querySelector("[data-home-category-grid]");
+    const tagRoot = root.querySelector("[data-home-tag-cloud]");
 
-    if (promoSecondaryRoot) {
-      promoSecondaryRoot.textContent = "";
-      const startCollection = featuredCollections.find((collection) => collection.id === "tf-gateway") || featuredCollections[0];
-      if (startCollection) {
-        promoSecondaryRoot.appendChild(
-          createPromoCard({
-            kicker: "入口特集",
-            title: startCollection.title,
-            description: startCollection.description || startCollection.lead || "",
-            href: `/collection/?slug=${encodeURIComponent(startCollection.slug)}`,
-            tone: "image",
-            visual: "frame",
-          })
-        );
-      }
-      promoSecondaryRoot.appendChild(
-        createPromoCard({
-          kicker: "Detailed search",
-          title: "詳細条件ビルダー",
-          description: "通常検索とは切り分けて、タグ・作者・除外条件をまとめて組み立てる独立導線です。",
-          href: "/builder/",
-          tone: "image",
-          visual: "grid",
+    if (spotlightRoot) {
+      spotlightRoot.textContent = "";
+      spotlightRoot.appendChild(
+        createHomeShowcaseSpotlightBanner({
+          profile,
+          collection: introCollection,
+          work: featuredWorks[0] || heroWorks[0],
         })
       );
     }
 
-    if (workRoot) {
-      disposeMediaCyclesWithin(workRoot);
-      workRoot.textContent = "";
-      featuredWorks.forEach((work) => {
-        workRoot.appendChild(
-          createProductCard({
-            work,
-            uiState,
-            reason: work.matchSummary || work.publicNote,
-            tagMap,
-          })
-        );
-      });
-    }
-
-    if (collectionRoot) {
-      collectionRoot.textContent = "";
-      featuredCollections.forEach((collection, index) => {
-        collectionRoot.appendChild(
-          createCategoryBannerCard({
-            href: `/collection/?slug=${encodeURIComponent(collection.slug)}`,
-            label: collection.title,
-            description: collection.description || collection.lead || "",
-            meta: `${collection.workObjects.length}件`,
-            variant: ["storage", "table", "box", "frame"][index % 4],
-          })
-        );
-      });
-    }
-
-    if (tagGroupsRoot) {
-      tagGroupsRoot.textContent = "";
-      groupedTags.slice(0, 5).forEach((group, index) => {
-        tagGroupsRoot.appendChild(
-          createCategoryBannerCard({
-            href: createFinderUrl({ includeTagIds: group.tags.slice(0, 1).map((tag) => tag.id) }),
-            label: group.label,
-            description: group.description || "",
-            meta: `${group.tags.length}条件`,
-            variant: ["storage", "desk", "bed", "table", "bowl"][index % 5],
-          })
-        );
-      });
-    }
-
-    if (popularRoot) {
-      popularRoot.textContent = "";
-      popularSearches.forEach((search) => {
-        popularRoot.appendChild(
-          createPillLink({
-            label: search.label || getSearchSummaryLabel(search, tagMap),
-            href: createFinderUrl(search),
-            className: "ikea-pill",
-          })
-        );
-      });
-    }
-
-    if (savedRoot) {
-      savedRoot.textContent = "";
-      const savedSearches = ensureArray(uiState.savedSearches).slice(0, 4);
-      if (!savedSearches.length) {
-        savedRoot.appendChild(
-          createMiniLink({
-            label: "保存した検索はまだありません",
-            href: "/finder/",
-            meta: "検索条件を保存するとここから再訪できます。",
-            icon: "save",
-          })
-        );
-      } else {
-        savedSearches.forEach((search) => {
-          savedRoot.appendChild(createMiniSearchItem({ search, tagMap }));
-        });
-      }
-    }
-
-    if (builderRoot) {
-      builderRoot.textContent = "";
-      builderRoot.append(
-        createMiniLink({
-          label: "詳細条件ビルダーを開く",
-          href: "/builder/",
-          meta: "タグ・作者・除外条件をまとめて組み立てます。",
-          icon: "compare",
-        }),
-        recentWorks.length
-          ? createMiniLink({
-              label: `最近見た: ${recentWorks[0].title}`,
-              href: `/work/?slug=${encodeURIComponent(recentWorks[0].slug)}`,
-              meta: "前回の閲覧から条件を作り直せます。",
-              icon: "recent",
-            })
-          : createMiniLink({
-              label: "通常検索から始める",
-              href: "/finder/",
-              meta: "広い入口から見たい時はこちらです。",
-              icon: "search",
-            })
+    if (collageRoot) {
+      collageRoot.textContent = "";
+      collageRoot.appendChild(
+        createHomeShowcaseCollageBanner({
+          collection: tfCollection,
+          works: heroWorks.slice(0, 6),
+        })
       );
     }
 
-    if (!root.dataset.homeBound) {
-      root.addEventListener("click", (event) => {
-        const actionButton = event.target.closest("[data-work-action]");
-        if (!actionButton) return;
-        const action = actionButton.dataset.workAction;
-        const workId = actionButton.dataset.workId;
-        if (!action || !workId) return;
-        if (action === "favorite") store.toggleFavoriteWork(workId);
-        if (action === "compare") store.toggleCompareWork(workId);
-        renderHomePage();
+    if (posterRoot) {
+      posterRoot.textContent = "";
+      posterRoot.appendChild(
+        createHomeShowcasePosterBanner({
+          article: recentArticle,
+          work: heroWorks[6] || heroWorks[1] || featuredWorks[0],
+        })
+      );
+    }
+
+    if (microActionsRoot) {
+      microActionsRoot.textContent = "";
+      [
+        { label: "特集記事", href: "/articles/", accent: true },
+        { label: "作品検索", href: "/finder/" },
+        { label: "詳細条件ビルダー", href: "/builder/" },
+      ].forEach((item) => {
+        microActionsRoot.appendChild(createHomeShowcaseAction(item));
       });
-      root.dataset.homeBound = "true";
+    }
+
+    if (featuredLinksRoot) {
+      featuredLinksRoot.textContent = "";
+      [
+        { label: "漫画入口", href: createFinderUrl({ includeTagIds: ["format-comic"] }), tone: "rose" },
+        { label: "CG・イラスト", href: createFinderUrl({ includeTagIds: ["format-cg"] }), tone: "blue" },
+        { label: "TFあり", href: createFinderUrl({ includeTagIds: ["tf-present"] }), tone: "green" },
+        { label: "相棒感", href: createFinderUrl({ includeTagIds: ["buddy-energy"] }), tone: "violet" },
+        { label: "ケモ率高め", href: createFinderUrl({ includeTagIds: ["dense-fur"] }), tone: "yellow" },
+        { label: "NTRなし", href: createFinderUrl({ includeTagIds: ["no-ntr"] }), tone: "orange" },
+        {
+          label: introCollection?.title || "まずここから",
+          href: introCollection ? `/collection/?slug=${encodeURIComponent(introCollection.slug)}` : "/collections/",
+          tone: "pink",
+        },
+        { label: "詳細条件", href: "/builder/", tone: "sky" },
+      ].forEach((item) => {
+        featuredLinksRoot.appendChild(createHomeShowcaseChip(item));
+      });
+    }
+
+    if (recommendedRoot) {
+      recommendedRoot.textContent = "";
+      recommendedWorks.forEach((work) => {
+        recommendedRoot.appendChild(createHomeShowcaseProductCard({ work, uiState, tagMap }));
+      });
+    }
+
+    if (categoryRoot) {
+      categoryRoot.textContent = "";
+      [
+        { label: "漫画", meta: "コミック作品から入る", href: createFinderUrl({ includeTagIds: ["format-comic"] }), icon: "work" },
+        { label: "CG集", meta: "イラスト中心で探す", href: createFinderUrl({ includeTagIds: ["format-cg"] }), icon: "collection" },
+        { label: "小説・台本", meta: "文章から入りたい", href: createFinderUrl({ includeTagIds: ["format-novel"] }), icon: "tag" },
+        { label: "TF・変身", meta: "変化ありを先に見る", href: createFinderUrl({ includeTagIds: ["tf-present"] }), icon: "compare" },
+        { label: "相棒感", meta: "距離感から選ぶ", href: createFinderUrl({ includeTagIds: ["buddy-energy"] }), icon: "heart" },
+        { label: "やさしめ", meta: "導入が穏やかな作品", href: createFinderUrl({ includeTagIds: ["gentle-tone"] }), icon: "save" },
+        { label: "熊", meta: "熊系の入口", href: createFinderUrl({ includeTagIds: ["species-bear"] }), icon: "work" },
+        { label: "狼", meta: "狼系の入口", href: createFinderUrl({ includeTagIds: ["species-wolf"] }), icon: "collection" },
+        { label: "狐", meta: "狐系の入口", href: createFinderUrl({ includeTagIds: ["species-fox"] }), icon: "tag" },
+        { label: "筋肉", meta: "体格感から絞る", href: createFinderUrl({ includeTagIds: ["body-muscular"] }), icon: "compare" },
+        { label: "入口特集", meta: "特集から探し始める", href: "/collections/", icon: "save" },
+        { label: "除外条件", meta: "苦手条件を外す", href: "/builder/", icon: "delete" },
+      ].forEach((item) => {
+        categoryRoot.appendChild(createHomeShowcaseCategoryCard(item));
+      });
+    }
+
+    if (tagRoot) {
+      tagRoot.textContent = "";
+      visibleTags.slice(0, 24).forEach((tag) => {
+        tagRoot.appendChild(
+          createHomeShowcaseTagLink({
+            label: tag.label,
+            href: createFinderUrl({ includeTagIds: [tag.id] }),
+          })
+        );
+      });
     }
   };
 
