@@ -9925,12 +9925,12 @@ body.finder-tag-picker-open {
   margin: 0 auto;
   padding: 16px 0 72px;
   display: grid;
-  gap: 28px;
+  gap: 20px;
 }
 
 .home-showcase-hero {
   display: grid;
-  gap: 8px;
+  gap: 6px;
 }
 
 .home-showcase-hero__rail {
@@ -9968,7 +9968,7 @@ body.finder-tag-picker-open {
 .home-showcase-hero__footer {
   display: grid;
   justify-items: center;
-  gap: 10px;
+  gap: 8px;
 }
 
 .home-showcase-hero__dots {
@@ -10271,7 +10271,7 @@ body.finder-tag-picker-open {
 .home-showcase-micro {
   display: grid;
   justify-items: center;
-  gap: 8px;
+  gap: 6px;
   padding: 0;
 }
 
@@ -10577,7 +10577,7 @@ body.finder-tag-picker-open {
 
 @media (max-width: 720px) {
   .home-showcase-shell {
-    gap: 24px;
+    gap: 20px;
   }
 
   .home-showcase-banner__copy,
