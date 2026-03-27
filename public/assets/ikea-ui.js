@@ -1748,21 +1748,33 @@
     const recentArticle = sourceArticles
       .slice()
       .sort((left, right) => Date.parse(right?.publishedAt || 0) - Date.parse(left?.publishedAt || 0))[0];
+    const sortWorksByPriority = (left, right) => {
+      const priorityOrder = Number(right.priority || 0) - Number(left.priority || 0);
+      if (priorityOrder !== 0) return priorityOrder;
+      return Date.parse(right.updatedAt || 0) - Date.parse(left.updatedAt || 0);
+    };
     const allWorks = core
       .getProfileWorks(state, profile.id, { publicOnly: true })
       .map((work) => workMap.get(work.id))
       .filter(Boolean)
-      .sort((left, right) => {
-        const priorityOrder = Number(right.priority || 0) - Number(left.priority || 0);
-        if (priorityOrder !== 0) return priorityOrder;
-        return Date.parse(right.updatedAt || 0) - Date.parse(left.updatedAt || 0);
-      });
+      .sort(sortWorksByPriority);
     const imageReadyWorks = allWorks
       .filter((work) => getPrimaryWorkImageUrl(work))
       .sort((left, right) => resolveCardImageUrls(right).length - resolveCardImageUrls(left).length);
-    const recommendedWorks = [...imageReadyWorks, ...allWorks.filter((work) => !imageReadyWorks.includes(work))].slice(0, 10);
-    const heroWorks = recommendedWorks.slice(0, 7);
-    const collageSourceWork = imageReadyWorks[0] || recommendedWorks[0];
+    const prioritizedProfileWorks = [...imageReadyWorks, ...allWorks.filter((work) => !imageReadyWorks.includes(work))];
+    const supplementalWorks = ensureArray(state?.works)
+      .filter((work) => work?.status === "published" && !prioritizedProfileWorks.some((item) => item.id === work.id))
+      .sort(sortWorksByPriority);
+    const supplementalImageReadyWorks = supplementalWorks
+      .filter((work) => getPrimaryWorkImageUrl(work))
+      .sort((left, right) => resolveCardImageUrls(right).length - resolveCardImageUrls(left).length);
+    const recommendedGridWorks = [
+      ...prioritizedProfileWorks,
+      ...supplementalImageReadyWorks,
+      ...supplementalWorks.filter((work) => !supplementalImageReadyWorks.includes(work)),
+    ].slice(0, 10);
+    const heroWorks = prioritizedProfileWorks.slice(0, 7);
+    const collageSourceWork = imageReadyWorks[0] || prioritizedProfileWorks[0];
     const collageItems = collageSourceWork
       ? resolveCardImageUrls(collageSourceWork).slice(0, 6)
       : heroWorks.slice(0, 6);
@@ -1858,7 +1870,7 @@
 
     if (recommendedRoot) {
       recommendedRoot.textContent = "";
-      recommendedWorks.forEach((work) => {
+      recommendedGridWorks.forEach((work) => {
         recommendedRoot.appendChild(createHomeShowcaseProductCard({ work, uiState, tagMap }));
       });
     }
