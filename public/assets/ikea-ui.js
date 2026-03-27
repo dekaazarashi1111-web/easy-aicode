@@ -707,13 +707,14 @@
     return wrap;
   };
 
-  const createHomeShowcaseSpotlightBanner = ({ profile, collection, work }) => {
+  const createHomeShowcaseSpotlightBanner = ({ profile, collection, work, relatedWorks = [] }) => {
     const link = createElement("a", "home-showcase-banner home-showcase-banner--spotlight");
     const media = createElement("div", "home-showcase-banner__media");
     const scrim = createElement("span", "home-showcase-banner__scrim");
     const copy = createElement("div", "home-showcase-banner__copy");
     const chips = createElement("div", "home-showcase-banner__chipRow");
     const title = createElement("strong", "home-showcase-banner__title");
+    const thumbStrip = createElement("div", "home-showcase-banner__thumbStrip");
     link.href = collection ? `/collection/?slug=${encodeURIComponent(collection.slug)}` : "/finder/";
     if (work) {
       media.appendChild(
@@ -742,15 +743,28 @@
       createElement("span", "home-showcase-banner__titleLine", "作品ファインダー")
     );
 
+    relatedWorks.slice(0, 4).forEach((item) => {
+      const thumb = createElement("span", "home-showcase-banner__thumb");
+      thumb.appendChild(
+        createHomeShowcaseWorkImage({
+          work: item,
+          className: "home-showcase-banner__thumbImage",
+          variant: "thumb",
+        })
+      );
+      thumbStrip.appendChild(thumb);
+    });
+
     copy.append(
       createElement("span", "home-showcase-banner__badge", "Feature Finder"),
       title,
       createElement(
         "p",
         "home-showcase-banner__description",
-        "特集と条件検索をまたぎながら、入口の作品から自然に次の一作へ進めるトップ導線です。"
+        "入口作品から条件検索、特集、作品紹介までをひと続きで辿れるトップ導線。"
       ),
-      chips
+      chips,
+      thumbStrip
     );
 
     link.append(media, scrim, copy);
@@ -760,16 +774,20 @@
   const createHomeShowcaseCollageBanner = ({ collection, works = [] }) => {
     const link = createElement("a", "home-showcase-banner home-showcase-banner--collage");
     const intro = createElement("div", "home-showcase-banner__intro");
+    const heading = createElement("div", "home-showcase-banner__yearTitle");
+    const year = createElement("strong", "home-showcase-banner__yearNumber", String(new Date().getFullYear()));
+    const label = createElement("span", "home-showcase-banner__yearLabel", "入口号");
     const collage = createElement("div", "home-showcase-collage");
 
     link.href = collection ? `/collection/?slug=${encodeURIComponent(collection.slug)}` : "/collections/";
+    heading.append(year, label);
     intro.append(
       createElement("span", "home-showcase-banner__badge home-showcase-banner__badge--light", "Topics"),
-      createElement("strong", "home-showcase-banner__sideTitle", collection?.title || "入口作品をまとめて見る"),
+      heading,
       createElement(
         "p",
         "home-showcase-banner__sideDescription",
-        collection?.description || collection?.lead || "複数の入口を一度に見比べて、好みの温度感から入り直せる導線です。"
+        collection?.title || "複数の入口作品を並べて、気になる温度感から見比べるためのまとめ枠。"
       )
     );
 
@@ -797,7 +815,7 @@
     ["START", "GUIDE"].forEach((line) => {
       headline.appendChild(createElement("span", "", line));
     });
-    note.textContent = "検索に入る前に、特集とレビューから入口を決めたい人向けの読み物導線。";
+    note.textContent = "まずは特集とレビューから入口を決める。";
     footer.append(footerText);
     if (work) {
       footer.appendChild(createHomeShowcaseThumb(work, "home-showcase-poster__thumb"));
@@ -1736,6 +1754,7 @@
           profile,
           collection: introCollection,
           work: featuredWorks[0] || heroWorks[0],
+          relatedWorks: heroWorks,
         })
       );
     }
