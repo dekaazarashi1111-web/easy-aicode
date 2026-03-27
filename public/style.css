@@ -9921,7 +9921,7 @@ body.finder-tag-picker-open {
 }
 
 .home-showcase-shell {
-  width: min(1320px, calc(100% - 48px));
+  width: min(1360px, calc(100% - 24px));
   margin: 0 auto;
   padding: 16px 0 72px;
   display: grid;
@@ -9938,7 +9938,7 @@ body.finder-tag-picker-open {
   gap: 14px;
   width: 100vw;
   margin-left: calc(50% - 50vw);
-  padding: 0 32px 2px;
+  padding: 0 12px 2px;
   overflow-x: auto;
   scroll-snap-type: x proximity;
   scrollbar-width: none;
@@ -9954,15 +9954,15 @@ body.finder-tag-picker-open {
 }
 
 .home-showcase-hero__item--wide {
-  width: clamp(500px, 37vw, 560px);
+  width: clamp(490px, 34vw, 520px);
 }
 
 .home-showcase-hero__item--medium {
-  width: clamp(470px, 35vw, 520px);
+  width: clamp(490px, 34vw, 520px);
 }
 
 .home-showcase-hero__item--poster {
-  width: clamp(248px, 19vw, 286px);
+  width: clamp(340px, 25vw, 380px);
 }
 
 .home-showcase-hero__footer {
@@ -9994,8 +9994,8 @@ body.finder-tag-picker-open {
 .home-showcase-banner {
   position: relative;
   min-width: 0;
-  min-height: 258px;
-  height: 258px;
+  min-height: 270px;
+  height: 270px;
   display: grid;
   overflow: hidden;
   border-radius: 0;
@@ -10518,15 +10518,15 @@ body.finder-tag-picker-open {
 
 @media (max-width: 1180px) {
   .home-showcase-hero__item--wide {
-    width: min(62vw, 540px);
+    width: min(54vw, 500px);
   }
 
   .home-showcase-hero__item--medium {
-    width: min(50vw, 460px);
+    width: min(52vw, 500px);
   }
 
   .home-showcase-hero__item--poster {
-    width: min(28vw, 250px);
+    width: min(36vw, 340px);
   }
 
   .home-showcase-productGrid {
@@ -10544,6 +10544,10 @@ body.finder-tag-picker-open {
     padding-top: 8px;
   }
 
+  .home-showcase-hero__rail {
+    padding: 0 10px 2px;
+  }
+
   .home-showcase-productGrid,
   .home-showcase-categoryGrid {
     grid-template-columns: 1fr;
@@ -10554,16 +10558,16 @@ body.finder-tag-picker-open {
   }
 
   .home-showcase-hero__item--medium {
-    width: min(76vw, 400px);
+    width: min(82vw, 460px);
   }
 
   .home-showcase-hero__item--poster {
-    width: min(58vw, 250px);
+    width: min(70vw, 340px);
   }
 
   .home-showcase-banner {
-    min-height: 232px;
-    height: 232px;
+    min-height: 244px;
+    height: 244px;
   }
 
   .home-showcase-collage {
