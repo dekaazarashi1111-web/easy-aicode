@@ -2291,14 +2291,21 @@ const createArticleTeaserCard = (article) => {
 
 const createArticleListLink = (article) => {
   const link = document.createElement("a");
+  const thumb = document.createElement("span");
+  const body = document.createElement("span");
   const title = document.createElement("strong");
   const meta = document.createElement("span");
 
   link.className = "detail-list-link";
   link.href = article.url;
+  link.dataset.articleType = article.type;
+  thumb.className = "detail-list-link__thumb";
+  thumb.textContent = article.type;
+  body.className = "detail-list-link__body";
   title.textContent = article.title;
   meta.textContent = `${article.type} | ${article.publishedAt}`;
-  link.append(title, meta);
+  body.append(title, meta);
+  link.append(thumb, body);
   return link;
 };
 
@@ -2386,41 +2393,6 @@ const initArticleDetailMeta = () => {
       .collectFilterOptions(decoratedArticles)
       .types.forEach((option) => categoryRoot.appendChild(createArticleCategoryChip(option)));
   }
-};
-
-const initDetailShareButtons = () => {
-  const pageTitle = document.title;
-  const pageUrl = window.location.href;
-  const shareText = encodeURIComponent(pageTitle);
-  const shareUrl = encodeURIComponent(pageUrl);
-
-  document.querySelectorAll("[data-share-x]").forEach((link) => {
-    link.setAttribute("href", `https://x.com/intent/tweet?text=${shareText}&url=${shareUrl}`);
-    link.setAttribute("target", "_blank");
-    link.setAttribute("rel", "noopener noreferrer");
-  });
-
-  document.querySelectorAll("[data-share-copy]").forEach((button) => {
-    if (button.dataset.shareBound === "true") return;
-    button.addEventListener("click", async () => {
-      const originalLabel = button.textContent;
-      try {
-        if (navigator.clipboard && typeof navigator.clipboard.writeText === "function") {
-          await navigator.clipboard.writeText(pageUrl);
-          button.textContent = "Done";
-        } else {
-          window.prompt("URL をコピーしてください", pageUrl);
-          button.textContent = "Copy";
-        }
-      } catch (error) {
-        window.prompt("URL をコピーしてください", pageUrl);
-      }
-      window.setTimeout(() => {
-        button.textContent = originalLabel;
-      }, 1400);
-    });
-    button.dataset.shareBound = "true";
-  });
 };
 
 const initArticleSearch = () => {
@@ -2624,7 +2596,6 @@ const initArticleSearch = () => {
 
 initArticleDetailMeta();
 initArticleSearch();
-initDetailShareButtons();
 
 document.addEventListener("click", (event) => {
   const target = event.target.closest("a, button");
