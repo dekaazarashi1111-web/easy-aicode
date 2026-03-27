@@ -10858,10 +10858,9 @@ body.finder-tag-picker-open {
 }
 
 .editorial-page--work .detail-title {
-  max-width: 16ch;
-  font-size: clamp(2.15rem, 3.7vw, 3rem);
+  max-width: none;
+  font-size: clamp(1.95rem, 3.2vw, 2.6rem);
   line-height: 1.08;
-  text-wrap: balance;
 }
 
 .editorial-page--work .detail-lead {
