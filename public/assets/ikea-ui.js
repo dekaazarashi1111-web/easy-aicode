@@ -1008,6 +1008,12 @@
     root.innerHTML = `
       <div class="home-showcase-shell">
         <section class="home-showcase-hero">
+          <button class="home-showcase-hero__nav home-showcase-hero__nav--prev" type="button" data-home-hero-prev aria-label="前のバナーを表示">
+            <span aria-hidden="true">‹</span>
+          </button>
+          <button class="home-showcase-hero__nav home-showcase-hero__nav--next" type="button" data-home-hero-next aria-label="次のバナーを表示">
+            <span aria-hidden="true">›</span>
+          </button>
           <div class="home-showcase-hero__rail" data-home-hero-rail></div>
           <div class="home-showcase-hero__footer">
             <div class="home-showcase-hero__dots" data-home-hero-dots></div>
@@ -1901,23 +1907,43 @@
       const heroRail = root.querySelector("[data-home-hero-rail]");
       const heroDots = Array.from(root.querySelectorAll("[data-hero-dot]"));
       const heroItems = Array.from(root.querySelectorAll("[data-hero-slide]"));
+      const prevButton = root.querySelector("[data-home-hero-prev]");
+      const nextButton = root.querySelector("[data-home-hero-next]");
+      let activeIndex = 0;
+
+      const scrollToHeroIndex = (index) => {
+        if (!heroRail || !heroItems.length) return;
+        const clampedIndex = Math.max(0, Math.min(heroItems.length - 1, index));
+        const target = heroItems[clampedIndex];
+        if (!target) return;
+        const railStyle = window.getComputedStyle(heroRail);
+        const railPaddingStart =
+          Number.parseFloat(railStyle.paddingInlineStart || railStyle.paddingLeft || "0") || 0;
+        heroRail.scrollTo({
+          left: Math.max(target.offsetLeft - railPaddingStart, 0),
+          behavior: "smooth",
+        });
+      };
 
       const syncHeroDots = () => {
         if (!heroRail || !heroItems.length || !heroDots.length) return;
         const railCenter = heroRail.scrollLeft + heroRail.clientWidth / 2;
-        let activeIndex = 0;
+        let nextActiveIndex = 0;
         let activeDistance = Number.POSITIVE_INFINITY;
         heroItems.forEach((item, index) => {
           const itemCenter = item.offsetLeft + item.offsetWidth / 2;
           const distance = Math.abs(itemCenter - railCenter);
           if (distance < activeDistance) {
             activeDistance = distance;
-            activeIndex = index;
+            nextActiveIndex = index;
           }
         });
+        activeIndex = nextActiveIndex;
         heroDots.forEach((dot, index) => {
           dot.setAttribute("aria-pressed", index === activeIndex ? "true" : "false");
         });
+        if (prevButton) prevButton.disabled = activeIndex <= 0;
+        if (nextButton) nextButton.disabled = activeIndex >= heroItems.length - 1;
       };
 
       heroRail?.addEventListener("scroll", () => {
@@ -1927,13 +1953,16 @@
       heroDots.forEach((dot) => {
         dot.addEventListener("click", () => {
           const index = Number(dot.dataset.heroDot || 0);
-          const target = heroItems[index];
-          if (!target || !heroRail) return;
-          heroRail.scrollTo({
-            left: target.offsetLeft - 12,
-            behavior: "smooth",
-          });
+          scrollToHeroIndex(index);
         });
+      });
+
+      prevButton?.addEventListener("click", () => {
+        scrollToHeroIndex(activeIndex - 1);
+      });
+
+      nextButton?.addEventListener("click", () => {
+        scrollToHeroIndex(activeIndex + 1);
       });
 
       syncHeroDots();
