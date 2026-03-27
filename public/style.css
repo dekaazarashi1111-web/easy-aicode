@@ -10391,8 +10391,7 @@ body.finder-tag-picker-open {
 }
 
 .detail-sidebar {
-  position: sticky;
-  top: 96px;
+  position: static;
   display: grid;
   gap: 1rem;
   align-content: start;
@@ -10693,7 +10692,6 @@ body.finder-tag-picker-open {
 }
 
 .editorial-page--article .detail-sidebar {
-  top: 88px;
   gap: 0.8rem;
 }
 
