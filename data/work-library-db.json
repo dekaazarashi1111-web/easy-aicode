@@ -1,0 +1,2476 @@
+{
+  "schemaVersion": 1,
+  "generatedAt": "2026-03-29T15:39:47.398Z",
+  "sourceLibrary": {
+    "id": "manual-work-transcriptions",
+    "label": "作品一覧テキストDB",
+    "sourceDirectory": "userfile/作品一覧",
+    "importScript": "scripts/build_text_work_db.js",
+    "parserVersion": 1,
+    "description": "userfile/作品一覧 にある手動文字起こしテキストを保持し、後で公開用 seed へ投影できるようにするための基礎DBです。"
+  },
+  "vocabularies": {
+    "workflowStatus": [
+      "imported",
+      "reviewed",
+      "mapped",
+      "published"
+    ],
+    "reviewStatus": [
+      "unreviewed",
+      "reviewed"
+    ],
+    "contributorRoles": [
+      "circle",
+      "author"
+    ],
+    "publicationStatus": [
+      "unmapped",
+      "mapped",
+      "published",
+      "hidden"
+    ],
+    "sourceKinds": [
+      "manual-transcription"
+    ]
+  },
+  "stats": {
+    "sourceDocumentCount": 8,
+    "workCount": 8,
+    "creatorCount": 2,
+    "seriesCount": 1
+  },
+  "sourceDocuments": [
+    {
+      "id": "source-dmm-d_726051",
+      "sourceKind": "manual-transcription",
+      "relativePath": "userfile/作品一覧/BBB.txt",
+      "fileName": "BBB.txt",
+      "fileStem": "BBB",
+      "sha1": "434e0ecdbbc371c889050d247b58aa856fd2155b",
+      "importedAt": "2026-03-29T15:39:47.390Z",
+      "parserVersion": 1,
+      "rawText": "BBB\r\n\r\nDraw Two\r\n\r\nhttps://www.dmm.co.jp/dc/doujin/-/detail/=/cid=d_726051/?dmmref=DetailOtherWorks&i3_ref=recommend&i3_ord=1\r\n\r\n犬獣人の配達員が、えっちな商品をお客様（牛獣人）にお届けするお話です。\r\n\r\n犬→筋肉\r\n牛→筋肉\r\n\r\n550円\r\n\r\n配信開始日\r\n2026/01/23 16:00\r\n作者\r\n土狼弐\r\n作品形式\r\nコミック\r\nページ数\r\n17ページ\r\n題材\r\nオリジナル\r\nジャンル\r\n筋肉\r\n \r\nゲイ\r\n \r\n中出し\r\n \r\nごっくん\r\n \r\n巨根\r\n \r\n女性向け\r\n \r\n成人向け\r\n \r\n手コキ\r\n \r\n口内射精\r\n \r\n獣人\r\n \r\n雄っぱい\r\n \r\nオスケモ\r\n \r\n準新作\r\nファイル容量\r\n35.67MB\r\n利用期限\r\n無期限",
+      "extracted": {
+        "title": "BBB",
+        "headerCreator": "Draw Two",
+        "storefrontUrl": "https://www.dmm.co.jp/dc/doujin/-/detail/=/cid=d_726051/?dmmref=DetailOtherWorks&i3_ref=recommend&i3_ord=1",
+        "descriptionLines": [
+          "犬獣人の配達員が、えっちな商品をお客様（牛獣人）にお届けするお話です。"
+        ],
+        "observationLines": [
+          "犬→筋肉",
+          "牛→筋肉"
+        ],
+        "priceLines": [
+          "550円"
+        ],
+        "metadataOrder": [
+          "配信開始日",
+          "作者",
+          "作品形式",
+          "ページ数",
+          "題材",
+          "ジャンル",
+          "ファイル容量",
+          "利用期限"
+        ],
+        "metadata": {
+          "配信開始日": "2026/01/23 16:00",
+          "作者": "土狼弐",
+          "作品形式": "コミック",
+          "ページ数": "17ページ",
+          "題材": "オリジナル",
+          "ジャンル": [
+            "筋肉",
+            "ゲイ",
+            "中出し",
+            "ごっくん",
+            "巨根",
+            "女性向け",
+            "成人向け",
+            "手コキ",
+            "口内射精",
+            "獣人",
+            "雄っぱい",
+            "オスケモ",
+            "準新作"
+          ],
+          "ファイル容量": "35.67MB",
+          "利用期限": "無期限"
+        },
+        "genreLabels": [
+          "筋肉",
+          "ゲイ",
+          "中出し",
+          "ごっくん",
+          "巨根",
+          "女性向け",
+          "成人向け",
+          "手コキ",
+          "口内射精",
+          "獣人",
+          "雄っぱい",
+          "オスケモ",
+          "準新作"
+        ]
+      }
+    },
+    {
+      "id": "source-dmm-d_497244",
+      "sourceKind": "manual-transcription",
+      "relativePath": "userfile/作品一覧/オオカミなんかこわくない！.txt",
+      "fileName": "オオカミなんかこわくない！.txt",
+      "fileStem": "オオカミなんかこわくない！",
+      "sha1": "0645dae159b3d0f784826747f2700ffc993e8e1e",
+      "importedAt": "2026-03-29T15:39:47.392Z",
+      "parserVersion": 1,
+      "rawText": "オオカミなんかこわくない！\r\n\r\nDraw Two\r\n\r\nhttps://www.dmm.co.jp/dc/doujin/-/detail/=/cid=d_497244/?dmmref=DetailOtherWorks&i3_ref=recommend&i3_ord=3\r\n\r\nハロウィンの夜に繁華街に群がる人間を狙って現れた狼男と、\r\nミイラ男に扮したオタク系ぽっちゃり男子がアレコレするお話です。\r\n\r\n人間→デブ\r\n狼→筋肉\r\n\r\n660円\r\n\r\n配信開始日\r\n2024/12/22 16:00\r\n作品形式\r\nコミック\r\nページ数\r\n20ページ\r\n題材\r\nオリジナル\r\nキャンペーン\r\n【らぶカル感謝祭】30%OFF\r\nジャンル\r\n筋肉\r\n \r\nぽっちゃり\r\n \r\nゲイ\r\n \r\n屋外\r\n \r\nけもの・獣化\r\n \r\n巨根\r\n \r\n異種姦\r\n \r\n女性向け\r\n \r\n成人向け\r\n \r\nガチムチ\r\n \r\n騎乗位\r\n \r\nオスケモ\r\n \r\n旧作\r\nファイル容量\r\n46.65MB\r\n利用期限\r\n無期限",
+      "extracted": {
+        "title": "オオカミなんかこわくない！",
+        "headerCreator": "Draw Two",
+        "storefrontUrl": "https://www.dmm.co.jp/dc/doujin/-/detail/=/cid=d_497244/?dmmref=DetailOtherWorks&i3_ref=recommend&i3_ord=3",
+        "descriptionLines": [
+          "ハロウィンの夜に繁華街に群がる人間を狙って現れた狼男と、",
+          "ミイラ男に扮したオタク系ぽっちゃり男子がアレコレするお話です。"
+        ],
+        "observationLines": [
+          "人間→デブ",
+          "狼→筋肉"
+        ],
+        "priceLines": [
+          "660円"
+        ],
+        "metadataOrder": [
+          "配信開始日",
+          "作品形式",
+          "ページ数",
+          "題材",
+          "キャンペーン",
+          "ジャンル",
+          "ファイル容量",
+          "利用期限"
+        ],
+        "metadata": {
+          "配信開始日": "2024/12/22 16:00",
+          "作品形式": "コミック",
+          "ページ数": "20ページ",
+          "題材": "オリジナル",
+          "キャンペーン": "【らぶカル感謝祭】30%OFF",
+          "ジャンル": [
+            "筋肉",
+            "ぽっちゃり",
+            "ゲイ",
+            "屋外",
+            "けもの・獣化",
+            "巨根",
+            "異種姦",
+            "女性向け",
+            "成人向け",
+            "ガチムチ",
+            "騎乗位",
+            "オスケモ",
+            "旧作"
+          ],
+          "ファイル容量": "46.65MB",
+          "利用期限": "無期限"
+        },
+        "genreLabels": [
+          "筋肉",
+          "ぽっちゃり",
+          "ゲイ",
+          "屋外",
+          "けもの・獣化",
+          "巨根",
+          "異種姦",
+          "女性向け",
+          "成人向け",
+          "ガチムチ",
+          "騎乗位",
+          "オスケモ",
+          "旧作"
+        ]
+      }
+    },
+    {
+      "id": "source-dmm-d_497256",
+      "sourceKind": "manual-transcription",
+      "relativePath": "userfile/作品一覧/カリソメオオカミ.txt",
+      "fileName": "カリソメオオカミ.txt",
+      "fileStem": "カリソメオオカミ",
+      "sha1": "e26a98ac04de3b22c877b360843b0a4bdd55e029",
+      "importedAt": "2026-03-29T15:39:47.393Z",
+      "parserVersion": 1,
+      "rawText": "カリソメオオカミ\r\n\r\nDraw Two\r\n\r\nhttps://www.dmm.co.jp/dc/doujin/-/detail/=/cid=d_497256/?dmmref=DetailOtherWorks&i3_ref=recommend&i3_ord=7\r\n\r\n\r\n性欲が高まる満月の夜、歳の差オオカミ男2匹がアレコレするお話です。\r\n\r\n\r\nオオカミA→筋肉\r\nオオカミB→筋肉\r\n\r\n660円\r\n\r\n配信開始日\r\n2024/12/22 16:00\r\n作品形式\r\nコミック\r\nページ数\r\n20ページ\r\n題材\r\nオリジナル\r\nキャンペーン\r\n【らぶカル感謝祭】30%OFF\r\nジャンル\r\n筋肉\r\n \r\nBL（ボーイズラブ）\r\n \r\nけもの・獣化\r\n \r\n女性向け\r\n \r\n成人向け\r\n \r\n獣人\r\n \r\n体格差\r\n \r\nオスケモ\r\n \r\n旧作\r\nファイル容量\r\n43.8MB\r\n利用期限\r\n無期限",
+      "extracted": {
+        "title": "カリソメオオカミ",
+        "headerCreator": "Draw Two",
+        "storefrontUrl": "https://www.dmm.co.jp/dc/doujin/-/detail/=/cid=d_497256/?dmmref=DetailOtherWorks&i3_ref=recommend&i3_ord=7",
+        "descriptionLines": [
+          "性欲が高まる満月の夜、歳の差オオカミ男2匹がアレコレするお話です。"
+        ],
+        "observationLines": [
+          "オオカミA→筋肉",
+          "オオカミB→筋肉"
+        ],
+        "priceLines": [
+          "660円"
+        ],
+        "metadataOrder": [
+          "配信開始日",
+          "作品形式",
+          "ページ数",
+          "題材",
+          "キャンペーン",
+          "ジャンル",
+          "ファイル容量",
+          "利用期限"
+        ],
+        "metadata": {
+          "配信開始日": "2024/12/22 16:00",
+          "作品形式": "コミック",
+          "ページ数": "20ページ",
+          "題材": "オリジナル",
+          "キャンペーン": "【らぶカル感謝祭】30%OFF",
+          "ジャンル": [
+            "筋肉",
+            "BL（ボーイズラブ）",
+            "けもの・獣化",
+            "女性向け",
+            "成人向け",
+            "獣人",
+            "体格差",
+            "オスケモ",
+            "旧作"
+          ],
+          "ファイル容量": "43.8MB",
+          "利用期限": "無期限"
+        },
+        "genreLabels": [
+          "筋肉",
+          "BL（ボーイズラブ）",
+          "けもの・獣化",
+          "女性向け",
+          "成人向け",
+          "獣人",
+          "体格差",
+          "オスケモ",
+          "旧作"
+        ]
+      }
+    },
+    {
+      "id": "source-dmm-d_497233",
+      "sourceKind": "manual-transcription",
+      "relativePath": "userfile/作品一覧/だから俺は異世界で春を売る。.txt",
+      "fileName": "だから俺は異世界で春を売る。.txt",
+      "fileStem": "だから俺は異世界で春を売る。",
+      "sha1": "75ee06000e2e3a136dad66abfdcaed4c732e08c2",
+      "importedAt": "2026-03-29T15:39:47.394Z",
+      "parserVersion": 1,
+      "rawText": "だから俺は異世界で春を売る。\r\n\r\nDraw Two\r\n\r\nhttps://www.dmm.co.jp/dc/doujin/-/detail/=/cid=d_497233/?dmmref=ListRanking&i3_ref=list&i3_ord=10\r\n\r\n\r\n水泳部の練習中に落雷に打たれたジンタは、気がつくと獣人が暮らす異世界に飛ばされていた。\r\nもとの世界に戻るには大金が必要だと知り、娼館で稼ぐことにしたジンタ。\r\n今夜もヒョウ・ハイエナ・白虎・オオカミの獣人相手にせっせと春を売るのであった…。\r\n\r\n人間→筋肉・普通\r\nヒョウ→筋肉\r\nハイエナ→普通体系\r\n虎→筋肉\r\n狼→筋肉\r\n\r\n880円\r\n\r\n\r\n配信開始日\r\n2024/12/22 16:00\r\n作品形式\r\nコミック\r\nページ数\r\n28ページ\r\nシリーズ\r\nだから俺は異世界で春を売る。\r\n題材\r\nオリジナル\r\nキャンペーン\r\n【らぶカル感謝祭】30%OFF\r\nジャンル\r\nファンタジー\r\n \r\n筋肉\r\n \r\nBL（ボーイズラブ）\r\n \r\n売春・援交\r\n \r\n異種姦\r\n \r\n女性向け\r\n \r\n成人向け\r\n \r\n異世界転生\r\n \r\nガチムチ\r\n \r\n男娼\r\n \r\n獣人\r\n \r\nオスケモ\r\n \r\n旧作\r\nファイル容量\r\n62.62MB\r\n利用期限\r\n無期限",
+      "extracted": {
+        "title": "だから俺は異世界で春を売る。",
+        "headerCreator": "Draw Two",
+        "storefrontUrl": "https://www.dmm.co.jp/dc/doujin/-/detail/=/cid=d_497233/?dmmref=ListRanking&i3_ref=list&i3_ord=10",
+        "descriptionLines": [
+          "水泳部の練習中に落雷に打たれたジンタは、気がつくと獣人が暮らす異世界に飛ばされていた。",
+          "もとの世界に戻るには大金が必要だと知り、娼館で稼ぐことにしたジンタ。",
+          "今夜もヒョウ・ハイエナ・白虎・オオカミの獣人相手にせっせと春を売るのであった…。"
+        ],
+        "observationLines": [
+          "人間→筋肉・普通",
+          "ヒョウ→筋肉",
+          "ハイエナ→普通体系",
+          "虎→筋肉",
+          "狼→筋肉"
+        ],
+        "priceLines": [
+          "880円"
+        ],
+        "metadataOrder": [
+          "配信開始日",
+          "作品形式",
+          "ページ数",
+          "シリーズ",
+          "題材",
+          "キャンペーン",
+          "ジャンル",
+          "ファイル容量",
+          "利用期限"
+        ],
+        "metadata": {
+          "配信開始日": "2024/12/22 16:00",
+          "作品形式": "コミック",
+          "ページ数": "28ページ",
+          "シリーズ": "だから俺は異世界で春を売る。",
+          "題材": "オリジナル",
+          "キャンペーン": "【らぶカル感謝祭】30%OFF",
+          "ジャンル": [
+            "ファンタジー",
+            "筋肉",
+            "BL（ボーイズラブ）",
+            "売春・援交",
+            "異種姦",
+            "女性向け",
+            "成人向け",
+            "異世界転生",
+            "ガチムチ",
+            "男娼",
+            "獣人",
+            "オスケモ",
+            "旧作"
+          ],
+          "ファイル容量": "62.62MB",
+          "利用期限": "無期限"
+        },
+        "genreLabels": [
+          "ファンタジー",
+          "筋肉",
+          "BL（ボーイズラブ）",
+          "売春・援交",
+          "異種姦",
+          "女性向け",
+          "成人向け",
+          "異世界転生",
+          "ガチムチ",
+          "男娼",
+          "獣人",
+          "オスケモ",
+          "旧作"
+        ]
+      }
+    },
+    {
+      "id": "source-dmm-d_497260",
+      "sourceKind": "manual-transcription",
+      "relativePath": "userfile/作品一覧/だから俺は異世界で春を売る。2.txt",
+      "fileName": "だから俺は異世界で春を売る。2.txt",
+      "fileStem": "だから俺は異世界で春を売る。2",
+      "sha1": "a2a8530e1e7bd843a29544186fc192f529d43eed",
+      "importedAt": "2026-03-29T15:39:47.395Z",
+      "parserVersion": 1,
+      "rawText": "だから俺は異世界で春を売る。2\r\n\r\nDraw Two\r\n\r\nhttps://www.dmm.co.jp/dc/doujin/-/detail/=/cid=d_497260/?dmmref=ListRanking&i3_ref=search&i3_ord=4\r\n\r\n水泳部男子が獣人だらけの異世界で男娼になって、\r\nクマやウシやゴリラの獣人たちとあれこれするお話です。\r\n\r\n\r\n熊→デブ\r\n牛→筋肉\r\n人間→筋肉・普通\r\n豚・オーク→デブ\r\nゴリラ→筋肉\r\n鷹→筋肉\r\n\r\n1100円\r\n3/30まで770円(30%OFF)\r\n\r\n配信開始日\r\n2024/12/22 16:00\r\n作品形式\r\nコミック\r\nページ数\r\n40ページ\r\nシリーズ\r\nだから俺は異世界で春を売る。\r\n題材\r\nオリジナル\r\nキャンペーン\r\n【らぶカル感謝祭】30%OFF\r\nジャンル\r\n筋肉\r\n \r\nゲイ\r\n \r\n売春・援交\r\n \r\nけもの・獣化\r\n \r\n巨根\r\n \r\n異種姦\r\n \r\n女性向け\r\n \r\n成人向け\r\n \r\n異世界転生\r\n \r\n男娼\r\n \r\n獣人\r\n \r\nオスケモ\r\n \r\n旧作\r\nファイル容量\r\n87.01MB\r\n利用期限\r\n無期限",
+      "extracted": {
+        "title": "だから俺は異世界で春を売る。2",
+        "headerCreator": "Draw Two",
+        "storefrontUrl": "https://www.dmm.co.jp/dc/doujin/-/detail/=/cid=d_497260/?dmmref=ListRanking&i3_ref=search&i3_ord=4",
+        "descriptionLines": [
+          "水泳部男子が獣人だらけの異世界で男娼になって、",
+          "クマやウシやゴリラの獣人たちとあれこれするお話です。"
+        ],
+        "observationLines": [
+          "熊→デブ",
+          "牛→筋肉",
+          "人間→筋肉・普通",
+          "豚・オーク→デブ",
+          "ゴリラ→筋肉",
+          "鷹→筋肉"
+        ],
+        "priceLines": [
+          "1100円",
+          "3/30まで770円(30%OFF)"
+        ],
+        "metadataOrder": [
+          "配信開始日",
+          "作品形式",
+          "ページ数",
+          "シリーズ",
+          "題材",
+          "キャンペーン",
+          "ジャンル",
+          "ファイル容量",
+          "利用期限"
+        ],
+        "metadata": {
+          "配信開始日": "2024/12/22 16:00",
+          "作品形式": "コミック",
+          "ページ数": "40ページ",
+          "シリーズ": "だから俺は異世界で春を売る。",
+          "題材": "オリジナル",
+          "キャンペーン": "【らぶカル感謝祭】30%OFF",
+          "ジャンル": [
+            "筋肉",
+            "ゲイ",
+            "売春・援交",
+            "けもの・獣化",
+            "巨根",
+            "異種姦",
+            "女性向け",
+            "成人向け",
+            "異世界転生",
+            "男娼",
+            "獣人",
+            "オスケモ",
+            "旧作"
+          ],
+          "ファイル容量": "87.01MB",
+          "利用期限": "無期限"
+        },
+        "genreLabels": [
+          "筋肉",
+          "ゲイ",
+          "売春・援交",
+          "けもの・獣化",
+          "巨根",
+          "異種姦",
+          "女性向け",
+          "成人向け",
+          "異世界転生",
+          "男娼",
+          "獣人",
+          "オスケモ",
+          "旧作"
+        ]
+      }
+    },
+    {
+      "id": "source-dmm-d_674868",
+      "sourceKind": "manual-transcription",
+      "relativePath": "userfile/作品一覧/だから俺は異世界で春を売る。3.txt",
+      "fileName": "だから俺は異世界で春を売る。3.txt",
+      "fileStem": "だから俺は異世界で春を売る。3",
+      "sha1": "ea9e791ca441c44664b066a274f38bf86fc7438e",
+      "importedAt": "2026-03-29T15:39:47.396Z",
+      "parserVersion": 1,
+      "rawText": "だから俺は異世界で春を売る。3\r\n\r\nDraw Two\r\n\r\nhttps://www.dmm.co.jp/dc/doujin/-/detail/=/cid=d_674868/?dmmref=ListRanking&i3_ref=list&i3_ord=3\r\n\r\n\r\nケモノだらけの異世界で男娼になって一年が経った水泳部男子ジンタが、\r\nライオン獣人たちとあれこれするお話です。\r\n\r\nライオン→筋肉\r\n人間→筋肉・普通\r\n\r\n\r\n配信開始日\r\n2025/09/29 16:00\r\n作者\r\n土狼弐\r\n作品形式\r\nコミック\r\nページ数\r\n37ページ\r\nシリーズ\r\nだから俺は異世界で春を売る。\r\n題材\r\nオリジナル\r\nジャンル\r\n筋肉\r\n \r\nゲイ\r\n \r\nけもの・獣化\r\n \r\n異種姦\r\n \r\n女性向け\r\n \r\n成人向け\r\n \r\n異世界転生\r\n \r\n男娼\r\n \r\n旧作\r\nファイル容量\r\n83.79MB\r\n利用期限\r\n無期限",
+      "extracted": {
+        "title": "だから俺は異世界で春を売る。3",
+        "headerCreator": "Draw Two",
+        "storefrontUrl": "https://www.dmm.co.jp/dc/doujin/-/detail/=/cid=d_674868/?dmmref=ListRanking&i3_ref=list&i3_ord=3",
+        "descriptionLines": [
+          "ケモノだらけの異世界で男娼になって一年が経った水泳部男子ジンタが、",
+          "ライオン獣人たちとあれこれするお話です。"
+        ],
+        "observationLines": [
+          "ライオン→筋肉",
+          "人間→筋肉・普通"
+        ],
+        "priceLines": [],
+        "metadataOrder": [
+          "配信開始日",
+          "作者",
+          "作品形式",
+          "ページ数",
+          "シリーズ",
+          "題材",
+          "ジャンル",
+          "ファイル容量",
+          "利用期限"
+        ],
+        "metadata": {
+          "配信開始日": "2025/09/29 16:00",
+          "作者": "土狼弐",
+          "作品形式": "コミック",
+          "ページ数": "37ページ",
+          "シリーズ": "だから俺は異世界で春を売る。",
+          "題材": "オリジナル",
+          "ジャンル": [
+            "筋肉",
+            "ゲイ",
+            "けもの・獣化",
+            "異種姦",
+            "女性向け",
+            "成人向け",
+            "異世界転生",
+            "男娼",
+            "旧作"
+          ],
+          "ファイル容量": "83.79MB",
+          "利用期限": "無期限"
+        },
+        "genreLabels": [
+          "筋肉",
+          "ゲイ",
+          "けもの・獣化",
+          "異種姦",
+          "女性向け",
+          "成人向け",
+          "異世界転生",
+          "男娼",
+          "旧作"
+        ]
+      }
+    },
+    {
+      "id": "source-dmm-d_596631",
+      "sourceKind": "manual-transcription",
+      "relativePath": "userfile/作品一覧/デビルなんかじゃないっ！.txt",
+      "fileName": "デビルなんかじゃないっ！.txt",
+      "fileStem": "デビルなんかじゃないっ！",
+      "sha1": "8fa1ec017371ace609e4b920d11d3c492ff3a24a",
+      "importedAt": "2026-03-29T15:39:47.396Z",
+      "parserVersion": 1,
+      "rawText": "デビルなんかじゃないっ！\r\n\r\nDraw Two\r\n\r\nhttps://www.dmm.co.jp/dc/doujin/-/detail/=/cid=d_596631/?dmmref=DetailOtherWorks&i3_ref=recommend&i3_ord=2\r\n\r\n\r\n凶悪（？）格闘家の白虎・タイガ（タチ）と\r\n幼馴染の人間・ツカサ（ウケ）がアレコレするお話です。\r\n\r\n虎→筋肉\r\n人間→筋肉\r\n\r\n990円\r\n\r\n配信開始日\r\n2025/05/27 00:00\r\n作品形式\r\nコミック\r\nページ数\r\n31ページ\r\n題材\r\nオリジナル\r\nキャンペーン\r\n【らぶカル感謝祭】30%OFF\r\nジャンル\r\nBL（ボーイズラブ）\r\n \r\n巨根\r\n \r\n体育会系\r\n \r\n異種姦\r\n \r\n女性向け\r\n \r\n成人向け\r\n \r\nガチムチ\r\n \r\n体格差\r\n \r\n雄っぱい\r\n \r\nオスケモ\r\n \r\n旧作\r\nファイル容量\r\n74.08MB\r\n利用期限\r\n無期限",
+      "extracted": {
+        "title": "デビルなんかじゃないっ！",
+        "headerCreator": "Draw Two",
+        "storefrontUrl": "https://www.dmm.co.jp/dc/doujin/-/detail/=/cid=d_596631/?dmmref=DetailOtherWorks&i3_ref=recommend&i3_ord=2",
+        "descriptionLines": [
+          "凶悪（？）格闘家の白虎・タイガ（タチ）と",
+          "幼馴染の人間・ツカサ（ウケ）がアレコレするお話です。"
+        ],
+        "observationLines": [
+          "虎→筋肉",
+          "人間→筋肉"
+        ],
+        "priceLines": [
+          "990円"
+        ],
+        "metadataOrder": [
+          "配信開始日",
+          "作品形式",
+          "ページ数",
+          "題材",
+          "キャンペーン",
+          "ジャンル",
+          "ファイル容量",
+          "利用期限"
+        ],
+        "metadata": {
+          "配信開始日": "2025/05/27 00:00",
+          "作品形式": "コミック",
+          "ページ数": "31ページ",
+          "題材": "オリジナル",
+          "キャンペーン": "【らぶカル感謝祭】30%OFF",
+          "ジャンル": [
+            "BL（ボーイズラブ）",
+            "巨根",
+            "体育会系",
+            "異種姦",
+            "女性向け",
+            "成人向け",
+            "ガチムチ",
+            "体格差",
+            "雄っぱい",
+            "オスケモ",
+            "旧作"
+          ],
+          "ファイル容量": "74.08MB",
+          "利用期限": "無期限"
+        },
+        "genreLabels": [
+          "BL（ボーイズラブ）",
+          "巨根",
+          "体育会系",
+          "異種姦",
+          "女性向け",
+          "成人向け",
+          "ガチムチ",
+          "体格差",
+          "雄っぱい",
+          "オスケモ",
+          "旧作"
+        ]
+      }
+    },
+    {
+      "id": "source-dmm-d_497265",
+      "sourceKind": "manual-transcription",
+      "relativePath": "userfile/作品一覧/雨と嘘.txt",
+      "fileName": "雨と嘘.txt",
+      "fileStem": "雨と嘘",
+      "sha1": "c1c7c4dca8bbd6f0082e9e731e804840578c085f",
+      "importedAt": "2026-03-29T15:39:47.398Z",
+      "parserVersion": 1,
+      "rawText": "雨と嘘\r\n\r\nDraw　Two\r\n\r\nhttps://www.dmm.co.jp/dc/doujin/-/detail/=/cid=d_497265/?dmmref=DetailOtherWorks&i3_ref=recommend&i3_ord=4\r\n\r\n\r\n組長の息子であるシノブ（オオカミ）は、明日の結婚式を前に眠れぬ夜を過ごしていた。\r\n世話係の犬伏（ドーベルマン）を寝酒に誘い、最後の夜だからとある『頼み事』をするが…。\r\n\r\n狼→筋肉\r\n犬→筋肉\r\n\r\n990円\r\n\r\n配信開始日\r\n2024/12/22 16:00\r\n作品形式\r\nコミック\r\nページ数\r\n28ページ\r\n題材\r\nオリジナル\r\nキャンペーン\r\n【らぶカル感謝祭】30%OFF\r\nジャンル\r\n筋肉\r\n \r\nゲイ\r\n \r\nけもの・獣化\r\n \r\n女性向け\r\n \r\n成人向け\r\n \r\n主従\r\n \r\nヤクザ/裏社会\r\n \r\n獣人\r\n \r\nオスケモ\r\n \r\n旧作\r\nファイル容量\r\n56.5MB\r\n利用期限\r\n無期限",
+      "extracted": {
+        "title": "雨と嘘",
+        "headerCreator": "Draw Two",
+        "storefrontUrl": "https://www.dmm.co.jp/dc/doujin/-/detail/=/cid=d_497265/?dmmref=DetailOtherWorks&i3_ref=recommend&i3_ord=4",
+        "descriptionLines": [
+          "組長の息子であるシノブ（オオカミ）は、明日の結婚式を前に眠れぬ夜を過ごしていた。",
+          "世話係の犬伏（ドーベルマン）を寝酒に誘い、最後の夜だからとある『頼み事』をするが…。"
+        ],
+        "observationLines": [
+          "狼→筋肉",
+          "犬→筋肉"
+        ],
+        "priceLines": [
+          "990円"
+        ],
+        "metadataOrder": [
+          "配信開始日",
+          "作品形式",
+          "ページ数",
+          "題材",
+          "キャンペーン",
+          "ジャンル",
+          "ファイル容量",
+          "利用期限"
+        ],
+        "metadata": {
+          "配信開始日": "2024/12/22 16:00",
+          "作品形式": "コミック",
+          "ページ数": "28ページ",
+          "題材": "オリジナル",
+          "キャンペーン": "【らぶカル感謝祭】30%OFF",
+          "ジャンル": [
+            "筋肉",
+            "ゲイ",
+            "けもの・獣化",
+            "女性向け",
+            "成人向け",
+            "主従",
+            "ヤクザ/裏社会",
+            "獣人",
+            "オスケモ",
+            "旧作"
+          ],
+          "ファイル容量": "56.5MB",
+          "利用期限": "無期限"
+        },
+        "genreLabels": [
+          "筋肉",
+          "ゲイ",
+          "けもの・獣化",
+          "女性向け",
+          "成人向け",
+          "主従",
+          "ヤクザ/裏社会",
+          "獣人",
+          "オスケモ",
+          "旧作"
+        ]
+      }
+    }
+  ],
+  "creators": [
+    {
+      "id": "creator-bc09d88fb2f9",
+      "displayName": "Draw Two",
+      "normalizedName": "Draw Two",
+      "roles": [
+        "circle"
+      ],
+      "workIds": [
+        "work-dmm-d_726051",
+        "work-dmm-d_497244",
+        "work-dmm-d_497256",
+        "work-dmm-d_497233",
+        "work-dmm-d_497260",
+        "work-dmm-d_674868",
+        "work-dmm-d_596631",
+        "work-dmm-d_497265"
+      ],
+      "sourceFields": [
+        "header.creator"
+      ]
+    },
+    {
+      "id": "creator-4f3eca20d025",
+      "displayName": "土狼弐",
+      "normalizedName": "土狼弐",
+      "roles": [
+        "author"
+      ],
+      "workIds": [
+        "work-dmm-d_726051",
+        "work-dmm-d_674868"
+      ],
+      "sourceFields": [
+        "metadata.作者"
+      ]
+    }
+  ],
+  "series": [
+    {
+      "id": "series-62a95b96e8bd",
+      "title": "だから俺は異世界で春を売る。",
+      "workIds": [
+        "work-dmm-d_497233",
+        "work-dmm-d_497260",
+        "work-dmm-d_674868"
+      ],
+      "entries": [
+        {
+          "workId": "work-dmm-d_497233",
+          "title": "だから俺は異世界で春を売る。",
+          "sequenceLabel": "",
+          "sequenceNumber": null
+        },
+        {
+          "workId": "work-dmm-d_497260",
+          "title": "だから俺は異世界で春を売る。2",
+          "sequenceLabel": "2",
+          "sequenceNumber": 2
+        },
+        {
+          "workId": "work-dmm-d_674868",
+          "title": "だから俺は異世界で春を売る。3",
+          "sequenceLabel": "3",
+          "sequenceNumber": 3
+        }
+      ]
+    }
+  ],
+  "works": [
+    {
+      "id": "work-dmm-d_726051",
+      "slug": "dmm-d_726051",
+      "workflowStatus": "imported",
+      "reviewStatus": "unreviewed",
+      "publication": {
+        "finderSeedStatus": "unmapped",
+        "siteProfileIds": [],
+        "collectionIds": [],
+        "primaryTagIds": [],
+        "notes": ""
+      },
+      "titles": {
+        "primary": "BBB",
+        "fileStem": "BBB",
+        "aliases": []
+      },
+      "sourceDocumentIds": [
+        "source-dmm-d_726051"
+      ],
+      "sourceRefs": [
+        {
+          "kind": "storefront_listing",
+          "storefront": "dmm",
+          "url": "https://www.dmm.co.jp/dc/doujin/-/detail/=/cid=d_726051/?dmmref=DetailOtherWorks&i3_ref=recommend&i3_ord=1",
+          "externalId": "d_726051"
+        }
+      ],
+      "contributors": [
+        {
+          "creatorId": "creator-bc09d88fb2f9",
+          "displayName": "Draw Two",
+          "normalizedName": "Draw Two",
+          "role": "circle",
+          "sourceField": "header.creator"
+        },
+        {
+          "creatorId": "creator-4f3eca20d025",
+          "displayName": "土狼弐",
+          "normalizedName": "土狼弐",
+          "role": "author",
+          "sourceField": "metadata.作者"
+        }
+      ],
+      "series": null,
+      "summaries": [
+        {
+          "kind": "store_description",
+          "text": "犬獣人の配達員が、えっちな商品をお客様（牛獣人）にお届けするお話です。",
+          "sourceDocumentId": "source-dmm-d_726051"
+        }
+      ],
+      "characterObservations": [
+        {
+          "id": "observation-1",
+          "rawText": "犬→筋肉",
+          "subjectText": "犬",
+          "subjectLabels": [
+            "犬"
+          ],
+          "normalizedSubjectLabels": [
+            "犬"
+          ],
+          "traitText": "筋肉",
+          "traitLabelsRaw": [
+            "筋肉"
+          ],
+          "normalizedTraitLabels": [
+            "筋肉"
+          ],
+          "bodyTypeLabels": [
+            "筋肉"
+          ]
+        },
+        {
+          "id": "observation-2",
+          "rawText": "牛→筋肉",
+          "subjectText": "牛",
+          "subjectLabels": [
+            "牛"
+          ],
+          "normalizedSubjectLabels": [
+            "牛"
+          ],
+          "traitText": "筋肉",
+          "traitLabelsRaw": [
+            "筋肉"
+          ],
+          "normalizedTraitLabels": [
+            "筋肉"
+          ],
+          "bodyTypeLabels": [
+            "筋肉"
+          ]
+        }
+      ],
+      "storefrontListings": [
+        {
+          "id": "listing-dmm-d_726051",
+          "storefront": "dmm",
+          "url": "https://www.dmm.co.jp/dc/doujin/-/detail/=/cid=d_726051/?dmmref=DetailOtherWorks&i3_ref=recommend&i3_ord=1",
+          "externalId": "d_726051",
+          "formatLabel": "コミック",
+          "pageCount": 17,
+          "releaseAt": "2026-01-23T16:00:00+09:00",
+          "themeLabel": "オリジナル",
+          "campaignLabel": "",
+          "genreLabels": [
+            "筋肉",
+            "ゲイ",
+            "中出し",
+            "ごっくん",
+            "巨根",
+            "女性向け",
+            "成人向け",
+            "手コキ",
+            "口内射精",
+            "獣人",
+            "雄っぱい",
+            "オスケモ",
+            "準新作"
+          ],
+          "fileSizeMB": 35.67,
+          "usageLimit": "無期限",
+          "metadata": {
+            "配信開始日": "2026/01/23 16:00",
+            "作者": "土狼弐",
+            "作品形式": "コミック",
+            "ページ数": "17ページ",
+            "題材": "オリジナル",
+            "ジャンル": [
+              "筋肉",
+              "ゲイ",
+              "中出し",
+              "ごっくん",
+              "巨根",
+              "女性向け",
+              "成人向け",
+              "手コキ",
+              "口内射精",
+              "獣人",
+              "雄っぱい",
+              "オスケモ",
+              "準新作"
+            ],
+            "ファイル容量": "35.67MB",
+            "利用期限": "無期限"
+          }
+        }
+      ],
+      "commercial": {
+        "regularPriceJPY": 550,
+        "campaignPriceJPY": null,
+        "campaignNote": "",
+        "rawPriceLines": [
+          "550円"
+        ]
+      },
+      "derived": {
+        "formatLabel": "コミック",
+        "pageCount": 17,
+        "releaseAt": "2026-01-23T16:00:00+09:00",
+        "fileSizeMB": 35.67,
+        "genreLabels": [
+          "筋肉",
+          "ゲイ",
+          "中出し",
+          "ごっくん",
+          "巨根",
+          "女性向け",
+          "成人向け",
+          "手コキ",
+          "口内射精",
+          "獣人",
+          "雄っぱい",
+          "オスケモ",
+          "準新作"
+        ],
+        "normalizedSubjectLabels": [
+          "犬",
+          "牛"
+        ],
+        "bodyTypeLabels": [
+          "筋肉"
+        ],
+        "hasManualObservation": true
+      },
+      "rawBlocks": {
+        "descriptionLines": [
+          "犬獣人の配達員が、えっちな商品をお客様（牛獣人）にお届けするお話です。"
+        ],
+        "observationLines": [
+          "犬→筋肉",
+          "牛→筋肉"
+        ],
+        "priceLines": [
+          "550円"
+        ]
+      },
+      "custom": {
+        "internalTags": [],
+        "notes": [],
+        "relatedWorkIds": [],
+        "sourceMemo": ""
+      }
+    },
+    {
+      "id": "work-dmm-d_497244",
+      "slug": "dmm-d_497244",
+      "workflowStatus": "imported",
+      "reviewStatus": "unreviewed",
+      "publication": {
+        "finderSeedStatus": "unmapped",
+        "siteProfileIds": [],
+        "collectionIds": [],
+        "primaryTagIds": [],
+        "notes": ""
+      },
+      "titles": {
+        "primary": "オオカミなんかこわくない！",
+        "fileStem": "オオカミなんかこわくない！",
+        "aliases": []
+      },
+      "sourceDocumentIds": [
+        "source-dmm-d_497244"
+      ],
+      "sourceRefs": [
+        {
+          "kind": "storefront_listing",
+          "storefront": "dmm",
+          "url": "https://www.dmm.co.jp/dc/doujin/-/detail/=/cid=d_497244/?dmmref=DetailOtherWorks&i3_ref=recommend&i3_ord=3",
+          "externalId": "d_497244"
+        }
+      ],
+      "contributors": [
+        {
+          "creatorId": "creator-bc09d88fb2f9",
+          "displayName": "Draw Two",
+          "normalizedName": "Draw Two",
+          "role": "circle",
+          "sourceField": "header.creator"
+        }
+      ],
+      "series": null,
+      "summaries": [
+        {
+          "kind": "store_description",
+          "text": "ハロウィンの夜に繁華街に群がる人間を狙って現れた狼男と、\nミイラ男に扮したオタク系ぽっちゃり男子がアレコレするお話です。",
+          "sourceDocumentId": "source-dmm-d_497244"
+        }
+      ],
+      "characterObservations": [
+        {
+          "id": "observation-1",
+          "rawText": "人間→デブ",
+          "subjectText": "人間",
+          "subjectLabels": [
+            "人間"
+          ],
+          "normalizedSubjectLabels": [
+            "人間"
+          ],
+          "traitText": "デブ",
+          "traitLabelsRaw": [
+            "デブ"
+          ],
+          "normalizedTraitLabels": [
+            "デブ"
+          ],
+          "bodyTypeLabels": [
+            "デブ"
+          ]
+        },
+        {
+          "id": "observation-2",
+          "rawText": "狼→筋肉",
+          "subjectText": "狼",
+          "subjectLabels": [
+            "狼"
+          ],
+          "normalizedSubjectLabels": [
+            "狼"
+          ],
+          "traitText": "筋肉",
+          "traitLabelsRaw": [
+            "筋肉"
+          ],
+          "normalizedTraitLabels": [
+            "筋肉"
+          ],
+          "bodyTypeLabels": [
+            "筋肉"
+          ]
+        }
+      ],
+      "storefrontListings": [
+        {
+          "id": "listing-dmm-d_497244",
+          "storefront": "dmm",
+          "url": "https://www.dmm.co.jp/dc/doujin/-/detail/=/cid=d_497244/?dmmref=DetailOtherWorks&i3_ref=recommend&i3_ord=3",
+          "externalId": "d_497244",
+          "formatLabel": "コミック",
+          "pageCount": 20,
+          "releaseAt": "2024-12-22T16:00:00+09:00",
+          "themeLabel": "オリジナル",
+          "campaignLabel": "【らぶカル感謝祭】30%OFF",
+          "genreLabels": [
+            "筋肉",
+            "ぽっちゃり",
+            "ゲイ",
+            "屋外",
+            "けもの・獣化",
+            "巨根",
+            "異種姦",
+            "女性向け",
+            "成人向け",
+            "ガチムチ",
+            "騎乗位",
+            "オスケモ",
+            "旧作"
+          ],
+          "fileSizeMB": 46.65,
+          "usageLimit": "無期限",
+          "metadata": {
+            "配信開始日": "2024/12/22 16:00",
+            "作品形式": "コミック",
+            "ページ数": "20ページ",
+            "題材": "オリジナル",
+            "キャンペーン": "【らぶカル感謝祭】30%OFF",
+            "ジャンル": [
+              "筋肉",
+              "ぽっちゃり",
+              "ゲイ",
+              "屋外",
+              "けもの・獣化",
+              "巨根",
+              "異種姦",
+              "女性向け",
+              "成人向け",
+              "ガチムチ",
+              "騎乗位",
+              "オスケモ",
+              "旧作"
+            ],
+            "ファイル容量": "46.65MB",
+            "利用期限": "無期限"
+          }
+        }
+      ],
+      "commercial": {
+        "regularPriceJPY": 660,
+        "campaignPriceJPY": null,
+        "campaignNote": "【らぶカル感謝祭】30%OFF",
+        "rawPriceLines": [
+          "660円"
+        ]
+      },
+      "derived": {
+        "formatLabel": "コミック",
+        "pageCount": 20,
+        "releaseAt": "2024-12-22T16:00:00+09:00",
+        "fileSizeMB": 46.65,
+        "genreLabels": [
+          "筋肉",
+          "ぽっちゃり",
+          "ゲイ",
+          "屋外",
+          "けもの・獣化",
+          "巨根",
+          "異種姦",
+          "女性向け",
+          "成人向け",
+          "ガチムチ",
+          "騎乗位",
+          "オスケモ",
+          "旧作"
+        ],
+        "normalizedSubjectLabels": [
+          "人間",
+          "狼"
+        ],
+        "bodyTypeLabels": [
+          "デブ",
+          "筋肉"
+        ],
+        "hasManualObservation": true
+      },
+      "rawBlocks": {
+        "descriptionLines": [
+          "ハロウィンの夜に繁華街に群がる人間を狙って現れた狼男と、",
+          "ミイラ男に扮したオタク系ぽっちゃり男子がアレコレするお話です。"
+        ],
+        "observationLines": [
+          "人間→デブ",
+          "狼→筋肉"
+        ],
+        "priceLines": [
+          "660円"
+        ]
+      },
+      "custom": {
+        "internalTags": [],
+        "notes": [],
+        "relatedWorkIds": [],
+        "sourceMemo": ""
+      }
+    },
+    {
+      "id": "work-dmm-d_497256",
+      "slug": "dmm-d_497256",
+      "workflowStatus": "imported",
+      "reviewStatus": "unreviewed",
+      "publication": {
+        "finderSeedStatus": "unmapped",
+        "siteProfileIds": [],
+        "collectionIds": [],
+        "primaryTagIds": [],
+        "notes": ""
+      },
+      "titles": {
+        "primary": "カリソメオオカミ",
+        "fileStem": "カリソメオオカミ",
+        "aliases": []
+      },
+      "sourceDocumentIds": [
+        "source-dmm-d_497256"
+      ],
+      "sourceRefs": [
+        {
+          "kind": "storefront_listing",
+          "storefront": "dmm",
+          "url": "https://www.dmm.co.jp/dc/doujin/-/detail/=/cid=d_497256/?dmmref=DetailOtherWorks&i3_ref=recommend&i3_ord=7",
+          "externalId": "d_497256"
+        }
+      ],
+      "contributors": [
+        {
+          "creatorId": "creator-bc09d88fb2f9",
+          "displayName": "Draw Two",
+          "normalizedName": "Draw Two",
+          "role": "circle",
+          "sourceField": "header.creator"
+        }
+      ],
+      "series": null,
+      "summaries": [
+        {
+          "kind": "store_description",
+          "text": "性欲が高まる満月の夜、歳の差オオカミ男2匹がアレコレするお話です。",
+          "sourceDocumentId": "source-dmm-d_497256"
+        }
+      ],
+      "characterObservations": [
+        {
+          "id": "observation-1",
+          "rawText": "オオカミA→筋肉",
+          "subjectText": "オオカミA",
+          "subjectLabels": [
+            "オオカミA"
+          ],
+          "normalizedSubjectLabels": [
+            "狼"
+          ],
+          "traitText": "筋肉",
+          "traitLabelsRaw": [
+            "筋肉"
+          ],
+          "normalizedTraitLabels": [
+            "筋肉"
+          ],
+          "bodyTypeLabels": [
+            "筋肉"
+          ]
+        },
+        {
+          "id": "observation-2",
+          "rawText": "オオカミB→筋肉",
+          "subjectText": "オオカミB",
+          "subjectLabels": [
+            "オオカミB"
+          ],
+          "normalizedSubjectLabels": [
+            "狼"
+          ],
+          "traitText": "筋肉",
+          "traitLabelsRaw": [
+            "筋肉"
+          ],
+          "normalizedTraitLabels": [
+            "筋肉"
+          ],
+          "bodyTypeLabels": [
+            "筋肉"
+          ]
+        }
+      ],
+      "storefrontListings": [
+        {
+          "id": "listing-dmm-d_497256",
+          "storefront": "dmm",
+          "url": "https://www.dmm.co.jp/dc/doujin/-/detail/=/cid=d_497256/?dmmref=DetailOtherWorks&i3_ref=recommend&i3_ord=7",
+          "externalId": "d_497256",
+          "formatLabel": "コミック",
+          "pageCount": 20,
+          "releaseAt": "2024-12-22T16:00:00+09:00",
+          "themeLabel": "オリジナル",
+          "campaignLabel": "【らぶカル感謝祭】30%OFF",
+          "genreLabels": [
+            "筋肉",
+            "BL（ボーイズラブ）",
+            "けもの・獣化",
+            "女性向け",
+            "成人向け",
+            "獣人",
+            "体格差",
+            "オスケモ",
+            "旧作"
+          ],
+          "fileSizeMB": 43.8,
+          "usageLimit": "無期限",
+          "metadata": {
+            "配信開始日": "2024/12/22 16:00",
+            "作品形式": "コミック",
+            "ページ数": "20ページ",
+            "題材": "オリジナル",
+            "キャンペーン": "【らぶカル感謝祭】30%OFF",
+            "ジャンル": [
+              "筋肉",
+              "BL（ボーイズラブ）",
+              "けもの・獣化",
+              "女性向け",
+              "成人向け",
+              "獣人",
+              "体格差",
+              "オスケモ",
+              "旧作"
+            ],
+            "ファイル容量": "43.8MB",
+            "利用期限": "無期限"
+          }
+        }
+      ],
+      "commercial": {
+        "regularPriceJPY": 660,
+        "campaignPriceJPY": null,
+        "campaignNote": "【らぶカル感謝祭】30%OFF",
+        "rawPriceLines": [
+          "660円"
+        ]
+      },
+      "derived": {
+        "formatLabel": "コミック",
+        "pageCount": 20,
+        "releaseAt": "2024-12-22T16:00:00+09:00",
+        "fileSizeMB": 43.8,
+        "genreLabels": [
+          "筋肉",
+          "BL（ボーイズラブ）",
+          "けもの・獣化",
+          "女性向け",
+          "成人向け",
+          "獣人",
+          "体格差",
+          "オスケモ",
+          "旧作"
+        ],
+        "normalizedSubjectLabels": [
+          "狼"
+        ],
+        "bodyTypeLabels": [
+          "筋肉"
+        ],
+        "hasManualObservation": true
+      },
+      "rawBlocks": {
+        "descriptionLines": [
+          "性欲が高まる満月の夜、歳の差オオカミ男2匹がアレコレするお話です。"
+        ],
+        "observationLines": [
+          "オオカミA→筋肉",
+          "オオカミB→筋肉"
+        ],
+        "priceLines": [
+          "660円"
+        ]
+      },
+      "custom": {
+        "internalTags": [],
+        "notes": [],
+        "relatedWorkIds": [],
+        "sourceMemo": ""
+      }
+    },
+    {
+      "id": "work-dmm-d_497233",
+      "slug": "dmm-d_497233",
+      "workflowStatus": "imported",
+      "reviewStatus": "unreviewed",
+      "publication": {
+        "finderSeedStatus": "unmapped",
+        "siteProfileIds": [],
+        "collectionIds": [],
+        "primaryTagIds": [],
+        "notes": ""
+      },
+      "titles": {
+        "primary": "だから俺は異世界で春を売る。",
+        "fileStem": "だから俺は異世界で春を売る。",
+        "aliases": []
+      },
+      "sourceDocumentIds": [
+        "source-dmm-d_497233"
+      ],
+      "sourceRefs": [
+        {
+          "kind": "storefront_listing",
+          "storefront": "dmm",
+          "url": "https://www.dmm.co.jp/dc/doujin/-/detail/=/cid=d_497233/?dmmref=ListRanking&i3_ref=list&i3_ord=10",
+          "externalId": "d_497233"
+        }
+      ],
+      "contributors": [
+        {
+          "creatorId": "creator-bc09d88fb2f9",
+          "displayName": "Draw Two",
+          "normalizedName": "Draw Two",
+          "role": "circle",
+          "sourceField": "header.creator"
+        }
+      ],
+      "series": {
+        "id": "series-62a95b96e8bd",
+        "title": "だから俺は異世界で春を売る。",
+        "sequenceLabel": "",
+        "sequenceNumber": null
+      },
+      "summaries": [
+        {
+          "kind": "store_description",
+          "text": "水泳部の練習中に落雷に打たれたジンタは、気がつくと獣人が暮らす異世界に飛ばされていた。\nもとの世界に戻るには大金が必要だと知り、娼館で稼ぐことにしたジンタ。\n今夜もヒョウ・ハイエナ・白虎・オオカミの獣人相手にせっせと春を売るのであった…。",
+          "sourceDocumentId": "source-dmm-d_497233"
+        }
+      ],
+      "characterObservations": [
+        {
+          "id": "observation-1",
+          "rawText": "人間→筋肉・普通",
+          "subjectText": "人間",
+          "subjectLabels": [
+            "人間"
+          ],
+          "normalizedSubjectLabels": [
+            "人間"
+          ],
+          "traitText": "筋肉・普通",
+          "traitLabelsRaw": [
+            "筋肉",
+            "普通"
+          ],
+          "normalizedTraitLabels": [
+            "筋肉",
+            "普通体型"
+          ],
+          "bodyTypeLabels": [
+            "筋肉",
+            "普通体型"
+          ]
+        },
+        {
+          "id": "observation-2",
+          "rawText": "ヒョウ→筋肉",
+          "subjectText": "ヒョウ",
+          "subjectLabels": [
+            "ヒョウ"
+          ],
+          "normalizedSubjectLabels": [
+            "ヒョウ"
+          ],
+          "traitText": "筋肉",
+          "traitLabelsRaw": [
+            "筋肉"
+          ],
+          "normalizedTraitLabels": [
+            "筋肉"
+          ],
+          "bodyTypeLabels": [
+            "筋肉"
+          ]
+        },
+        {
+          "id": "observation-3",
+          "rawText": "ハイエナ→普通体系",
+          "subjectText": "ハイエナ",
+          "subjectLabels": [
+            "ハイエナ"
+          ],
+          "normalizedSubjectLabels": [
+            "ハイエナ"
+          ],
+          "traitText": "普通体系",
+          "traitLabelsRaw": [
+            "普通体系"
+          ],
+          "normalizedTraitLabels": [
+            "普通体型"
+          ],
+          "bodyTypeLabels": [
+            "普通体型"
+          ]
+        },
+        {
+          "id": "observation-4",
+          "rawText": "虎→筋肉",
+          "subjectText": "虎",
+          "subjectLabels": [
+            "虎"
+          ],
+          "normalizedSubjectLabels": [
+            "虎"
+          ],
+          "traitText": "筋肉",
+          "traitLabelsRaw": [
+            "筋肉"
+          ],
+          "normalizedTraitLabels": [
+            "筋肉"
+          ],
+          "bodyTypeLabels": [
+            "筋肉"
+          ]
+        },
+        {
+          "id": "observation-5",
+          "rawText": "狼→筋肉",
+          "subjectText": "狼",
+          "subjectLabels": [
+            "狼"
+          ],
+          "normalizedSubjectLabels": [
+            "狼"
+          ],
+          "traitText": "筋肉",
+          "traitLabelsRaw": [
+            "筋肉"
+          ],
+          "normalizedTraitLabels": [
+            "筋肉"
+          ],
+          "bodyTypeLabels": [
+            "筋肉"
+          ]
+        }
+      ],
+      "storefrontListings": [
+        {
+          "id": "listing-dmm-d_497233",
+          "storefront": "dmm",
+          "url": "https://www.dmm.co.jp/dc/doujin/-/detail/=/cid=d_497233/?dmmref=ListRanking&i3_ref=list&i3_ord=10",
+          "externalId": "d_497233",
+          "formatLabel": "コミック",
+          "pageCount": 28,
+          "releaseAt": "2024-12-22T16:00:00+09:00",
+          "themeLabel": "オリジナル",
+          "campaignLabel": "【らぶカル感謝祭】30%OFF",
+          "genreLabels": [
+            "ファンタジー",
+            "筋肉",
+            "BL（ボーイズラブ）",
+            "売春・援交",
+            "異種姦",
+            "女性向け",
+            "成人向け",
+            "異世界転生",
+            "ガチムチ",
+            "男娼",
+            "獣人",
+            "オスケモ",
+            "旧作"
+          ],
+          "fileSizeMB": 62.62,
+          "usageLimit": "無期限",
+          "metadata": {
+            "配信開始日": "2024/12/22 16:00",
+            "作品形式": "コミック",
+            "ページ数": "28ページ",
+            "シリーズ": "だから俺は異世界で春を売る。",
+            "題材": "オリジナル",
+            "キャンペーン": "【らぶカル感謝祭】30%OFF",
+            "ジャンル": [
+              "ファンタジー",
+              "筋肉",
+              "BL（ボーイズラブ）",
+              "売春・援交",
+              "異種姦",
+              "女性向け",
+              "成人向け",
+              "異世界転生",
+              "ガチムチ",
+              "男娼",
+              "獣人",
+              "オスケモ",
+              "旧作"
+            ],
+            "ファイル容量": "62.62MB",
+            "利用期限": "無期限"
+          }
+        }
+      ],
+      "commercial": {
+        "regularPriceJPY": 880,
+        "campaignPriceJPY": null,
+        "campaignNote": "【らぶカル感謝祭】30%OFF",
+        "rawPriceLines": [
+          "880円"
+        ]
+      },
+      "derived": {
+        "formatLabel": "コミック",
+        "pageCount": 28,
+        "releaseAt": "2024-12-22T16:00:00+09:00",
+        "fileSizeMB": 62.62,
+        "genreLabels": [
+          "ファンタジー",
+          "筋肉",
+          "BL（ボーイズラブ）",
+          "売春・援交",
+          "異種姦",
+          "女性向け",
+          "成人向け",
+          "異世界転生",
+          "ガチムチ",
+          "男娼",
+          "獣人",
+          "オスケモ",
+          "旧作"
+        ],
+        "normalizedSubjectLabels": [
+          "人間",
+          "ヒョウ",
+          "ハイエナ",
+          "虎",
+          "狼"
+        ],
+        "bodyTypeLabels": [
+          "筋肉",
+          "普通体型"
+        ],
+        "hasManualObservation": true
+      },
+      "rawBlocks": {
+        "descriptionLines": [
+          "水泳部の練習中に落雷に打たれたジンタは、気がつくと獣人が暮らす異世界に飛ばされていた。",
+          "もとの世界に戻るには大金が必要だと知り、娼館で稼ぐことにしたジンタ。",
+          "今夜もヒョウ・ハイエナ・白虎・オオカミの獣人相手にせっせと春を売るのであった…。"
+        ],
+        "observationLines": [
+          "人間→筋肉・普通",
+          "ヒョウ→筋肉",
+          "ハイエナ→普通体系",
+          "虎→筋肉",
+          "狼→筋肉"
+        ],
+        "priceLines": [
+          "880円"
+        ]
+      },
+      "custom": {
+        "internalTags": [],
+        "notes": [],
+        "relatedWorkIds": [],
+        "sourceMemo": ""
+      }
+    },
+    {
+      "id": "work-dmm-d_497260",
+      "slug": "dmm-d_497260",
+      "workflowStatus": "imported",
+      "reviewStatus": "unreviewed",
+      "publication": {
+        "finderSeedStatus": "unmapped",
+        "siteProfileIds": [],
+        "collectionIds": [],
+        "primaryTagIds": [],
+        "notes": ""
+      },
+      "titles": {
+        "primary": "だから俺は異世界で春を売る。2",
+        "fileStem": "だから俺は異世界で春を売る。2",
+        "aliases": []
+      },
+      "sourceDocumentIds": [
+        "source-dmm-d_497260"
+      ],
+      "sourceRefs": [
+        {
+          "kind": "storefront_listing",
+          "storefront": "dmm",
+          "url": "https://www.dmm.co.jp/dc/doujin/-/detail/=/cid=d_497260/?dmmref=ListRanking&i3_ref=search&i3_ord=4",
+          "externalId": "d_497260"
+        }
+      ],
+      "contributors": [
+        {
+          "creatorId": "creator-bc09d88fb2f9",
+          "displayName": "Draw Two",
+          "normalizedName": "Draw Two",
+          "role": "circle",
+          "sourceField": "header.creator"
+        }
+      ],
+      "series": {
+        "id": "series-62a95b96e8bd",
+        "title": "だから俺は異世界で春を売る。",
+        "sequenceLabel": "2",
+        "sequenceNumber": 2
+      },
+      "summaries": [
+        {
+          "kind": "store_description",
+          "text": "水泳部男子が獣人だらけの異世界で男娼になって、\nクマやウシやゴリラの獣人たちとあれこれするお話です。",
+          "sourceDocumentId": "source-dmm-d_497260"
+        }
+      ],
+      "characterObservations": [
+        {
+          "id": "observation-1",
+          "rawText": "熊→デブ",
+          "subjectText": "熊",
+          "subjectLabels": [
+            "熊"
+          ],
+          "normalizedSubjectLabels": [
+            "熊"
+          ],
+          "traitText": "デブ",
+          "traitLabelsRaw": [
+            "デブ"
+          ],
+          "normalizedTraitLabels": [
+            "デブ"
+          ],
+          "bodyTypeLabels": [
+            "デブ"
+          ]
+        },
+        {
+          "id": "observation-2",
+          "rawText": "牛→筋肉",
+          "subjectText": "牛",
+          "subjectLabels": [
+            "牛"
+          ],
+          "normalizedSubjectLabels": [
+            "牛"
+          ],
+          "traitText": "筋肉",
+          "traitLabelsRaw": [
+            "筋肉"
+          ],
+          "normalizedTraitLabels": [
+            "筋肉"
+          ],
+          "bodyTypeLabels": [
+            "筋肉"
+          ]
+        },
+        {
+          "id": "observation-3",
+          "rawText": "人間→筋肉・普通",
+          "subjectText": "人間",
+          "subjectLabels": [
+            "人間"
+          ],
+          "normalizedSubjectLabels": [
+            "人間"
+          ],
+          "traitText": "筋肉・普通",
+          "traitLabelsRaw": [
+            "筋肉",
+            "普通"
+          ],
+          "normalizedTraitLabels": [
+            "筋肉",
+            "普通体型"
+          ],
+          "bodyTypeLabels": [
+            "筋肉",
+            "普通体型"
+          ]
+        },
+        {
+          "id": "observation-4",
+          "rawText": "豚・オーク→デブ",
+          "subjectText": "豚・オーク",
+          "subjectLabels": [
+            "豚",
+            "オーク"
+          ],
+          "normalizedSubjectLabels": [
+            "豚",
+            "オーク"
+          ],
+          "traitText": "デブ",
+          "traitLabelsRaw": [
+            "デブ"
+          ],
+          "normalizedTraitLabels": [
+            "デブ"
+          ],
+          "bodyTypeLabels": [
+            "デブ"
+          ]
+        },
+        {
+          "id": "observation-5",
+          "rawText": "ゴリラ→筋肉",
+          "subjectText": "ゴリラ",
+          "subjectLabels": [
+            "ゴリラ"
+          ],
+          "normalizedSubjectLabels": [
+            "ゴリラ"
+          ],
+          "traitText": "筋肉",
+          "traitLabelsRaw": [
+            "筋肉"
+          ],
+          "normalizedTraitLabels": [
+            "筋肉"
+          ],
+          "bodyTypeLabels": [
+            "筋肉"
+          ]
+        },
+        {
+          "id": "observation-6",
+          "rawText": "鷹→筋肉",
+          "subjectText": "鷹",
+          "subjectLabels": [
+            "鷹"
+          ],
+          "normalizedSubjectLabels": [
+            "鷹"
+          ],
+          "traitText": "筋肉",
+          "traitLabelsRaw": [
+            "筋肉"
+          ],
+          "normalizedTraitLabels": [
+            "筋肉"
+          ],
+          "bodyTypeLabels": [
+            "筋肉"
+          ]
+        }
+      ],
+      "storefrontListings": [
+        {
+          "id": "listing-dmm-d_497260",
+          "storefront": "dmm",
+          "url": "https://www.dmm.co.jp/dc/doujin/-/detail/=/cid=d_497260/?dmmref=ListRanking&i3_ref=search&i3_ord=4",
+          "externalId": "d_497260",
+          "formatLabel": "コミック",
+          "pageCount": 40,
+          "releaseAt": "2024-12-22T16:00:00+09:00",
+          "themeLabel": "オリジナル",
+          "campaignLabel": "【らぶカル感謝祭】30%OFF",
+          "genreLabels": [
+            "筋肉",
+            "ゲイ",
+            "売春・援交",
+            "けもの・獣化",
+            "巨根",
+            "異種姦",
+            "女性向け",
+            "成人向け",
+            "異世界転生",
+            "男娼",
+            "獣人",
+            "オスケモ",
+            "旧作"
+          ],
+          "fileSizeMB": 87.01,
+          "usageLimit": "無期限",
+          "metadata": {
+            "配信開始日": "2024/12/22 16:00",
+            "作品形式": "コミック",
+            "ページ数": "40ページ",
+            "シリーズ": "だから俺は異世界で春を売る。",
+            "題材": "オリジナル",
+            "キャンペーン": "【らぶカル感謝祭】30%OFF",
+            "ジャンル": [
+              "筋肉",
+              "ゲイ",
+              "売春・援交",
+              "けもの・獣化",
+              "巨根",
+              "異種姦",
+              "女性向け",
+              "成人向け",
+              "異世界転生",
+              "男娼",
+              "獣人",
+              "オスケモ",
+              "旧作"
+            ],
+            "ファイル容量": "87.01MB",
+            "利用期限": "無期限"
+          }
+        }
+      ],
+      "commercial": {
+        "regularPriceJPY": 1100,
+        "campaignPriceJPY": 770,
+        "campaignNote": "3/30まで770円(30%OFF)",
+        "rawPriceLines": [
+          "1100円",
+          "3/30まで770円(30%OFF)"
+        ]
+      },
+      "derived": {
+        "formatLabel": "コミック",
+        "pageCount": 40,
+        "releaseAt": "2024-12-22T16:00:00+09:00",
+        "fileSizeMB": 87.01,
+        "genreLabels": [
+          "筋肉",
+          "ゲイ",
+          "売春・援交",
+          "けもの・獣化",
+          "巨根",
+          "異種姦",
+          "女性向け",
+          "成人向け",
+          "異世界転生",
+          "男娼",
+          "獣人",
+          "オスケモ",
+          "旧作"
+        ],
+        "normalizedSubjectLabels": [
+          "熊",
+          "牛",
+          "人間",
+          "豚",
+          "オーク",
+          "ゴリラ",
+          "鷹"
+        ],
+        "bodyTypeLabels": [
+          "デブ",
+          "筋肉",
+          "普通体型"
+        ],
+        "hasManualObservation": true
+      },
+      "rawBlocks": {
+        "descriptionLines": [
+          "水泳部男子が獣人だらけの異世界で男娼になって、",
+          "クマやウシやゴリラの獣人たちとあれこれするお話です。"
+        ],
+        "observationLines": [
+          "熊→デブ",
+          "牛→筋肉",
+          "人間→筋肉・普通",
+          "豚・オーク→デブ",
+          "ゴリラ→筋肉",
+          "鷹→筋肉"
+        ],
+        "priceLines": [
+          "1100円",
+          "3/30まで770円(30%OFF)"
+        ]
+      },
+      "custom": {
+        "internalTags": [],
+        "notes": [],
+        "relatedWorkIds": [],
+        "sourceMemo": ""
+      }
+    },
+    {
+      "id": "work-dmm-d_674868",
+      "slug": "dmm-d_674868",
+      "workflowStatus": "imported",
+      "reviewStatus": "unreviewed",
+      "publication": {
+        "finderSeedStatus": "unmapped",
+        "siteProfileIds": [],
+        "collectionIds": [],
+        "primaryTagIds": [],
+        "notes": ""
+      },
+      "titles": {
+        "primary": "だから俺は異世界で春を売る。3",
+        "fileStem": "だから俺は異世界で春を売る。3",
+        "aliases": []
+      },
+      "sourceDocumentIds": [
+        "source-dmm-d_674868"
+      ],
+      "sourceRefs": [
+        {
+          "kind": "storefront_listing",
+          "storefront": "dmm",
+          "url": "https://www.dmm.co.jp/dc/doujin/-/detail/=/cid=d_674868/?dmmref=ListRanking&i3_ref=list&i3_ord=3",
+          "externalId": "d_674868"
+        }
+      ],
+      "contributors": [
+        {
+          "creatorId": "creator-bc09d88fb2f9",
+          "displayName": "Draw Two",
+          "normalizedName": "Draw Two",
+          "role": "circle",
+          "sourceField": "header.creator"
+        },
+        {
+          "creatorId": "creator-4f3eca20d025",
+          "displayName": "土狼弐",
+          "normalizedName": "土狼弐",
+          "role": "author",
+          "sourceField": "metadata.作者"
+        }
+      ],
+      "series": {
+        "id": "series-62a95b96e8bd",
+        "title": "だから俺は異世界で春を売る。",
+        "sequenceLabel": "3",
+        "sequenceNumber": 3
+      },
+      "summaries": [
+        {
+          "kind": "store_description",
+          "text": "ケモノだらけの異世界で男娼になって一年が経った水泳部男子ジンタが、\nライオン獣人たちとあれこれするお話です。",
+          "sourceDocumentId": "source-dmm-d_674868"
+        }
+      ],
+      "characterObservations": [
+        {
+          "id": "observation-1",
+          "rawText": "ライオン→筋肉",
+          "subjectText": "ライオン",
+          "subjectLabels": [
+            "ライオン"
+          ],
+          "normalizedSubjectLabels": [
+            "ライオン"
+          ],
+          "traitText": "筋肉",
+          "traitLabelsRaw": [
+            "筋肉"
+          ],
+          "normalizedTraitLabels": [
+            "筋肉"
+          ],
+          "bodyTypeLabels": [
+            "筋肉"
+          ]
+        },
+        {
+          "id": "observation-2",
+          "rawText": "人間→筋肉・普通",
+          "subjectText": "人間",
+          "subjectLabels": [
+            "人間"
+          ],
+          "normalizedSubjectLabels": [
+            "人間"
+          ],
+          "traitText": "筋肉・普通",
+          "traitLabelsRaw": [
+            "筋肉",
+            "普通"
+          ],
+          "normalizedTraitLabels": [
+            "筋肉",
+            "普通体型"
+          ],
+          "bodyTypeLabels": [
+            "筋肉",
+            "普通体型"
+          ]
+        }
+      ],
+      "storefrontListings": [
+        {
+          "id": "listing-dmm-d_674868",
+          "storefront": "dmm",
+          "url": "https://www.dmm.co.jp/dc/doujin/-/detail/=/cid=d_674868/?dmmref=ListRanking&i3_ref=list&i3_ord=3",
+          "externalId": "d_674868",
+          "formatLabel": "コミック",
+          "pageCount": 37,
+          "releaseAt": "2025-09-29T16:00:00+09:00",
+          "themeLabel": "オリジナル",
+          "campaignLabel": "",
+          "genreLabels": [
+            "筋肉",
+            "ゲイ",
+            "けもの・獣化",
+            "異種姦",
+            "女性向け",
+            "成人向け",
+            "異世界転生",
+            "男娼",
+            "旧作"
+          ],
+          "fileSizeMB": 83.79,
+          "usageLimit": "無期限",
+          "metadata": {
+            "配信開始日": "2025/09/29 16:00",
+            "作者": "土狼弐",
+            "作品形式": "コミック",
+            "ページ数": "37ページ",
+            "シリーズ": "だから俺は異世界で春を売る。",
+            "題材": "オリジナル",
+            "ジャンル": [
+              "筋肉",
+              "ゲイ",
+              "けもの・獣化",
+              "異種姦",
+              "女性向け",
+              "成人向け",
+              "異世界転生",
+              "男娼",
+              "旧作"
+            ],
+            "ファイル容量": "83.79MB",
+            "利用期限": "無期限"
+          }
+        }
+      ],
+      "commercial": {
+        "regularPriceJPY": null,
+        "campaignPriceJPY": null,
+        "campaignNote": "",
+        "rawPriceLines": []
+      },
+      "derived": {
+        "formatLabel": "コミック",
+        "pageCount": 37,
+        "releaseAt": "2025-09-29T16:00:00+09:00",
+        "fileSizeMB": 83.79,
+        "genreLabels": [
+          "筋肉",
+          "ゲイ",
+          "けもの・獣化",
+          "異種姦",
+          "女性向け",
+          "成人向け",
+          "異世界転生",
+          "男娼",
+          "旧作"
+        ],
+        "normalizedSubjectLabels": [
+          "ライオン",
+          "人間"
+        ],
+        "bodyTypeLabels": [
+          "筋肉",
+          "普通体型"
+        ],
+        "hasManualObservation": true
+      },
+      "rawBlocks": {
+        "descriptionLines": [
+          "ケモノだらけの異世界で男娼になって一年が経った水泳部男子ジンタが、",
+          "ライオン獣人たちとあれこれするお話です。"
+        ],
+        "observationLines": [
+          "ライオン→筋肉",
+          "人間→筋肉・普通"
+        ],
+        "priceLines": []
+      },
+      "custom": {
+        "internalTags": [],
+        "notes": [],
+        "relatedWorkIds": [],
+        "sourceMemo": ""
+      }
+    },
+    {
+      "id": "work-dmm-d_596631",
+      "slug": "dmm-d_596631",
+      "workflowStatus": "imported",
+      "reviewStatus": "unreviewed",
+      "publication": {
+        "finderSeedStatus": "unmapped",
+        "siteProfileIds": [],
+        "collectionIds": [],
+        "primaryTagIds": [],
+        "notes": ""
+      },
+      "titles": {
+        "primary": "デビルなんかじゃないっ！",
+        "fileStem": "デビルなんかじゃないっ！",
+        "aliases": []
+      },
+      "sourceDocumentIds": [
+        "source-dmm-d_596631"
+      ],
+      "sourceRefs": [
+        {
+          "kind": "storefront_listing",
+          "storefront": "dmm",
+          "url": "https://www.dmm.co.jp/dc/doujin/-/detail/=/cid=d_596631/?dmmref=DetailOtherWorks&i3_ref=recommend&i3_ord=2",
+          "externalId": "d_596631"
+        }
+      ],
+      "contributors": [
+        {
+          "creatorId": "creator-bc09d88fb2f9",
+          "displayName": "Draw Two",
+          "normalizedName": "Draw Two",
+          "role": "circle",
+          "sourceField": "header.creator"
+        }
+      ],
+      "series": null,
+      "summaries": [
+        {
+          "kind": "store_description",
+          "text": "凶悪（？）格闘家の白虎・タイガ（タチ）と\n幼馴染の人間・ツカサ（ウケ）がアレコレするお話です。",
+          "sourceDocumentId": "source-dmm-d_596631"
+        }
+      ],
+      "characterObservations": [
+        {
+          "id": "observation-1",
+          "rawText": "虎→筋肉",
+          "subjectText": "虎",
+          "subjectLabels": [
+            "虎"
+          ],
+          "normalizedSubjectLabels": [
+            "虎"
+          ],
+          "traitText": "筋肉",
+          "traitLabelsRaw": [
+            "筋肉"
+          ],
+          "normalizedTraitLabels": [
+            "筋肉"
+          ],
+          "bodyTypeLabels": [
+            "筋肉"
+          ]
+        },
+        {
+          "id": "observation-2",
+          "rawText": "人間→筋肉",
+          "subjectText": "人間",
+          "subjectLabels": [
+            "人間"
+          ],
+          "normalizedSubjectLabels": [
+            "人間"
+          ],
+          "traitText": "筋肉",
+          "traitLabelsRaw": [
+            "筋肉"
+          ],
+          "normalizedTraitLabels": [
+            "筋肉"
+          ],
+          "bodyTypeLabels": [
+            "筋肉"
+          ]
+        }
+      ],
+      "storefrontListings": [
+        {
+          "id": "listing-dmm-d_596631",
+          "storefront": "dmm",
+          "url": "https://www.dmm.co.jp/dc/doujin/-/detail/=/cid=d_596631/?dmmref=DetailOtherWorks&i3_ref=recommend&i3_ord=2",
+          "externalId": "d_596631",
+          "formatLabel": "コミック",
+          "pageCount": 31,
+          "releaseAt": "2025-05-27T00:00:00+09:00",
+          "themeLabel": "オリジナル",
+          "campaignLabel": "【らぶカル感謝祭】30%OFF",
+          "genreLabels": [
+            "BL（ボーイズラブ）",
+            "巨根",
+            "体育会系",
+            "異種姦",
+            "女性向け",
+            "成人向け",
+            "ガチムチ",
+            "体格差",
+            "雄っぱい",
+            "オスケモ",
+            "旧作"
+          ],
+          "fileSizeMB": 74.08,
+          "usageLimit": "無期限",
+          "metadata": {
+            "配信開始日": "2025/05/27 00:00",
+            "作品形式": "コミック",
+            "ページ数": "31ページ",
+            "題材": "オリジナル",
+            "キャンペーン": "【らぶカル感謝祭】30%OFF",
+            "ジャンル": [
+              "BL（ボーイズラブ）",
+              "巨根",
+              "体育会系",
+              "異種姦",
+              "女性向け",
+              "成人向け",
+              "ガチムチ",
+              "体格差",
+              "雄っぱい",
+              "オスケモ",
+              "旧作"
+            ],
+            "ファイル容量": "74.08MB",
+            "利用期限": "無期限"
+          }
+        }
+      ],
+      "commercial": {
+        "regularPriceJPY": 990,
+        "campaignPriceJPY": null,
+        "campaignNote": "【らぶカル感謝祭】30%OFF",
+        "rawPriceLines": [
+          "990円"
+        ]
+      },
+      "derived": {
+        "formatLabel": "コミック",
+        "pageCount": 31,
+        "releaseAt": "2025-05-27T00:00:00+09:00",
+        "fileSizeMB": 74.08,
+        "genreLabels": [
+          "BL（ボーイズラブ）",
+          "巨根",
+          "体育会系",
+          "異種姦",
+          "女性向け",
+          "成人向け",
+          "ガチムチ",
+          "体格差",
+          "雄っぱい",
+          "オスケモ",
+          "旧作"
+        ],
+        "normalizedSubjectLabels": [
+          "虎",
+          "人間"
+        ],
+        "bodyTypeLabels": [
+          "筋肉"
+        ],
+        "hasManualObservation": true
+      },
+      "rawBlocks": {
+        "descriptionLines": [
+          "凶悪（？）格闘家の白虎・タイガ（タチ）と",
+          "幼馴染の人間・ツカサ（ウケ）がアレコレするお話です。"
+        ],
+        "observationLines": [
+          "虎→筋肉",
+          "人間→筋肉"
+        ],
+        "priceLines": [
+          "990円"
+        ]
+      },
+      "custom": {
+        "internalTags": [],
+        "notes": [],
+        "relatedWorkIds": [],
+        "sourceMemo": ""
+      }
+    },
+    {
+      "id": "work-dmm-d_497265",
+      "slug": "dmm-d_497265",
+      "workflowStatus": "imported",
+      "reviewStatus": "unreviewed",
+      "publication": {
+        "finderSeedStatus": "unmapped",
+        "siteProfileIds": [],
+        "collectionIds": [],
+        "primaryTagIds": [],
+        "notes": ""
+      },
+      "titles": {
+        "primary": "雨と嘘",
+        "fileStem": "雨と嘘",
+        "aliases": []
+      },
+      "sourceDocumentIds": [
+        "source-dmm-d_497265"
+      ],
+      "sourceRefs": [
+        {
+          "kind": "storefront_listing",
+          "storefront": "dmm",
+          "url": "https://www.dmm.co.jp/dc/doujin/-/detail/=/cid=d_497265/?dmmref=DetailOtherWorks&i3_ref=recommend&i3_ord=4",
+          "externalId": "d_497265"
+        }
+      ],
+      "contributors": [
+        {
+          "creatorId": "creator-bc09d88fb2f9",
+          "displayName": "Draw Two",
+          "normalizedName": "Draw Two",
+          "role": "circle",
+          "sourceField": "header.creator"
+        }
+      ],
+      "series": null,
+      "summaries": [
+        {
+          "kind": "store_description",
+          "text": "組長の息子であるシノブ（オオカミ）は、明日の結婚式を前に眠れぬ夜を過ごしていた。\n世話係の犬伏（ドーベルマン）を寝酒に誘い、最後の夜だからとある『頼み事』をするが…。",
+          "sourceDocumentId": "source-dmm-d_497265"
+        }
+      ],
+      "characterObservations": [
+        {
+          "id": "observation-1",
+          "rawText": "狼→筋肉",
+          "subjectText": "狼",
+          "subjectLabels": [
+            "狼"
+          ],
+          "normalizedSubjectLabels": [
+            "狼"
+          ],
+          "traitText": "筋肉",
+          "traitLabelsRaw": [
+            "筋肉"
+          ],
+          "normalizedTraitLabels": [
+            "筋肉"
+          ],
+          "bodyTypeLabels": [
+            "筋肉"
+          ]
+        },
+        {
+          "id": "observation-2",
+          "rawText": "犬→筋肉",
+          "subjectText": "犬",
+          "subjectLabels": [
+            "犬"
+          ],
+          "normalizedSubjectLabels": [
+            "犬"
+          ],
+          "traitText": "筋肉",
+          "traitLabelsRaw": [
+            "筋肉"
+          ],
+          "normalizedTraitLabels": [
+            "筋肉"
+          ],
+          "bodyTypeLabels": [
+            "筋肉"
+          ]
+        }
+      ],
+      "storefrontListings": [
+        {
+          "id": "listing-dmm-d_497265",
+          "storefront": "dmm",
+          "url": "https://www.dmm.co.jp/dc/doujin/-/detail/=/cid=d_497265/?dmmref=DetailOtherWorks&i3_ref=recommend&i3_ord=4",
+          "externalId": "d_497265",
+          "formatLabel": "コミック",
+          "pageCount": 28,
+          "releaseAt": "2024-12-22T16:00:00+09:00",
+          "themeLabel": "オリジナル",
+          "campaignLabel": "【らぶカル感謝祭】30%OFF",
+          "genreLabels": [
+            "筋肉",
+            "ゲイ",
+            "けもの・獣化",
+            "女性向け",
+            "成人向け",
+            "主従",
+            "ヤクザ/裏社会",
+            "獣人",
+            "オスケモ",
+            "旧作"
+          ],
+          "fileSizeMB": 56.5,
+          "usageLimit": "無期限",
+          "metadata": {
+            "配信開始日": "2024/12/22 16:00",
+            "作品形式": "コミック",
+            "ページ数": "28ページ",
+            "題材": "オリジナル",
+            "キャンペーン": "【らぶカル感謝祭】30%OFF",
+            "ジャンル": [
+              "筋肉",
+              "ゲイ",
+              "けもの・獣化",
+              "女性向け",
+              "成人向け",
+              "主従",
+              "ヤクザ/裏社会",
+              "獣人",
+              "オスケモ",
+              "旧作"
+            ],
+            "ファイル容量": "56.5MB",
+            "利用期限": "無期限"
+          }
+        }
+      ],
+      "commercial": {
+        "regularPriceJPY": 990,
+        "campaignPriceJPY": null,
+        "campaignNote": "【らぶカル感謝祭】30%OFF",
+        "rawPriceLines": [
+          "990円"
+        ]
+      },
+      "derived": {
+        "formatLabel": "コミック",
+        "pageCount": 28,
+        "releaseAt": "2024-12-22T16:00:00+09:00",
+        "fileSizeMB": 56.5,
+        "genreLabels": [
+          "筋肉",
+          "ゲイ",
+          "けもの・獣化",
+          "女性向け",
+          "成人向け",
+          "主従",
+          "ヤクザ/裏社会",
+          "獣人",
+          "オスケモ",
+          "旧作"
+        ],
+        "normalizedSubjectLabels": [
+          "狼",
+          "犬"
+        ],
+        "bodyTypeLabels": [
+          "筋肉"
+        ],
+        "hasManualObservation": true
+      },
+      "rawBlocks": {
+        "descriptionLines": [
+          "組長の息子であるシノブ（オオカミ）は、明日の結婚式を前に眠れぬ夜を過ごしていた。",
+          "世話係の犬伏（ドーベルマン）を寝酒に誘い、最後の夜だからとある『頼み事』をするが…。"
+        ],
+        "observationLines": [
+          "狼→筋肉",
+          "犬→筋肉"
+        ],
+        "priceLines": [
+          "990円"
+        ]
+      },
+      "custom": {
+        "internalTags": [],
+        "notes": [],
+        "relatedWorkIds": [],
+        "sourceMemo": ""
+      }
+    }
+  ]
+}

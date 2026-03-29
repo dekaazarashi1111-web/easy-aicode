@@ -41,6 +41,12 @@
 - 現状は静的サイト運用を優先し、生成した内容を `public/assets/finder-seed.js` に反映して公開します。
 - 実例として `https://booth.pm/ja/items/2427390` の取り込み結果を seed に追加済みです。
 
+## 作品テキストDB
+- `userfile/作品一覧` の手動文字起こしは、公開用 `finder-seed.js` とは別に保持します。
+- `node scripts/build_text_work_db.js` で `data/work-library-db.json` を生成できます。
+- 生成DBは `sourceDocuments` に生テキスト全文、`works` に抽出済みメタ情報、`creators` / `series` に横断参照を持ちます。
+- 詳細設計は `docs/work-library-db.md` を参照してください。
+
 ## ライブスクリーンショット
 - UI改修の途中確認には `node scripts/capture_local_ui_screenshots.js` を使います。ホーム、検索、詳細条件ビルダー、作品詳細の主要画面をローカルでまとめて撮ります。
 - `node scripts/capture_live_screenshots.js` はデフォルトで `quick` モードです。`public/` のHTMLルートと `sitemap.xml` を起点に、主要ページだけを軽く撮ります。
