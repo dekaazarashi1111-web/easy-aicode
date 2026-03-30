@@ -353,7 +353,6 @@ const renderEditorialFooter = () => `
   <footer class="footer editorial-footer">
     <div class="container editorial-footer__inner">
       <section class="editorial-footer__brand">
-        <p class="editorial-footer__eyebrow">Feature Finder</p>
         <h2 data-site-brand>${escapeHtml(BRAND_NAME)}</h2>
         <p>条件検索、固定特集、記事ガイドを横断しながら、次に読む作品と次に試す条件を探しやすくするためのサイトです。</p>
         <a class="btn btn--primary btn--sm" href="/finder/">作品検索へ</a>
@@ -381,15 +380,6 @@ const renderEditorialFooter = () => `
           <li><a href="/collections/">入口特集</a></li>
           <li><a href="/articles/">記事一覧</a></li>
         </ul>
-      </div>
-    </div>
-    <div class="container editorial-footer__bottom">
-      <p class="editorial-footer__legal" data-site-copyright>© ${escapeHtml(BRAND_NAME)}</p>
-      <div class="editorial-footer__bottom-links">
-        <a href="/">ホーム</a>
-        <a href="/finder/">作品検索</a>
-        <a href="/collections/">特集</a>
-        <a href="/articles/">記事</a>
       </div>
     </div>
   </footer>
