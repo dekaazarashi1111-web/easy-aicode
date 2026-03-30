@@ -47,6 +47,14 @@
 - 生成DBは `sourceDocuments` に生テキスト全文、`works` に抽出済みメタ情報、`creators` / `series` に横断参照を持ちます。
 - 詳細設計は `docs/work-library-db.md` を参照してください。
 
+## Windows Chrome 取り込み
+- Windows 側で普段使っている Chrome から DMM/FANZA 同人の作品ページを取り込む導線を `tools/dmm-capture/` に追加しています。
+- `node tools/dmm-capture/server.js` で WSL 側のローカル inbox サーバーを起動できます。
+- Chrome 拡張は `tools/dmm-capture/extension/` を「パッケージ化されていない拡張機能」として読み込みます。
+- `127.0.0.1` で届かない環境では、WSL の IP を `Server URL` に指定して保存できます。
+- 保存先は `data/dmm-capture-inbox.json` と `data/dmm-capture-items/` です。
+- 詳細手順は `docs/windows-dmm-capture.md` を参照してください。
+
 ## ライブスクリーンショット
 - UI改修の途中確認には `node scripts/capture_local_ui_screenshots.js` を使います。ホーム、検索、詳細条件ビルダー、作品詳細の主要画面をローカルでまとめて撮ります。
 - `node scripts/capture_live_screenshots.js` はデフォルトで `quick` モードです。`public/` のHTMLルートと `sitemap.xml` を起点に、主要ページだけを軽く撮ります。

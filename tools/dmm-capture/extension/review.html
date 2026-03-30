@@ -1,0 +1,107 @@
+<!doctype html>
+<html lang="ja">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>DMM Capture Review</title>
+    <link rel="stylesheet" href="review.css" />
+  </head>
+  <body>
+    <div class="layout">
+      <aside class="sidebar">
+        <div class="sidebar__head">
+          <h1>DMM Capture</h1>
+          <p>取り込み済み一覧</p>
+        </div>
+        <div id="capture-list" class="capture-list"></div>
+      </aside>
+
+      <main class="main">
+        <header class="page-head">
+          <div>
+            <p class="eyebrow">Windows Chrome Review</p>
+            <h2 id="page-title">キャプチャを読み込み中...</h2>
+            <p id="page-subtitle" class="muted"></p>
+          </div>
+          <div class="head-actions">
+            <button id="copy-json-button" type="button">JSONをコピー</button>
+            <button id="download-json-button" type="button">JSONを保存</button>
+          </div>
+        </header>
+
+        <section id="message-box" class="message-box" hidden></section>
+
+        <section class="panel">
+          <div class="panel__head">
+            <h3>抽出結果</h3>
+            <p class="muted">定型項目はここで確認します。必要ならあとで Codex 側で加工できます。</p>
+          </div>
+          <div id="summary-grid" class="summary-grid"></div>
+        </section>
+
+        <section class="panel">
+          <div class="panel__head">
+            <h3>手動追記</h3>
+            <p class="muted">登場人物や体型メモなど、自動化しない部分だけ補います。</p>
+          </div>
+          <div class="form-grid">
+            <label class="field field--full">
+              <span>登場人物・体型メモ</span>
+              <textarea
+                id="character-observation-text"
+                rows="8"
+                placeholder="例: 犬→筋肉&#10;牛→筋肉"
+              ></textarea>
+            </label>
+            <label class="field field--full">
+              <span>補足メモ</span>
+              <textarea
+                id="note-text"
+                rows="5"
+                placeholder="作品の読み味や、自分用の補足メモ"
+              ></textarea>
+            </label>
+            <label class="field field--full">
+              <span>内部タグ</span>
+              <input
+                id="internal-tags-text"
+                type="text"
+                placeholder="例: wolf, muscular, intro"
+              />
+            </label>
+          </div>
+        </section>
+
+        <section class="panel">
+          <div class="panel__head">
+            <h3>ローカル Inbox</h3>
+            <p class="muted">WSL 側の保存サーバーが起動していれば、ここから inbox に送れます。</p>
+          </div>
+          <div class="form-grid">
+            <label class="field field--full">
+              <span>Server URL</span>
+              <input id="server-url" type="url" />
+            </label>
+          </div>
+          <div class="action-row">
+            <button id="ping-server-button" type="button">接続確認</button>
+            <button id="send-inbox-button" type="button" class="button-primary">
+              inboxへ保存
+            </button>
+          </div>
+          <p id="sync-status" class="muted"></p>
+        </section>
+
+        <section class="panel">
+          <div class="panel__head">
+            <h3>JSONプレビュー</h3>
+            <p class="muted">この内容がコピー・保存・送信されます。</p>
+          </div>
+          <pre id="json-preview" class="json-preview"></pre>
+        </section>
+      </main>
+    </div>
+
+    <script src="review.js"></script>
+  </body>
+</html>
