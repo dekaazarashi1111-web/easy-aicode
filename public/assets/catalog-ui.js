@@ -45,6 +45,8 @@
 
   const ensureArray = (value) => core.ensureArray(value);
   const unique = (value) => core.unique(value);
+  const toWorkPath = (workOrSlug) => core.getWorkPath(workOrSlug);
+  const toCollectionPath = (collectionOrSlug) => core.getCollectionPath(collectionOrSlug);
 
   const normalizeText = (value) =>
     String(value || "")
@@ -715,7 +717,7 @@
     const chips = createElement("div", "home-showcase-banner__chipRow");
     const title = createElement("strong", "home-showcase-banner__title");
     const thumbStrip = createElement("div", "home-showcase-banner__thumbStrip");
-    link.href = collection ? `/collection/?slug=${encodeURIComponent(collection.slug)}` : "/finder/";
+    link.href = collection ? toCollectionPath(collection) : "/finder/";
     if (work) {
       media.appendChild(
         createHomeShowcaseWorkImage({
@@ -779,7 +781,7 @@
     const label = createElement("span", "home-showcase-banner__yearLabel", "入口号");
     const collage = createElement("div", "home-showcase-collage");
 
-    link.href = collection ? `/collection/?slug=${encodeURIComponent(collection.slug)}` : "/collections/";
+    link.href = collection ? toCollectionPath(collection) : "/collections/";
     heading.append(year, label);
     intro.append(
       createElement("span", "home-showcase-banner__badge home-showcase-banner__badge--light", "Topics"),
@@ -868,7 +870,7 @@
       "home-showcase-product__detail",
       `${Math.max(1, resolveCardImageUrls(work).length)}枚`
     );
-    mediaLink.href = `/work/?slug=${encodeURIComponent(work.slug)}`;
+    mediaLink.href = toWorkPath(work);
     title.href = mediaLink.href;
 
     mediaLink.appendChild(
@@ -912,6 +914,10 @@
   const mountBuilderSkeleton = (root) => {
     if (root.dataset.builderMounted) return;
     root.className = "main catalog-main catalog-builder-page";
+    if (root.querySelector("[data-builder-include-groups]") && root.querySelector("[data-builder-preview-works]")) {
+      root.dataset.builderMounted = "true";
+      return;
+    }
     root.innerHTML = `
       <div class="catalog-page-shell catalog-builder-shell">
         <section class="catalog-builder-hero">
@@ -1005,6 +1011,15 @@
   const mountHomeSkeleton = (root) => {
     if (root.dataset.homeMounted) return;
     root.className = "main home-showcase-page";
+    if (
+      root.querySelector("[data-home-hero-rail]") &&
+      root.querySelector("[data-home-recommended-works]") &&
+      root.querySelector("[data-home-category-grid]") &&
+      root.querySelector("[data-home-tag-cloud]")
+    ) {
+      root.dataset.homeMounted = "true";
+      return;
+    }
     root.innerHTML = `
       <div class="home-showcase-shell">
         <section class="home-showcase-hero">
@@ -1045,6 +1060,10 @@
   const mountFinderSkeleton = (root) => {
     if (root.dataset.finderMounted) return;
     root.className = "main catalog-main catalog-search-page";
+    if (root.querySelector("[data-finder-results]") && root.querySelector("[data-finder-sort]")) {
+      root.dataset.finderMounted = "true";
+      return;
+    }
     root.innerHTML = `
       <div class="catalog-page-shell catalog-search-shell">
         <div class="catalog-search-layout">
@@ -1491,10 +1510,10 @@
     const summaryText = reason || work.matchSummary || work.shortDescription || work.publicNote || "";
 
     article.dataset.tone = meta.tone;
-    mediaLink.href = `/work/?slug=${encodeURIComponent(work.slug)}`;
+    mediaLink.href = toWorkPath(work);
     mediaLink.dataset.workLink = "true";
     mediaLink.dataset.workId = work.id;
-    title.href = `/work/?slug=${encodeURIComponent(work.slug)}`;
+    title.href = toWorkPath(work);
     title.dataset.workLink = "true";
     title.dataset.workId = work.id;
 
@@ -1826,7 +1845,7 @@
             badge: "Collection",
             title: "SAFE\nFILTER",
             description: safeCollection?.title || "強い地雷を避けたい時の入口特集。",
-            href: safeCollection ? `/collection/?slug=${encodeURIComponent(safeCollection.slug)}` : "/collections/",
+            href: safeCollection ? toCollectionPath(safeCollection) : "/collections/",
           }),
         },
       ];
@@ -2770,7 +2789,7 @@
         recentRoot.appendChild(
           createMiniLink({
             label: work.title,
-            href: `/work/?slug=${encodeURIComponent(work.slug)}`,
+            href: toWorkPath(work),
             meta: [work.format, work.creator].filter(Boolean).join(" / "),
             icon: "recent",
           })
@@ -2873,7 +2892,7 @@
         compareItemsRoot.appendChild(
           createMiniLink({
             label: work.title,
-            href: `/work/?slug=${encodeURIComponent(work.slug)}`,
+            href: toWorkPath(work),
             meta: [work.format, work.creator].filter(Boolean).join(" / "),
             icon: "compare",
           })
@@ -3012,7 +3031,7 @@
             emptyRecentRoot.appendChild(
               createMiniLink({
                 label: work.title,
-                href: `/work/?slug=${encodeURIComponent(work.slug)}`,
+                href: toWorkPath(work),
                 meta: [work.format, work.creator].filter(Boolean).join(" / "),
                 icon: "recent",
               })
@@ -4319,7 +4338,7 @@
           previewWorksRoot.appendChild(
             createMiniLink({
               label: work.title,
-              href: `/work/?slug=${encodeURIComponent(work.slug)}`,
+              href: toWorkPath(work),
               meta: [work.format, work.creator].filter(Boolean).join(" / "),
               icon: "work",
             })

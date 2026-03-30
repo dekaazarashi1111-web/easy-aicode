@@ -65,6 +65,35 @@
 
   const unique = (values) => core.unique(values);
 
+  const isPlaceholderExternalUrl = (value = "") => {
+    if (!value) return true;
+    try {
+      const url = new URL(value, window.location.origin);
+      return url.hostname === "example.com";
+    } catch (error) {
+      return true;
+    }
+  };
+
+  const getPublicExternalLinks = (work) =>
+    core
+      .ensureArray(work?.externalLinks)
+      .filter((link) => link?.url && !isPlaceholderExternalUrl(link.url));
+
+  const toWorkPath = (workOrSlug) =>
+    typeof core.getWorkPath === "function"
+      ? core.getWorkPath(workOrSlug)
+      : `/works/${encodeURIComponent(
+          typeof workOrSlug === "string" ? workOrSlug : workOrSlug?.slug || ""
+        )}/`;
+
+  const toCollectionPath = (collectionOrSlug) =>
+    typeof core.getCollectionPath === "function"
+      ? core.getCollectionPath(collectionOrSlug)
+      : `/collections/${encodeURIComponent(
+          typeof collectionOrSlug === "string" ? collectionOrSlug : collectionOrSlug?.slug || ""
+        )}/`;
+
   const toFinderUrl = ({
     query = "",
     creatorQuery = "",
@@ -214,7 +243,7 @@
     visualText.textContent = work.creator || "サンプル作者";
     visualMeta.append(visualBadgeLabel, visualText);
     visualLink.className = "work-card__visual-link";
-    visualLink.href = `/work/?slug=${encodeURIComponent(work.slug)}`;
+    visualLink.href = toWorkPath(work);
     visualLink.dataset.workLink = "true";
     visualLink.dataset.workId = work.id;
     visualLink.append(
@@ -231,7 +260,7 @@
     );
 
     titleLink.className = "work-card__title";
-    titleLink.href = `/work/?slug=${encodeURIComponent(work.slug)}`;
+    titleLink.href = toWorkPath(work);
     titleLink.dataset.workLink = "true";
     titleLink.dataset.workId = work.id;
     titleLink.textContent = work.title;
@@ -274,7 +303,7 @@
     );
 
     detailLink.className = "btn btn--secondary btn--sm";
-    detailLink.href = `/work/?slug=${encodeURIComponent(work.slug)}`;
+    detailLink.href = toWorkPath(work);
     detailLink.dataset.workLink = "true";
     detailLink.dataset.workId = work.id;
     detailLink.textContent = layout === "compact" ? "詳細" : "詳細を見る";
@@ -328,7 +357,7 @@
     header.append(createText("span", "collection-card__creator", "固定導線"), createText("span", "help", "Curated"));
 
     titleLink.className = layout === "compact" ? "h3 collection-card__title" : "h2 collection-card__title";
-    titleLink.href = `/collection/?slug=${encodeURIComponent(collection.slug)}`;
+    titleLink.href = toCollectionPath(collection);
     titleLink.textContent = collection.title;
 
     description.className = "collection-card__summary";
@@ -351,7 +380,7 @@
     count.className = "collection-card__count";
     count.textContent = `${collection.workObjects.length}件`;
     detailLink.className = "btn btn--secondary btn--sm";
-    detailLink.href = `/collection/?slug=${encodeURIComponent(collection.slug)}`;
+    detailLink.href = toCollectionPath(collection);
     detailLink.textContent = "特集を見る";
 
     footer.className = "collection-card__footer";
@@ -446,7 +475,7 @@
       root.appendChild(
         createFinderLink({
           label: work.title,
-          href: `/work/?slug=${encodeURIComponent(work.slug)}`,
+          href: toWorkPath(work),
           meta: [work.format, work.creator].filter(Boolean).join(" / "),
         })
       );
@@ -1477,7 +1506,8 @@
       tagCountRoot.textContent = `主要タグ: ${core.ensureArray(decoratedWork?.primaryTagObjects).length}件`;
     }
     if (updatedRoot) updatedRoot.textContent = work.updatedAt || work.releasedAt || "未設定";
-    if (linkCountRoot) linkCountRoot.textContent = `${core.ensureArray(work.externalLinks).length}件`;
+    const publicExternalLinks = getPublicExternalLinks(work);
+    if (linkCountRoot) linkCountRoot.textContent = `${publicExternalLinks.length}件`;
     if (collectionCountRoot) collectionCountRoot.textContent = `${core.ensureArray(work.collectionIds).length}件`;
 
     renderWorkGallery(work);
@@ -1556,7 +1586,7 @@
 
     if (linksRoot) {
       linksRoot.textContent = "";
-      core.ensureArray(work.externalLinks).forEach((link) => {
+      publicExternalLinks.forEach((link) => {
         const anchor = document.createElement("a");
         anchor.className = "btn btn--primary";
         anchor.href = link.url;
@@ -1568,7 +1598,7 @@
       });
       if (!linksRoot.childElementCount) {
         linksRoot.appendChild(
-          createText("p", "help", "外部リンクはまだ未設定です。仮導線としてこの枠だけ確保しています。")
+          createText("p", "help", "外部リンクは公開準備中です。案内が整い次第、この枠に追加します。")
         );
       }
     }
@@ -1581,7 +1611,7 @@
         collectionRoot.appendChild(
           createTagChip({
             label: collection.title,
-            href: `/collection/?slug=${encodeURIComponent(collection.slug)}`,
+            href: toCollectionPath(collection),
           })
         );
       });
@@ -1616,7 +1646,7 @@
     setMeta({
       title: `${work.title} | ${profile?.name || "作品ファインダー"}`,
       description: work.shortDescription || work.publicNote,
-      canonical: `/work/?slug=${encodeURIComponent(work.slug)}`,
+      canonical: toWorkPath(work),
     });
 
     store.logEvent("detail_view", {
@@ -1779,7 +1809,7 @@
           relatedRoot.appendChild(
             createTagChip({
               label: item.title,
-              href: `/collection/?slug=${encodeURIComponent(item.slug)}`,
+              href: toCollectionPath(item),
             })
           );
         });
@@ -1803,7 +1833,7 @@
     setMeta({
       title: `${collection.title} | ${profile?.name || "作品ファインダー"}`,
       description: collection.description,
-      canonical: `/collection/?slug=${encodeURIComponent(collection.slug)}`,
+      canonical: toCollectionPath(collection),
     });
   };
 

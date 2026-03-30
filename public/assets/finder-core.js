@@ -30,6 +30,26 @@
       .replace(/[^a-z0-9]+/g, "-")
       .replace(/^-+|-+$/g, "") || `item-${Date.now()}`;
 
+  const getWorkPath = (workOrSlug) => {
+    const slug =
+      typeof workOrSlug === "string"
+        ? workOrSlug
+        : typeof workOrSlug?.slug === "string"
+          ? workOrSlug.slug
+          : "";
+    return slug ? `/works/${encodeURIComponent(slug)}/` : "/finder/";
+  };
+
+  const getCollectionPath = (collectionOrSlug) => {
+    const slug =
+      typeof collectionOrSlug === "string"
+        ? collectionOrSlug
+        : typeof collectionOrSlug?.slug === "string"
+          ? collectionOrSlug.slug
+          : "";
+    return slug ? `/collections/${encodeURIComponent(slug)}/` : "/collections/";
+  };
+
   const getActiveProfile = (state) => {
     const profiles = ensureArray(state?.siteProfiles);
     if (!profiles.length) return null;
@@ -617,8 +637,10 @@
     groupTags,
     aggregateLogs,
     normalizeText,
+    getCollectionPath,
     slugify,
     splitTokens,
+    getWorkPath,
     suggestWorks,
     unique,
   };

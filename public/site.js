@@ -33,6 +33,16 @@ const toAbsoluteUrl = (value) => {
   }
 };
 
+const toWorkPath = (workOrSlug) => {
+  const slug =
+    typeof workOrSlug === "string"
+      ? workOrSlug
+      : typeof workOrSlug?.slug === "string"
+        ? workOrSlug.slug
+        : "";
+  return slug ? `/works/${encodeURIComponent(slug)}/` : "/finder/";
+};
+
 const updateSeoUrls = () => {
   const canonical = document.querySelector('link[rel="canonical"]');
   if (canonical) {
@@ -118,8 +128,11 @@ const updateBrandCopy = () => {
   const siteName = document.querySelector('meta[property="og:site_name"]');
   if (siteName) siteName.setAttribute("content", SITE_CONFIG.BRAND_NAME);
 
-  if (document.title.includes("Media Canvas")) {
-    document.title = document.title.replace(/Media Canvas/g, SITE_CONFIG.BRAND_NAME);
+  if (/(Media Canvas|ケモホモ作品ファインダー)/.test(document.title)) {
+    document.title = document.title.replace(
+      /(Media Canvas|ケモホモ作品ファインダー)/g,
+      SITE_CONFIG.BRAND_NAME
+    );
   }
 
   const titleMeta = [
@@ -130,15 +143,18 @@ const updateBrandCopy = () => {
   titleMeta.forEach((meta) => {
     if (!meta) return;
     const current = meta.getAttribute("content") || "";
-    if (current.includes("Media Canvas")) {
-      meta.setAttribute("content", current.replace(/Media Canvas/g, SITE_CONFIG.BRAND_NAME));
+    if (/(Media Canvas|ケモホモ作品ファインダー)/.test(current)) {
+      meta.setAttribute(
+        "content",
+        current.replace(/(Media Canvas|ケモホモ作品ファインダー)/g, SITE_CONFIG.BRAND_NAME)
+      );
     }
   });
 };
 
 updateBrandCopy();
 
-const BRAND_NAME = SITE_CONFIG.BRAND_NAME || "Media Canvas";
+const BRAND_NAME = SITE_CONFIG.BRAND_NAME || "ケモホモ作品ファインダー";
 const FINDER_STORAGE_KEY = "finder-canvas-state";
 const RECENT_HISTORY_HASH = "#recent-history";
 const SAVED_SEARCH_HASH = "#saved-searches";
@@ -444,7 +460,13 @@ const normalizePathname = (pathname) => {
 const getCurrentSection = (pathname = window.location.pathname) => {
   const normalized = normalizePathname(pathname);
   if (normalized === "/") return "home";
-  if (normalized.startsWith("/finder/") || normalized.startsWith("/work/")) return "finder";
+  if (
+    normalized.startsWith("/finder/") ||
+    normalized.startsWith("/work/") ||
+    normalized.startsWith("/works/")
+  ) {
+    return "finder";
+  }
   if (normalized.startsWith("/builder/")) return "builder";
   if (normalized.startsWith("/collections/") || normalized.startsWith("/collection/")) {
     return "collections";
@@ -457,8 +479,8 @@ const getCurrentSection = (pathname = window.location.pathname) => {
 
 const NAV_ITEMS = [
   { href: "/finder/", label: "作品を探す", section: "finder" },
+  { href: "/collections/", label: "特集を見る", section: "collections" },
   { href: "/articles/", label: "特集記事", section: "articles" },
-  { href: "/apply/?v=20260325", label: "掲載申請", section: "apply" },
   { href: "/contact/", label: "お問い合わせ", section: "contact" },
 ];
 
@@ -508,9 +530,9 @@ const EDITORIAL_FOOTER_TEMPLATE = (brandName) => `
     <p class="editorial-footer__legal" data-site-copyright>© ${brandName}</p>
     <div class="editorial-footer__bottom-links">
       <a href="/">ホーム</a>
-      <a href="/articles/">記事一覧</a>
       <a href="/finder/">作品検索</a>
-      <a href="/contact/">お問い合わせ</a>
+      <a href="/collections/">特集一覧</a>
+      <a href="/articles/">記事一覧</a>
     </div>
   </div>
 `;
@@ -694,7 +716,7 @@ const renderHistoryDrawer = () => {
         const updatedAt = document.createElement("span");
 
         link.className = "finder-mini-link catalog-history-drawer__link";
-        link.href = `/work/?slug=${encodeURIComponent(work.slug || "")}`;
+        link.href = toWorkPath(work);
         body.className = "finder-mini-link__body";
         title.textContent = work.title || "作品";
 
