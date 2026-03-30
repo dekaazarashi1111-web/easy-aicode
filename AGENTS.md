@@ -14,7 +14,6 @@
 - `/articles/comparison-template/` : `public/articles/comparison-template/index.html`
 - `/articles/content-planning-checklist/` : `public/articles/content-planning-checklist/index.html`
 - `/articles/review-structure/` : `public/articles/review-structure/index.html`
-- `/about/` : `public/about/index.html`
 - `/contact/` : `public/contact/index.html`
 - `/privacy.html` : `public/privacy.html`
 - `/disclaimer.html` : `public/disclaimer.html`

@@ -13,7 +13,6 @@
 - 特集一覧: `public/collections/index.html` → `/collections/`
 - 特集詳細: `public/collection/index.html` → `/collection/?slug=...`
 - ガイド一覧: `public/articles/index.html` → `/articles/`
-- 運営方針: `public/about/index.html` → `/about/`
 - お問い合わせ: `public/contact/index.html` → `/contact/`
 - プライバシー: `public/privacy/index.html` → `/privacy`
 - 免責事項: `public/disclaimer/index.html` → `/disclaimer`

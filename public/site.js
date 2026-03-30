@@ -451,7 +451,6 @@ const getCurrentSection = (pathname = window.location.pathname) => {
   }
   if (normalized.startsWith("/articles/")) return "articles";
   if (normalized.startsWith("/apply/")) return "apply";
-  if (normalized.startsWith("/about/")) return "about";
   if (normalized.startsWith("/contact/")) return "contact";
   return "";
 };
@@ -498,7 +497,6 @@ const EDITORIAL_FOOTER_TEMPLATE = (brandName) => `
     <div class="editorial-footer__column">
       <h3>運営</h3>
       <ul class="editorial-footer__links">
-        <li><a href="/about/">運営方針</a></li>
         <li><a href="/contact/">お問い合わせ</a></li>
         <li><a href="/privacy">プライバシー</a></li>
         <li><a href="/disclaimer">免責事項</a></li>
