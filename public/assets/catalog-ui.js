@@ -1,5 +1,5 @@
 (function (root, factory) {
-  root.IkeaFinderUi = factory(root.FinderStore, root.FinderCore, root.ArticleSearch, root.ARTICLE_INDEX);
+  root.CatalogFinderUi = factory(root.FinderStore, root.FinderCore, root.ArticleSearch, root.ARTICLE_INDEX);
 })(typeof globalThis !== "undefined" ? globalThis : this, function (store, core, articleSearch, articleIndex) {
   if (!store || !core || typeof document === "undefined") return {};
 
@@ -296,12 +296,12 @@
   const createShelfArtwork = (seed, visual = "grid", tone = "white", compact = false) => {
     const art = createElement(
       "div",
-      `ikea-artwork ikea-artwork--${visual}${compact ? " ikea-artwork--compact" : ""}`
+      `catalog-artwork catalog-artwork--${visual}${compact ? " catalog-artwork--compact" : ""}`
     );
     art.dataset.tone = tone;
     art.dataset.seed = String(hashString(seed) % 7);
     Array.from({ length: visual === "wide" ? 6 : 5 }).forEach(() => {
-      art.appendChild(createElement("span", "ikea-artwork__piece"));
+      art.appendChild(createElement("span", "catalog-artwork__piece"));
     });
     return art;
   };
@@ -459,32 +459,32 @@
   };
 
   const createProductCardMediaVisual = ({ work, meta, card }) => {
-    const visuals = createElement("div", "ikea-product-card__mediaVisuals");
-    const base = createElement("div", "ikea-product-card__mediaVisual ikea-product-card__mediaVisual--base");
-    const hover = createElement("div", "ikea-product-card__mediaVisual ikea-product-card__mediaVisual--hover");
+    const visuals = createElement("div", "catalog-product-card__mediaVisuals");
+    const base = createElement("div", "catalog-product-card__mediaVisual catalog-product-card__mediaVisual--base");
+    const hover = createElement("div", "catalog-product-card__mediaVisual catalog-product-card__mediaVisual--hover");
     const distinctImageUrls = resolveCardImageUrls(work);
     const primaryImageUrl = distinctImageUrls[0] || "";
     const alternateImageUrls = distinctImageUrls.slice(1);
 
     if (primaryImageUrl) {
-      base.appendChild(createProductCardImage("ikea-product-card__mainImage", primaryImageUrl));
+      base.appendChild(createProductCardImage("catalog-product-card__mainImage", primaryImageUrl));
     } else {
       base.appendChild(createShelfArtwork(work.id || work.slug || work.title, meta.visual, meta.tone));
     }
 
     if (alternateImageUrls.length) {
       const hoverImage = createProductCardImage(
-        "ikea-product-card__hoverImage",
+        "catalog-product-card__hoverImage",
         alternateImageUrls[0]
       );
-      visuals.classList.add("ikea-product-card__mediaVisuals--hoverSwap");
+      visuals.classList.add("catalog-product-card__mediaVisuals--hoverSwap");
       hover.appendChild(hoverImage);
       bindHoverGalleryCycle({ card, hoverImage, hoverImageUrls: alternateImageUrls });
     } else if (!primaryImageUrl) {
-      visuals.classList.add("ikea-product-card__mediaVisuals--hoverSwap");
+      visuals.classList.add("catalog-product-card__mediaVisuals--hoverSwap");
       hover.appendChild(
         createProductCardImage(
-          "ikea-product-card__hoverImage",
+          "catalog-product-card__hoverImage",
           buildHoverPreviewPlaceholder(work, meta)
         )
       );
@@ -495,17 +495,17 @@
   };
 
   const createMatchTagList = (labels) => {
-    const wrap = createElement("div", "ikea-product-card__matchTags");
+    const wrap = createElement("div", "catalog-product-card__matchTags");
     labels.forEach((label) => {
-      wrap.appendChild(createElement("span", "ikea-product-card__matchTag", label));
+      wrap.appendChild(createElement("span", "catalog-product-card__matchTag", label));
     });
     return wrap;
   };
 
   const createAffinityLinks = (links) => {
-    const wrap = createElement("div", "ikea-affinity-links");
+    const wrap = createElement("div", "catalog-affinity-links");
     links.forEach((item) => {
-      const link = createElement("a", "ikea-affinity-link", item.label);
+      const link = createElement("a", "catalog-affinity-link", item.label);
       link.href = item.href;
       wrap.appendChild(link);
     });
@@ -515,7 +515,7 @@
   const createIconActionButton = ({ kind, workId, active = false, label }) => {
     const button = createElement(
       "button",
-      `ikea-product-card__iconButton ikea-product-card__iconButton--${kind}`
+      `catalog-product-card__iconButton catalog-product-card__iconButton--${kind}`
     );
     button.type = "button";
     button.dataset.workAction = kind;
@@ -527,59 +527,59 @@
   };
 
   const createCategoryVisual = (variant) => {
-    const visual = createElement("div", "ikea-category-visual");
+    const visual = createElement("div", "catalog-category-visual");
     visual.dataset.variant = variant;
     Array.from({ length: 5 }).forEach(() => {
-      visual.appendChild(createElement("span", "ikea-category-visual__piece"));
+      visual.appendChild(createElement("span", "catalog-category-visual__piece"));
     });
     return visual;
   };
 
   const createTopCategoryCard = ({ label, href, visual }) => {
-    const link = createElement("a", "ikea-top-category-card");
-    const body = createElement("div", "ikea-top-category-card__body");
+    const link = createElement("a", "catalog-top-category-card");
+    const body = createElement("div", "catalog-top-category-card__body");
     link.href = href;
-    body.append(createCategoryVisual(visual), createElement("strong", "ikea-top-category-card__title", label));
+    body.append(createCategoryVisual(visual), createElement("strong", "catalog-top-category-card__title", label));
     link.appendChild(body);
     return link;
   };
 
   const createPromoCard = ({ kicker = "", title = "", description = "", href = "/", tone = "image", visual = "grid" }) => {
-    const link = createElement("a", `ikea-home-promo ikea-home-promo--${tone}`);
-    const content = createElement("div", "ikea-home-promo__content");
-    const visualWrap = createElement("div", "ikea-home-promo__visual");
+    const link = createElement("a", `catalog-home-promo catalog-home-promo--${tone}`);
+    const content = createElement("div", "catalog-home-promo__content");
+    const visualWrap = createElement("div", "catalog-home-promo__visual");
     link.href = href;
     visualWrap.appendChild(createShelfArtwork(`${title}-${tone}`, visual, tone === "yellow" ? "sand" : "white"));
-    if (kicker) content.appendChild(createElement("span", "ikea-home-promo__kicker", kicker));
-    content.appendChild(createElement("strong", "ikea-home-promo__title", title));
-    if (description) content.appendChild(createElement("p", "ikea-home-promo__description", description));
-    content.appendChild(createElement("span", "ikea-home-promo__link", "見る →"));
+    if (kicker) content.appendChild(createElement("span", "catalog-home-promo__kicker", kicker));
+    content.appendChild(createElement("strong", "catalog-home-promo__title", title));
+    if (description) content.appendChild(createElement("p", "catalog-home-promo__description", description));
+    content.appendChild(createElement("span", "catalog-home-promo__link", "見る →"));
     link.append(visualWrap, content);
     return link;
   };
 
   const createCategoryBannerCard = ({ href, label, description = "", variant = "storage", meta = "" }) => {
-    const link = createElement("a", "ikea-category-banner");
-    const body = createElement("div", "ikea-category-banner__body");
-    const text = createElement("div", "ikea-category-banner__text");
+    const link = createElement("a", "catalog-category-banner");
+    const body = createElement("div", "catalog-category-banner__body");
+    const text = createElement("div", "catalog-category-banner__text");
     link.href = href;
     body.appendChild(createCategoryVisual(variant));
-    text.append(createElement("strong", "ikea-category-banner__title", label));
-    if (description) text.appendChild(createElement("p", "ikea-category-banner__description", description));
-    if (meta) text.appendChild(createElement("span", "ikea-category-banner__meta", meta));
+    text.append(createElement("strong", "catalog-category-banner__title", label));
+    if (description) text.appendChild(createElement("p", "catalog-category-banner__description", description));
+    if (meta) text.appendChild(createElement("span", "catalog-category-banner__meta", meta));
     body.appendChild(text);
     link.appendChild(body);
     return link;
   };
 
   const createHomeSearchHero = ({ profile }) => {
-    const card = createElement("section", "ikea-home-search-hero");
-    const content = createElement("div", "ikea-home-search-hero__content");
-    const form = createElement("form", "ikea-home-search-hero__form");
-    const field = createElement("label", "ikea-home-search-hero__field");
+    const card = createElement("section", "catalog-home-search-hero");
+    const content = createElement("div", "catalog-home-search-hero__content");
+    const form = createElement("form", "catalog-home-search-hero__form");
+    const field = createElement("label", "catalog-home-search-hero__field");
     const input = document.createElement("input");
-    const submit = createElement("button", "ikea-home-search-hero__submit", "探す");
-    const quick = createElement("div", "ikea-home-search-hero__quick");
+    const submit = createElement("button", "catalog-home-search-hero__submit", "探す");
+    const quick = createElement("div", "catalog-home-search-hero__quick");
     const links = [
       { label: "まずここから", href: createFinderUrl({ collectionId: "start-here" }) },
       { label: "TFあり", href: createFinderUrl({ includeTagIds: ["tf-present"] }) },
@@ -597,17 +597,17 @@
     form.append(field, submit);
 
     content.append(
-      createElement("span", "ikea-home-search-hero__eyebrow", "Search first"),
-      createElement("h1", "ikea-home-search-hero__title", "何を探したいかを、そのまま入れる"),
+      createElement("span", "catalog-home-search-hero__eyebrow", "Search first"),
+      createElement("h1", "catalog-home-search-hero__title", "何を探したいかを、そのまま入れる"),
       createElement(
         "p",
-        "ikea-home-search-hero__description",
+        "catalog-home-search-hero__description",
         "広い入口はここから、細かい組み合わせは詳細条件ビルダーへ。ECの販促枠だった場所を、探索の入口に置き換えています。"
       ),
       form
     );
     links.forEach((item) => {
-      quick.appendChild(createPillLink({ label: item.label, href: item.href, className: "ikea-pill" }));
+      quick.appendChild(createPillLink({ label: item.label, href: item.href, className: "catalog-pill" }));
     });
     card.append(content, quick);
     return card;
@@ -911,85 +911,85 @@
 
   const mountBuilderSkeleton = (root) => {
     if (root.dataset.builderMounted) return;
-    root.className = "main ikea-main ikea-builder-page";
+    root.className = "main catalog-main catalog-builder-page";
     root.innerHTML = `
-      <div class="ikea-page-shell ikea-builder-shell">
-        <section class="ikea-builder-hero">
+      <div class="catalog-page-shell catalog-builder-shell">
+        <section class="catalog-builder-hero">
           <div>
-            <p class="ikea-section-heading__eyebrow">Detailed Search</p>
-            <h1 class="ikea-builder-hero__title">詳細条件ビルダー</h1>
-            <p class="ikea-builder-hero__summary">
+            <p class="catalog-section-heading__eyebrow">Detailed Search</p>
+            <h1 class="catalog-builder-hero__title">詳細条件ビルダー</h1>
+            <p class="catalog-builder-hero__summary">
               広い入口はトップや通常検索、細かい組み合わせはここで作ります。今の段階ではタグ・作者・特集・除外条件をまとめて組み立てるための独立導線です。
             </p>
           </div>
-          <div class="ikea-builder-hero__actions">
-            <a href="/finder/" class="ikea-builder-hero__link">通常検索へ</a>
-            <a href="/collections/" class="ikea-builder-hero__link ikea-builder-hero__link--secondary">入口特集へ</a>
+          <div class="catalog-builder-hero__actions">
+            <a href="/finder/" class="catalog-builder-hero__link">通常検索へ</a>
+            <a href="/collections/" class="catalog-builder-hero__link catalog-builder-hero__link--secondary">入口特集へ</a>
           </div>
         </section>
-        <div class="ikea-builder-layout">
-          <section class="ikea-builder-main">
-            <section class="ikea-builder-card">
-              <div class="ikea-section-heading">
+        <div class="catalog-builder-layout">
+          <section class="catalog-builder-main">
+            <section class="catalog-builder-card">
+              <div class="catalog-section-heading">
                 <div>
-                  <p class="ikea-section-heading__eyebrow">Step 1</p>
-                  <h2 class="ikea-section-heading__title">基本条件</h2>
+                  <p class="catalog-section-heading__eyebrow">Step 1</p>
+                  <h2 class="catalog-section-heading__title">基本条件</h2>
                 </div>
               </div>
-              <div class="ikea-builder-fields">
-                <label class="ikea-search-sidebar__field">
+              <div class="catalog-builder-fields">
+                <label class="catalog-search-sidebar__field">
                   <span>作品名・タグ・気分</span>
                   <input type="search" autocomplete="off" placeholder="例: TF / やさしめ / ノベル" data-builder-query />
                 </label>
-                <label class="ikea-search-sidebar__field">
+                <label class="catalog-search-sidebar__field">
                   <span>作者・サークル</span>
                   <input type="search" autocomplete="off" placeholder="作者名やサークル名" data-builder-creator />
                 </label>
-                <label class="ikea-search-sidebar__field">
+                <label class="catalog-search-sidebar__field">
                   <span>入口特集</span>
                   <select data-builder-collection></select>
                 </label>
-                <div class="ikea-search-sidebar__field">
+                <div class="catalog-search-sidebar__field">
                   <span>一致方法</span>
-                  <div class="ikea-search-modeSwitch">
+                  <div class="catalog-search-modeSwitch">
                     <button type="button" data-builder-mode="and" aria-pressed="true">すべて一致</button>
                     <button type="button" data-builder-mode="or" aria-pressed="false">いずれか一致</button>
                   </div>
                 </div>
               </div>
             </section>
-            <section class="ikea-builder-card">
-              <div class="ikea-section-heading">
+            <section class="catalog-builder-card">
+              <div class="catalog-section-heading">
                 <div>
-                  <p class="ikea-section-heading__eyebrow">Step 2</p>
-                  <h2 class="ikea-section-heading__title">含めたい条件</h2>
+                  <p class="catalog-section-heading__eyebrow">Step 2</p>
+                  <h2 class="catalog-section-heading__title">含めたい条件</h2>
                 </div>
               </div>
-              <div class="ikea-builder-groups" data-builder-include-groups></div>
+              <div class="catalog-builder-groups" data-builder-include-groups></div>
             </section>
-            <section class="ikea-builder-card">
-              <div class="ikea-section-heading">
+            <section class="catalog-builder-card">
+              <div class="catalog-section-heading">
                 <div>
-                  <p class="ikea-section-heading__eyebrow">Step 3</p>
-                  <h2 class="ikea-section-heading__title">外したい条件</h2>
+                  <p class="catalog-section-heading__eyebrow">Step 3</p>
+                  <h2 class="catalog-section-heading__title">外したい条件</h2>
                 </div>
               </div>
-              <div class="ikea-builder-groups" data-builder-exclude-groups></div>
+              <div class="catalog-builder-groups" data-builder-exclude-groups></div>
             </section>
           </section>
-          <aside class="ikea-builder-side">
-            <section class="ikea-builder-card ikea-builder-card--sticky">
-              <div class="ikea-section-heading">
+          <aside class="catalog-builder-side">
+            <section class="catalog-builder-card catalog-builder-card--sticky">
+              <div class="catalog-section-heading">
                 <div>
-                  <p class="ikea-section-heading__eyebrow">Preview</p>
-                  <h2 class="ikea-section-heading__title" data-builder-preview-title>候補を計算中</h2>
+                  <p class="catalog-section-heading__eyebrow">Preview</p>
+                  <h2 class="catalog-section-heading__title" data-builder-preview-title>候補を計算中</h2>
                 </div>
               </div>
-              <p class="ikea-builder-preview__summary" data-builder-preview-summary></p>
-              <div class="ikea-pill-cloud" data-builder-active></div>
-              <div class="ikea-mini-stack" data-builder-preview-works></div>
-              <div class="ikea-builder-preview__actions">
-                <a href="/finder/" class="ikea-builder-preview__primary" data-builder-open-results>この条件で一覧を見る</a>
+              <p class="catalog-builder-preview__summary" data-builder-preview-summary></p>
+              <div class="catalog-pill-cloud" data-builder-active></div>
+              <div class="catalog-mini-stack" data-builder-preview-works></div>
+              <div class="catalog-builder-preview__actions">
+                <a href="/finder/" class="catalog-builder-preview__primary" data-builder-open-results>この条件で一覧を見る</a>
                 <button type="button" data-builder-save-search>条件を保存</button>
                 <button type="button" data-builder-copy-link>共有URLをコピー</button>
                 <button type="button" data-builder-clear>最初からやり直す</button>
@@ -1044,14 +1044,14 @@
 
   const mountFinderSkeleton = (root) => {
     if (root.dataset.finderMounted) return;
-    root.className = "main ikea-main ikea-search-page";
+    root.className = "main catalog-main catalog-search-page";
     root.innerHTML = `
-      <div class="ikea-page-shell ikea-search-shell">
-        <div class="ikea-search-layout">
-          <aside class="ikea-search-sidebar">
-            <section class="ikea-search-sidebar__card" data-finder-quick-filters></section>
-            <section class="ikea-search-sidebar__card ikea-search-sidebar__card--compact">
-              <label class="ikea-search-sidebar__field">
+      <div class="catalog-page-shell catalog-search-shell">
+        <div class="catalog-search-layout">
+          <aside class="catalog-search-sidebar">
+            <section class="catalog-search-sidebar__card" data-finder-quick-filters></section>
+            <section class="catalog-search-sidebar__card catalog-search-sidebar__card--compact">
+              <label class="catalog-search-sidebar__field">
                 <span>並び替え</span>
                 <select data-finder-sort>
                   <option value="recommended">ベストマッチ</option>
@@ -1060,48 +1060,48 @@
                   <option value="title">名前順</option>
                 </select>
               </label>
-              <p class="ikea-search-sidebar__help" data-finder-sort-note></p>
+              <p class="catalog-search-sidebar__help" data-finder-sort-note></p>
             </section>
           </aside>
-          <section class="ikea-search-results">
+          <section class="catalog-search-results">
             <p aria-live="assertive" class="sr-only" data-finder-a11y-live></p>
-            <div class="ikea-search-results__toolbar">
+            <div class="catalog-search-results__toolbar">
               <div>
                 <h2>結果リスト</h2>
                 <p data-finder-status>条件なし</p>
               </div>
             </div>
-            <section class="ikea-search-results__compare" data-finder-compare hidden id="compare-tray">
-              <div class="ikea-section-heading">
+            <section class="catalog-search-results__compare" data-finder-compare hidden id="compare-tray">
+              <div class="catalog-section-heading">
                 <div>
-                  <p class="ikea-section-heading__eyebrow">Compare tray</p>
-                  <h2 class="ikea-section-heading__title">候補を見比べる</h2>
+                  <p class="catalog-section-heading__eyebrow">Compare tray</p>
+                  <h2 class="catalog-section-heading__title">候補を見比べる</h2>
                 </div>
                 <button type="button" data-compare-clear>比較をクリア</button>
               </div>
-              <div class="ikea-mini-stack" data-compare-items></div>
+              <div class="catalog-mini-stack" data-compare-items></div>
               <div class="plp-compare-grid" data-compare-grid></div>
             </section>
-            <section class="ikea-search-results__empty" data-finder-empty hidden>
+            <section class="catalog-search-results__empty" data-finder-empty hidden>
               <h2>一致する作品が見つかりません</h2>
               <p>条件を絞りすぎている可能性があります。下の緩和候補から近い条件の作品を探してください。</p>
               <div class="finder-relax-list" data-finder-rescue></div>
-              <div class="ikea-search-empty-grid">
-                <div class="ikea-search-empty-grid__column">
+              <div class="catalog-search-empty-grid">
+                <div class="catalog-search-empty-grid__column">
                   <h3>入口特集</h3>
-                  <div class="ikea-mini-stack" data-finder-empty-collections></div>
+                  <div class="catalog-mini-stack" data-finder-empty-collections></div>
                 </div>
-                <div class="ikea-search-empty-grid__column">
+                <div class="catalog-search-empty-grid__column">
                   <h3>最近見た作品</h3>
-                  <div class="ikea-mini-stack" data-finder-empty-recent></div>
+                  <div class="catalog-mini-stack" data-finder-empty-recent></div>
                 </div>
-                <div class="ikea-search-empty-grid__column">
+                <div class="catalog-search-empty-grid__column">
                   <h3>助けが必要なとき</h3>
-                  <div class="ikea-mini-stack" data-finder-empty-help></div>
+                  <div class="catalog-mini-stack" data-finder-empty-help></div>
                 </div>
               </div>
             </section>
-            <div class="ikea-product-grid ikea-product-grid--search" id="product-list" data-finder-results></div>
+            <div class="catalog-product-grid catalog-product-grid--search" id="product-list" data-finder-results></div>
           </section>
         </div>
       </div>
@@ -1317,7 +1317,7 @@
   }) => {
     const button = createElement(
       "button",
-      `ikea-quick-filter-chip${className ? ` ${className}` : ""}`,
+      `catalog-quick-filter-chip${className ? ` ${className}` : ""}`,
       label
     );
     button.type = "button";
@@ -1334,14 +1334,14 @@
     selected = false,
     dataset = {},
   }) => {
-    const button = createElement("button", "ikea-quick-filter-bodyButton");
+    const button = createElement("button", "catalog-quick-filter-bodyButton");
     button.type = "button";
     button.setAttribute("aria-pressed", String(selected));
     Object.entries(dataset).forEach(([key, value]) => {
       button.dataset[key] = value;
     });
 
-    const imageWrap = createElement("span", "ikea-quick-filter-bodyButton__image");
+    const imageWrap = createElement("span", "catalog-quick-filter-bodyButton__image");
     if (imageSrc) {
       const image = document.createElement("img");
       image.src = imageSrc;
@@ -1350,12 +1350,12 @@
       image.decoding = "async";
       imageWrap.appendChild(image);
     } else {
-      imageWrap.appendChild(createElement("span", "ikea-quick-filter-bodyButton__fallback", label));
+      imageWrap.appendChild(createElement("span", "catalog-quick-filter-bodyButton__fallback", label));
     }
 
     button.append(
       imageWrap,
-      createElement("span", "ikea-quick-filter-bodyButton__label", label)
+      createElement("span", "catalog-quick-filter-bodyButton__label", label)
     );
     return button;
   };
@@ -1474,19 +1474,19 @@
     pageState = {},
   }) => {
     const meta = getDiscoveryCardMeta({ work, tagMap, pageState, reason });
-    const article = createElement("article", "plp-product-card ikea-product-card");
-    const mediaLink = createElement("a", "ikea-product-card__mediaLink");
-    const media = createElement("div", "ikea-product-card__media");
-    const body = createElement("div", "ikea-product-card__body");
-    const formatLabel = createElement("p", "ikea-product-card__subtitle", work.format || "作品");
-    const title = createElement("a", "ikea-product-card__title", work.title);
+    const article = createElement("article", "plp-product-card catalog-product-card");
+    const mediaLink = createElement("a", "catalog-product-card__mediaLink");
+    const media = createElement("div", "catalog-product-card__media");
+    const body = createElement("div", "catalog-product-card__body");
+    const formatLabel = createElement("p", "catalog-product-card__subtitle", work.format || "作品");
+    const title = createElement("a", "catalog-product-card__title", work.title);
     const subtitle = createElement(
       "p",
-      "ikea-product-card__detail",
+      "catalog-product-card__detail",
       work.creator || "サンプル作者"
     );
-    const metaRow = createElement("div", "ikea-product-card__metaRow");
-    const actionRow = createElement("div", "ikea-product-card__actionRow");
+    const metaRow = createElement("div", "catalog-product-card__metaRow");
+    const actionRow = createElement("div", "catalog-product-card__actionRow");
     const favoriteSet = new Set(ensureArray(uiState.favoriteWorkIds));
     const summaryText = reason || work.matchSummary || work.shortDescription || work.publicNote || "";
 
@@ -1499,13 +1499,13 @@
     title.dataset.workId = work.id;
 
     if (meta.badge) {
-      media.appendChild(createElement("span", "ikea-product-card__badge", meta.badge));
+      media.appendChild(createElement("span", "catalog-product-card__badge", meta.badge));
     }
     media.appendChild(createProductCardMediaVisual({ work, meta, card: article }));
     mediaLink.appendChild(media);
 
     meta.metaItems.forEach((item) => {
-      metaRow.appendChild(createElement("span", "ikea-product-card__metaItem", item));
+      metaRow.appendChild(createElement("span", "catalog-product-card__metaItem", item));
     });
 
     if (showActions) {
@@ -1520,7 +1520,7 @@
     }
 
     body.append(formatLabel, title, subtitle, metaRow);
-    if (summaryText) body.appendChild(createElement("p", "ikea-product-card__reason", summaryText));
+    if (summaryText) body.appendChild(createElement("p", "catalog-product-card__reason", summaryText));
     if (showActions) body.appendChild(actionRow);
     article.append(mediaLink, body);
     return article;
@@ -1626,21 +1626,21 @@
   const createArticleCard = ({ article, pageState = {}, articleApi }) => {
     const meta = getArticleCardMeta({ article, pageState });
     const reason = getArticleMatchReason(article, pageState, articleApi);
-    const card = createElement("article", "plp-product-card ikea-product-card");
-    const mediaLink = createElement("a", "ikea-product-card__mediaLink");
-    const media = createElement("div", "ikea-product-card__media");
-    const body = createElement("div", "ikea-product-card__body");
-    const title = createElement("a", "ikea-product-card__title", article.title || "記事タイトル");
+    const card = createElement("article", "plp-product-card catalog-product-card");
+    const mediaLink = createElement("a", "catalog-product-card__mediaLink");
+    const media = createElement("div", "catalog-product-card__media");
+    const body = createElement("div", "catalog-product-card__body");
+    const title = createElement("a", "catalog-product-card__title", article.title || "記事タイトル");
     const subtitle = createElement(
       "p",
-      "ikea-product-card__subtitle",
+      "catalog-product-card__subtitle",
       [article.type || "特集記事", article.publishedAt ? `公開 ${formatDateLabel(article.publishedAt)}` : ""]
         .filter(Boolean)
         .join("、")
     );
-    const detail = createElement("p", "ikea-product-card__detail", article.summary || "");
-    const metaRow = createElement("div", "ikea-product-card__metaRow");
-    const swatchLabel = createElement("p", "ikea-product-card__swatchLabel", "近い切り口や次に読む記事");
+    const detail = createElement("p", "catalog-product-card__detail", article.summary || "");
+    const metaRow = createElement("div", "catalog-product-card__metaRow");
+    const swatchLabel = createElement("p", "catalog-product-card__swatchLabel", "近い切り口や次に読む記事");
     const affinityLinks = createAffinityLinks(meta.relatedLinks);
     const href = article.url || createArticlesUrl();
 
@@ -1648,18 +1648,18 @@
     title.href = href;
 
     if (meta.badge) {
-      media.appendChild(createElement("span", "ikea-product-card__badge", meta.badge));
+      media.appendChild(createElement("span", "catalog-product-card__badge", meta.badge));
     }
     media.appendChild(createProductCardMediaVisual({ work: article, meta, card }));
     mediaLink.appendChild(media);
 
     meta.metaItems.forEach((item) => {
-      metaRow.appendChild(createElement("span", "ikea-product-card__metaItem", item));
+      metaRow.appendChild(createElement("span", "catalog-product-card__metaItem", item));
     });
 
     if (meta.matchLabels.length) body.appendChild(createMatchTagList(meta.matchLabels));
     body.append(title, subtitle, detail, metaRow);
-    if (reason) body.appendChild(createElement("p", "ikea-product-card__reason", reason));
+    if (reason) body.appendChild(createElement("p", "catalog-product-card__reason", reason));
     if (meta.relatedLinks.length) body.append(swatchLabel, affinityLinks);
     card.append(mediaLink, body);
     return card;
@@ -1711,7 +1711,7 @@
   };
 
   const renderHomePage = () => {
-    const root = document.querySelector("[data-home-ikea-page]");
+    const root = document.querySelector("[data-home-catalog-page]");
     if (!root) return;
     mountHomeSkeleton(root);
 
@@ -2064,7 +2064,7 @@
   };
 
   const renderFinderPage = () => {
-    const root = document.querySelector("[data-finder-ikea-page]");
+    const root = document.querySelector("[data-finder-catalog-page]");
     if (!root) return;
     mountFinderSkeleton(root);
 
@@ -2108,7 +2108,7 @@
     const modeButtons = Array.from(root.querySelectorAll("[data-finder-mode]"));
     let paginationRoot = root.querySelector("[data-finder-pagination]");
     if (!paginationRoot && resultsRoot) {
-      paginationRoot = createElement("nav", "ikea-article-pagination");
+      paginationRoot = createElement("nav", "catalog-article-pagination");
       paginationRoot.dataset.finderPagination = "true";
       paginationRoot.setAttribute("aria-label", "作品ページ送り");
       resultsRoot.insertAdjacentElement("afterend", paginationRoot);
@@ -2233,7 +2233,7 @@
     }) => {
       const button = createElement(
         "button",
-        `ikea-article-pagination__button${current ? " is-current" : ""}`,
+        `catalog-article-pagination__button${current ? " is-current" : ""}`,
         label
       );
       button.type = "button";
@@ -2259,10 +2259,10 @@
       const endIndex = Math.min(currentPage * FINDER_RESULTS_PER_PAGE, totalCount);
       const summary = createElement(
         "p",
-        "ikea-article-pagination__summary",
+        "catalog-article-pagination__summary",
         `${totalCount}件中 ${startIndex}-${endIndex}件を表示`
       );
-      const controls = createElement("div", "ikea-article-pagination__controls");
+      const controls = createElement("div", "catalog-article-pagination__controls");
 
       controls.appendChild(
         createFinderPaginationButton({
@@ -2352,52 +2352,52 @@
       const existing = document.querySelector("[data-finder-tag-picker]");
       if (existing) return existing;
 
-      const picker = createElement("div", "ikea-tag-picker");
+      const picker = createElement("div", "catalog-tag-picker");
       picker.hidden = true;
       picker.dataset.finderTagPicker = "true";
       picker.dataset.open = "false";
       picker.setAttribute("aria-hidden", "true");
 
-      const backdrop = createElement("button", "ikea-tag-picker__backdrop");
+      const backdrop = createElement("button", "catalog-tag-picker__backdrop");
       backdrop.type = "button";
       backdrop.dataset.tagPickerClose = "true";
       backdrop.setAttribute("aria-label", "タグ選択を閉じる");
 
-      const panel = createElement("div", "ikea-tag-picker__panel");
+      const panel = createElement("div", "catalog-tag-picker__panel");
       panel.setAttribute("role", "dialog");
       panel.setAttribute("aria-modal", "true");
       panel.setAttribute("aria-labelledby", "finder-tag-picker-title");
 
-      const header = createElement("div", "ikea-tag-picker__header");
-      const heading = createElement("div", "ikea-tag-picker__heading");
-      const eyebrow = createElement("p", "ikea-tag-picker__eyebrow", "タグ選択");
-      const title = createElement("h2", "ikea-tag-picker__title");
+      const header = createElement("div", "catalog-tag-picker__header");
+      const heading = createElement("div", "catalog-tag-picker__heading");
+      const eyebrow = createElement("p", "catalog-tag-picker__eyebrow", "タグ選択");
+      const title = createElement("h2", "catalog-tag-picker__title");
       title.id = "finder-tag-picker-title";
       title.dataset.tagPickerTitle = "true";
-      const lead = createElement("p", "ikea-tag-picker__lead");
+      const lead = createElement("p", "catalog-tag-picker__lead");
       lead.dataset.tagPickerLead = "true";
       heading.append(eyebrow, title, lead);
 
-      const closeButton = createElement("button", "ikea-tag-picker__close");
+      const closeButton = createElement("button", "catalog-tag-picker__close");
       closeButton.type = "button";
       closeButton.dataset.tagPickerClose = "true";
       closeButton.setAttribute("aria-label", "タグ選択を閉じる");
       closeButton.appendChild(createIcon("delete"));
       header.append(heading, closeButton);
 
-      const body = createElement("div", "ikea-tag-picker__body");
-      const searchField = createElement("label", "ikea-tag-picker__searchField");
-      const searchLabel = createElement("span", "ikea-tag-picker__searchLabel", "タグ検索");
-      const searchInput = createElement("input", "ikea-tag-picker__searchInput");
+      const body = createElement("div", "catalog-tag-picker__body");
+      const searchField = createElement("label", "catalog-tag-picker__searchField");
+      const searchLabel = createElement("span", "catalog-tag-picker__searchLabel", "タグ検索");
+      const searchInput = createElement("input", "catalog-tag-picker__searchInput");
       searchInput.type = "search";
       searchInput.placeholder = "タグ名や関連語で検索";
       searchInput.dataset.tagPickerQuery = "true";
       searchInput.setAttribute("aria-label", "タグ検索");
       searchField.append(searchLabel, searchInput);
 
-      const count = createElement("p", "ikea-tag-picker__count");
+      const count = createElement("p", "catalog-tag-picker__count");
       count.dataset.tagPickerCount = "true";
-      const results = createElement("div", "ikea-tag-picker__results");
+      const results = createElement("div", "catalog-tag-picker__results");
       results.dataset.tagPickerResults = "true";
       body.append(searchField, count, results);
 
@@ -2484,20 +2484,20 @@
 
       if (!filteredGroups.length) {
         results.appendChild(
-          createElement("p", "ikea-tag-picker__empty", "一致するタグはありません。")
+          createElement("p", "catalog-tag-picker__empty", "一致するタグはありません。")
         );
         return;
       }
 
       filteredGroups.forEach((group) => {
-        const section = createElement("section", "ikea-tag-picker__group");
-        const groupHeader = createElement("div", "ikea-tag-picker__groupHeader");
+        const section = createElement("section", "catalog-tag-picker__group");
+        const groupHeader = createElement("div", "catalog-tag-picker__groupHeader");
         groupHeader.append(
-          createElement("h3", "ikea-tag-picker__groupTitle", group.label),
-          createElement("p", "ikea-tag-picker__groupCount", `${group.tags.length}件`)
+          createElement("h3", "catalog-tag-picker__groupTitle", group.label),
+          createElement("p", "catalog-tag-picker__groupCount", `${group.tags.length}件`)
         );
 
-        const row = createElement("div", "ikea-tag-picker__chipRow");
+        const row = createElement("div", "catalog-tag-picker__chipRow");
         group.tags.forEach((tag) => {
           row.appendChild(
             createQuickFilterChip({
@@ -2524,40 +2524,40 @@
       const quickSummary = getQuickFilterSummary(pageState, tagMap);
       const character = normalizeCharacters(pageState.characters)[0];
 
-      const wrapper = createElement("div", "ikea-quick-filters");
-      const header = createElement("div", "ikea-quick-filters__header");
-      const headingBlock = createElement("div", "ikea-quick-filters__heading");
+      const wrapper = createElement("div", "catalog-quick-filters");
+      const header = createElement("div", "catalog-quick-filters__header");
+      const headingBlock = createElement("div", "catalog-quick-filters__heading");
       headingBlock.append(
-        createElement("p", "ikea-quick-filters__eyebrow", "フィルター"),
+        createElement("p", "catalog-quick-filters__eyebrow", "フィルター"),
         createElement("h2", "", "キャラクターフィルター")
       );
       header.append(
         headingBlock,
         createActionButton({
           label: "すべて解除",
-          className: "ikea-quick-filters__clear",
+          className: "catalog-quick-filters__clear",
           dataset: { quickFiltersClear: "true" },
         })
       );
 
-      const summary = createElement("p", "ikea-quick-filters__summary", quickSummary);
+      const summary = createElement("p", "catalog-quick-filters__summary", quickSummary);
 
-      const characterCard = createElement("section", "ikea-quick-character-card");
-      const characterHeader = createElement("div", "ikea-quick-character-card__header");
+      const characterCard = createElement("section", "catalog-quick-character-card");
+      const characterHeader = createElement("div", "catalog-quick-character-card__header");
       characterHeader.appendChild(
-        createElement("strong", "ikea-quick-character-card__title", "キャラ 1")
+        createElement("strong", "catalog-quick-character-card__title", "キャラ 1")
       );
       characterCard.appendChild(characterHeader);
 
-      const speciesField = createElement("section", "ikea-quick-filter-field");
-      const speciesLabelRow = createElement("div", "ikea-quick-filter-field__labelRow");
-      const searchMoreLink = createElement("a", "ikea-quick-filter-field__link", "もっと探す");
+      const speciesField = createElement("section", "catalog-quick-filter-field");
+      const speciesLabelRow = createElement("div", "catalog-quick-filter-field__labelRow");
+      const searchMoreLink = createElement("a", "catalog-quick-filter-field__link", "もっと探す");
       searchMoreLink.href = getQuickFilterBuilderHref(pageState);
       speciesLabelRow.append(
-        createElement("strong", "ikea-quick-filter-field__label", "種族"),
+        createElement("strong", "catalog-quick-filter-field__label", "種族"),
         searchMoreLink
       );
-      const speciesRow = createElement("div", "ikea-quick-filter-chipRow");
+      const speciesRow = createElement("div", "catalog-quick-filter-chipRow");
       QUICK_FILTER_SPECIES_TAG_IDS.forEach((tagId) => {
         const tag = tagMap.get(tagId);
         if (!tag) return;
@@ -2574,9 +2574,9 @@
       });
       speciesField.append(speciesLabelRow, speciesRow);
 
-      const bodyField = createElement("section", "ikea-quick-filter-field");
-      bodyField.appendChild(createElement("strong", "ikea-quick-filter-field__label", "体型"));
-      const bodyGrid = createElement("div", "ikea-quick-filter-bodyGrid");
+      const bodyField = createElement("section", "catalog-quick-filter-field");
+      bodyField.appendChild(createElement("strong", "catalog-quick-filter-field__label", "体型"));
+      const bodyGrid = createElement("div", "catalog-quick-filter-bodyGrid");
       QUICK_FILTER_BODY_OPTIONS.forEach((option) => {
         bodyGrid.appendChild(
           createQuickFilterBodyButton({
@@ -2592,9 +2592,9 @@
       });
       bodyField.appendChild(bodyGrid);
 
-      const ageField = createElement("section", "ikea-quick-filter-field");
-      ageField.appendChild(createElement("strong", "ikea-quick-filter-field__label", "年齢"));
-      const ageRow = createElement("div", "ikea-quick-filter-chipRow");
+      const ageField = createElement("section", "catalog-quick-filter-field");
+      ageField.appendChild(createElement("strong", "catalog-quick-filter-field__label", "年齢"));
+      const ageRow = createElement("div", "catalog-quick-filter-chipRow");
       QUICK_FILTER_AGE_OPTIONS.forEach((option) => {
         const tag = tagMap.get(option.tagId);
         if (!tag) return;
@@ -2613,9 +2613,9 @@
 
       characterCard.append(speciesField, bodyField, ageField);
 
-      const includeField = createElement("section", "ikea-quick-filter-field");
-      includeField.appendChild(createElement("strong", "ikea-quick-filter-field__label", "含めるタグ"));
-      const includeRow = createElement("div", "ikea-quick-filter-chipRow");
+      const includeField = createElement("section", "catalog-quick-filter-field");
+      includeField.appendChild(createElement("strong", "catalog-quick-filter-field__label", "含めるタグ"));
+      const includeRow = createElement("div", "catalog-quick-filter-chipRow");
       getQuickTagPreview("include").forEach((tag) => {
         includeRow.appendChild(
           createQuickFilterChip({
@@ -2628,14 +2628,14 @@
           })
         );
       });
-      const includeMoreButton = createElement("button", "ikea-quick-filter-field__more", "もっと見る");
+      const includeMoreButton = createElement("button", "catalog-quick-filter-field__more", "もっと見る");
       includeMoreButton.type = "button";
       includeMoreButton.dataset.quickTagPickerOpen = "include";
       includeField.append(includeRow, includeMoreButton);
 
-      const excludeField = createElement("section", "ikea-quick-filter-field");
-      excludeField.appendChild(createElement("strong", "ikea-quick-filter-field__label", "除外タグ"));
-      const excludeRow = createElement("div", "ikea-quick-filter-chipRow");
+      const excludeField = createElement("section", "catalog-quick-filter-field");
+      excludeField.appendChild(createElement("strong", "catalog-quick-filter-field__label", "除外タグ"));
+      const excludeRow = createElement("div", "catalog-quick-filter-chipRow");
       getQuickTagPreview("exclude").forEach((tag) => {
         excludeRow.appendChild(
           createQuickFilterChip({
@@ -2649,7 +2649,7 @@
           })
         );
       });
-      const excludeMoreButton = createElement("button", "ikea-quick-filter-field__more", "もっと見る");
+      const excludeMoreButton = createElement("button", "catalog-quick-filter-field__more", "もっと見る");
       excludeMoreButton.type = "button";
       excludeMoreButton.dataset.quickTagPickerOpen = "exclude";
       excludeField.append(excludeRow, excludeMoreButton);
@@ -2851,7 +2851,7 @@
         }
       }
       if (!activeRoot.childElementCount) {
-        activeRoot.appendChild(createElement("span", "ikea-pill ikea-pill--muted", "条件なし"));
+        activeRoot.appendChild(createElement("span", "catalog-pill catalog-pill--muted", "条件なし"));
       }
     };
 
@@ -2966,7 +2966,7 @@
 
       promotedWrap.hidden = promoted.length === 0;
       promoted.forEach(({ tag, count }) => {
-        const button = createElement("button", "ikea-promoted-filter", `${tag.label} (${count})`);
+        const button = createElement("button", "catalog-promoted-filter", `${tag.label} (${count})`);
         button.type = "button";
         button.dataset.promotedTagId = tag.id;
         promotedRoot.appendChild(button);
@@ -3477,7 +3477,7 @@
           const nextPage = Math.max(Number.parseInt(pageButton.dataset.finderPageTarget || "1", 10) || 1, 1);
           pageState.page = nextPage;
           applyAndRender();
-          root.querySelector(".ikea-search-results__toolbar")?.scrollIntoView({
+          root.querySelector(".catalog-search-results__toolbar")?.scrollIntoView({
             behavior: "smooth",
             block: "start",
           });
@@ -3672,7 +3672,7 @@
   };
 
   const renderArticlesPage = () => {
-    const root = document.querySelector("[data-articles-ikea-page]");
+    const root = document.querySelector("[data-articles-catalog-page]");
     if (!root) return;
 
     const articleApi = articleSearch || globalThis.ArticleSearch;
@@ -3697,15 +3697,15 @@
     const categoryRoot = root.querySelector("[data-finder-categories]");
     const relatedRoot = root.querySelector("[data-finder-related-searches]");
     const compareRoot = root.querySelector("[data-finder-compare]");
-    const categorySection = categoryRoot?.closest(".ikea-search-section");
-    const relatedSection = relatedRoot?.closest(".ikea-search-section");
-    const toolbarHeading = root.querySelector(".ikea-search-results__toolbar h2");
+    const categorySection = categoryRoot?.closest(".catalog-search-section");
+    const relatedSection = relatedRoot?.closest(".catalog-search-section");
+    const toolbarHeading = root.querySelector(".catalog-search-results__toolbar h2");
     const emptyTitle = emptyRoot?.querySelector("h2");
     const emptyDescription = emptyRoot?.querySelector("p");
-    const emptyColumnHeadings = emptyRoot?.querySelectorAll(".ikea-search-empty-grid__column h3") || [];
+    const emptyColumnHeadings = emptyRoot?.querySelectorAll(".catalog-search-empty-grid__column h3") || [];
     let paginationRoot = root.querySelector("[data-article-pagination]");
     if (!paginationRoot && resultsRoot) {
-      paginationRoot = createElement("nav", "ikea-article-pagination");
+      paginationRoot = createElement("nav", "catalog-article-pagination");
       paginationRoot.dataset.articlePagination = "true";
       paginationRoot.setAttribute("aria-label", "記事ページ送り");
       resultsRoot.insertAdjacentElement("afterend", paginationRoot);
@@ -3798,38 +3798,38 @@
     const renderQuickFilters = () => {
       quickFiltersRoot.textContent = "";
 
-      const wrapper = createElement("div", "ikea-quick-filters ikea-quick-filters--articles");
-      const header = createElement("div", "ikea-quick-filters__header");
-      const headingBlock = createElement("div", "ikea-quick-filters__heading");
+      const wrapper = createElement("div", "catalog-quick-filters catalog-quick-filters--articles");
+      const header = createElement("div", "catalog-quick-filters__header");
+      const headingBlock = createElement("div", "catalog-quick-filters__heading");
       headingBlock.append(
-        createElement("p", "ikea-quick-filters__eyebrow", "フィルター"),
+        createElement("p", "catalog-quick-filters__eyebrow", "フィルター"),
         createElement("h2", "", "記事フィルター")
       );
       header.append(
         headingBlock,
         createActionButton({
           label: "すべて解除",
-          className: "ikea-quick-filters__clear",
+          className: "catalog-quick-filters__clear",
           dataset: { articleClear: "true" },
         })
       );
 
-      const summary = createElement("p", "ikea-quick-filters__summary", getArticleSearchSummaryLabel(pageState));
+      const summary = createElement("p", "catalog-quick-filters__summary", getArticleSearchSummaryLabel(pageState));
 
-      const queryField = createElement("section", "ikea-quick-filter-field");
-      const queryLabel = createElement("strong", "ikea-quick-filter-field__label", "記事名・タグ");
+      const queryField = createElement("section", "catalog-quick-filter-field");
+      const queryLabel = createElement("strong", "catalog-quick-filter-field__label", "記事名・タグ");
       const queryInput = document.createElement("input");
       queryInput.type = "search";
       queryInput.autocomplete = "off";
-      queryInput.className = "ikea-quick-filter-input";
+      queryInput.className = "catalog-quick-filter-input";
       queryInput.placeholder = "例: 比較 / CTA / 構成";
       queryInput.value = pageState.query;
       queryInput.dataset.articleQuery = "true";
       queryField.append(queryLabel, queryInput);
 
-      const typeField = createElement("section", "ikea-quick-filter-field");
-      typeField.appendChild(createElement("strong", "ikea-quick-filter-field__label", "記事タイプ"));
-      const typeRow = createElement("div", "ikea-quick-filter-chipRow");
+      const typeField = createElement("section", "catalog-quick-filter-field");
+      typeField.appendChild(createElement("strong", "catalog-quick-filter-field__label", "記事タイプ"));
+      const typeRow = createElement("div", "catalog-quick-filter-chipRow");
       filterOptions.types.forEach((typeOption) => {
         typeRow.appendChild(
           createQuickFilterChip({
@@ -3843,9 +3843,9 @@
       });
       typeField.appendChild(typeRow);
 
-      const tagField = createElement("section", "ikea-quick-filter-field");
-      tagField.appendChild(createElement("strong", "ikea-quick-filter-field__label", "タグ"));
-      const tagRow = createElement("div", "ikea-quick-filter-chipRow");
+      const tagField = createElement("section", "catalog-quick-filter-field");
+      tagField.appendChild(createElement("strong", "catalog-quick-filter-field__label", "タグ"));
+      const tagRow = createElement("div", "catalog-quick-filter-chipRow");
       filterOptions.tags.slice(0, 14).forEach((tagOption) => {
         tagRow.appendChild(
           createQuickFilterChip({
@@ -3959,7 +3959,7 @@
     }) => {
       const button = createElement(
         "button",
-        `ikea-article-pagination__button${current ? " is-current" : ""}`,
+        `catalog-article-pagination__button${current ? " is-current" : ""}`,
         label
       );
       button.type = "button";
@@ -3985,10 +3985,10 @@
       const endIndex = Math.min(currentPage * ARTICLE_RESULTS_PER_PAGE, totalCount);
       const summary = createElement(
         "p",
-        "ikea-article-pagination__summary",
+        "catalog-article-pagination__summary",
         `${totalCount}件中 ${startIndex}-${endIndex}件を表示`
       );
-      const controls = createElement("div", "ikea-article-pagination__controls");
+      const controls = createElement("div", "catalog-article-pagination__controls");
 
       controls.appendChild(
         createArticlePaginationButton({
@@ -4107,7 +4107,7 @@
           const nextPage = Math.max(Number.parseInt(pageButton.dataset.articlePageTarget || "1", 10) || 1, 1);
           pageState.page = nextPage;
           applyAndRender();
-          root.querySelector(".ikea-search-results__toolbar")?.scrollIntoView({
+          root.querySelector(".catalog-search-results__toolbar")?.scrollIntoView({
             behavior: "smooth",
             block: "start",
           });
@@ -4134,7 +4134,7 @@
   };
 
   const renderBuilderPage = () => {
-    const root = document.querySelector("[data-builder-ikea-page]");
+    const root = document.querySelector("[data-builder-catalog-page]");
     if (!root) return;
     mountBuilderSkeleton(root);
 
@@ -4231,17 +4231,17 @@
     const renderBuilderGroupSet = (targetRoot, kind) => {
       targetRoot.textContent = "";
       groupedTags.forEach((group) => {
-        const section = createElement("section", "ikea-builder-group");
-        const title = createElement("div", "ikea-builder-group__title");
-        const chipRow = createElement("div", "ikea-builder-group__chips");
+        const section = createElement("section", "catalog-builder-group");
+        const title = createElement("div", "catalog-builder-group__title");
+        const chipRow = createElement("div", "catalog-builder-group__chips");
         title.append(
           createElement("strong", "", FILTER_LABEL_OVERRIDES[group.id] || group.label),
-          createElement("span", "ikea-builder-group__description", group.description || "")
+          createElement("span", "catalog-builder-group__description", group.description || "")
         );
         group.tags.forEach((tag) => {
           const chip = createElement(
             "button",
-            `ikea-builder-chip${
+            `catalog-builder-chip${
               (kind === "include" ? pageState.includeTagIds : pageState.excludeTagIds).includes(tag.id)
                 ? " is-active"
                 : ""
@@ -4282,7 +4282,7 @@
       });
       if (!items.length) items.push("条件なし");
       items.forEach((item) => {
-        activeRoot.appendChild(createElement("span", "ikea-pill", item));
+        activeRoot.appendChild(createElement("span", "catalog-pill", item));
       });
     };
 
