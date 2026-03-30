@@ -353,7 +353,7 @@ const renderEditorialFooter = () => `
   <footer class="footer editorial-footer">
     <div class="container editorial-footer__inner">
       <section class="editorial-footer__brand">
-        <p class="editorial-footer__eyebrow">Feature Finder</p>
+        <p class="editorial-footer__eyebrow">作品探索</p>
         <h2 data-site-brand>${escapeHtml(BRAND_NAME)}</h2>
         <p>特集記事、作品紹介、条件検索をまたいで、次に読むものと次に探す条件をひと続きにするための土台です。</p>
         <a class="btn btn--primary btn--sm" href="/finder/">作品検索へ</a>
@@ -538,7 +538,7 @@ const renderHomeSpotlightBanner = ({ profile, collection, work, relatedWorks = [
     </div>
     <span class="home-showcase-banner__scrim"></span>
     <div class="home-showcase-banner__copy">
-      <span class="home-showcase-banner__badge">Feature Finder</span>
+      <span class="home-showcase-banner__badge">注目導線</span>
       <strong class="home-showcase-banner__title">
         <span class="home-showcase-banner__titleLine">${escapeHtml(profile?.shortName || "ケモホモ")}</span>
         <span class="home-showcase-banner__titleLine">作品ファインダー</span>
@@ -566,7 +566,7 @@ const renderHomeCollageBanner = ({ collection, works = [] }) => `
     collection ? getCollectionPath(collection) : "/collections/"
   )}">
     <div class="home-showcase-banner__intro">
-      <span class="home-showcase-banner__badge home-showcase-banner__badge--light">Topics</span>
+      <span class="home-showcase-banner__badge home-showcase-banner__badge--light">特集</span>
       <div class="home-showcase-banner__yearTitle">
         <strong class="home-showcase-banner__yearNumber">${new Date().getFullYear()}</strong>
         <span class="home-showcase-banner__yearLabel">入口号</span>
@@ -583,10 +583,10 @@ const renderHomeCollageBanner = ({ collection, works = [] }) => `
 
 const renderHomePosterBanner = ({ article, work }) => `
   <a class="home-showcase-banner home-showcase-banner--poster" href="${escapeHtml(article?.url || "/articles/")}">
-    <span class="home-showcase-banner__badge home-showcase-banner__badge--pink">Guide</span>
+    <span class="home-showcase-banner__badge home-showcase-banner__badge--pink">記事</span>
     <div class="home-showcase-poster__headline">
-      <span>START</span>
-      <span>GUIDE</span>
+      <span>記事から</span>
+      <span>始める</span>
     </div>
     <p class="home-showcase-poster__note">まずは比較記事や使い方ガイドから入口を決めるためのまとめです。</p>
     <div class="home-showcase-poster__footer">
@@ -597,7 +597,7 @@ const renderHomePosterBanner = ({ article, work }) => `
 `;
 
 const renderHomeCompactBanner = ({
-  badge = "Topics",
+  badge = "特集",
   title = "",
   description = "",
   href = "/",
@@ -819,7 +819,7 @@ ${renderPrimaryNav("home")}
 <main id="main" class="main home-showcase-page" data-home-catalog-page>
   <div class="home-showcase-shell">
     <section class="card page-hero page-hero--support stack">
-      <p class="kicker">Condition Finder</p>
+      <p class="kicker">作品探索</p>
       <h1 class="h1">${escapeHtml(profile?.heroTitle || BRAND_NAME)}</h1>
       <p class="lead">${escapeHtml(homePageDescription)}</p>
       <p class="muted">入口語は広く、在庫は深く。特集、条件検索、詳細ページを行き来しながら、自分に合う作品へたどり着きやすくしています。</p>
@@ -864,8 +864,8 @@ ${renderPrimaryNav("home")}
         </div>
         <div class="home-showcase-hero__item home-showcase-hero__item--wide" data-hero-slide="3">
           ${renderHomeCompactBanner({
-            badge: "Builder",
-            title: "DETAIL\nBUILDER",
+            badge: "詳細条件",
+            title: "条件を\n細かく選ぶ",
             description: "タグ、作者、除外条件をまとめて組み立てる詳細条件ビルダー。",
             href: "/builder/",
             tone: "dark",
@@ -873,8 +873,8 @@ ${renderPrimaryNav("home")}
         </div>
         <div class="home-showcase-hero__item home-showcase-hero__item--medium" data-hero-slide="4">
           ${renderHomeCompactBanner({
-            badge: "Collection",
-            title: "SAFE\nFILTER",
+            badge: "除外条件",
+            title: "地雷を\n先に外す",
             description: safeCollection?.title || "強い地雷を避けたい時の入口特集。",
             href: safeCollection ? getCollectionPath(safeCollection) : "/collections/",
           })}
@@ -888,7 +888,7 @@ ${renderPrimaryNav("home")}
     </section>
 
     <section class="home-showcase-micro">
-      <p class="home-showcase-micro__eyebrow">Start Here</p>
+      <p class="home-showcase-micro__eyebrow">入口</p>
       <div class="home-showcase-micro__actions">
         ${renderHomeActionLink({ label: "作品検索へ", href: "/finder/", accent: true })}
         ${renderHomeActionLink({ label: "入口特集を見る", href: "/collections/" })}

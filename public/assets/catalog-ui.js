@@ -599,7 +599,7 @@
     form.append(field, submit);
 
     content.append(
-      createElement("span", "catalog-home-search-hero__eyebrow", "Search first"),
+      createElement("span", "catalog-home-search-hero__eyebrow", "まず探す"),
       createElement("h1", "catalog-home-search-hero__title", "何を探したいかを、そのまま入れる"),
       createElement(
         "p",
@@ -758,7 +758,7 @@
     });
 
     copy.append(
-      createElement("span", "home-showcase-banner__badge", "Feature Finder"),
+      createElement("span", "home-showcase-banner__badge", "注目導線"),
       title,
       createElement(
         "p",
@@ -784,7 +784,7 @@
     link.href = collection ? toCollectionPath(collection) : "/collections/";
     heading.append(year, label);
     intro.append(
-      createElement("span", "home-showcase-banner__badge home-showcase-banner__badge--light", "Topics"),
+      createElement("span", "home-showcase-banner__badge home-showcase-banner__badge--light", "特集"),
       heading,
       createElement(
         "p",
@@ -803,7 +803,7 @@
 
   const createHomeShowcasePosterBanner = ({ article, work }) => {
     const link = createElement("a", "home-showcase-banner home-showcase-banner--poster");
-    const badge = createElement("span", "home-showcase-banner__badge home-showcase-banner__badge--pink", "Guide");
+    const badge = createElement("span", "home-showcase-banner__badge home-showcase-banner__badge--pink", "記事");
     const headline = createElement("div", "home-showcase-poster__headline");
     const note = createElement("p", "home-showcase-poster__note");
     const footer = createElement("div", "home-showcase-poster__footer");
@@ -814,7 +814,7 @@
     );
 
     link.href = article?.url || "/articles/";
-    ["START", "GUIDE"].forEach((line) => {
+    ["記事から", "始める"].forEach((line) => {
       headline.appendChild(createElement("span", "", line));
     });
     note.textContent = "まずは特集とレビューから入口を決める。";
@@ -828,7 +828,7 @@
   };
 
   const createHomeShowcaseCompactBanner = ({
-    badge = "Topics",
+    badge = "特集",
     title = "",
     description = "",
     href = "/",
@@ -1832,8 +1832,8 @@
         {
           size: "wide",
           element: createHomeShowcaseCompactBanner({
-            badge: "Builder",
-            title: "DETAIL\nBUILDER",
+            badge: "詳細条件",
+            title: "条件を\n細かく選ぶ",
             description: "タグ、作者、除外条件をまとめて組み立てる詳細条件ビルダー。",
             href: "/builder/",
             tone: "dark",
@@ -1842,8 +1842,8 @@
         {
           size: "medium",
           element: createHomeShowcaseCompactBanner({
-            badge: "Collection",
-            title: "SAFE\nFILTER",
+            badge: "除外条件",
+            title: "地雷を\n先に外す",
             description: safeCollection?.title || "強い地雷を避けたい時の入口特集。",
             href: safeCollection ? toCollectionPath(safeCollection) : "/collections/",
           }),
