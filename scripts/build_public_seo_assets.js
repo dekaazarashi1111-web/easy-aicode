@@ -355,31 +355,31 @@ const renderEditorialFooter = () => `
       <section class="editorial-footer__brand">
         <p class="editorial-footer__eyebrow">Feature Finder</p>
         <h2 data-site-brand>${escapeHtml(BRAND_NAME)}</h2>
-        <p>条件検索、固定特集、記事ガイドを横断しながら、次に読む作品と次に試す条件を探しやすくするためのサイトです。</p>
+        <p>特集記事、作品紹介、条件検索をまたいで、次に読むものと次に探す条件をひと続きにするための土台です。</p>
         <a class="btn btn--primary btn--sm" href="/finder/">作品検索へ</a>
       </section>
       <div class="editorial-footer__column">
         <h3>探す</h3>
         <ul class="editorial-footer__links">
           <li><a href="/finder/">作品検索</a></li>
+          <li><a href="/builder/">詳細条件ビルダー</a></li>
           <li><a href="/collections/">特集一覧</a></li>
-          <li><a href="/articles/">特集記事</a></li>
         </ul>
       </div>
       <div class="editorial-footer__column">
-        <h3>使う</h3>
+        <h3>読む</h3>
         <ul class="editorial-footer__links">
-          <li><a href="/builder/">詳細条件ビルダー</a></li>
+          <li><a href="/articles/">特集記事</a></li>
+          <li><a href="/articles/comparison-template/">比較記事</a></li>
+          <li><a href="/articles/review-structure/">レビュー記事</a></li>
+        </ul>
+      </div>
+      <div class="editorial-footer__column">
+        <h3>運営</h3>
+        <ul class="editorial-footer__links">
           <li><a href="/contact/">お問い合わせ</a></li>
           <li><a href="/privacy">プライバシー</a></li>
-        </ul>
-      </div>
-      <div class="editorial-footer__column">
-        <h3>案内</h3>
-        <ul class="editorial-footer__links">
           <li><a href="/disclaimer">免責事項</a></li>
-          <li><a href="/collections/">入口特集</a></li>
-          <li><a href="/articles/">記事一覧</a></li>
         </ul>
       </div>
     </div>
@@ -388,8 +388,8 @@ const renderEditorialFooter = () => `
       <div class="editorial-footer__bottom-links">
         <a href="/">ホーム</a>
         <a href="/finder/">作品検索</a>
-        <a href="/collections/">特集</a>
-        <a href="/articles/">記事</a>
+        <a href="/collections/">特集一覧</a>
+        <a href="/articles/">記事一覧</a>
       </div>
     </div>
   </footer>
