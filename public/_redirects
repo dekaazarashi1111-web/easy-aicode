@@ -23,8 +23,8 @@
 /outbound/index.html /finder/ 301
 /apply /apply/?v=20260325 302
 /apply/index.html /apply/?v=20260325 302
-/privacy /privacy.html 301
+/privacy /privacy.html 200
 /work /work/ 301
 /work/index.html /work/ 301
-/disclaimer /disclaimer.html 301
+/disclaimer /disclaimer.html 200
 /* /404.html 404
