@@ -479,7 +479,6 @@ const getCurrentSection = (pathname = window.location.pathname) => {
 
 const NAV_ITEMS = [
   { href: "/finder/", label: "作品を探す", section: "finder" },
-  { href: "/collections/", label: "特集を見る", section: "collections" },
   { href: "/articles/", label: "特集記事", section: "articles" },
   { href: "/contact/", label: "お問い合わせ", section: "contact" },
 ];

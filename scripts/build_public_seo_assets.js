@@ -484,7 +484,6 @@ const renderPrimaryNav = (currentSection = "") => {
   const navItems = [
     { href: "/", label: "ホーム", section: "home" },
     { href: "/finder/", label: "作品検索", section: "finder" },
-    { href: "/collections/", label: "特集", section: "collections" },
     { href: "/articles/", label: "ガイド", section: "articles" },
   ];
 
@@ -1171,17 +1170,7 @@ ${renderHead({
 <body class="editorial-page editorial-page--work">
 ${GENERATED_MARK}
 <a class="skip-link" href="#main">本文へスキップ</a>
-<nav class="nav">
-  <div class="container nav__inner">
-    <a class="nav__brand" data-site-brand href="/">${escapeHtml(BRAND_NAME)}</a>
-    <div class="nav__links">
-      <a class="nav__link" href="/">ホーム</a>
-      <a class="nav__link" href="/finder/">作品検索</a>
-      <a class="nav__link" href="/collections/">特集</a>
-      <a class="nav__link" href="/articles/">ガイド</a>
-    </div>
-  </div>
-</nav>
+${renderPrimaryNav()}
 <main id="main">
   <section class="section section--tight">
     <div class="container stack stack--lg">
@@ -1390,17 +1379,7 @@ ${renderHead({
 <body>
 ${GENERATED_MARK}
 <a class="skip-link" href="#main">本文へスキップ</a>
-<nav class="nav">
-  <div class="container nav__inner">
-    <a class="nav__brand" data-site-brand href="/">${escapeHtml(BRAND_NAME)}</a>
-    <div class="nav__links">
-      <a class="nav__link" href="/">ホーム</a>
-      <a class="nav__link" href="/finder/">作品検索</a>
-      <a class="nav__link" href="/collections/" aria-current="page">特集</a>
-      <a class="nav__link" href="/articles/">ガイド</a>
-    </div>
-  </div>
-</nav>
+${renderPrimaryNav()}
 <main id="main">
   <section class="section section--tight">
     <div class="container stack stack--lg">
