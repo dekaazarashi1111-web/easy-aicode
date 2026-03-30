@@ -15,8 +15,8 @@
 - ガイド一覧: `public/articles/index.html` → `/articles/`
 - 運営方針: `public/about/index.html` → `/about/`
 - お問い合わせ: `public/contact/index.html` → `/contact/`
-- プライバシー: `public/privacy.html` → `/privacy.html`
-- 免責事項: `public/disclaimer.html` → `/disclaimer.html`
+- プライバシー: `public/privacy/` → `/privacy/`
+- 免責事項: `public/disclaimer/` → `/disclaimer/`
 
 ## 共通ファイル
 - CSS: `public/style.css`
