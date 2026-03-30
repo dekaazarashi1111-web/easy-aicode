@@ -59,65 +59,60 @@
 </nav>
 
 <main id="main">
-  <section class="section section--tight">
-    <div class="container stack stack--lg">
-      <div class="card page-hero page-hero--support stack">
-        <p class="kicker">Contact</p>
-        <h1 class="h1">お問い合わせ窓口</h1>
-        <p class="lead">
-          掲載修正、権利関係、運営連絡の窓口を整理して置くためのページです。公開前に実際のフォームやメール窓口へ差し替えてください。
-        </p>
-        <div class="tag-list">
-          <a class="tag" href="/privacy.html">プライバシー</a>
-          <a class="tag" href="/disclaimer.html">免責事項</a>
-          <a class="tag" href="/about/">運営方針</a>
+  <section class="section section--tight contact-simple-page">
+    <div class="container">
+      <div class="contact-simple-shell">
+        <div class="contact-simple-card">
+          <header class="contact-simple-header">
+            <span class="contact-simple-header__icon" aria-hidden="true">問</span>
+            <div class="contact-simple-header__body">
+              <p class="contact-simple-header__eyebrow">Contact</p>
+              <h1 class="h2">フォームによるお問い合わせ</h1>
+              <p class="muted">掲載修正、権利関係、運営連絡を受けるための、シンプルな窓口ページです。</p>
+            </div>
+          </header>
+
+          <section class="contact-simple-note" aria-label="案内">
+            <p>このページは仮フォームです。公開前に、実際のフォーム送信先またはメール窓口へ差し替えてください。</p>
+            <p class="muted">削除依頼や権利関係も、ここから同じ窓口で受ける前提にしています。</p>
+          </section>
+
+          <form class="contact-simple-form">
+            <label class="contact-simple-form__field">
+              <span>種別</span>
+              <select name="kind">
+                <option>選択してください</option>
+                <option>掲載修正について</option>
+                <option>権利関係・削除依頼</option>
+                <option>運営への連絡</option>
+              </select>
+            </label>
+
+            <label class="contact-simple-form__field">
+              <span>お名前</span>
+              <input type="text" name="name" placeholder="お名前を入力してください" />
+            </label>
+
+            <label class="contact-simple-form__field">
+              <span>メールアドレス</span>
+              <input type="email" name="email" placeholder="you@example.com" />
+            </label>
+
+            <label class="contact-simple-form__field">
+              <span>本文</span>
+              <textarea name="message" placeholder="内容を入力してください"></textarea>
+            </label>
+
+            <p class="contact-simple-form__hint">送信ボタンは見た目の仮置きです。実運用ではフォーム送信やメール導線へ接続してください。</p>
+            <button class="contact-simple-submit" type="button">送信する</button>
+          </form>
         </div>
-      </div>
 
-      <div class="page-layout">
-        <div class="page-main stack stack--lg">
-          <div class="booking-info-grid">
-            <div class="card stack">
-              <h2 class="h3">想定する受付内容</h2>
-              <ul class="list">
-                <li>掲載内容の修正依頼</li>
-                <li>権利関係や削除依頼</li>
-                <li>運営への連絡</li>
-              </ul>
-            </div>
-
-            <div class="card stack">
-              <h2 class="h3">公開前チェック</h2>
-              <ul class="list">
-                <li>問い合わせフォームまたはメール窓口の実装</li>
-                <li>返信できない内容の明記</li>
-                <li>プライバシーポリシー内の窓口情報との一致</li>
-              </ul>
-            </div>
-
-            <div class="card stack">
-              <h2 class="h3">対応の考え方</h2>
-              <p>削除依頼や権利関係は導線を分けずに受けられるようにし、窓口情報は固定ページ間で必ず一致させます。</p>
-            </div>
-          </div>
-        </div>
-
-        <aside class="page-rail">
-          <div class="card rail-card booking-sticky-card stack">
-            <p class="kicker">Related</p>
-            <h2 class="h3">関連ページ</h2>
-            <a class="btn btn--primary btn--sm" href="/privacy.html">プライバシーを見る</a>
-            <a class="btn btn--secondary btn--sm" href="/disclaimer.html">免責事項を見る</a>
-            <a class="btn btn--secondary btn--sm" href="/about/">運営方針を見る</a>
-            <div class="divider"></div>
-            <h3 class="h3">窓口設計の基準</h3>
-            <ul class="list list--compact">
-              <li>固定ページ間で文言と窓口を一致させる</li>
-              <li>削除依頼の受け皿を別立てにしない</li>
-              <li>返答できない内容を先に明示する</li>
-            </ul>
-          </div>
-        </aside>
+        <nav class="contact-simple-links" aria-label="関連ページ">
+          <a href="/privacy.html">プライバシー</a>
+          <a href="/disclaimer.html">免責事項</a>
+          <a href="/about/">運営方針</a>
+        </nav>
       </div>
     </div>
   </section>

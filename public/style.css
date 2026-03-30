@@ -2868,6 +2868,175 @@ body {
   padding: 1.15rem 1.2rem;
 }
 
+.contact-simple-page {
+  background: linear-gradient(180deg, #f4f7fb 0%, #eef2f6 100%);
+}
+
+.contact-simple-shell {
+  width: min(720px, 100%);
+  margin: 0 auto;
+  padding: clamp(0.75rem, 2vw, 1.5rem) 0 clamp(2.5rem, 5vw, 4rem);
+  display: grid;
+  gap: 1rem;
+}
+
+.contact-simple-card {
+  display: grid;
+  gap: 1.15rem;
+  padding: clamp(1.25rem, 2.8vw, 1.8rem);
+  border-radius: 28px;
+  background: #ffffff;
+  border: 1px solid rgba(222, 229, 238, 0.96);
+  box-shadow: 0 24px 60px rgba(45, 63, 92, 0.08);
+}
+
+.contact-simple-header {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.95rem;
+}
+
+.contact-simple-header__icon {
+  width: 48px;
+  height: 48px;
+  flex: 0 0 auto;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 16px;
+  background: #eef3f8;
+  color: #5f7088;
+  font-size: 1rem;
+  font-weight: 800;
+}
+
+.contact-simple-header__body {
+  display: grid;
+  gap: 0.35rem;
+}
+
+.contact-simple-header__eyebrow {
+  margin: 0;
+  color: #6a7b91;
+  font-size: 0.72rem;
+  font-weight: 800;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.contact-simple-header__body .h2 {
+  margin: 0;
+  font-size: clamp(1.45rem, 2.6vw, 1.8rem);
+}
+
+.contact-simple-header__body .muted {
+  margin: 0;
+  line-height: 1.7;
+}
+
+.contact-simple-note {
+  display: grid;
+  gap: 0.45rem;
+  padding: 1rem 1.05rem;
+  border-radius: 18px;
+  border: 1px solid #e8edf4;
+  background: #fafbfd;
+}
+
+.contact-simple-note p {
+  margin: 0;
+  line-height: 1.7;
+}
+
+.contact-simple-form {
+  display: grid;
+  gap: 0.95rem;
+}
+
+.contact-simple-form__field {
+  display: grid;
+  gap: 0.42rem;
+}
+
+.contact-simple-form__field span {
+  color: #273244;
+  font-size: 0.92rem;
+  font-weight: 800;
+}
+
+.contact-simple-form__field input,
+.contact-simple-form__field select,
+.contact-simple-form__field textarea {
+  width: 100%;
+  border: 1px solid #e5eaf1;
+  border-radius: 14px;
+  background: #fbfcfe;
+  color: #243042;
+  font: inherit;
+}
+
+.contact-simple-form__field input,
+.contact-simple-form__field select {
+  min-height: 50px;
+  padding: 0 0.95rem;
+}
+
+.contact-simple-form__field textarea {
+  min-height: 240px;
+  padding: 0.95rem;
+  resize: vertical;
+}
+
+.contact-simple-form__field input::placeholder,
+.contact-simple-form__field textarea::placeholder {
+  color: #9aa7b8;
+}
+
+.contact-simple-form__hint {
+  margin: 0;
+  color: #66758a;
+  font-size: 0.84rem;
+  line-height: 1.7;
+}
+
+.contact-simple-submit {
+  min-height: 54px;
+  border: 0;
+  border-radius: 999px;
+  background: linear-gradient(135deg, #ffb8c4, #f99db1);
+  color: #ffffff;
+  font: inherit;
+  font-size: 0.98rem;
+  font-weight: 800;
+  cursor: pointer;
+}
+
+.contact-simple-links {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 0.7rem;
+}
+
+.contact-simple-links a {
+  min-height: 38px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0 1rem;
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.84);
+  border: 1px solid rgba(223, 229, 238, 0.96);
+  color: #55657b;
+  text-decoration: none;
+  font-size: 0.84rem;
+  font-weight: 700;
+}
+
+.contact-simple-links a:hover {
+  background: #ffffff;
+}
+
 .guide-search-panel {
   padding: 1.2rem;
 }
@@ -3688,6 +3857,10 @@ body {
   .page-layout,
   .guide-detail-layout {
     grid-template-columns: 1fr;
+  }
+
+  .contact-simple-shell {
+    width: min(680px, 100%);
   }
 
   .ikea-category-grid,
@@ -10613,6 +10786,32 @@ body.finder-tag-picker-open {
 }
 
 @media (max-width: 720px) {
+  .contact-simple-card {
+    border-radius: 22px;
+  }
+
+  .contact-simple-header {
+    gap: 0.8rem;
+  }
+
+  .contact-simple-header__icon {
+    width: 44px;
+    height: 44px;
+    border-radius: 14px;
+  }
+
+  .contact-simple-form__field textarea {
+    min-height: 220px;
+  }
+
+  .contact-simple-links {
+    justify-content: stretch;
+  }
+
+  .contact-simple-links a {
+    width: 100%;
+  }
+
   .home-showcase-shell {
     gap: 22px;
   }
