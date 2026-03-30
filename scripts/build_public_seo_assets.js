@@ -485,6 +485,8 @@ const renderPrimaryNav = (currentSection = "") => {
     { href: "/", label: "ホーム", section: "home" },
     { href: "/finder/", label: "作品検索", section: "finder" },
     { href: "/articles/", label: "ガイド", section: "articles" },
+    { href: "/apply/", label: "掲載申請", section: "apply" },
+    { href: "/contact/", label: "お問い合わせ", section: "contact" },
   ];
 
   return `
@@ -818,28 +820,6 @@ ${GENERATED_MARK}
 ${renderPrimaryNav("home")}
 <main id="main" class="main home-showcase-page" data-home-catalog-page>
   <div class="home-showcase-shell">
-    <section class="card page-hero page-hero--support stack">
-      <p class="kicker">作品探索</p>
-      <h1 class="h1">${escapeHtml(profile?.heroTitle || BRAND_NAME)}</h1>
-      <p class="lead">${escapeHtml(homePageDescription)}</p>
-      <p class="muted">入口語は広く、在庫は深く。特集、条件検索、詳細ページを行き来しながら、自分に合う作品へたどり着きやすくしています。</p>
-      <div class="home-showcase-linkGrid">
-        ${featuredCollections
-          .slice(0, 5)
-          .map(
-            (collection, index) => `
-              <a class="home-showcase-linkChip" data-tone="${escapeHtml(
-                featuredLinkTones[index % featuredLinkTones.length]
-              )}" href="${escapeHtml(getCollectionPath(collection))}">${escapeHtml(collection.title)}</a>
-            `
-          )
-          .join("")}
-      </div>
-      <ul class="list">
-        ${ensureArray(profile?.valueProps).map((item) => `<li>${escapeHtml(item)}</li>`).join("")}
-      </ul>
-    </section>
-
     <section class="home-showcase-hero">
       <button class="home-showcase-hero__nav home-showcase-hero__nav--prev" type="button" data-home-hero-prev aria-label="前のバナーを表示">
         <span aria-hidden="true">‹</span>
@@ -992,30 +972,6 @@ ${GENERATED_MARK}
 <a class="skip-link" href="#main">本文へスキップ</a>
 ${renderPrimaryNav("articles")}
 <main id="main" class="main catalog-main catalog-search-page" data-articles-catalog-page>
-  <section class="section section--tight">
-    <div class="container stack stack--lg">
-      <section class="card page-hero page-hero--support stack">
-        <p class="kicker">Guide Index</p>
-        <h1 class="h1">特集記事一覧</h1>
-        <p class="lead">比較記事、使い方ガイド、レビュー記事の構成メモをまとめています。</p>
-        <p class="muted">検索でいきなり迷ったときは記事から入口を整え、必要ならそのまま作品検索へ移れる構成です。</p>
-        <div class="home-showcase-linkGrid">
-          ${Array.from(articleTypeCounts.entries())
-            .sort((left, right) => right[1] - left[1] || left[0].localeCompare(right[0], "ja"))
-            .map(
-              ([type, count], index) => `
-                <a class="home-showcase-linkChip" data-tone="${escapeHtml(
-                  ["rose", "blue", "green", "violet", "yellow"][index % 5]
-                )}" href="${escapeHtml(createArticlesUrl({ selectedTypes: [type] }))}">${escapeHtml(
-                  `${type} (${count})`
-                )}</a>
-              `
-            )
-            .join("")}
-        </div>
-      </section>
-    </div>
-  </section>
   <div class="catalog-page-shell catalog-search-shell">
     <div class="catalog-search-layout">
       <aside class="catalog-search-sidebar">
