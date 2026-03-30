@@ -12258,15 +12258,15 @@ body.finder-tag-picker-open {
   --editorial-accent-soft: #eef5ff;
   --editorial-shadow: 0 24px 60px rgba(15, 23, 42, 0.08);
   border-top: 1px solid var(--editorial-border);
-  background: var(--editorial-bg);
+  background: #ffffff;
   color: var(--editorial-text);
 }
 
 .editorial-footer__inner {
   display: grid;
-  grid-template-columns: minmax(0, 1.2fr) repeat(3, minmax(0, 0.7fr));
-  gap: 1.6rem 2rem;
-  padding: 2.4rem 0;
+  grid-template-columns: minmax(0, 1.15fr) repeat(3, minmax(0, 0.7fr));
+  gap: 1.4rem;
+  padding: 2rem 0 1.2rem;
 }
 
 .editorial-footer__brand {
@@ -12277,7 +12277,6 @@ body.finder-tag-picker-open {
   border-radius: 0;
   background: transparent;
   box-shadow: none;
-  max-width: 30rem;
 }
 
 .editorial-footer .btn {
@@ -12306,14 +12305,6 @@ body.finder-tag-picker-open {
   letter-spacing: -0.03em;
 }
 
-.editorial-footer__brand h2 {
-  font-size: clamp(1.25rem, 1rem + 0.7vw, 1.8rem);
-}
-
-.editorial-footer__column h3 {
-  font-size: 0.96rem;
-}
-
 .editorial-footer__brand p {
   margin: 0;
   color: var(--editorial-muted);
@@ -12337,8 +12328,6 @@ body.finder-tag-picker-open {
 .editorial-footer__links a {
   color: var(--editorial-muted);
   text-decoration: none;
-  font-size: 0.95rem;
-  line-height: 1.65;
 }
 
 .editorial-footer__links a:hover {
