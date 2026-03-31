@@ -867,16 +867,6 @@ ${renderPrimaryNav("home")}
       </div>
     </section>
 
-    <section class="home-showcase-micro">
-      <p class="home-showcase-micro__eyebrow">入口</p>
-      <div class="home-showcase-micro__actions">
-        ${renderHomeActionLink({ label: "作品検索へ", href: "/finder/", accent: true })}
-        ${renderHomeActionLink({ label: "入口特集を見る", href: "/collections/" })}
-        ${renderHomeActionLink({ label: "詳細条件を作る", href: "/builder/" })}
-        ${renderHomeActionLink({ label: "ガイドを読む", href: "/articles/" })}
-      </div>
-    </section>
-
     <section class="home-showcase-section">
       <div class="home-showcase-section__head">
         <h2>注目の作品</h2>
