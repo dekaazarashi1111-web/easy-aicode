@@ -66,6 +66,21 @@ const ICON_PATHS = {
   save: "M6 3h12a1 1 0 0 1 1 1v17l-7-4-7 4V4a1 1 0 0 1 1-1z",
 };
 
+const BODY_ICON_MAP = {
+  "body-normal": {
+    src: "/assets/quick-filters/body-normal.png",
+    label: "普通体型",
+  },
+  "body-muscular": {
+    src: "/assets/quick-filters/body-muscular.png",
+    label: "筋肉",
+  },
+  "body-fat": {
+    src: "/assets/quick-filters/body-fat.png",
+    label: "デブ",
+  },
+};
+
 const renderIconSvg = (kind) => `
   <svg viewBox="0 0 24 24" focusable="false" width="24" height="24" aria-hidden="true">
     <path fill-rule="evenodd" clip-rule="evenodd" d="${escapeHtml(ICON_PATHS[kind] || ICON_PATHS.tag)}"></path>
@@ -412,6 +427,76 @@ const renderArticleCategoryChip = (type, count) => `
     <span>${count}件</span>
   </a>
 `;
+
+const getCharacterTagLabels = (tagIds = []) =>
+  unique(
+    ensureArray(tagIds)
+      .map((tagId) => tagMap.get(tagId)?.label || "")
+      .filter(Boolean)
+  );
+
+const getCharacterSpeciesLabels = (character = {}) => {
+  if (character.speciesLabel) return [character.speciesLabel];
+  return getCharacterTagLabels(character.speciesTagIds);
+};
+
+const renderCharacterBodyIcons = (character = {}) =>
+  unique(ensureArray(character.bodyTypeTagIds))
+    .map((tagId) => {
+      const icon = BODY_ICON_MAP[tagId];
+      if (!icon) return "";
+      const label = tagMap.get(tagId)?.label || icon.label;
+      return `
+        <span class="detail-character-card__bodyIcon" title="${escapeHtml(label)}" aria-label="${escapeHtml(label)}">
+          <img src="${escapeHtml(icon.src)}" alt="${escapeHtml(label)}" loading="lazy" decoding="async" />
+        </span>
+      `;
+    })
+    .join("");
+
+const renderCharacterCard = (character = {}) => {
+  const metaLabels = unique([
+    ...getCharacterSpeciesLabels(character),
+    ...getCharacterTagLabels(character.ageFeelTagIds),
+    character.role || "",
+  ]).filter(Boolean);
+  const bodyLabels = getCharacterTagLabels(character.bodyTypeTagIds);
+  return `
+    <article class="detail-character-card">
+      <div class="detail-character-card__header">
+        <div class="detail-character-card__iconRow">
+          ${renderCharacterBodyIcons(character)}
+        </div>
+        <div class="detail-character-card__copy">
+          <strong class="detail-character-card__name">${escapeHtml(character.name || "登場キャラクター")}</strong>
+          ${metaLabels.length ? `<p class="detail-character-card__meta">${escapeHtml(metaLabels.join(" / "))}</p>` : ""}
+        </div>
+      </div>
+      ${
+        bodyLabels.length
+          ? `<div class="detail-character-card__chips">${bodyLabels
+              .map((label) => `<span class="detail-character-card__chip">${escapeHtml(label)}</span>`)
+              .join("")}</div>`
+          : ""
+      }
+    </article>
+  `;
+};
+
+const renderWorkCharacters = (work = {}) => {
+  const characters = ensureArray(work.characters);
+  if (!characters.length) return "";
+  return `
+    <section class="detail-work-card detail-work-card--characters">
+      <p class="detail-section__eyebrow">Characters</p>
+      <h2>登場キャラクター</h2>
+      <p>種族、年齢感、体型の雰囲気を先に見分けやすいように、主要キャラを一覧でまとめています。</p>
+      <div class="detail-character-grid">
+        ${characters.map((character) => renderCharacterCard(character)).join("")}
+      </div>
+    </section>
+  `;
+};
 
 const renderWorkCard = ({ work, reason = "" }) => {
   const releaseText = work.releasedAt || "公開日未設定";
@@ -1370,6 +1455,7 @@ ${renderPrimaryNav()}
               </div>
             </div>
           </header>
+          ${renderWorkCharacters(work)}
           <section class="detail-callout">
             <p class="detail-callout__eyebrow">この作品が合いやすい人</p>
             <p>${escapeHtml(collapseText(work.matchSummary || work.publicNote || work.shortDescription || ""))}</p>

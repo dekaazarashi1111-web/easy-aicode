@@ -7,11 +7,18 @@ const seed = require(path.join(__dirname, "..", "public", "assets", "finder-seed
 const core = require(path.join(__dirname, "..", "public", "assets", "finder-core.js"));
 const store = require(path.join(__dirname, "..", "public", "assets", "finder-store.js"));
 
+const ensureCharacters = (work) => (Array.isArray(work?.characters) ? work.characters : []);
+
 store.resetState();
 
 let state = store.loadState();
 
 assert.equal(core.getActiveProfile(state).id, seed.activeProfileId, "active profile should come from seed");
+assert.equal(
+  ensureCharacters(seed.works.find((work) => work.slug === "ookami-nanka-kowakunai")).length >= 2,
+  true,
+  "published work should keep character cards data"
+);
 
 assert.deepEqual(
   core

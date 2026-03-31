@@ -465,6 +465,24 @@
         format: "漫画",
         pageCount: 20,
         priceText: "660円",
+        characters: [
+          {
+            id: "ookami-wolfman",
+            name: "狼男",
+            role: "夜の街に現れる相手役",
+            speciesTagIds: ["species-wolf"],
+            bodyTypeTagIds: ["body-muscular"],
+            ageFeelTagIds: ["age-young"],
+          },
+          {
+            id: "ookami-mummy-boy",
+            name: "ミイラ男に扮した青年",
+            role: "オタク系ぽっちゃり青年",
+            speciesLabel: "人間",
+            bodyTypeTagIds: ["body-fat"],
+            ageFeelTagIds: ["age-young"],
+          },
+        ],
         shortDescription:
           "ハロウィンの夜、狼男とミイラ男に扮したぽっちゃり青年が交差する、勢いと体格差で入れる短編漫画です。",
         publicNote:
@@ -511,6 +529,24 @@
         format: "漫画",
         pageCount: 31,
         priceText: "990円",
+        characters: [
+          {
+            id: "devil-tiger",
+            name: "タイガ",
+            role: "凶悪格闘家の白虎",
+            speciesTagIds: ["species-tiger"],
+            bodyTypeTagIds: ["body-muscular"],
+            ageFeelTagIds: ["age-young"],
+          },
+          {
+            id: "devil-tsukasa",
+            name: "ツカサ",
+            role: "幼馴染の人間",
+            speciesLabel: "人間",
+            bodyTypeTagIds: ["body-muscular"],
+            ageFeelTagIds: ["age-young"],
+          },
+        ],
         shortDescription:
           "白虎の格闘家と人間の幼馴染がぶつかる、体育会系の熱量と体格差をまっすぐ浴びられる一本です。",
         publicNote:
@@ -558,6 +594,24 @@
         format: "漫画",
         pageCount: 17,
         priceText: "550円",
+        characters: [
+          {
+            id: "bbb-dog",
+            name: "犬獣人の配達員",
+            role: "えっちな商品を届ける配達員",
+            speciesTagIds: ["species-dog"],
+            bodyTypeTagIds: ["body-muscular"],
+            ageFeelTagIds: ["age-young"],
+          },
+          {
+            id: "bbb-bull",
+            name: "牛獣人の客",
+            role: "配達先で待つ客",
+            speciesTagIds: ["species-bull"],
+            bodyTypeTagIds: ["body-muscular"],
+            ageFeelTagIds: ["age-young"],
+          },
+        ],
         shortDescription:
           "犬獣人の配達員と牛獣人の客先という配置で、短いページ数に筋肉とフェチの勢いを詰めた配達シチュ漫画です。",
         publicNote:
@@ -603,6 +657,24 @@
         format: "漫画",
         pageCount: 20,
         priceText: "660円",
+        characters: [
+          {
+            id: "karisome-older",
+            name: "年上側のオオカミ",
+            role: "満月の夜を迎える年上側",
+            speciesTagIds: ["species-wolf"],
+            bodyTypeTagIds: ["body-muscular"],
+            ageFeelTagIds: ["age-older"],
+          },
+          {
+            id: "karisome-younger",
+            name: "年下側のオオカミ",
+            role: "向き合う年下側",
+            speciesTagIds: ["species-wolf"],
+            bodyTypeTagIds: ["body-muscular"],
+            ageFeelTagIds: ["age-young"],
+          },
+        ],
         shortDescription:
           "満月の夜、歳の差のあるオオカミ男どうしが向き合う、純オスケモ寄りの熱量を短く強く浴びられる作品です。",
         publicNote:
@@ -647,6 +719,24 @@
         format: "漫画",
         pageCount: 28,
         priceText: "990円",
+        characters: [
+          {
+            id: "ame-shinobu",
+            name: "シノブ",
+            role: "組長の息子のオオカミ",
+            speciesTagIds: ["species-wolf"],
+            bodyTypeTagIds: ["body-muscular"],
+            ageFeelTagIds: ["age-young"],
+          },
+          {
+            id: "ame-inubuse",
+            name: "犬伏",
+            role: "世話係のドーベルマン",
+            speciesTagIds: ["species-dog"],
+            bodyTypeTagIds: ["body-muscular"],
+            ageFeelTagIds: ["age-young"],
+          },
+        ],
         shortDescription:
           "結婚式前夜の狼と、その世話係であるドーベルマンが向き合う、主従と裏社会の緊張感が濃い一冊です。",
         publicNote:
@@ -694,6 +784,48 @@
         pageCount: 28,
         seriesTitle: "だから俺は異世界で春を売る。",
         priceText: "880円",
+        characters: [
+          {
+            id: "haru1-jinta",
+            name: "ジンタ",
+            role: "異世界へ飛ばされた水泳部男子",
+            speciesLabel: "人間",
+            bodyTypeTagIds: ["body-muscular", "body-normal"],
+            ageFeelTagIds: ["age-young"],
+          },
+          {
+            id: "haru1-leopard",
+            name: "ヒョウ獣人",
+            role: "娼館で相手をする獣人",
+            speciesLabel: "ヒョウ",
+            bodyTypeTagIds: ["body-muscular"],
+            ageFeelTagIds: ["age-young"],
+          },
+          {
+            id: "haru1-hyena",
+            name: "ハイエナ獣人",
+            role: "娼館で相手をする獣人",
+            speciesLabel: "ハイエナ",
+            bodyTypeTagIds: ["body-normal"],
+            ageFeelTagIds: ["age-young"],
+          },
+          {
+            id: "haru1-tiger",
+            name: "白虎獣人",
+            role: "娼館で相手をする獣人",
+            speciesTagIds: ["species-tiger"],
+            bodyTypeTagIds: ["body-muscular"],
+            ageFeelTagIds: ["age-young"],
+          },
+          {
+            id: "haru1-wolf",
+            name: "オオカミ獣人",
+            role: "娼館で相手をする獣人",
+            speciesTagIds: ["species-wolf"],
+            bodyTypeTagIds: ["body-muscular"],
+            ageFeelTagIds: ["age-young"],
+          },
+        ],
         shortDescription:
           "雷で異世界へ飛ばされた水泳部男子ジンタが、獣人だらけの娼館で稼ぎ始める。多種族と世界観の入口になるシリーズ1巻です。",
         publicNote:
@@ -741,6 +873,56 @@
         pageCount: 40,
         seriesTitle: "だから俺は異世界で春を売る。",
         priceText: "1100円",
+        characters: [
+          {
+            id: "haru2-jinta",
+            name: "ジンタ",
+            role: "異世界で春を売る主人公",
+            speciesLabel: "人間",
+            bodyTypeTagIds: ["body-muscular", "body-normal"],
+            ageFeelTagIds: ["age-young"],
+          },
+          {
+            id: "haru2-bear",
+            name: "熊獣人",
+            role: "2巻で目立つ大型種族",
+            speciesTagIds: ["species-bear"],
+            bodyTypeTagIds: ["body-fat"],
+            ageFeelTagIds: ["age-young"],
+          },
+          {
+            id: "haru2-bull",
+            name: "牛獣人",
+            role: "2巻で目立つ大型種族",
+            speciesTagIds: ["species-bull"],
+            bodyTypeTagIds: ["body-muscular"],
+            ageFeelTagIds: ["age-young"],
+          },
+          {
+            id: "haru2-gorilla",
+            name: "ゴリラ獣人",
+            role: "2巻で目立つ大型種族",
+            speciesLabel: "ゴリラ",
+            bodyTypeTagIds: ["body-muscular"],
+            ageFeelTagIds: ["age-young"],
+          },
+          {
+            id: "haru2-orc",
+            name: "豚・オーク獣人",
+            role: "デブ体型も混ざる相手役",
+            speciesLabel: "豚・オーク",
+            bodyTypeTagIds: ["body-fat"],
+            ageFeelTagIds: ["age-young"],
+          },
+          {
+            id: "haru2-hawk",
+            name: "鷹獣人",
+            role: "種族の幅を広げる相手役",
+            speciesLabel: "鷹",
+            bodyTypeTagIds: ["body-muscular"],
+            ageFeelTagIds: ["age-young"],
+          },
+        ],
         shortDescription:
           "熊、牛、ゴリラ、豚・オークまで広がり、多種族と体格差の密度が一段上がるシリーズ2巻です。",
         publicNote:
@@ -789,6 +971,24 @@
         pageCount: 37,
         seriesTitle: "だから俺は異世界で春を売る。",
         priceText: "",
+        characters: [
+          {
+            id: "haru3-jinta",
+            name: "ジンタ",
+            role: "異世界で一年を過ごした主人公",
+            speciesLabel: "人間",
+            bodyTypeTagIds: ["body-muscular", "body-normal"],
+            ageFeelTagIds: ["age-young"],
+          },
+          {
+            id: "haru3-lion",
+            name: "ライオン獣人たち",
+            role: "3巻の中心になる相手役",
+            speciesTagIds: ["species-lion"],
+            bodyTypeTagIds: ["body-muscular"],
+            ageFeelTagIds: ["age-young"],
+          },
+        ],
         shortDescription:
           "異世界で一年を過ごしたジンタとライオン獣人たちに焦点が寄る、シリーズ3巻目のライオン回です。",
         publicNote:
@@ -832,6 +1032,26 @@
         title: "白熊執事、爽籟と共に",
         creator: "一億総サンタクロース計画",
         format: "漫画",
+        characters: [
+          {
+            id: "booth-arashi",
+            name: "嵐",
+            role: "白純岡家に仕える執事",
+            speciesTagIds: ["species-bear"],
+            speciesLabel: "白熊",
+            bodyTypeTagIds: ["body-normal"],
+            ageFeelTagIds: ["age-adult"],
+          },
+          {
+            id: "booth-yuki",
+            name: "雪",
+            role: "主家を守るボディーガード",
+            speciesTagIds: ["species-bear"],
+            speciesLabel: "白熊",
+            bodyTypeTagIds: ["body-muscular"],
+            ageFeelTagIds: ["age-adult"],
+          },
+        ],
         shortDescription:
           "白純岡家の執事・嵐とボディーガード・雪が、お嬢様への報告後に揺れる空気を描く、やさしめ寄りの従者カップル漫画です。",
         publicNote:
