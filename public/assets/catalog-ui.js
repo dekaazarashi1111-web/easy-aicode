@@ -196,6 +196,9 @@
     "species-fox",
     "species-cat",
     "species-bear",
+    "species-tiger",
+    "species-lion",
+    "species-bull",
   ];
 
   const QUICK_FILTER_BODY_OPTIONS = [

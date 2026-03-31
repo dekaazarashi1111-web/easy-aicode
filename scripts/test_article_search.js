@@ -8,7 +8,7 @@ const articles = require(path.join(__dirname, "..", "public", "assets", "article
 
 const slugs = (items) => items.map((item) => item.slug);
 
-assert.equal(articles.length >= 3, true, "sample articles should include at least three entries");
+assert.equal(articles.length >= 4, true, "article index should include at least four entries");
 
 assert.deepEqual(
   slugs(articleSearch.filterArticles({ articles })),
@@ -22,14 +22,14 @@ assert.deepEqual(
 );
 
 assert.deepEqual(
-  slugs(articleSearch.filterArticles({ articles, query: "比較記事 広告表記", mode: "and" })),
+  slugs(articleSearch.filterArticles({ articles, query: "狼 虎 異世界", mode: "and" })),
   ["comparison-template"],
   "AND text search should require all tokens"
 );
 
 assert.deepEqual(
-  slugs(articleSearch.filterArticles({ articles, selectedTags: ["CTA", "体験談"], mode: "or" })),
-  ["content-planning-checklist", "comparison-template", "review-structure"],
+  slugs(articleSearch.filterArticles({ articles, selectedTags: ["異世界", "主従"], mode: "or" })),
+  ["comparison-template", "review-structure", "article-layout-test"],
   "OR tag search should match any selected tag"
 );
 
@@ -38,7 +38,7 @@ assert.deepEqual(
     articleSearch.filterArticles({
       articles,
       selectedTypes: ["使い方ガイド"],
-      selectedTags: ["検索意図", "内部リンク"],
+      selectedTags: ["入口", "初読"],
       mode: "and",
     })
   ),
@@ -47,7 +47,7 @@ assert.deepEqual(
 );
 
 const options = articleSearch.collectFilterOptions(articles);
-assert.equal(options.types.some((option) => option.value === "使い方ガイド"), true, "new type should become a filter");
-assert.equal(options.tags.some((option) => option.value === "検索意図"), true, "new tag should become a filter");
+assert.equal(options.types.some((option) => option.value === "使い方ガイド"), true, "guide type should become a filter");
+assert.equal(options.tags.some((option) => option.value === "異世界"), true, "new tag should become a filter");
 
 console.log("[article-search] ok");

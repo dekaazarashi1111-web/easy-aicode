@@ -1,0 +1,96 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 1600" role="img" aria-labelledby="title desc">
+  <title id="title">だから俺は異世界で春を売る。</title>
+  <desc id="desc">異世界 / 多種族 / 男娼ものの入口を探している人向け。</desc>
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="#0f4035" />
+      <stop offset="100%" stop-color="#49ab87" />
+    </linearGradient>
+    <linearGradient id="shine" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#d5fff0" stop-opacity="0.28" />
+      <stop offset="100%" stop-color="#d5fff0" stop-opacity="0" />
+    </linearGradient>
+  </defs>
+  <rect width="1200" height="1600" fill="url(#bg)" rx="48" />
+  <circle cx="1030" cy="210" r="230" fill="#d5fff0" fill-opacity="0.18" />
+  <circle cx="180" cy="1370" r="280" fill="#d5fff0" fill-opacity="0.12" />
+  <rect x="72" y="72" width="1056" height="1456" rx="36" fill="none" stroke="rgba(255,255,255,0.24)" />
+  <rect x="120" y="128" width="252" height="46" rx="23" fill="rgba(255,255,255,0.14)" />
+  <text x="148" y="158" fill="#ffffff" font-size="28" font-family="'Hiragino Sans','Yu Gothic',sans-serif" letter-spacing="0.18em">DRAW TWO / 漫画</text>
+  <rect x="120" y="220" width="960" height="720" rx="42" fill="url(#shine)" />
+  
+  <text
+    x="120"
+    y="360"
+    fill="#ffffff"
+    font-size="96"
+    font-weight="700"
+    font-family="'Hiragino Sans','Yu Gothic',sans-serif"
+    letter-spacing="0.02em"
+  >だから俺は異世界で春</text>
+  <text
+    x="120"
+    y="474"
+    fill="#ffffff"
+    font-size="96"
+    font-weight="700"
+    font-family="'Hiragino Sans','Yu Gothic',sans-serif"
+    letter-spacing="0.02em"
+  >を売る。</text>
+  <text
+    x="124"
+    y="980"
+    fill="rgba(255,255,255,0.9)"
+    font-size="34"
+    font-family="'Hiragino Sans','Yu Gothic',sans-serif"
+  >異世界 / 多種族 / 男娼ものの入口を探している人向け。</text>
+  
+  <g transform="translate(120, 1080)">
+    <rect width="256" height="70" rx="35" fill="#edfff8" fill-opacity="0.18" stroke="rgba(255,255,255,0.18)" />
+    <text
+      x="28"
+      y="45"
+      fill="#ffffff"
+      font-size="30"
+      font-family="'Hiragino Sans','Yu Gothic',sans-serif"
+    >異世界</text>
+  </g>
+  <g transform="translate(420, 1080)">
+    <rect width="256" height="70" rx="35" fill="#edfff8" fill-opacity="0.18" stroke="rgba(255,255,255,0.18)" />
+    <text
+      x="28"
+      y="45"
+      fill="#ffffff"
+      font-size="30"
+      font-family="'Hiragino Sans','Yu Gothic',sans-serif"
+    >多種族</text>
+  </g>
+  <g transform="translate(720, 1080)">
+    <rect width="256" height="70" rx="35" fill="#edfff8" fill-opacity="0.18" stroke="rgba(255,255,255,0.18)" />
+    <text
+      x="28"
+      y="45"
+      fill="#ffffff"
+      font-size="30"
+      font-family="'Hiragino Sans','Yu Gothic',sans-serif"
+    >男娼もの</text>
+  </g>
+  <rect x="120" y="1290" width="960" height="162" rx="34" fill="rgba(255,255,255,0.1)" />
+  <text
+    x="160"
+    y="1360"
+    fill="#ffffff"
+    font-size="52"
+    font-weight="700"
+    font-family="'Hiragino Sans','Yu Gothic',sans-serif"
+  >28P ・ 880円 ・ 2024-12-22</text>
+  <text
+    x="160"
+    y="1420"
+    fill="rgba(255,255,255,0.86)"
+    font-size="28"
+    font-family="'Hiragino Sans','Yu Gothic',sans-serif"
+    letter-spacing="0.08em"
+  >WINTERGATOR WORK DETAIL</text>
+</svg>

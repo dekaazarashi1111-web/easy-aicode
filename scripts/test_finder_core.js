@@ -18,11 +18,11 @@ assert.deepEqual(
     .filterWorks({
       state,
       profileId: "kemohomo-main",
-      includeTagIds: ["osu-kemo", "no-ntr"],
+      includeTagIds: ["species-wolf", "format-comic"],
       sort: "recommended",
     })
     .map((work) => work.slug),
-  ["garage-bond-at-midnight", "rooftop-fence-promise"],
+  ["ookami-nanka-kowakunai", "karisome-ookami", "ame-to-uso"],
   "include filters should require all selected tags in AND mode"
 );
 
@@ -31,17 +31,12 @@ assert.deepEqual(
     .filterWorks({
       state,
       profileId: "kemohomo-main",
-      includeTagIds: ["format-cg", "tf-present"],
+      includeTagIds: ["motif-isekai", "motif-master-servant"],
       matchMode: "or",
       sort: "recommended",
     })
     .map((work) => work.slug),
-  [
-    "pocket-shift-memo",
-    "rain-hoodie-shelter",
-    "morning-workshop-shift",
-    "harbor-sketchbook",
-  ],
+  ["ame-to-uso", "dakara-haru-uru-1", "dakara-haru-uru-2", "dakara-haru-uru-3", "booth-item-2427390"],
   "OR mode should return works matching any selected include tag"
 );
 
@@ -50,17 +45,11 @@ assert.deepEqual(
     .filterWorks({
       state,
       profileId: "kemohomo-main",
-      excludeTagIds: ["osu-kemo"],
+      excludeTagIds: ["species-wolf"],
       sort: "recommended",
     })
     .map((work) => work.slug),
-  [
-    "pocket-shift-memo",
-    "rain-hoodie-shelter",
-    "morning-workshop-shift",
-    "harbor-sketchbook",
-    "booth-item-2427390",
-  ],
+  ["devil-nanka-janai", "bbb", "dakara-haru-uru-1", "dakara-haru-uru-2", "dakara-haru-uru-3", "booth-item-2427390"],
   "exclude filters should remove works containing excluded tags"
 );
 
@@ -69,12 +58,21 @@ assert.deepEqual(
     .filterWorks({
       state,
       profileId: "kemohomo-main",
-      creatorQuery: "夜道",
+      creatorQuery: "Draw Two",
       sort: "recommended",
     })
     .map((work) => work.slug),
-  ["rain-hoodie-shelter"],
-  "creator query should filter by creator or circle name"
+  [
+    "ookami-nanka-kowakunai",
+    "devil-nanka-janai",
+    "bbb",
+    "karisome-ookami",
+    "ame-to-uso",
+    "dakara-haru-uru-1",
+    "dakara-haru-uru-2",
+    "dakara-haru-uru-3",
+  ],
+  "creator query should filter by creator name"
 );
 
 assert.deepEqual(
@@ -86,7 +84,7 @@ assert.deepEqual(
       sort: "recommended",
     })
     .map((work) => work.slug),
-  ["garage-bond-at-midnight", "pocket-shift-memo", "rain-hoodie-shelter"],
+  ["ookami-nanka-kowakunai", "devil-nanka-janai", "bbb"],
   "collection filter should only return collection works"
 );
 
@@ -107,7 +105,7 @@ store.upsertCollection({
   introPoints: ["一点目", "二点目"],
   siteProfileIds: ["kemohomo-main"],
   tagIds: ["aftercare-clear"],
-  workIds: ["work-garage-bond"],
+  workIds: ["work-drawtwo-ookami"],
   isPublic: true,
 });
 
@@ -127,7 +125,7 @@ store.upsertWork({
   matchSummary: "安心感タグの動作確認用。",
   internalNote: "後で公開へ切り替える想定。",
   priority: 99,
-  releasedAt: "2026-03-23",
+  releasedAt: "2026-03-31",
   externalLabel: "DMMで作品を見る",
   externalPartner: "DMM",
   externalUrl: "https://example.com/dmm/test-seed-work",
@@ -163,7 +161,7 @@ const relaxations = core.buildRelaxationSuggestions({
   state,
   profileId: "kemohomo-main",
   query: "存在しない条件",
-  includeTagIds: ["osu-kemo"],
+  includeTagIds: ["species-wolf"],
   matchMode: "and",
 });
 
@@ -175,31 +173,31 @@ assert.equal(
 
 store.logEvent("search", {
   profileId: "kemohomo-main",
-  query: "オスケモ寄り",
-  includeTagIds: ["osu-kemo"],
-  excludeTagIds: ["low-gore"],
+  query: "狼",
+  includeTagIds: ["species-wolf"],
+  excludeTagIds: ["body-fat"],
   matchMode: "and",
   resultCount: 1,
 });
 
 store.logEvent("search", {
   profileId: "kemohomo-main",
-  query: "変化",
-  includeTagIds: ["tf-present"],
-  excludeTagIds: ["mind-stable"],
+  query: "異世界",
+  includeTagIds: ["motif-isekai"],
+  excludeTagIds: ["body-muscular"],
   matchMode: "and",
   resultCount: 0,
 });
 
 store.logEvent("detail_view", {
   profileId: "kemohomo-main",
-  workId: "work-garage-bond",
+  workId: "work-drawtwo-ookami",
 });
 
 store.logEvent("outbound_click", {
   profileId: "kemohomo-main",
-  workId: "work-garage-bond",
-  href: "https://example.com/dmm/garage-bond-at-midnight",
+  workId: "work-drawtwo-ookami",
+  href: "https://example.com/dmm/ookami-nanka-kowakunai",
 });
 
 state = store.loadState();

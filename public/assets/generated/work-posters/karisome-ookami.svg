@@ -1,0 +1,87 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 1600" role="img" aria-labelledby="title desc">
+  <title id="title">カリソメオオカミ</title>
+  <desc id="desc">狼同士 / 年の差 / 体格差で探している人向け。</desc>
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="#2f3340" />
+      <stop offset="100%" stop-color="#6f7990" />
+    </linearGradient>
+    <linearGradient id="shine" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#e4e9f3" stop-opacity="0.28" />
+      <stop offset="100%" stop-color="#e4e9f3" stop-opacity="0" />
+    </linearGradient>
+  </defs>
+  <rect width="1200" height="1600" fill="url(#bg)" rx="48" />
+  <circle cx="1030" cy="210" r="230" fill="#e4e9f3" fill-opacity="0.18" />
+  <circle cx="180" cy="1370" r="280" fill="#e4e9f3" fill-opacity="0.12" />
+  <rect x="72" y="72" width="1056" height="1456" rx="36" fill="none" stroke="rgba(255,255,255,0.24)" />
+  <rect x="120" y="128" width="252" height="46" rx="23" fill="rgba(255,255,255,0.14)" />
+  <text x="148" y="158" fill="#ffffff" font-size="28" font-family="'Hiragino Sans','Yu Gothic',sans-serif" letter-spacing="0.18em">DRAW TWO / 漫画</text>
+  <rect x="120" y="220" width="960" height="720" rx="42" fill="url(#shine)" />
+  
+  <text
+    x="120"
+    y="360"
+    fill="#ffffff"
+    font-size="96"
+    font-weight="700"
+    font-family="'Hiragino Sans','Yu Gothic',sans-serif"
+    letter-spacing="0.02em"
+  >カリソメオオカミ</text>
+  <text
+    x="124"
+    y="980"
+    fill="rgba(255,255,255,0.9)"
+    font-size="34"
+    font-family="'Hiragino Sans','Yu Gothic',sans-serif"
+  >狼同士 / 年の差 / 体格差で探している人向け。</text>
+  
+  <g transform="translate(120, 1080)">
+    <rect width="256" height="70" rx="35" fill="#f4f7fc" fill-opacity="0.18" stroke="rgba(255,255,255,0.18)" />
+    <text
+      x="28"
+      y="45"
+      fill="#ffffff"
+      font-size="30"
+      font-family="'Hiragino Sans','Yu Gothic',sans-serif"
+    >狼</text>
+  </g>
+  <g transform="translate(420, 1080)">
+    <rect width="256" height="70" rx="35" fill="#f4f7fc" fill-opacity="0.18" stroke="rgba(255,255,255,0.18)" />
+    <text
+      x="28"
+      y="45"
+      fill="#ffffff"
+      font-size="30"
+      font-family="'Hiragino Sans','Yu Gothic',sans-serif"
+    >年の差</text>
+  </g>
+  <g transform="translate(720, 1080)">
+    <rect width="256" height="70" rx="35" fill="#f4f7fc" fill-opacity="0.18" stroke="rgba(255,255,255,0.18)" />
+    <text
+      x="28"
+      y="45"
+      fill="#ffffff"
+      font-size="30"
+      font-family="'Hiragino Sans','Yu Gothic',sans-serif"
+    >筋肉</text>
+  </g>
+  <rect x="120" y="1290" width="960" height="162" rx="34" fill="rgba(255,255,255,0.1)" />
+  <text
+    x="160"
+    y="1360"
+    fill="#ffffff"
+    font-size="52"
+    font-weight="700"
+    font-family="'Hiragino Sans','Yu Gothic',sans-serif"
+  >20P ・ 660円 ・ 2024-12-22</text>
+  <text
+    x="160"
+    y="1420"
+    fill="rgba(255,255,255,0.86)"
+    font-size="28"
+    font-family="'Hiragino Sans','Yu Gothic',sans-serif"
+    letter-spacing="0.08em"
+  >WINTERGATOR WORK DETAIL</text>
+</svg>

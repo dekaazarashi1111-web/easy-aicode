@@ -165,6 +165,9 @@ const HEADER_FILTER_SPECIES_TAG_IDS = [
   "species-fox",
   "species-cat",
   "species-bear",
+  "species-tiger",
+  "species-lion",
+  "species-bull",
 ];
 const HEADER_FILTER_BODY_OPTIONS = [
   {
@@ -195,6 +198,7 @@ const HEADER_FILTER_LABEL_OVERRIDES = {
   style: "雰囲気",
   transformation: "変化要素",
   relationship: "関係性",
+  motif: "モチーフ",
   format: "媒体",
   curation: "運営選抜",
   avoid: "除外条件",
