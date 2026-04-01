@@ -159,6 +159,7 @@ const FINDER_STORAGE_KEY = "finder-canvas-state";
 const RECENT_HISTORY_HASH = "#recent-history";
 const SAVED_SEARCH_HASH = "#saved-searches";
 const RECENT_HISTORY_LIMIT = 20;
+const SAVED_SEARCH_LIMIT = 30;
 const HEADER_FILTER_SPECIES_TAG_IDS = [
   "species-wolf",
   "species-dog",
@@ -383,7 +384,7 @@ const getRecentHistoryWorks = () => {
 
 const getSavedSearches = () => {
   const state = readFinderCanvasState();
-  return Array.isArray(state?.ui?.savedSearches) ? state.ui.savedSearches.slice(0, 10) : [];
+  return Array.isArray(state?.ui?.savedSearches) ? state.ui.savedSearches.slice(0, SAVED_SEARCH_LIMIT) : [];
 };
 
 const buildFinderSearchHref = (search = {}) => {

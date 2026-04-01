@@ -7,6 +7,7 @@
 })(typeof globalThis !== "undefined" ? globalThis : this, function (seed, core) {
   const STORAGE_KEY = "finder-canvas-state";
   const RECENT_WORK_LIMIT = 20;
+  const SAVED_SEARCH_LIMIT = 30;
   const LOCAL_SOURCE_KIND = "local";
 
   const getStorage = () => {
@@ -460,7 +461,7 @@
       };
       const index = state.ui.savedSearches.findIndex((item) => item.id === nextSearch.id);
       if (index === -1) {
-        state.ui.savedSearches = [nextSearch, ...state.ui.savedSearches].slice(0, 10);
+        state.ui.savedSearches = [nextSearch, ...state.ui.savedSearches].slice(0, SAVED_SEARCH_LIMIT);
       } else {
         state.ui.savedSearches[index] = { ...state.ui.savedSearches[index], ...nextSearch };
       }
