@@ -74,7 +74,7 @@
             <form class="form apply-form" data-apply-form>
               <label class="field">
                 <span class="label">クリエイター名 / サークル名</span>
-                <input class="input" type="text" name="creator_name" autocomplete="organization" />
+                <input class="input" type="text" name="creator_name" autocomplete="organization" required />
               </label>
 
               <section class="field">
@@ -101,11 +101,11 @@
                     <div class="apply-work-grid">
                       <label class="field">
                         <span class="label">作品名</span>
-                        <input class="input" type="text" name="work_title[]" />
+                        <input class="input" type="text" name="work_title[]" required />
                       </label>
                       <label class="field">
                         <span class="label">作品URL</span>
-                        <input class="input" type="url" name="work_url[]" inputmode="url" />
+                        <input class="input" type="url" name="work_url[]" inputmode="url" required />
                       </label>
                     </div>
                   </div>
@@ -117,13 +117,15 @@
                 <textarea
                   class="textarea"
                   name="sns_account"
+                  required
                 ></textarea>
                 <span class="help">活動実態が確認でき、DMでご連絡可能なアカウントをご入力ください。プラットフォームは問いません。</span>
               </label>
 
               <div class="apply-form__actions">
-                <button class="btn btn--primary" type="button">送信する</button>
+                <button class="btn btn--primary" type="submit" data-apply-submit disabled>送信する</button>
               </div>
+              <p class="contact-simple-form__status" data-apply-status hidden aria-live="polite"></p>
             </form>
           </section>
         </div>

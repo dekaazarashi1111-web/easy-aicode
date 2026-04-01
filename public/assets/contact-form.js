@@ -7,6 +7,7 @@
   const submitButton = form.querySelector("[data-contact-submit]");
   const status = form.querySelector("[data-contact-status]");
   if (!(submitButton instanceof HTMLButtonElement) || !(status instanceof HTMLElement)) return;
+  const successMessage = "送信しました。メールアプリで内容を確認して送信してください。";
 
   const getValue = (name) => {
     const value = new FormData(form).get(name);
@@ -73,7 +74,8 @@
     ].join("\n");
     const query = new URLSearchParams({ subject, body }).toString();
 
-    setStatus("メールアプリを起動します。内容を確認して送信してください。", "success");
+    setStatus(successMessage, "success");
+    window.alert(successMessage);
     window.location.href = `mailto:${recipient}?${query}`;
   });
 

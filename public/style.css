@@ -2825,6 +2825,11 @@ body {
   justify-content: flex-start;
 }
 
+.apply-form__actions .btn:disabled {
+  opacity: 0.55;
+  cursor: not-allowed;
+}
+
 .apply-field-header {
   display: flex;
   align-items: flex-start;
