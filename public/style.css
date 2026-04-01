@@ -12465,10 +12465,19 @@ body.finder-tag-picker-open {
 
 @media (max-width: 980px) {
   .detail-shell,
+  .detail-shell--article,
+  .detail-shell--work,
+  .editorial-page--article .detail-shell--article,
+  .editorial-page--work .detail-shell--work,
   .editorial-footer__inner,
   .detail-related-grid,
   .detail-related-grid--works {
     grid-template-columns: 1fr;
+  }
+
+  .editorial-page--article .detail-shell--article,
+  .editorial-page--work .detail-shell--work {
+    gap: 1rem;
   }
 
   .detail-sidebar {
@@ -12488,6 +12497,19 @@ body.finder-tag-picker-open {
 
   .detail-title {
     max-width: none;
+  }
+
+  .detail-byline {
+    align-items: flex-start;
+  }
+
+  .editorial-page--article .detail-cta-band .detail-widget__actions,
+  .editorial-page--work .detail-widget__actions {
+    display: grid;
+  }
+
+  .editorial-page--work .pdp-gallery__hero {
+    min-height: 240px;
   }
 
   .detail-author-card {
