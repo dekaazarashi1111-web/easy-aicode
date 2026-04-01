@@ -10843,33 +10843,134 @@ body.finder-tag-picker-open {
   }
 
   .home-showcase-shell {
+    width: min(100%, calc(100% - 16px));
     gap: 22px;
+  }
+
+  .home-showcase-page {
+    --home-showcase-hero-height: auto;
+  }
+
+  .home-showcase-hero {
+    gap: 12px;
+  }
+
+  .home-showcase-hero__nav {
+    display: none;
+  }
+
+  .home-showcase-hero__rail {
+    gap: 12px;
+    padding: 0 8px 4px;
+    scroll-padding-inline: 8px;
+    overscroll-behavior-x: contain;
+  }
+
+  .home-showcase-hero__item,
+  .home-showcase-hero__item--wide,
+  .home-showcase-hero__item--medium,
+  .home-showcase-hero__item--poster {
+    width: calc(100vw - 16px);
+  }
+
+  .home-showcase-banner {
+    height: auto;
+    min-height: 272px;
+    border-radius: 20px;
+  }
+
+  .home-showcase-banner--spotlight {
+    min-height: 320px;
+  }
+
+  .home-showcase-banner--collage,
+  .home-showcase-banner--poster,
+  .home-showcase-banner--compact {
+    min-height: 284px;
   }
 
   .home-showcase-banner__copy,
   .home-showcase-banner__intro,
-  .home-showcase-banner--poster {
-    padding: 18px;
+  .home-showcase-banner--poster,
+  .home-showcase-banner--compact {
+    padding: 20px 18px;
   }
 
   .home-showcase-banner__title {
-    font-size: 2rem;
+    font-size: clamp(1.8rem, 9vw, 2.35rem);
+    line-height: 0.92;
+  }
+
+  .home-showcase-banner__titleLine {
+    white-space: normal;
   }
 
   .home-showcase-banner__sideTitle {
     font-size: 1.55rem;
   }
 
+  .home-showcase-banner__description {
+    max-width: none;
+    font-size: 0.9rem;
+  }
+
+  .home-showcase-banner__thumbStrip,
+  .home-showcase-banner__chipRow {
+    gap: 8px;
+  }
+
+  .home-showcase-banner__thumb {
+    width: 42px;
+    height: 56px;
+  }
+
+  .home-showcase-banner__yearTitle {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 4px;
+  }
+
+  .home-showcase-banner__yearNumber {
+    font-size: clamp(2.45rem, 13vw, 3rem);
+  }
+
+  .home-showcase-banner__yearLabel {
+    min-height: 0;
+    padding-bottom: 0;
+    font-size: 0.96rem;
+  }
+
   .home-showcase-collage {
     grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 10px;
+  }
+
+  .home-showcase-collage__tile,
+  .home-showcase-poster__thumb {
+    min-height: 88px;
+    border-radius: 10px;
+  }
+
+  .home-showcase-compact__title,
+  .home-showcase-poster__headline span {
+    font-size: clamp(1.85rem, 9vw, 2.45rem);
+  }
+
+  .home-showcase-section__head {
+    text-align: left;
+    padding-inline: 4px;
   }
 
   .home-showcase-linkGrid {
-    justify-content: stretch;
+    justify-content: flex-start;
   }
 
   .home-showcase-linkChip {
     width: 100%;
+  }
+
+  .home-showcase-tagCloud {
+    justify-content: flex-start;
   }
 }
 
