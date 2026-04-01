@@ -12508,6 +12508,21 @@ body.finder-tag-picker-open {
     display: grid;
   }
 
+  .detail-list-link,
+  .editorial-page--article .detail-list-link {
+    grid-template-columns: 1fr;
+    align-items: start;
+    gap: 0.75rem;
+  }
+
+  .detail-list-link__thumb,
+  .editorial-page--article .detail-list-link__thumb {
+    width: 100%;
+    min-height: 78px;
+    padding: 0.75rem;
+    border-radius: 14px;
+  }
+
   .editorial-page--work .pdp-gallery__hero {
     min-height: 240px;
   }
