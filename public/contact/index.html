@@ -40,6 +40,7 @@
   <script src="/assets/site-config.js"></script>
   <script src="/assets/finder-seed.js"></script>
   <script src="/site.js" defer></script>
+  <script src="/assets/contact-form.js" defer></script>
 </head>
 <body>
 <a class="skip-link" href="#main">本文へスキップ</a>
@@ -66,43 +67,38 @@
             <div class="contact-simple-header__body">
               <p class="contact-simple-header__eyebrow">Contact</p>
               <h1 class="h2">フォームによるお問い合わせ</h1>
-              <p class="muted">掲載修正、権利関係、運営連絡を受けるための、シンプルな窓口ページです。</p>
+              <p class="muted">掲載修正、権利関係、運営連絡を受けるための窓口ページです。</p>
             </div>
           </header>
 
-          <section class="contact-simple-note" aria-label="案内">
-            <p>このページは仮フォームです。公開前に、実際のフォーム送信先またはメール窓口へ差し替えてください。</p>
-            <p class="muted">削除依頼や権利関係も、ここから同じ窓口で受ける前提にしています。</p>
-          </section>
-
-          <form class="contact-simple-form">
+          <form class="contact-simple-form" data-contact-form>
             <label class="contact-simple-form__field">
               <span>種別</span>
-              <select name="kind">
-                <option>選択してください</option>
-                <option>掲載修正について</option>
-                <option>権利関係・削除依頼</option>
-                <option>運営への連絡</option>
+              <select name="kind" required>
+                <option value="" selected disabled>選択してください</option>
+                <option value="掲載修正について">掲載修正について</option>
+                <option value="権利関係・削除依頼">権利関係・削除依頼</option>
+                <option value="運営への連絡">運営への連絡</option>
               </select>
             </label>
 
             <label class="contact-simple-form__field">
               <span>お名前</span>
-              <input type="text" name="name" placeholder="お名前を入力してください" />
+              <input type="text" name="name" placeholder="お名前を入力してください" autocomplete="name" required />
             </label>
 
             <label class="contact-simple-form__field">
               <span>メールアドレス</span>
-              <input type="email" name="email" placeholder="you@example.com" />
+              <input type="email" name="email" placeholder="you@example.com" autocomplete="email" required />
             </label>
 
             <label class="contact-simple-form__field">
               <span>本文</span>
-              <textarea name="message" placeholder="内容を入力してください"></textarea>
+              <textarea name="message" placeholder="内容を入力してください" required></textarea>
             </label>
 
-            <p class="contact-simple-form__hint">送信ボタンは見た目の仮置きです。実運用ではフォーム送信やメール導線へ接続してください。</p>
-            <button class="contact-simple-submit" type="button">送信する</button>
+            <button class="contact-simple-submit" type="submit" data-contact-submit disabled>送信する</button>
+            <p class="contact-simple-form__status" data-contact-status hidden aria-live="polite"></p>
           </form>
         </div>
 

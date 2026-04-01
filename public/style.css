@@ -3011,6 +3011,31 @@ body {
   cursor: pointer;
 }
 
+.contact-simple-submit:disabled {
+  opacity: 0.55;
+  cursor: not-allowed;
+}
+
+.contact-simple-form__status {
+  margin: 0;
+  padding: 0.9rem 1rem;
+  border-radius: 14px;
+  font-size: 0.9rem;
+  line-height: 1.7;
+}
+
+.contact-simple-form__status[data-state="success"] {
+  background: #eef8f0;
+  border: 1px solid #cfe7d5;
+  color: #275936;
+}
+
+.contact-simple-form__status[data-state="error"] {
+  background: #fff4f4;
+  border: 1px solid #f1d0d0;
+  color: #8a2b2b;
+}
+
 .contact-simple-links {
   display: flex;
   flex-wrap: wrap;
