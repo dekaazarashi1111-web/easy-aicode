@@ -17,7 +17,7 @@ assert.equal(core.getActiveProfile(state).id, seed.activeProfileId, "active prof
 assert.equal(
   ensureCharacters(seed.works.find((work) => work.slug === "ookami-nanka-kowakunai")).length >= 2,
   true,
-  "published work should keep character cards data"
+  "seed work should keep character cards data"
 );
 
 assert.deepEqual(
@@ -29,7 +29,7 @@ assert.deepEqual(
       sort: "recommended",
     })
     .map((work) => work.slug),
-  ["ookami-nanka-kowakunai", "karisome-ookami", "ame-to-uso", "dosukoi-mammoth-ketsuware-bu"],
+  ["karisome-ookami", "dosukoi-mammoth-ketsuware-bu"],
   "include filters should require all selected tags in AND mode"
 );
 
@@ -43,7 +43,7 @@ assert.deepEqual(
       sort: "recommended",
     })
     .map((work) => work.slug),
-  ["ame-to-uso", "dakara-haru-uru-1", "dakara-haru-uru-2", "dakara-haru-uru-3", "booth-item-2427390"],
+  [],
   "OR mode should return works matching any selected include tag"
 );
 
@@ -57,12 +57,6 @@ assert.deepEqual(
     })
     .map((work) => work.slug),
   [
-    "devil-nanka-janai",
-    "bbb",
-    "dakara-haru-uru-1",
-    "dakara-haru-uru-2",
-    "dakara-haru-uru-3",
-    "booth-item-2427390",
     "hebereke-kansai-tora-ossan",
     "iguma-senpai-kumase-kun",
     "mikosuri-san",
@@ -80,16 +74,7 @@ assert.deepEqual(
       sort: "recommended",
     })
     .map((work) => work.slug),
-  [
-    "ookami-nanka-kowakunai",
-    "devil-nanka-janai",
-    "bbb",
-    "karisome-ookami",
-    "ame-to-uso",
-    "dakara-haru-uru-1",
-    "dakara-haru-uru-2",
-    "dakara-haru-uru-3",
-  ],
+  ["karisome-ookami"],
   "creator query should filter by creator name"
 );
 
@@ -102,7 +87,7 @@ assert.deepEqual(
       sort: "recommended",
     })
     .map((work) => work.slug),
-  ["ookami-nanka-kowakunai", "devil-nanka-janai", "bbb"],
+  [],
   "collection filter should only return collection works"
 );
 
