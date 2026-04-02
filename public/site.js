@@ -128,9 +128,9 @@ const updateBrandCopy = () => {
   const siteName = document.querySelector('meta[property="og:site_name"]');
   if (siteName) siteName.setAttribute("content", SITE_CONFIG.BRAND_NAME);
 
-  if (/(Media Canvas|ケモホモ作品ファインダー)/.test(document.title)) {
+  if (/(Media Canvas|ケモホモ作品ファインダー|ケモホモドットコム)/.test(document.title)) {
     document.title = document.title.replace(
-      /(Media Canvas|ケモホモ作品ファインダー)/g,
+      /(Media Canvas|ケモホモ作品ファインダー|ケモホモドットコム)/g,
       SITE_CONFIG.BRAND_NAME
     );
   }
@@ -143,10 +143,10 @@ const updateBrandCopy = () => {
   titleMeta.forEach((meta) => {
     if (!meta) return;
     const current = meta.getAttribute("content") || "";
-    if (/(Media Canvas|ケモホモ作品ファインダー)/.test(current)) {
+    if (/(Media Canvas|ケモホモ作品ファインダー|ケモホモドットコム)/.test(current)) {
       meta.setAttribute(
         "content",
-        current.replace(/(Media Canvas|ケモホモ作品ファインダー)/g, SITE_CONFIG.BRAND_NAME)
+        current.replace(/(Media Canvas|ケモホモ作品ファインダー|ケモホモドットコム)/g, SITE_CONFIG.BRAND_NAME)
       );
     }
   });
@@ -154,7 +154,7 @@ const updateBrandCopy = () => {
 
 updateBrandCopy();
 
-const BRAND_NAME = SITE_CONFIG.BRAND_NAME || "ケモホモ作品ファインダー";
+const BRAND_NAME = SITE_CONFIG.BRAND_NAME || "ケモホモドットコム";
 const FINDER_STORAGE_KEY = "finder-canvas-state";
 const RECENT_HISTORY_HASH = "#recent-history";
 const SAVED_SEARCH_HASH = "#saved-searches";

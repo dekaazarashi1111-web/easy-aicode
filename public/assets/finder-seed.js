@@ -12,7 +12,7 @@
       {
         id: "kemohomo-main",
         slug: "kemohomo-main",
-        name: "ケモホモ作品ファインダー",
+        name: "ケモホモドットコム",
         shortName: "ケモホモ",
         heroTitle: "ケモホモ作品を、狼・虎・異世界・主従の入口から探す",
         heroDescription:
@@ -61,7 +61,7 @@
       {
         id: "kemohomo-tf",
         slug: "kemohomo-tf",
-        name: "ケモホモ異世界ファインダー",
+        name: "ケモホモドットコム異世界",
         shortName: "異世界ケモホモ",
         heroTitle: "異世界と多種族のケモホモ作品を、シリーズ単位で掘る",
         heroDescription:

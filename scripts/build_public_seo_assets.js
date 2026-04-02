@@ -8,7 +8,7 @@ const core = require("../public/assets/finder-core.js");
 const articleIndex = require("../public/assets/articles.js");
 
 const SITE_URL = process.env.SITE_URL || "https://kemohomo.com";
-const BRAND_NAME = "ケモホモ作品ファインダー";
+const BRAND_NAME = "ケモホモドットコム";
 const ROOT_DIR = path.resolve(__dirname, "..");
 const PUBLIC_DIR = path.join(ROOT_DIR, "public");
 const ARTICLES_DIR = path.join(PUBLIC_DIR, "articles");
