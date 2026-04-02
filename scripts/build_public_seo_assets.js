@@ -74,7 +74,11 @@ const BODY_ICON_MAP = {
   },
   "body-muscular": {
     src: "/assets/quick-filters/body-muscular.png",
-    label: "筋肉",
+    label: "筋肉・ガチムチ",
+  },
+  "body-beefy": {
+    src: "/assets/quick-filters/body-muscular.png",
+    label: "筋肉・ガチムチ",
   },
   "body-fat": {
     src: "/assets/quick-filters/body-fat.png",

@@ -209,8 +209,8 @@
       imageSrc: "/assets/quick-filters/body-normal.png",
     },
     {
-      tagId: "body-muscular",
-      label: "筋肉",
+      tagIds: ["body-muscular", "body-beefy"],
+      label: "筋肉・ガチムチ",
       imageSrc: "/assets/quick-filters/body-muscular.png",
     },
     {
@@ -226,6 +226,12 @@
   ];
   const QUICK_FILTER_AGE_TAG_IDS = QUICK_FILTER_AGE_OPTIONS.map((option) => option.tagId);
   const QUICK_FILTER_AGE_TAG_ID_SET = new Set(QUICK_FILTER_AGE_TAG_IDS);
+  const getQuickFilterOptionTagIds = (option) =>
+    ensureArray(option?.tagIds).length
+      ? ensureArray(option.tagIds)
+      : option?.tagId
+        ? [option.tagId]
+        : [];
   const QUICK_FILTER_TAG_PREVIEW_LIMIT = 10;
   const HOVER_GALLERY_INTERVAL_MS = 3000;
 
@@ -249,6 +255,7 @@
   const getQuickFilterTagLabel = (tagId, tagMap) => {
     const ageOption = QUICK_FILTER_AGE_OPTIONS.find((option) => option.tagId === tagId);
     if (ageOption) return ageOption.label;
+    if (tagId === "body-muscular" || tagId === "body-beefy") return "筋肉・ガチムチ";
     return tagMap.get(tagId)?.label || tagId;
   };
 
@@ -1342,11 +1349,11 @@
   const getQuickFilterSummary = (state, tagMap) => {
     const parts = [];
     normalizeCharacters(state.characters).forEach((character, index) => {
-      const labels = [
+      const labels = unique([
         ...ensureArray(character.speciesTagIds).map((tagId) => getQuickFilterTagLabel(tagId, tagMap)),
         ...ensureArray(character.bodyTypeTagIds).map((tagId) => getQuickFilterTagLabel(tagId, tagMap)),
         ...ensureArray(character.ageFeelTagIds).map((tagId) => getQuickFilterTagLabel(tagId, tagMap)),
-      ];
+      ]);
       if (!labels.length) return;
       parts.push(`キャラ${index + 1}: ${labels.join(" / ")}`);
     });
@@ -1918,7 +1925,7 @@
         { label: "熊", meta: "熊系の入口", href: createFinderUrl({ includeTagIds: ["species-bear"] }), icon: "work" },
         { label: "狼", meta: "狼系の入口", href: createFinderUrl({ includeTagIds: ["species-wolf"] }), icon: "collection" },
         { label: "狐", meta: "狐系の入口", href: createFinderUrl({ includeTagIds: ["species-fox"] }), icon: "tag" },
-        { label: "筋肉", meta: "体格感から絞る", href: createFinderUrl({ includeTagIds: ["body-muscular"] }), icon: "compare" },
+        { label: "筋肉・ガチムチ", meta: "体格感から絞る", href: createFinderUrl({ includeTagIds: ["body-muscular", "body-beefy"], matchMode: "or" }), icon: "compare" },
         { label: "入口特集", meta: "特集から探し始める", href: "/collections/", icon: "save" },
         { label: "除外条件", meta: "苦手条件を外す", href: "/builder/", icon: "delete" },
       ].forEach((item) => {
@@ -2350,7 +2357,7 @@
       paginationRoot.append(summary, controls);
     };
 
-    const toggleCharacterFieldValue = (field, tagId) => {
+    const toggleCharacterFieldValues = (field, tagIds) => {
       const character = normalizeCharacters(pageState.characters)[0];
       const nextCharacter = normalizeCharacterState(character);
       const key =
@@ -2359,9 +2366,13 @@
           : field === "body"
             ? "bodyTypeTagIds"
             : "ageFeelTagIds";
-      nextCharacter[key] = ensureArray(nextCharacter[key]).includes(tagId)
-        ? ensureArray(nextCharacter[key]).filter((value) => value !== tagId)
-        : unique([...ensureArray(nextCharacter[key]), tagId]);
+      const nextTagIds = unique(ensureArray(tagIds));
+      if (!nextTagIds.length) return;
+      const currentValues = ensureArray(nextCharacter[key]);
+      const hasAllSelected = nextTagIds.every((tagId) => currentValues.includes(tagId));
+      nextCharacter[key] = hasAllSelected
+        ? currentValues.filter((value) => !nextTagIds.includes(value))
+        : unique([...currentValues, ...nextTagIds]);
       pageState.characters = [nextCharacter];
     };
 
@@ -2634,14 +2645,15 @@
       bodyField.appendChild(createElement("strong", "catalog-quick-filter-field__label", "体型"));
       const bodyGrid = createElement("div", "catalog-quick-filter-bodyGrid");
       QUICK_FILTER_BODY_OPTIONS.forEach((option) => {
+        const optionTagIds = getQuickFilterOptionTagIds(option);
         bodyGrid.appendChild(
           createQuickFilterBodyButton({
             label: option.label,
             imageSrc: option.imageSrc,
-            selected: character.bodyTypeTagIds.includes(option.tagId),
+            selected: optionTagIds.some((tagId) => character.bodyTypeTagIds.includes(tagId)),
             dataset: {
               quickCharacterField: "body",
-              quickTagId: option.tagId,
+              quickTagIds: optionTagIds.join(","),
             },
           })
         );
@@ -3433,9 +3445,12 @@
         const quickCharacterButton = event.target.closest("[data-quick-character-field]");
         if (quickCharacterButton) {
           const field = quickCharacterButton.dataset.quickCharacterField;
-          const tagId = quickCharacterButton.dataset.quickTagId || "";
-          if (!field || !tagId) return;
-          toggleCharacterFieldValue(field, tagId);
+          const tagIds = (quickCharacterButton.dataset.quickTagIds || quickCharacterButton.dataset.quickTagId || "")
+            .split(",")
+            .map((tagId) => tagId.trim())
+            .filter(Boolean);
+          if (!field || !tagIds.length) return;
+          toggleCharacterFieldValues(field, tagIds);
           pageState.page = 1;
           applyAndRender();
           return;
