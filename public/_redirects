@@ -1,3 +1,5 @@
+/ /finder/ 301!
+/index.html /finder/ 301!
 /about /404.html 404
 /about/ /404.html 404
 /about/index.html /404.html 404

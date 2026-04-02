@@ -1556,6 +1556,24 @@ ${renderEditorialFooter()}
 `;
 };
 
+const renderRootRedirectPage = () => `<!doctype html>
+<html lang="ja">
+<head>
+  <meta charset="utf-8" />
+  <meta http-equiv="refresh" content="0; url=/finder/" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>作品検索へ移動します | ${escapeHtml(BRAND_NAME)}</title>
+  <meta name="robots" content="noindex,follow" />
+  <link rel="canonical" href="${escapeHtml(absoluteUrl("/finder/"))}" />
+  <script>window.location.replace("/finder/");</script>
+</head>
+<body>
+  ${GENERATED_MARK}
+  <p><a href="/finder/">作品検索へ移動します。</a></p>
+</body>
+</html>
+`;
+
 const renderArticlesIndexPage = () => {
   if (!recentArticles.length) {
     const listLd = {
@@ -2120,7 +2138,7 @@ const writeFile = (filePath, content) => {
 const buildSitemap = () => {
   const latestPublishedAt = recentArticles[0]?.publishedAt || "2026-04-02";
   const pages = [
-    { loc: absoluteUrl("/"), lastmod: latestPublishedAt, changefreq: "weekly", priority: "1.0" },
+    { loc: absoluteUrl("/finder/"), lastmod: latestPublishedAt, changefreq: "weekly", priority: "1.0" },
     { loc: absoluteUrl("/collections/"), lastmod: latestPublishedAt, changefreq: "weekly", priority: "0.9" },
     { loc: absoluteUrl("/articles/"), lastmod: latestPublishedAt, changefreq: "weekly", priority: "0.8" },
     ...publicCollections.map((collection) => {
@@ -2182,7 +2200,7 @@ const buildStaticPages = () => {
   cleanGeneratedChildren(WORKS_DIR);
   cleanGeneratedChildren(COLLECTIONS_DIR, { preserveNames: ["index.html"] });
   syncGeneratedWorkPosters(publishedWorks);
-  writeFile(path.join(PUBLIC_DIR, "index.html"), renderHomePage());
+  writeFile(path.join(PUBLIC_DIR, "index.html"), renderRootRedirectPage());
   writeFile(path.join(PUBLIC_DIR, "articles", "index.html"), renderArticlesIndexPage());
   recentArticles.forEach((article) => {
     writeFile(path.join(ARTICLES_DIR, article.slug, "index.html"), renderArticlePage(article));
