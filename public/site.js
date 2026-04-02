@@ -40,7 +40,7 @@ const toWorkPath = (workOrSlug) => {
       : typeof workOrSlug?.slug === "string"
         ? workOrSlug.slug
         : "";
-  return slug ? `/works/${encodeURIComponent(slug)}/` : "/finder/";
+  return slug ? `/works/${encodeURIComponent(slug)}/` : "/";
 };
 
 const updateSeoUrls = () => {
@@ -335,7 +335,7 @@ const composeFinderCanvasState = (rawState) => {
         ageFeelTagIds: character.ageFeelTagIds.filter((tagId) => validTagIds.has(tagId)),
       })),
       sort: item?.sort || "recommended",
-      collectionId: validCollectionIds.has(item?.collectionId) ? item.collectionId : "",
+      collectionId: "",
       matchMode: item?.matchMode === "or" ? "or" : "and",
       includeTagIds: uniqueFinderValues(item?.includeTagIds).filter((tagId) => validTagIds.has(tagId)),
       excludeTagIds: uniqueFinderValues(item?.excludeTagIds).filter((tagId) => validTagIds.has(tagId)),
@@ -409,7 +409,6 @@ const buildFinderSearchHref = (search = {}) => {
   if (search.query) params.set("q", search.query);
   if (search.creatorQuery) params.set("creator", search.creatorQuery);
   if (search.sort && search.sort !== "recommended") params.set("sort", search.sort);
-  if (search.collectionId) params.set("collection", search.collectionId);
   if (search.matchMode === "or") params.set("mode", "or");
 
   uniqueFinderValues(search.includeTagIds).forEach((tagId) => params.append("include", tagId));
@@ -418,7 +417,7 @@ const buildFinderSearchHref = (search = {}) => {
   character.bodyTypeTagIds.forEach((tagId) => params.append("c1_body", tagId));
   character.ageFeelTagIds.forEach((tagId) => params.append("c1_age", tagId));
 
-  return params.toString() ? `/finder/?${params.toString()}` : "/finder/";
+  return params.toString() ? `/?${params.toString()}` : "/";
 };
 
 const getSavedSearchSummary = (search = {}) => {
@@ -445,7 +444,6 @@ const getSavedSearchSummary = (search = {}) => {
   if (characterLabels.length) parts.push(`キャラ1: ${characterLabels.join(" / ")}`);
   if (includeLabels.length) parts.push(`含める: ${includeLabels.join(" / ")}`);
   if (excludeLabels.length) parts.push(`除外: ${excludeLabels.join(" / ")}`);
-  if (search.collectionId) parts.push("特集あり");
   if (search.matchMode === "or") parts.push("いずれか一致");
   return parts.join(" / ") || "条件なし";
 };
@@ -474,7 +472,7 @@ const normalizePathname = (pathname) => {
 
 const getCurrentSection = (pathname = window.location.pathname) => {
   const normalized = normalizePathname(pathname);
-  if (normalized === "/") return "home";
+  if (normalized === "/") return "finder";
   if (
     normalized.startsWith("/finder/") ||
     normalized.startsWith("/work/") ||
@@ -483,23 +481,20 @@ const getCurrentSection = (pathname = window.location.pathname) => {
     return "finder";
   }
   if (normalized.startsWith("/builder/")) return "builder";
-  if (normalized.startsWith("/collections/") || normalized.startsWith("/collection/")) {
-    return "collections";
-  }
   if (normalized.startsWith("/apply/")) return "apply";
   if (normalized.startsWith("/contact/")) return "contact";
   return "";
 };
 
 const NAV_ITEMS = [
-  { href: "/finder/", label: "作品を探す", section: "finder" },
+  { href: "/", label: "作品を探す", section: "finder" },
   { href: "/apply/", label: "掲載申請", section: "apply" },
   { href: "/contact/", label: "お問い合わせ", section: "contact" },
 ];
 
 const HEADER_ACTIONS = [
-  { href: "/finder/#saved-searches", label: "保存検索", icon: "save" },
-  { href: "/finder/#recent-history", label: "閲覧履歴", icon: "recent" },
+  { href: "/#saved-searches", label: "保存検索", icon: "save" },
+  { href: "/#recent-history", label: "閲覧履歴", icon: "recent" },
 ];
 
 const EDITORIAL_FOOTER_TEMPLATE = (brandName) => `
@@ -507,16 +502,15 @@ const EDITORIAL_FOOTER_TEMPLATE = (brandName) => `
     <section class="editorial-footer__brand">
       <p class="editorial-footer__eyebrow">作品探索</p>
       <h2 data-site-brand>${brandName}</h2>
-      <p>作品検索と特集一覧を行き来しながら、次に読む作品と次に試す条件をつなぐための土台です。</p>
-      <a class="btn btn--primary btn--sm" href="/finder/">作品検索へ</a>
+      <p>作品検索を起点に、次に読む作品と次に試す条件をつなぐための土台です。</p>
+      <a class="btn btn--primary btn--sm" href="/">作品検索へ</a>
     </section>
 
     <div class="editorial-footer__column">
       <h3>探す</h3>
       <ul class="editorial-footer__links">
-        <li><a href="/finder/">作品検索</a></li>
+        <li><a href="/">作品検索</a></li>
         <li><a href="/builder/">詳細条件ビルダー</a></li>
-        <li><a href="/collections/">特集一覧</a></li>
       </ul>
     </div>
 
@@ -533,9 +527,9 @@ const EDITORIAL_FOOTER_TEMPLATE = (brandName) => `
   <div class="container editorial-footer__bottom">
     <p class="editorial-footer__legal" data-site-copyright>© ${brandName}</p>
     <div class="editorial-footer__bottom-links">
-      <a href="/">ホーム</a>
-      <a href="/finder/">作品検索</a>
-      <a href="/collections/">特集一覧</a>
+      <a href="/">作品検索</a>
+      <a href="/builder/">詳細条件</a>
+      <a href="/contact/">お問い合わせ</a>
     </div>
   </div>
 `;
@@ -1827,7 +1821,7 @@ const createSearchFilterScreen = () => {
   panel.setAttribute("aria-labelledby", "site-search-filter-title");
 
   form.className = "catalog-search-filter-screen__form";
-  form.action = "/finder/";
+  form.action = "/";
   form.method = "get";
 
   queryInput.type = "hidden";
@@ -2157,7 +2151,7 @@ const renderSiteChrome = () => {
     menu.setAttribute("aria-label", "主要メニュー");
 
     searchForm.className = "catalog-shell__searchForm";
-    searchForm.action = "/finder/";
+    searchForm.action = "/";
     searchForm.method = "get";
     searchShell.className = "catalog-shell__search";
     searchShell.appendChild(createIcon("search", "catalog-shell__searchIcon"));

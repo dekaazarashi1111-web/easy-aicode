@@ -62,7 +62,7 @@
       creatorQuery: (item.creatorQuery || "").trim(),
       characters: normalizeSearchCharacters(item.characters),
       sort: item.sort || "recommended",
-      collectionId: item.collectionId || "",
+      collectionId: "",
       matchMode: item.matchMode === "or" ? "or" : "and",
       includeTagIds: core.unique(item.includeTagIds),
       excludeTagIds: core.unique(item.excludeTagIds),
@@ -126,7 +126,7 @@
       })),
       includeTagIds: item.includeTagIds.filter((tagId) => validTagIds.has(tagId)),
       excludeTagIds: item.excludeTagIds.filter((tagId) => validTagIds.has(tagId)),
-      collectionId: validCollectionIds.has(item.collectionId) ? item.collectionId : "",
+      collectionId: "",
     }));
     return next;
   };
@@ -466,7 +466,7 @@
         creatorQuery: (input.creatorQuery || "").trim(),
         characters: normalizeSearchCharacters(input.characters),
         sort: input.sort || "recommended",
-        collectionId: input.collectionId || "",
+        collectionId: "",
         matchMode: input.matchMode === "or" ? "or" : "and",
         includeTagIds: core.unique(input.includeTagIds),
         excludeTagIds: core.unique(input.excludeTagIds),

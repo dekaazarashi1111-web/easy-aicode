@@ -640,13 +640,13 @@
     const submit = createElement("button", "catalog-home-search-hero__submit", "探す");
     const quick = createElement("div", "catalog-home-search-hero__quick");
     const links = [
-      { label: "まずここから", href: createFinderUrl({ collectionId: "start-here" }) },
+      { label: "歳の差", href: createFinderUrl({ includeTagIds: ["motif-age-gap"] }) },
       { label: "TFあり", href: createFinderUrl({ includeTagIds: ["tf-present"] }) },
       { label: "NTRなし", href: createFinderUrl({ includeTagIds: ["no-ntr"] }) },
       { label: "詳細条件ビルダー", href: "/builder/" },
     ];
 
-    form.action = "/finder/";
+    form.action = "/";
     form.method = "get";
     input.type = "search";
     input.name = "q";
@@ -990,12 +990,11 @@
             <p class="catalog-section-heading__eyebrow">Detailed Search</p>
             <h1 class="catalog-builder-hero__title">詳細条件ビルダー</h1>
             <p class="catalog-builder-hero__summary">
-              広い入口はトップや通常検索、細かい組み合わせはここで作ります。今の段階ではタグ・作者・特集・除外条件をまとめて組み立てるための独立導線です。
+              広い入口は通常検索、細かい組み合わせはここで作ります。タグ・作者・除外条件をまとめて組み立てるための独立導線です。
             </p>
           </div>
           <div class="catalog-builder-hero__actions">
-            <a href="/finder/" class="catalog-builder-hero__link">通常検索へ</a>
-            <a href="/collections/" class="catalog-builder-hero__link catalog-builder-hero__link--secondary">入口特集へ</a>
+            <a href="/" class="catalog-builder-hero__link">通常検索へ</a>
           </div>
         </section>
         <div class="catalog-builder-layout">
@@ -1015,10 +1014,6 @@
                 <label class="catalog-search-sidebar__field">
                   <span>作者・サークル</span>
                   <input type="search" autocomplete="off" placeholder="作者名やサークル名" data-builder-creator />
-                </label>
-                <label class="catalog-search-sidebar__field">
-                  <span>入口特集</span>
-                  <select data-builder-collection></select>
                 </label>
                 <div class="catalog-search-sidebar__field">
                   <span>一致方法</span>
@@ -1060,7 +1055,7 @@
               <div class="catalog-pill-cloud" data-builder-active></div>
               <div class="catalog-mini-stack" data-builder-preview-works></div>
               <div class="catalog-builder-preview__actions">
-                <a href="/finder/" class="catalog-builder-preview__primary" data-builder-open-results>この条件で一覧を見る</a>
+                <a href="/" class="catalog-builder-preview__primary" data-builder-open-results>この条件で一覧を見る</a>
                 <button type="button" data-builder-save-search>条件を保存</button>
                 <button type="button" data-builder-copy-link>共有URLをコピー</button>
                 <button type="button" data-builder-clear>最初からやり直す</button>
@@ -1172,7 +1167,7 @@
               <div class="finder-relax-list" data-finder-rescue></div>
               <div class="catalog-search-empty-grid">
                 <div class="catalog-search-empty-grid__column">
-                  <h3>入口特集</h3>
+                  <h3>おすすめ条件</h3>
                   <div class="catalog-mini-stack" data-finder-empty-collections></div>
                 </div>
                 <div class="catalog-search-empty-grid__column">
@@ -1208,13 +1203,12 @@
     if (query) params.set("q", query);
     if (creatorQuery) params.set("creator", creatorQuery);
     if (sort && sort !== "recommended") params.set("sort", sort);
-    if (collectionId) params.set("collection", collectionId);
     if (matchMode === "or") params.set("mode", "or");
     unique(includeTagIds).forEach((tagId) => params.append("include", tagId));
     unique(excludeTagIds).forEach((tagId) => params.append("exclude", tagId));
     appendCharacterParams(params, characters);
     if (page && page > 1) params.set("page", String(page));
-    return `/finder/${params.toString() ? `?${params.toString()}` : ""}`;
+    return params.toString() ? `/?${params.toString()}` : "/";
   };
 
   const createArticlesUrl = ({
@@ -1280,9 +1274,6 @@
       if (!tag) return;
       parts.push(`除外: ${tag.label}`);
     });
-    if (search.collectionId) {
-      parts.push("特集");
-    }
     if (search.matchMode === "or") {
       parts.push("いずれか一致");
     }
@@ -1369,16 +1360,21 @@
     }),
   ];
 
-  const getQuickFilterBuilderHref = (state) =>
-    createFinderUrl({
-      query: state.query,
-      creatorQuery: state.creatorQuery,
-      sort: state.sort,
-      collectionId: state.collectionId,
-      includeTagIds: unique([...state.includeTagIds, ...getAllCharacterTagIds(state.characters)]),
-      excludeTagIds: state.excludeTagIds,
-      matchMode: state.matchMode,
-    }).replace("/finder/", "/builder/");
+  const getQuickFilterBuilderHref = (state) => {
+    const finderUrl = new URL(
+      createFinderUrl({
+        query: state.query,
+        creatorQuery: state.creatorQuery,
+        sort: state.sort,
+        collectionId: state.collectionId,
+        includeTagIds: unique([...state.includeTagIds, ...getAllCharacterTagIds(state.characters)]),
+        excludeTagIds: state.excludeTagIds,
+        matchMode: state.matchMode,
+      }),
+      window.location.origin
+    );
+    return `/builder/${finderUrl.search}`;
+  };
 
   const getQuickFilterSummary = (state, tagMap) => {
     const parts = [];
@@ -2281,7 +2277,7 @@
       pageState.query = params.get("q") || "";
       pageState.creatorQuery = params.get("creator") || "";
       pageState.sort = params.get("sort") || "recommended";
-      pageState.collectionId = params.get("collection") || "";
+      pageState.collectionId = "";
       pageState.matchMode = params.get("mode") === "or" ? "or" : "and";
       pageState.includeTagIds = unique(params.getAll("include")).filter((tagId) =>
         visibleTagIdSet.has(tagId)
@@ -2320,7 +2316,7 @@
       includeTagIds: unique(overrides.includeTagIds ?? pageState.includeTagIds),
       excludeTagIds: unique(overrides.excludeTagIds ?? pageState.excludeTagIds),
       sort: overrides.sort ?? pageState.sort,
-      collectionId: overrides.collectionId ?? pageState.collectionId,
+      collectionId: "",
       matchMode: overrides.matchMode ?? pageState.matchMode,
       characters: normalizeCharacters(overrides.characters ?? pageState.characters),
     });
@@ -2335,7 +2331,7 @@
         includeTagIds: searchState.includeTagIds,
         excludeTagIds: searchState.excludeTagIds,
         sort: searchState.sort,
-        collectionId: searchState.collectionId,
+        collectionId: "",
         matchMode: searchState.matchMode,
       });
       return filtered.filter((work) => matchesCharacters(work, searchState.characters));
@@ -2784,7 +2780,7 @@
         savedRoot.appendChild(
           createMiniLink({
             label: "保存した検索はまだありません",
-            href: "/finder/",
+            href: "/",
             meta: "条件を保存するとここからすぐ再訪できます。",
             icon: "save",
           })
@@ -2818,17 +2814,14 @@
     const renderPresets = () => {
       if (!presetsRoot) return;
       presetsRoot.textContent = "";
-      core
-        .getProfileCollections(state, profile.id, { publicOnly: true })
-        .filter((collection) => ensureArray(profile.featuredCollectionIds).includes(collection.id))
-        .forEach((collection) => {
-          presetsRoot.appendChild(
-            createPillLink({
-              label: collection.title,
-              href: createFinderUrl({ collectionId: collection.id }),
-            })
-          );
-        });
+      visibleTags.slice(0, 6).forEach((tag) => {
+        presetsRoot.appendChild(
+          createPillLink({
+            label: tag.label,
+            href: createFinderUrl({ includeTagIds: [tag.id] }),
+          })
+        );
+      });
     };
 
     const renderPopularSearches = () => {
@@ -2838,16 +2831,13 @@
       const summary = core.aggregateLogs(state);
       const searches = summary.topSearches.length
         ? summary.topSearches
-        : core
-            .getProfileCollections(state, profile.id, { publicOnly: true })
-            .slice(0, 4)
-            .map((collection) => ({
-              label: collection.title,
+        : visibleTags.slice(0, 4).map((tag) => ({
+              label: tag.label,
               query: "",
               creatorQuery: "",
-              includeTagIds: [],
+              includeTagIds: [tag.id],
               excludeTagIds: [],
-              collectionId: collection.id,
+              collectionId: "",
               matchMode: "and",
               sort: "recommended",
             }));
@@ -2875,7 +2865,7 @@
         recentRoot.appendChild(
           createMiniLink({
             label: "閲覧履歴はまだありません",
-            href: "/finder/",
+            href: "/",
             meta: "作品詳細を開くとここに履歴がたまります。",
             icon: "recent",
           })
@@ -2954,18 +2944,6 @@
           })
         );
       });
-      if (pageState.collectionId) {
-        const collection = core.getCollection(state, pageState.collectionId);
-        if (collection) {
-          activeRoot.appendChild(
-            createActionButton({
-              label: `特集: ${collection.title}`,
-              className: "plp-chip",
-              dataset: { removeKind: "collection" },
-            })
-          );
-        }
-      }
       if (!activeRoot.childElementCount) {
         activeRoot.appendChild(createElement("span", "catalog-pill catalog-pill--muted", "条件なし"));
       }
@@ -3027,7 +3005,7 @@
         includeTagIds: pageState.includeTagIds,
         excludeTagIds: pageState.excludeTagIds,
         sort: pageState.sort,
-        collectionId: pageState.collectionId,
+        collectionId: "",
         matchMode: pageState.matchMode,
         limit: 5,
       });
@@ -3092,16 +3070,13 @@
     const renderEmptyRecovery = () => {
       if (emptyCollectionsRoot) {
         emptyCollectionsRoot.textContent = "";
-        core
-          .getProfileCollections(state, profile.id, { publicOnly: true })
-          .slice(0, 3)
-          .forEach((collection) => {
+        visibleTags.slice(0, 4).forEach((tag) => {
             emptyCollectionsRoot.appendChild(
               createMiniLink({
-                label: collection.title,
-                href: createFinderUrl({ collectionId: collection.id }),
-                meta: collection.lead || collection.description,
-                icon: "collection",
+                label: tag.label,
+                href: createFinderUrl({ includeTagIds: [tag.id] }),
+                meta: "この条件から探し直せます。",
+                icon: "tag",
               })
             );
           });
@@ -3118,8 +3093,8 @@
           emptyRecentRoot.appendChild(
             createMiniLink({
               label: "最近見た作品はまだありません",
-              href: "/finder/",
-              meta: "入口特集や人気条件から探し直せます。",
+              href: "/",
+              meta: "通常検索から探し直せます。",
               icon: "recent",
             })
           );
@@ -3142,7 +3117,7 @@
         emptyHelpRoot.append(
           createMiniLink({
             label: "通常検索へ戻る",
-            href: "/finder/",
+            href: "/",
             meta: "条件を外して広い入口から再開します。",
             icon: "search",
           }),
@@ -3200,29 +3175,6 @@
     const renderCategories = (filtered) => {
       if (!categoryRoot) return;
       categoryRoot.textContent = "";
-      const collections = core
-        .getProfileCollections(state, profile.id, { publicOnly: true })
-        .map((collection) => core.decorateCollection(collection, state))
-        .slice(0, 8);
-
-      if (filtered.length && collections.length) {
-        collections.forEach((collection) => {
-          const relatedCount = filtered.filter((work) =>
-            ensureArray(work.collectionIds).includes(collection.id)
-          ).length;
-          categoryRoot.appendChild(
-            createCategoryBannerCard({
-              href: createFinderUrl({ collectionId: collection.id }),
-              label: collection.title,
-              description: collection.lead || collection.description,
-              meta: `${relatedCount || collection.workObjects.length}件`,
-              variant: ["storage", "table", "box", "frame"][relatedCount % 4],
-            })
-          );
-        });
-        return;
-      }
-
       groupedTags.slice(0, 8).forEach((group) => {
         categoryRoot.appendChild(
           createCategoryBannerCard({
@@ -3297,35 +3249,6 @@
           });
         });
 
-      if (items.length < 8) {
-        core
-          .getProfileCollections(state, profile.id, { publicOnly: true })
-          .slice(0, 6)
-          .forEach((collection) => {
-            const resultCount = filterFinderWorks({
-              includeTagIds: pageState.includeTagIds,
-              excludeTagIds: pageState.excludeTagIds,
-              sort: pageState.sort,
-              collectionId: collection.id,
-            }).length;
-            if (!resultCount) return;
-            pushItem({
-              label: collection.title,
-              href: createFinderUrl({
-                query: pageState.query,
-                creatorQuery: pageState.creatorQuery,
-                characters: pageState.characters,
-                includeTagIds: pageState.includeTagIds,
-                excludeTagIds: pageState.excludeTagIds,
-                sort: pageState.sort,
-                collectionId: collection.id,
-                matchMode: pageState.matchMode,
-              }),
-              count: resultCount,
-            });
-          });
-      }
-
       items.slice(0, 10).forEach((item) => {
         const listItem = createElement("li", "relatedSearches__list-item");
         const link = createElement("a", "relatedSearches__link", item.label);
@@ -3344,7 +3267,6 @@
         pageState.creatorQuery ||
         pageState.includeTagIds.length ||
         pageState.excludeTagIds.length ||
-        pageState.collectionId ||
         resultCount === 0;
       if (!shouldLog) return;
 
@@ -3354,7 +3276,6 @@
         characters: normalizeCharacters(pageState.characters),
         includeTagIds: pageState.includeTagIds.slice().sort(),
         excludeTagIds: pageState.excludeTagIds.slice().sort(),
-        collectionId: pageState.collectionId,
         sort: pageState.sort,
         matchMode: pageState.matchMode,
         resultCount,
@@ -3370,7 +3291,6 @@
           characters: normalizeCharacters(pageState.characters),
           includeTagIds: pageState.includeTagIds,
           excludeTagIds: pageState.excludeTagIds,
-          collectionId: pageState.collectionId,
           matchMode: pageState.matchMode,
           resultCount,
         });
@@ -3381,7 +3301,6 @@
     const renderResults = () => {
       state = store.loadState();
       const uiState = getUiState(state);
-      const collection = pageState.collectionId ? core.getCollection(state, pageState.collectionId) : null;
       const filtered = filterFinderWorks();
       const totalPages = Math.max(Math.ceil(filtered.length / FINDER_RESULTS_PER_PAGE), 1);
       pageState.page = Math.min(Math.max(pageState.page, 1), totalPages);
@@ -3407,16 +3326,13 @@
 
       const headingLabel = pageState.query
         ? `「${pageState.query}」の検索結果：${filtered.length}件`
-        : collection
-          ? `${collection.title}：${filtered.length}件`
-          : `作品検索：${filtered.length}件`;
+        : `作品検索：${filtered.length}件`;
 
       if (headingRoot) {
         headingRoot.textContent = headingLabel;
       }
       if (summaryRoot) {
-        summaryRoot.textContent =
-          collection?.description || profile.heroDescription || "条件を組み合わせて作品を探します。";
+        summaryRoot.textContent = profile.heroDescription || "条件を組み合わせて作品を探します。";
       }
       if (a11yLive) {
         a11yLive.textContent = `${headingLabel} が見つかりました。`;
@@ -3446,7 +3362,6 @@
       if (pageState.query) conditionFragments.push(`検索語: ${pageState.query}`);
       if (pageState.creatorQuery) conditionFragments.push(`作者: ${pageState.creatorQuery}`);
       if (pageState.matchMode === "or") conditionFragments.push("いずれか一致");
-      if (collection) conditionFragments.push(`特集: ${collection.title}`);
       const quickFilterSummary = getQuickFilterSummary(pageState, tagMap);
       conditionFragments.push(quickFilterSummary === "条件なし" ? "クイック条件なし" : quickFilterSummary);
       statusRoot.textContent = `${filtered.length}件 | ${getSortMeta(pageState.sort).label} | ${pageState.page}/${totalPages}ページ | ${conditionFragments.join(" | ")}`;
@@ -4044,7 +3959,7 @@
           }),
           createMiniLink({
             label: "作品を探す",
-            href: "/finder/",
+            href: "/",
             meta: "記事ではなく作品一覧から探したい時の入口です。",
             icon: "collection",
           }),
@@ -4259,7 +4174,6 @@
 
     const queryInput = root.querySelector("[data-builder-query]");
     const creatorInput = root.querySelector("[data-builder-creator]");
-    const collectionSelect = root.querySelector("[data-builder-collection]");
     const includeRoot = root.querySelector("[data-builder-include-groups]");
     const excludeRoot = root.querySelector("[data-builder-exclude-groups]");
     const activeRoot = root.querySelector("[data-builder-active]");
@@ -4275,7 +4189,6 @@
     if (
       !queryInput ||
       !creatorInput ||
-      !collectionSelect ||
       !includeRoot ||
       !excludeRoot ||
       !activeRoot ||
@@ -4294,7 +4207,6 @@
     const visibleTagIdSet = new Set(visibleTags.map((tag) => tag.id));
     const groupedTags = core.groupTags(visibleTags, state.tagGroups);
     const tagMap = core.getTagMap(state);
-    const collections = core.getProfileCollections(state, profile.id, { publicOnly: true });
 
     const pageState = {
       query: "",
@@ -4310,7 +4222,7 @@
       const params = new URLSearchParams(window.location.search);
       pageState.query = params.get("q") || "";
       pageState.creatorQuery = params.get("creator") || "";
-      pageState.collectionId = params.get("collection") || "";
+      pageState.collectionId = "";
       pageState.matchMode = params.get("mode") === "or" ? "or" : "and";
       pageState.includeTagIds = unique(params.getAll("include")).filter((tagId) =>
         visibleTagIdSet.has(tagId)
@@ -4332,18 +4244,6 @@
     const syncControls = () => {
       queryInput.value = pageState.query;
       creatorInput.value = pageState.creatorQuery;
-      collectionSelect.textContent = "";
-      const defaultOption = document.createElement("option");
-      defaultOption.value = "";
-      defaultOption.textContent = "指定なし";
-      collectionSelect.appendChild(defaultOption);
-      collections.forEach((collection) => {
-        const option = document.createElement("option");
-        option.value = collection.id;
-        option.textContent = collection.title;
-        collectionSelect.appendChild(option);
-      });
-      collectionSelect.value = pageState.collectionId;
       modeButtons.forEach((button) => {
         button.setAttribute(
           "aria-pressed",
@@ -4393,10 +4293,6 @@
       const items = [];
       if (pageState.query) items.push(`作品: ${pageState.query}`);
       if (pageState.creatorQuery) items.push(`作者: ${pageState.creatorQuery}`);
-      if (pageState.collectionId) {
-        const collection = core.getCollection(state, pageState.collectionId);
-        if (collection) items.push(`特集: ${collection.title}`);
-      }
       if (pageState.matchMode === "or") items.push("いずれか一致");
       pageState.includeTagIds.forEach((tagId) => {
         items.push(`含める: ${tagMap.get(tagId)?.label || tagId}`);
@@ -4419,7 +4315,7 @@
         creatorQuery: pageState.creatorQuery,
         includeTagIds: pageState.includeTagIds,
         excludeTagIds: pageState.excludeTagIds,
-        collectionId: pageState.collectionId,
+        collectionId: "",
         matchMode: pageState.matchMode,
         sort: "recommended",
       });
@@ -4433,7 +4329,7 @@
         previewWorksRoot.appendChild(
           createMiniLink({
             label: "通常検索に戻る",
-            href: "/finder/",
+            href: "/",
             meta: "広い入口に戻して探し直せます。",
             icon: "search",
           })
@@ -4503,11 +4399,6 @@
       applyAndRender();
     });
 
-    collectionSelect.addEventListener("change", () => {
-      pageState.collectionId = collectionSelect.value;
-      applyAndRender();
-    });
-
     clearButton?.addEventListener("click", () => {
       pageState.query = "";
       pageState.creatorQuery = "";
@@ -4531,7 +4422,7 @@
         creatorQuery: pageState.creatorQuery,
         includeTagIds: pageState.includeTagIds,
         excludeTagIds: pageState.excludeTagIds,
-        collectionId: pageState.collectionId,
+        collectionId: "",
         matchMode: pageState.matchMode,
         sort: "recommended",
       });

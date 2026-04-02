@@ -7,7 +7,7 @@ const seed = require("../public/assets/finder-seed.js");
 const core = require("../public/assets/finder-core.js");
 const articleIndex = require("../public/assets/articles.js");
 
-const SITE_URL = "https://wintergator.com";
+const SITE_URL = process.env.SITE_URL || "https://wintergator.com";
 const BRAND_NAME = "ケモホモ作品ファインダー";
 const ROOT_DIR = path.resolve(__dirname, "..");
 const PUBLIC_DIR = path.join(ROOT_DIR, "public");
@@ -288,11 +288,10 @@ const createFinderUrl = ({
   const params = new URLSearchParams();
   if (query) params.set("q", query);
   if (creatorQuery) params.set("creator", creatorQuery);
-  if (collectionId) params.set("collection", collectionId);
   if (matchMode === "or") params.set("mode", "or");
   unique(includeTagIds).forEach((tagId) => params.append("include", tagId));
   unique(excludeTagIds).forEach((tagId) => params.append("exclude", tagId));
-  return `/finder/${params.toString() ? `?${params.toString()}` : ""}`;
+  return params.toString() ? `/?${params.toString()}` : "/";
 };
 
 const createBuilderUrl = (params = {}) => {
@@ -708,15 +707,14 @@ const renderEditorialFooter = () => `
       <section class="editorial-footer__brand">
         <p class="editorial-footer__eyebrow">作品探索</p>
         <h2 data-site-brand>${escapeHtml(BRAND_NAME)}</h2>
-        <p>作品検索と特集一覧を行き来しながら、次に読む作品と次に試す条件をつなぐための土台です。</p>
-        <a class="btn btn--primary btn--sm" href="/finder/">作品検索へ</a>
+        <p>作品検索を起点に、次に読む作品と次に試す条件をつなぐための土台です。</p>
+        <a class="btn btn--primary btn--sm" href="/">作品検索へ</a>
       </section>
       <div class="editorial-footer__column">
         <h3>探す</h3>
         <ul class="editorial-footer__links">
-          <li><a href="/finder/">作品検索</a></li>
+          <li><a href="/">作品検索</a></li>
           <li><a href="/builder/">詳細条件ビルダー</a></li>
-          <li><a href="/collections/">特集一覧</a></li>
         </ul>
       </div>
       <div class="editorial-footer__column">
@@ -732,9 +730,9 @@ const renderEditorialFooter = () => `
     <div class="container editorial-footer__bottom">
       <p class="editorial-footer__legal" data-site-copyright>© ${escapeHtml(BRAND_NAME)}</p>
       <div class="editorial-footer__bottom-links">
-        <a href="/">ホーム</a>
-        <a href="/finder/">作品検索</a>
-        <a href="/collections/">特集一覧</a>
+        <a href="/">作品検索</a>
+        <a href="/builder/">詳細条件</a>
+        <a href="/contact/">お問い合わせ</a>
       </div>
     </div>
   </footer>
@@ -765,6 +763,7 @@ const renderHead = ({
   <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
   <link rel="apple-touch-icon" href="/assets/logo.png" />
   <meta name="robots" content="${escapeHtml(robots)}" />
+  <meta name="rating" content="adult" />
   <meta name="author" content="${escapeHtml(BRAND_NAME)}" />
   <meta name="theme-color" content="${escapeHtml(themeColor)}" />
   <meta property="og:site_name" content="${escapeHtml(BRAND_NAME)}" />
@@ -807,35 +806,21 @@ const renderCollectionLinks = (work) =>
     )
     .join("");
 
-const renderArticleSidebar = ({ excludeSlug = "" } = {}) => {
-  if (!recentArticles.length) return "";
-  return `
-  <section class="detail-widget">
-    <h3 class="detail-widget__title">最近公開した記事</h3>
-    <div class="detail-link-list">
-      ${recentArticles
-        .filter((article) => article.slug !== excludeSlug)
-        .slice(0, 3)
-        .map((article) => renderArticleListLink(article))
-        .join("")}
-    </div>
-  </section>
-  <section class="detail-widget">
-    <h3 class="detail-widget__title">記事カテゴリ</h3>
-    <div class="detail-category-list">
-      ${Array.from(articleTypeCounts.entries())
-        .sort((left, right) => right[1] - left[1] || left[0].localeCompare(right[0], "ja"))
-        .map(([type, count]) => renderArticleCategoryChip(type, count))
-        .join("")}
+const renderArticleSidebar = () => `
+  <section class="detail-widget detail-widget--cta">
+    <p class="detail-widget__eyebrow">Finder Hub</p>
+    <h3 class="detail-widget__title">次の行き先を決める</h3>
+    <p class="detail-widget__text">作品検索に戻るか、詳細条件ビルダーへ進んで条件を詰められます。</p>
+    <div class="detail-widget__actions">
+      <a class="btn btn--primary" href="/">作品検索へ</a>
+      <a class="btn btn--secondary" href="/builder/">詳細条件へ</a>
     </div>
   </section>
 `;
-};
 
 const renderPrimaryNav = (currentSection = "") => {
   const navItems = [
-    { href: "/", label: "ホーム", section: "home" },
-    { href: "/finder/", label: "作品検索", section: "finder" },
+    { href: "/", label: "作品を探す", section: "finder" },
     { href: "/apply/", label: "掲載申請", section: "apply" },
     { href: "/contact/", label: "お問い合わせ", section: "contact" },
   ];
@@ -1774,7 +1759,6 @@ const renderWorkPage = (work) => {
     profileId: profile?.id,
     limit: 3,
   });
-  const collectionLinks = renderCollectionLinks(work);
   const publicExternalLinks = getPublicExternalLinks(work);
   const description = truncate(leadText || work.publicNote || work.matchSummary, 140);
   const pagePath = getWorkPath(work);
@@ -1783,7 +1767,7 @@ const renderWorkPage = (work) => {
     "@type": "BreadcrumbList",
     itemListElement: [
       { "@type": "ListItem", position: 1, name: "ホーム", item: absoluteUrl("/") },
-      { "@type": "ListItem", position: 2, name: "作品検索", item: absoluteUrl("/finder/") },
+      { "@type": "ListItem", position: 2, name: "作品検索", item: absoluteUrl("/") },
       { "@type": "ListItem", position: 3, name: work.title, item: absoluteUrl(pagePath) },
     ],
   };
@@ -1829,7 +1813,7 @@ ${renderPrimaryNav()}
     <div class="container stack stack--lg">
       <div class="detail-shell detail-shell--work">
         <div class="detail-primary">
-          <p class="detail-breadcrumb"><a href="/">ホーム</a> / <a href="/finder/">作品検索</a> / ${escapeHtml(work.title)}</p>
+          <p class="detail-breadcrumb"><a href="/">ホーム</a> / <a href="/">作品検索</a> / ${escapeHtml(work.title)}</p>
           <header class="detail-header">
             <div class="detail-badges">
               <span class="detail-badge">${escapeHtml(work.format || "作品")}</span>
@@ -1874,8 +1858,8 @@ ${renderPrimaryNav()}
                 <strong>${escapeHtml(work.seriesTitle || "単巻")}</strong>
               </div>
               <div class="detail-fact">
-                <span>関連特集</span>
-                <strong>${escapeHtml(`${ensureArray(work.collectionIds).length}件`)}</strong>
+                <span>関連作品</span>
+                <strong>${escapeHtml(`${relatedWorks.length}件`)}</strong>
               </div>
             </div>
           </header>
@@ -1883,18 +1867,6 @@ ${renderPrimaryNav()}
           ${renderWorkRecommendationCard({ recommendationBullets: work.recommendationBullets })}
           ${renderWorkGallery(bodyParagraphs.length ? { ...work, publicNote: leadText } : work)}
           ${renderWorkStoryCard(storyParagraphs)}
-          ${
-            collectionLinks
-              ? `
-                  <section class="detail-work-card">
-                    <p class="detail-section__eyebrow">Collections</p>
-                    <h2>この作品から次に行ける入口</h2>
-                    <p>近い温度感や条件の作品へ移りやすいように、関連する入口特集をまとめています。</p>
-                    <div class="detail-tag-row">${collectionLinks}</div>
-                  </section>
-                `
-              : ""
-          }
           <section class="detail-work-card">
             <p class="detail-section__eyebrow">Links</p>
             <h2>外部サイトで作品を確認する</h2>
@@ -2125,32 +2097,20 @@ const writeFile = (filePath, content) => {
 };
 
 const buildSitemap = () => {
-  const latestPublishedAt = recentArticles[0]?.publishedAt || "2026-04-02";
+  const latestPublishedAt =
+    publishedWorks
+      .map((work) => work.updatedAt || work.releasedAt || "")
+      .filter(Boolean)
+      .sort()
+      .reverse()[0] || "2026-04-02";
   const pages = [
-    { loc: absoluteUrl("/finder/"), lastmod: latestPublishedAt, changefreq: "weekly", priority: "1.0" },
-    { loc: absoluteUrl("/collections/"), lastmod: latestPublishedAt, changefreq: "weekly", priority: "0.9" },
-    ...publicCollections.map((collection) => {
-      const workDates = ensureArray(collection.workIds)
-        .map((workId) => workMap.get(workId)?.updatedAt || workMap.get(workId)?.releasedAt || "")
-        .filter(Boolean)
-        .sort()
-        .reverse();
-      return {
-        loc: absoluteUrl(getCollectionPath(collection)),
-        lastmod: workDates[0] || latestPublishedAt,
-        changefreq: "monthly",
-        priority: "0.7",
-      };
-    }),
+    { loc: absoluteUrl("/"), lastmod: latestPublishedAt, changefreq: "weekly", priority: "1.0" },
     ...publishedWorks.map((work) => ({
       loc: absoluteUrl(getWorkPath(work)),
       lastmod: work.updatedAt || work.releasedAt || latestPublishedAt,
       changefreq: "monthly",
       priority: "0.6",
     })),
-    { loc: absoluteUrl("/contact/"), lastmod: latestPublishedAt, changefreq: "monthly", priority: "0.4" },
-    { loc: absoluteUrl("/privacy"), lastmod: latestPublishedAt, changefreq: "yearly", priority: "0.2" },
-    { loc: absoluteUrl("/disclaimer"), lastmod: latestPublishedAt, changefreq: "yearly", priority: "0.2" },
   ];
 
   const xml = `<?xml version="1.0" encoding="UTF-8"?>
@@ -2180,14 +2140,12 @@ const buildRobots = () => {
 const buildStaticPages = () => {
   cleanGeneratedChildren(ARTICLES_DIR);
   cleanGeneratedChildren(WORKS_DIR);
-  cleanGeneratedChildren(COLLECTIONS_DIR, { preserveNames: ["index.html"] });
+  cleanGeneratedChildren(COLLECTIONS_DIR);
+  cleanGeneratedChildren(path.join(PUBLIC_DIR, "finder"));
+  cleanGeneratedChildren(path.join(PUBLIC_DIR, "collection"));
   syncGeneratedWorkPosters(publishedWorks);
-  writeFile(path.join(PUBLIC_DIR, "index.html"), renderRootRedirectPage());
   publishedWorks.forEach((work) => {
     writeFile(path.join(WORKS_DIR, work.slug, "index.html"), renderWorkPage(work));
-  });
-  publicCollections.forEach((collection) => {
-    writeFile(path.join(COLLECTIONS_DIR, collection.slug, "index.html"), renderCollectionPage(collection));
   });
 };
 
@@ -2196,5 +2154,5 @@ buildSitemap();
 buildRobots();
 
 process.stdout.write(
-  `generated finder root, ${publishedWorks.length} works, ${publicCollections.length} collections, sitemap, robots\n`
+  `generated root search and ${publishedWorks.length} work pages, sitemap, robots\n`
 );

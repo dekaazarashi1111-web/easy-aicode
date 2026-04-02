@@ -37,7 +37,7 @@
         : typeof workOrSlug?.slug === "string"
           ? workOrSlug.slug
           : "";
-    return slug ? `/works/${encodeURIComponent(slug)}/` : "/finder/";
+    return slug ? `/works/${encodeURIComponent(slug)}/` : "/";
   };
 
   const getCollectionPath = (collectionOrSlug) => {
