@@ -8,10 +8,11 @@
     name="description"
     content="作品の一言説明、合う理由、タグ、関連特集、外部リンクを確認するための詳細ページです。"
   />
-  <link rel="canonical" href="/work/" />
+  <link rel="canonical" href="https://kemohomo.com/work/" />
   <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
   <link rel="apple-touch-icon" href="/assets/logo.png" />
   <meta name="robots" content="noindex,follow" />
+  <meta name="rating" content="adult" />
   <meta name="author" content="ケモホモ作品ファインダー" />
   <meta name="theme-color" content="#006ce4" />
   <meta property="og:site_name" content="ケモホモ作品ファインダー" />
@@ -21,10 +22,10 @@
     content="作品の雰囲気、タグ、なぜ条件に合うのか、外部リンクを確認するための詳細ページです。"
   />
   <meta property="og:type" content="website" />
-  <meta property="og:url" content="/work/" />
+  <meta property="og:url" content="https://kemohomo.com/work/" />
   <meta property="og:locale" content="ja_JP" />
-  <meta property="og:image" content="/assets/og-default.png" />
-  <meta property="og:image:secure_url" content="/assets/og-default.png" />
+  <meta property="og:image" content="https://kemohomo.com/assets/og-default.png" />
+  <meta property="og:image:secure_url" content="https://kemohomo.com/assets/og-default.png" />
   <meta property="og:image:alt" content="作品詳細ページのOG画像" />
   <meta property="og:image:width" content="1200" />
   <meta property="og:image:height" content="630" />
@@ -34,7 +35,7 @@
     name="twitter:description"
     content="作品の合う理由、タグ、外部リンクをまとめて確認できる詳細ページです。"
   />
-  <meta name="twitter:image" content="/assets/og-default.png" />
+  <meta name="twitter:image" content="https://kemohomo.com/assets/og-default.png" />
   <meta name="twitter:image:alt" content="作品詳細ページのOG画像" />
   <link rel="stylesheet" href="/style.css" />
   <script src="/assets/site-config.js"></script>
@@ -47,17 +48,7 @@
 <body class="editorial-page editorial-page--work">
 <a class="skip-link" href="#main">本文へスキップ</a>
 
-<nav class="nav">
-  <div class="container nav__inner">
-    <a class="nav__brand" data-site-brand href="/">ケモホモ作品ファインダー</a>
-
-    <div class="nav__links">
-      <a class="nav__link" href="/">ホーム</a>
-      <a class="nav__link" href="/finder/">作品検索</a>
-      <a class="nav__link" href="/collections/">特集一覧</a>
-    </div>
-  </div>
-</nav>
+<nav class="nav"></nav>
 
 <main id="main">
   <section class="section section--tight">
@@ -66,8 +57,8 @@
         <h1 class="h1">作品が見つかりません</h1>
         <p class="muted">作品 slug または公開状態を確認してください。</p>
         <div class="cluster">
-          <a class="btn btn--primary" href="/finder/">作品検索へ戻る</a>
-          <a class="btn btn--secondary" href="/collections/">特集を見る</a>
+          <a class="btn btn--primary" href="/">作品検索へ戻る</a>
+          <a class="btn btn--secondary" href="/builder/">詳細条件を見る</a>
         </div>
       </div>
 
@@ -162,10 +153,10 @@
           <section class="detail-widget detail-widget--cta">
             <p class="detail-widget__eyebrow">Finder Hub</p>
             <h2 class="detail-widget__title">次の行き先を決める</h2>
-            <p class="detail-widget__text">作品検索や特集一覧に戻って、近い条件の作品をそのまま探せます。</p>
+            <p class="detail-widget__text">作品検索や詳細条件ビルダーに戻って、近い条件の作品をそのまま探せます。</p>
             <div class="detail-widget__actions">
-              <a class="btn btn--primary" href="/finder/">作品検索へ</a>
-              <a class="btn btn--secondary" href="/collections/">特集一覧へ</a>
+              <a class="btn btn--primary" href="/">作品検索へ</a>
+              <a class="btn btn--secondary" href="/builder/">詳細条件へ</a>
             </div>
           </section>
         </aside>
@@ -174,43 +165,6 @@
   </section>
 </main>
 
-<footer class="footer editorial-footer">
-  <div class="container editorial-footer__inner">
-    <section class="editorial-footer__brand">
-      <p class="editorial-footer__eyebrow">Feature Finder</p>
-      <h2 data-site-brand>ケモホモ作品ファインダー</h2>
-      <p>作品検索と特集一覧を行き来しながら、次に読む作品と次に試す条件をつなぐための土台です。</p>
-      <a class="btn btn--primary btn--sm" href="/finder/">作品検索へ</a>
-    </section>
-
-    <div class="editorial-footer__column">
-      <h3>探す</h3>
-      <ul class="editorial-footer__links">
-        <li><a href="/finder/">作品検索</a></li>
-        <li><a href="/builder/">詳細条件ビルダー</a></li>
-        <li><a href="/collections/">特集一覧</a></li>
-      </ul>
-    </div>
-
-    <div class="editorial-footer__column">
-      <h3>運営</h3>
-      <ul class="editorial-footer__links">
-        <li><a href="/contact/">お問い合わせ</a></li>
-        <li><a href="/privacy">プライバシー</a></li>
-        <li><a href="/disclaimer">免責事項</a></li>
-      </ul>
-    </div>
-  </div>
-
-  <div class="container editorial-footer__bottom">
-    <p class="editorial-footer__legal" data-site-copyright>© ケモホモ作品ファインダー</p>
-    <div class="editorial-footer__bottom-links">
-      <a href="/">ホーム</a>
-      <a href="/finder/">作品検索</a>
-      <a href="/collections/">特集一覧</a>
-      <a href="/contact/">お問い合わせ</a>
-    </div>
-  </div>
-</footer>
+<footer class="footer"></footer>
 </body>
 </html>

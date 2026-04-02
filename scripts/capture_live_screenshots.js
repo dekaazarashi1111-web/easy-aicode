@@ -6,9 +6,9 @@ const { spawn, spawnSync } = require("node:child_process");
 
 const ROOT = path.resolve(__dirname, "..");
 const PUBLIC_DIR = path.join(ROOT, "public");
-const DEFAULT_BASE_URL = "https://wintergator.com/";
+const DEFAULT_BASE_URL = "https://kemohomo.com/";
 const DEFAULT_OUTPUT_DIR = path.join(ROOT, "artifacts", "live-screenshots", "latest");
-const SAME_PATH_QUERY_CHAIN_BLOCKLIST = new Set(["/finder/", "/articles/"]);
+const SAME_PATH_QUERY_CHAIN_BLOCKLIST = new Set(["/", "/finder/", "/articles/"]);
 const MODE_CONFIG = {
   quick: {
     label: "quick",
@@ -115,10 +115,10 @@ function printHelp() {
       "usage: node scripts/capture_live_screenshots.js [base-url]",
       "       node scripts/capture_live_screenshots.js --quick [base-url]",
       "       node scripts/capture_live_screenshots.js --full [base-url]",
-      "       node scripts/capture_live_screenshots.js --quick --target /articles/article-layout-test/ --target '/work/?slug=pocket-shift-memo'",
+      "       node scripts/capture_live_screenshots.js --quick --target /works/hebereke-kansai-tora-ossan/ --target '/?q=へべれけ'",
       "",
       "env:",
-      "  LIVE_SCREENSHOT_BASE_URL        default: https://wintergator.com/",
+      "  LIVE_SCREENSHOT_BASE_URL        default: https://kemohomo.com/",
       "  LIVE_SCREENSHOT_MODE            quick | full (default: quick)",
       "  LIVE_SCREENSHOT_TARGETS         comma/newline separated explicit paths or same-origin URLs",
       "  LIVE_SCREENSHOT_OUTPUT_DIR      default: artifacts/live-screenshots/latest",

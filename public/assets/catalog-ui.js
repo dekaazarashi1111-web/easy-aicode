@@ -776,7 +776,7 @@
     const chips = createElement("div", "home-showcase-banner__chipRow");
     const title = createElement("strong", "home-showcase-banner__title");
     const thumbStrip = createElement("div", "home-showcase-banner__thumbStrip");
-    link.href = collection ? toCollectionPath(collection) : "/finder/";
+    link.href = work ? toWorkPath(work) : "/";
     if (work) {
       media.appendChild(
         createHomeShowcaseWorkImage({
@@ -790,7 +790,7 @@
     }
 
     [
-      collection?.title || "入口特集",
+      collection?.title || "注目作品",
       work?.format || "作品紹介",
       ensureArray(work?.highlightPoints)[0] || "導入向け",
     ]
@@ -822,7 +822,7 @@
       createElement(
         "p",
         "home-showcase-banner__description",
-        "入口作品から条件検索、特集、作品紹介までをひと続きで辿れるトップ導線。"
+        "作品カードと条件検索を行き来しながら、次の1冊へ進みやすいトップ導線。"
       ),
       chips,
       thumbStrip
@@ -837,18 +837,18 @@
     const intro = createElement("div", "home-showcase-banner__intro");
     const heading = createElement("div", "home-showcase-banner__yearTitle");
     const year = createElement("strong", "home-showcase-banner__yearNumber", String(new Date().getFullYear()));
-    const label = createElement("span", "home-showcase-banner__yearLabel", "入口号");
+    const label = createElement("span", "home-showcase-banner__yearLabel", "注目枠");
     const collage = createElement("div", "home-showcase-collage");
 
-    link.href = collection ? toCollectionPath(collection) : "/collections/";
+    link.href = "/";
     heading.append(year, label);
     intro.append(
-      createElement("span", "home-showcase-banner__badge home-showcase-banner__badge--light", "特集"),
+      createElement("span", "home-showcase-banner__badge home-showcase-banner__badge--light", "作品群"),
       heading,
       createElement(
         "p",
         "home-showcase-banner__sideDescription",
-        collection?.title || "複数の入口作品を並べて、気になる温度感から見比べるためのまとめ枠。"
+        collection?.title || "複数の作品カードを並べて、気になる温度感から見比べるためのまとめ枠。"
       )
     );
 
@@ -876,7 +876,7 @@
       article?.title || work?.title || "作品一覧から探し方を決める"
     );
 
-    link.href = article?.url || (work ? toWorkPath(work) : "/finder/");
+    link.href = article?.url || (work ? toWorkPath(work) : "/");
     [article ? "記事から" : "作品を", article ? "始める" : "探す"].forEach((line) => {
       headline.appendChild(createElement("span", "", line));
     });
@@ -1226,7 +1226,7 @@
     if (sort && sort !== "latest") params.set("sort", sort);
     if (mode === "or") params.set("mode", "or");
     if (page && page > 1) params.set("page", String(page));
-    return `/articles/${params.toString() ? `?${params.toString()}` : ""}`;
+    return "/";
   };
 
   const getUiState = (state) => state?.ui || {};
@@ -1918,8 +1918,8 @@
           element: createHomeShowcaseCompactBanner({
             badge: "除外条件",
             title: "地雷を\n先に外す",
-            description: safeCollection?.title || "強い地雷を避けたい時の入口特集。",
-            href: safeCollection ? toCollectionPath(safeCollection) : "/collections/",
+            description: "苦手条件を先に外したい時の詳細条件ビルダー入口。",
+            href: "/builder/",
           }),
         },
       ];
@@ -1956,7 +1956,7 @@
         { label: "狼", meta: "狼系の入口", href: createFinderUrl({ includeTagIds: ["species-wolf"] }), icon: "collection" },
         { label: "狐", meta: "狐系の入口", href: createFinderUrl({ includeTagIds: ["species-fox"] }), icon: "tag" },
         { label: "筋肉・ガチムチ", meta: "体格感から絞る", href: createFinderUrl({ includeTagIds: ["body-muscular", "body-beefy"], matchMode: "or" }), icon: "compare" },
-        { label: "入口特集", meta: "特集から探し始める", href: "/collections/", icon: "save" },
+        { label: "掲載申請", meta: "作品掲載の相談を送る", href: "/apply/", icon: "save" },
         { label: "除外条件", meta: "苦手条件を外す", href: "/builder/", icon: "delete" },
       ].forEach((item) => {
         categoryRoot.appendChild(createHomeShowcaseCategoryCard(item));

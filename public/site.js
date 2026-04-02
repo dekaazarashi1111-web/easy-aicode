@@ -27,7 +27,7 @@ const toAbsoluteUrl = (value) => {
     return value;
   }
   try {
-    return new URL(value, window.location.origin).href;
+    return new URL(value, SITE_CONFIG.SITE_URL || window.location.origin).href;
   } catch (error) {
     return value;
   }
@@ -2258,7 +2258,7 @@ const toFilterUrl = ({ query = "", mode = "and", type = "", tag = "" } = {}) => 
   if (mode === "or") params.set("mode", "or");
   if (type) params.append("type", type);
   if (tag) params.append("tag", tag);
-  return `/articles/${params.toString() ? `?${params.toString()}` : ""}`;
+  return "/";
 };
 
 const createFilterBadge = (label, href) => {

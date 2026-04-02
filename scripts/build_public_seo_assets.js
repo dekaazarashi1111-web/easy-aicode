@@ -7,7 +7,7 @@ const seed = require("../public/assets/finder-seed.js");
 const core = require("../public/assets/finder-core.js");
 const articleIndex = require("../public/assets/articles.js");
 
-const SITE_URL = process.env.SITE_URL || "https://wintergator.com";
+const SITE_URL = process.env.SITE_URL || "https://kemohomo.com";
 const BRAND_NAME = "ケモホモ作品ファインダー";
 const ROOT_DIR = path.resolve(__dirname, "..");
 const PUBLIC_DIR = path.join(ROOT_DIR, "public");
@@ -866,7 +866,7 @@ const renderHomeThumb = (work, className = "home-showcase-collage__tile", imageC
 
 const renderHomeSpotlightBanner = ({ profile, collection, work, relatedWorks = [] }) => `
   <a class="home-showcase-banner home-showcase-banner--spotlight" href="${escapeHtml(
-    collection ? getCollectionPath(collection) : "/finder/"
+    getWorkPath(work) || "/"
   )}">
     <div class="home-showcase-banner__media">
       ${renderHomeShowcaseWorkImage(work, "home-showcase-banner__image", {
@@ -881,10 +881,10 @@ const renderHomeSpotlightBanner = ({ profile, collection, work, relatedWorks = [
         <span class="home-showcase-banner__titleLine">${escapeHtml(profile?.shortName || "ケモホモ")}</span>
         <span class="home-showcase-banner__titleLine">作品ファインダー</span>
       </strong>
-      <p class="home-showcase-banner__description">入口作品、特集、条件検索を行き来しながら、次の1冊へ進みやすい導線をトップにまとめています。</p>
+      <p class="home-showcase-banner__description">作品カードと条件検索を行き来しながら、次の1冊へ進みやすい導線をまとめています。</p>
       <div class="home-showcase-banner__chipRow">
         ${[
-          collection?.title || "入口特集",
+          collection?.title || "注目作品",
           work?.format || "作品紹介",
           ensureArray(work?.highlightPoints)[0] || "導入向け",
         ]
@@ -900,17 +900,15 @@ const renderHomeSpotlightBanner = ({ profile, collection, work, relatedWorks = [
 `;
 
 const renderHomeCollageBanner = ({ collection, works = [] }) => `
-  <a class="home-showcase-banner home-showcase-banner--collage" href="${escapeHtml(
-    collection ? getCollectionPath(collection) : "/collections/"
-  )}">
+  <a class="home-showcase-banner home-showcase-banner--collage" href="/">
     <div class="home-showcase-banner__intro">
-      <span class="home-showcase-banner__badge home-showcase-banner__badge--light">特集</span>
+      <span class="home-showcase-banner__badge home-showcase-banner__badge--light">作品群</span>
       <div class="home-showcase-banner__yearTitle">
         <strong class="home-showcase-banner__yearNumber">${new Date().getFullYear()}</strong>
-        <span class="home-showcase-banner__yearLabel">入口号</span>
+        <span class="home-showcase-banner__yearLabel">注目枠</span>
       </div>
       <p class="home-showcase-banner__sideDescription">${escapeHtml(
-        collection?.title || "複数の入口作品を見比べる特集"
+        collection?.title || "複数の作品カードを見比べて、気になる温度感から選ぶための導線"
       )}</p>
     </div>
     <div class="home-showcase-collage">
@@ -921,7 +919,7 @@ const renderHomeCollageBanner = ({ collection, works = [] }) => `
 
 const renderHomePosterBanner = ({ article, work }) => `
   <a class="home-showcase-banner home-showcase-banner--poster" href="${escapeHtml(
-    article?.url || getWorkPath(work) || "/finder/"
+    article?.url || getWorkPath(work) || "/"
   )}">
     <span class="home-showcase-banner__badge home-showcase-banner__badge--pink">${escapeHtml(
       article ? "記事" : "作品"
@@ -1384,7 +1382,7 @@ const renderHomePage = () => {
     { label: "主従", meta: "立場の重さで選ぶ", href: createFinderUrl({ includeTagIds: ["motif-master-servant"] }), icon: "heart" },
     { label: "幼馴染", meta: "距離感の近さから入る", href: createFinderUrl({ includeTagIds: ["motif-childhood-friend"] }), icon: "save" },
     { label: "ぽっちゃり", meta: "体型から入口を決める", href: createFinderUrl({ includeTagIds: ["body-fat"] }), icon: "tag" },
-    { label: "入口特集", meta: "固定特集から始める", href: "/collections/", icon: "collection" },
+    { label: "掲載申請", meta: "作品掲載の相談を送る", href: "/apply/", icon: "collection" },
     { label: "詳細条件", meta: "条件を作って絞る", href: "/builder/", icon: "tag" },
   ];
   const websiteLd = {
@@ -1395,7 +1393,7 @@ const renderHomePage = () => {
     description: homePageDescription,
     potentialAction: {
       "@type": "SearchAction",
-      target: absoluteUrl("/finder/?q={search_term_string}"),
+      target: absoluteUrl("/?q={search_term_string}"),
       "query-input": "required name=search_term_string",
     },
   };
@@ -1433,7 +1431,7 @@ ${renderHead({
 <body>
 ${GENERATED_MARK}
 <a class="skip-link" href="#main">本文へスキップ</a>
-${renderPrimaryNav("home")}
+${renderPrimaryNav("finder")}
 <main id="main" class="main home-showcase-page" data-home-catalog-page>
   <div class="home-showcase-shell">
     <section class="home-showcase-hero">
@@ -1471,8 +1469,8 @@ ${renderPrimaryNav("home")}
           ${renderHomeCompactBanner({
             badge: "除外条件",
             title: "地雷を\n先に外す",
-            description: safeCollection?.title || "強い地雷を避けたい時の入口特集。",
-            href: safeCollection ? getCollectionPath(safeCollection) : "/collections/",
+            description: "苦手条件を先に外したい時の詳細条件ビルダー入口。",
+            href: "/builder/",
           })}
         </div>
       </div>
@@ -1526,6 +1524,55 @@ ${renderPrimaryNav("home")}
   </div>
 </main>
 ${renderEditorialFooter()}
+</body>
+</html>
+`;
+};
+
+const renderSearchTopPage = () => {
+  const pageTitle = `作品検索 | ${BRAND_NAME}`;
+  const pageDescription =
+    "ケモホモ作品を、入口タグ、TF、媒体、除外条件、AND/OR 条件で探すための検索ページです。";
+  const websiteLd = {
+    "@context": "https://schema.org",
+    "@type": "WebSite",
+    name: BRAND_NAME,
+    url: absoluteUrl("/"),
+    description: "ケモホモ作品を条件検索で探すための検索トップです。",
+    potentialAction: {
+      "@type": "SearchAction",
+      target: absoluteUrl("/?q={search_term_string}"),
+      "query-input": "required name=search_term_string",
+    },
+  };
+
+  return `<!doctype html>
+<html lang="ja">
+${renderHead({
+  title: pageTitle,
+  description: pageDescription,
+  pathName: "/",
+  ogImage: DEFAULT_OG_IMAGE,
+  ogImageAlt: "作品検索ページのOG画像",
+  themeColor: "#ffffff",
+  jsonLd: [websiteLd],
+  scriptUrls: [
+    "/assets/site-config.js",
+    "/assets/finder-seed.js",
+    "/assets/finder-core.js",
+    "/assets/finder-store.js",
+  ],
+  deferScriptUrls: ["/site.js", "/assets/catalog-ui.js"],
+})}
+<body>
+${GENERATED_MARK}
+<a class="hnf-skip-to-content" href="#main">メインに進む</a>
+
+<nav class="nav"></nav>
+
+<main id="main" class="main" data-finder-catalog-page></main>
+
+<footer class="footer"></footer>
 </body>
 </html>
 `;
@@ -2144,6 +2191,7 @@ const buildStaticPages = () => {
   cleanGeneratedChildren(path.join(PUBLIC_DIR, "finder"));
   cleanGeneratedChildren(path.join(PUBLIC_DIR, "collection"));
   syncGeneratedWorkPosters(publishedWorks);
+  writeFile(path.join(PUBLIC_DIR, "index.html"), renderSearchTopPage());
   publishedWorks.forEach((work) => {
     writeFile(path.join(WORKS_DIR, work.slug, "index.html"), renderWorkPage(work));
   });

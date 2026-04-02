@@ -111,7 +111,7 @@
     if (matchMode === "or") params.set("mode", "or");
     unique(includeTagIds).forEach((tagId) => params.append("include", tagId));
     unique(excludeTagIds).forEach((tagId) => params.append("exclude", tagId));
-    return `/finder/${params.toString() ? `?${params.toString()}` : ""}`;
+    return `/${params.toString() ? `?${params.toString()}` : ""}`;
   };
 
   const updateUrl = (nextState) => {
