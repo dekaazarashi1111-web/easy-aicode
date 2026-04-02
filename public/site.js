@@ -486,7 +486,6 @@ const getCurrentSection = (pathname = window.location.pathname) => {
   if (normalized.startsWith("/collections/") || normalized.startsWith("/collection/")) {
     return "collections";
   }
-  if (normalized.startsWith("/articles/")) return "articles";
   if (normalized.startsWith("/apply/")) return "apply";
   if (normalized.startsWith("/contact/")) return "contact";
   return "";
@@ -494,7 +493,6 @@ const getCurrentSection = (pathname = window.location.pathname) => {
 
 const NAV_ITEMS = [
   { href: "/finder/", label: "作品を探す", section: "finder" },
-  { href: "/articles/", label: "特集記事", section: "articles" },
   { href: "/apply/", label: "掲載申請", section: "apply" },
   { href: "/contact/", label: "お問い合わせ", section: "contact" },
 ];
@@ -509,7 +507,7 @@ const EDITORIAL_FOOTER_TEMPLATE = (brandName) => `
     <section class="editorial-footer__brand">
       <p class="editorial-footer__eyebrow">作品探索</p>
       <h2 data-site-brand>${brandName}</h2>
-      <p>特集記事、作品紹介、条件検索をまたいで、次に読むものと次に探す条件をひと続きにするための土台です。</p>
+      <p>作品検索と特集一覧を行き来しながら、次に読む作品と次に試す条件をつなぐための土台です。</p>
       <a class="btn btn--primary btn--sm" href="/finder/">作品検索へ</a>
     </section>
 
@@ -518,15 +516,6 @@ const EDITORIAL_FOOTER_TEMPLATE = (brandName) => `
       <ul class="editorial-footer__links">
         <li><a href="/finder/">作品検索</a></li>
         <li><a href="/builder/">詳細条件ビルダー</a></li>
-        <li><a href="/collections/">特集一覧</a></li>
-      </ul>
-    </div>
-
-    <div class="editorial-footer__column">
-      <h3>読む</h3>
-      <ul class="editorial-footer__links">
-        <li><a href="/articles/">特集記事</a></li>
-        <li><a href="/finder/">作品検索</a></li>
         <li><a href="/collections/">特集一覧</a></li>
       </ul>
     </div>
@@ -547,7 +536,6 @@ const EDITORIAL_FOOTER_TEMPLATE = (brandName) => `
       <a href="/">ホーム</a>
       <a href="/finder/">作品検索</a>
       <a href="/collections/">特集一覧</a>
-      <a href="/articles/">記事一覧</a>
     </div>
   </div>
 `;

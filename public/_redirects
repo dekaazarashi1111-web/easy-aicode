@@ -9,8 +9,8 @@
 /collection/index.html /collection/ 301
 /contact /contact/ 301
 /contact/index.html /contact/ 301
-/articles /articles/ 301
-/articles/index.html /articles/ 301
+/articles /finder/ 301!
+/articles/index.html /finder/ 301!
 /articles/hebereke-kansai-tora-ossan /works/hebereke-kansai-tora-ossan/ 301
 /articles/hebereke-kansai-tora-ossan/ /works/hebereke-kansai-tora-ossan/ 301
 /articles/hebereke-kansai-tora-ossan/index.html /works/hebereke-kansai-tora-ossan/ 301
@@ -29,14 +29,7 @@
 /articles/buta-no-harami-bukuro-2 /works/buta-no-harami-bukuro-2/ 301
 /articles/buta-no-harami-bukuro-2/ /works/buta-no-harami-bukuro-2/ 301
 /articles/buta-no-harami-bukuro-2/index.html /works/buta-no-harami-bukuro-2/ 301
-/articles/comparison-template /articles/ 301
-/articles/comparison-template/index.html /articles/ 301
-/articles/article-layout-test /articles/ 301
-/articles/article-layout-test/index.html /articles/ 301
-/articles/content-planning-checklist /articles/ 301
-/articles/content-planning-checklist/index.html /articles/ 301
-/articles/review-structure /articles/ 301
-/articles/review-structure/index.html /articles/ 301
+/articles/* /finder/ 301
 /finder /finder/ 301
 /finder/index.html /finder/ 301
 /outbound /finder/ 301

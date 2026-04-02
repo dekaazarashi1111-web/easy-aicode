@@ -708,7 +708,7 @@ const renderEditorialFooter = () => `
       <section class="editorial-footer__brand">
         <p class="editorial-footer__eyebrow">作品探索</p>
         <h2 data-site-brand>${escapeHtml(BRAND_NAME)}</h2>
-        <p>特集記事、作品紹介、条件検索をまたいで、次に読むものと次に探す条件をひと続きにするための土台です。</p>
+        <p>作品検索と特集一覧を行き来しながら、次に読む作品と次に試す条件をつなぐための土台です。</p>
         <a class="btn btn--primary btn--sm" href="/finder/">作品検索へ</a>
       </section>
       <div class="editorial-footer__column">
@@ -716,14 +716,6 @@ const renderEditorialFooter = () => `
         <ul class="editorial-footer__links">
           <li><a href="/finder/">作品検索</a></li>
           <li><a href="/builder/">詳細条件ビルダー</a></li>
-          <li><a href="/collections/">特集一覧</a></li>
-        </ul>
-      </div>
-      <div class="editorial-footer__column">
-        <h3>読む</h3>
-        <ul class="editorial-footer__links">
-          <li><a href="/articles/">特集記事</a></li>
-          <li><a href="/finder/">作品検索</a></li>
           <li><a href="/collections/">特集一覧</a></li>
         </ul>
       </div>
@@ -743,7 +735,6 @@ const renderEditorialFooter = () => `
         <a href="/">ホーム</a>
         <a href="/finder/">作品検索</a>
         <a href="/collections/">特集一覧</a>
-        <a href="/articles/">記事一覧</a>
       </div>
     </div>
   </footer>
@@ -845,7 +836,6 @@ const renderPrimaryNav = (currentSection = "") => {
   const navItems = [
     { href: "/", label: "ホーム", section: "home" },
     { href: "/finder/", label: "作品検索", section: "finder" },
-    { href: "/articles/", label: "特集記事", section: "articles" },
     { href: "/apply/", label: "掲載申請", section: "apply" },
     { href: "/contact/", label: "お問い合わせ", section: "contact" },
   ];
@@ -2116,7 +2106,6 @@ ${renderPrimaryNav()}
       <a href="/">ホーム</a>
       <a href="/finder/">作品検索</a>
       <a href="/collections/">特集一覧</a>
-      <a href="/articles/">特集記事</a>
       <a href="/apply/">掲載申請</a>
       <a href="/contact/">お問い合わせ</a>
       <a href="/privacy">プライバシー</a>
@@ -2140,7 +2129,6 @@ const buildSitemap = () => {
   const pages = [
     { loc: absoluteUrl("/finder/"), lastmod: latestPublishedAt, changefreq: "weekly", priority: "1.0" },
     { loc: absoluteUrl("/collections/"), lastmod: latestPublishedAt, changefreq: "weekly", priority: "0.9" },
-    { loc: absoluteUrl("/articles/"), lastmod: latestPublishedAt, changefreq: "weekly", priority: "0.8" },
     ...publicCollections.map((collection) => {
       const workDates = ensureArray(collection.workIds)
         .map((workId) => workMap.get(workId)?.updatedAt || workMap.get(workId)?.releasedAt || "")
@@ -2157,12 +2145,6 @@ const buildSitemap = () => {
     ...publishedWorks.map((work) => ({
       loc: absoluteUrl(getWorkPath(work)),
       lastmod: work.updatedAt || work.releasedAt || latestPublishedAt,
-      changefreq: "monthly",
-      priority: "0.6",
-    })),
-    ...recentArticles.map((article) => ({
-      loc: absoluteUrl(article.url),
-      lastmod: article.publishedAt || latestPublishedAt,
       changefreq: "monthly",
       priority: "0.6",
     })),
@@ -2196,15 +2178,11 @@ const buildRobots = () => {
 };
 
 const buildStaticPages = () => {
-  cleanGeneratedChildren(ARTICLES_DIR, { preserveNames: ["index.html"] });
+  cleanGeneratedChildren(ARTICLES_DIR);
   cleanGeneratedChildren(WORKS_DIR);
   cleanGeneratedChildren(COLLECTIONS_DIR, { preserveNames: ["index.html"] });
   syncGeneratedWorkPosters(publishedWorks);
   writeFile(path.join(PUBLIC_DIR, "index.html"), renderRootRedirectPage());
-  writeFile(path.join(PUBLIC_DIR, "articles", "index.html"), renderArticlesIndexPage());
-  recentArticles.forEach((article) => {
-    writeFile(path.join(ARTICLES_DIR, article.slug, "index.html"), renderArticlePage(article));
-  });
   publishedWorks.forEach((work) => {
     writeFile(path.join(WORKS_DIR, work.slug, "index.html"), renderWorkPage(work));
   });
@@ -2218,5 +2196,5 @@ buildSitemap();
 buildRobots();
 
 process.stdout.write(
-  `generated home, article index, ${recentArticles.length} articles, ${publishedWorks.length} works, ${publicCollections.length} collections, sitemap, robots\n`
+  `generated finder root, ${publishedWorks.length} works, ${publicCollections.length} collections, sitemap, robots\n`
 );
