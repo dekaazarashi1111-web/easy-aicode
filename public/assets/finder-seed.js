@@ -1243,7 +1243,10 @@
         siteProfileIds: ["kemohomo-main"],
         status: "published",
         title: "へべれけ関西弁虎おっさんの介抱する本",
+        creator: "ヒャク",
         format: "漫画",
+        pageCount: 47,
+        priceText: "880円",
         characters: [
           {
             id: "hebereke-kuma-kun",
@@ -1291,8 +1294,16 @@
         primaryTagIds: ["body-fat", "body-beefy", "motif-age-gap", "fetish-odor"],
         collectionIds: [],
         priority: 95,
-        releasedAt: "",
+        releasedAt: "2024-12-06",
         updatedAt: "2026-04-02",
+        externalLinks: [
+          {
+            id: "link-hebereke-kansai-tora-ossan",
+            label: "DMMで作品を見る",
+            partner: "DMM",
+            url: "https://www.dmm.co.jp/dc/doujin/-/detail/=/cid=d_474900/?dmmref=ListRanking&i3_ref=list&i3_ord=2",
+          },
+        ],
       },
       {
         id: "work-iguma-senpai-kumase-kun",
@@ -1300,7 +1311,10 @@
         siteProfileIds: ["kemohomo-main"],
         status: "published",
         title: "猪熊先輩と熊瀬くんが 甘々仲直りセックスする本",
+        creator: "ヒャク",
         format: "漫画",
+        pageCount: 59,
+        priceText: "770円",
         characters: [
           {
             id: "iguma-senpai",
@@ -1346,8 +1360,16 @@
         primaryTagIds: ["body-fat", "relationship-size-gap", "motif-age-gap", "relationship-sweet"],
         collectionIds: [],
         priority: 100,
-        releasedAt: "",
+        releasedAt: "2024-12-06",
         updatedAt: "2026-04-02",
+        externalLinks: [
+          {
+            id: "link-iguma-senpai-kumase-kun",
+            label: "DMMで作品を見る",
+            partner: "DMM",
+            url: "https://www.dmm.co.jp/dc/doujin/-/detail/=/cid=d_474904/?dmmref=ListRanking&i3_ref=list&i3_ord=10",
+          },
+        ],
       },
       {
         id: "work-mikosuri-san",
@@ -1355,7 +1377,10 @@
         siteProfileIds: ["kemohomo-main"],
         status: "published",
         title: "みこすりさん",
+        creator: "ノスタルジックシンドローム",
         format: "漫画",
+        pageCount: 20,
+        priceText: "880円",
         characters: [
           {
             id: "mikosuri-dog",
@@ -1399,8 +1424,16 @@
         primaryTagIds: ["body-fat", "motif-workwear", "fetish-odor", "fetish-creampie"],
         collectionIds: [],
         priority: 105,
-        releasedAt: "",
+        releasedAt: "2024-10-28",
         updatedAt: "2026-04-02",
+        externalLinks: [
+          {
+            id: "link-mikosuri-san",
+            label: "DMMで作品を見る",
+            partner: "DMM",
+            url: "https://www.dmm.co.jp/dc/doujin/-/detail/=/cid=d_458827/?dmmref=ListRanking&i3_ref=list&i3_ord=2",
+          },
+        ],
       },
       {
         id: "work-dosukoi-mammoth-ketsuware-bu",
