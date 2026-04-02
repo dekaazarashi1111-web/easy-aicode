@@ -287,10 +287,10 @@
       },
       {
         id: "age-young",
-        label: "若め",
+        label: "青年",
         groupId: "age-feel",
         isPublic: true,
-        synonyms: ["少年寄り", "年下感"],
+        synonyms: ["若め", "少年寄り", "年下感"],
       },
       {
         id: "age-adult",
@@ -301,10 +301,10 @@
       },
       {
         id: "age-older",
-        label: "年上感",
+        label: "熟年",
         groupId: "age-feel",
         isPublic: true,
-        synonyms: ["熟年寄り", "兄貴肌"],
+        synonyms: ["年上感", "熟年寄り", "兄貴肌"],
       },
       {
         id: "gentle-tone",
