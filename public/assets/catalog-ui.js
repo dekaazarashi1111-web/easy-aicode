@@ -659,6 +659,8 @@
     return `¥${new Intl.NumberFormat("ja-JP").format(amount)}`;
   };
 
+  const formatWorkPrice = (work) => work?.priceText || formatPriceJPY(work?.priceJPY);
+
   const getPrimaryWorkImageUrl = (work) => resolveCardImageUrls(work)[0] || "";
 
   const buildHomeShowcasePlaceholderImage = (work, variant = "card") => {
@@ -908,7 +910,7 @@
       [ensureArray(work.highlightPoints)[0], ensureArray(work.highlightPoints)[1]].filter(Boolean).join(" / ")
     );
     const footer = createElement("div", "home-showcase-product__footer");
-    const price = createElement("strong", "home-showcase-product__price", formatPriceJPY(work.priceJPY));
+    const price = createElement("strong", "home-showcase-product__price", formatWorkPrice(work));
     const detail = createElement(
       "span",
       "home-showcase-product__detail",
