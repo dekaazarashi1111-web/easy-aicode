@@ -160,7 +160,7 @@ const RECENT_HISTORY_HASH = "#recent-history";
 const SAVED_SEARCH_HASH = "#saved-searches";
 const RECENT_HISTORY_LIMIT = 20;
 const SAVED_SEARCH_LIMIT = 30;
-const HEADER_FILTER_SPECIES_TAG_IDS = [
+const HEADER_FILTER_SPECIES_TAG_ORDER = [
   "species-wolf",
   "species-dog",
   "species-fox",
@@ -169,6 +169,8 @@ const HEADER_FILTER_SPECIES_TAG_IDS = [
   "species-tiger",
   "species-lion",
   "species-bull",
+  "species-boar",
+  "species-pig",
 ];
 const HEADER_FILTER_BODY_OPTIONS = [
   {
@@ -177,8 +179,8 @@ const HEADER_FILTER_BODY_OPTIONS = [
     imageSrc: "/assets/quick-filters/body-normal.png",
   },
   {
-    tagId: "body-muscular",
-    label: "筋肉",
+    tagIds: ["body-muscular", "body-beefy"],
+    label: "筋肉・ガチムチ",
     imageSrc: "/assets/quick-filters/body-muscular.png",
   },
   {
@@ -187,10 +189,7 @@ const HEADER_FILTER_BODY_OPTIONS = [
     imageSrc: "/assets/quick-filters/body-fat.png",
   },
 ];
-const HEADER_FILTER_AGE_OPTIONS = [
-  { tagId: "age-adult", label: "成年" },
-  { tagId: "age-older", label: "熟年" },
-];
+const HEADER_FILTER_AGE_TAG_ORDER = ["age-young", "age-adult", "age-older"];
 const HEADER_FILTER_LABEL_OVERRIDES = {
   entrance: "入口条件",
   species: "種族",
@@ -288,8 +287,19 @@ const composeFinderCanvasState = (rawState) => {
   const validWorkIds = new Set(
     (Array.isArray(next.works) ? next.works : []).map((work) => work?.id).filter(Boolean)
   );
+  const usedTagIds = new Set(
+    (Array.isArray(next.works) ? next.works : [])
+      .filter((work) => work?.status === "published")
+      .flatMap((work) => [
+        ...(Array.isArray(work.tagIds) ? work.tagIds : []),
+        ...(Array.isArray(work.primaryTagIds) ? work.primaryTagIds : []),
+      ])
+      .filter(Boolean)
+  );
   const validTagIds = new Set(
-    (Array.isArray(next.tags) ? next.tags : []).map((tag) => tag?.id).filter(Boolean)
+    (Array.isArray(next.tags) ? next.tags : [])
+      .filter((tag) => tag?.id && tag.isPublic !== false && usedTagIds.has(tag.id))
+      .map((tag) => tag.id)
   );
   const validCollectionIds = new Set(
     (Array.isArray(next.collections) ? next.collections : [])
@@ -418,11 +428,11 @@ const getSavedSearchSummary = (search = {}) => {
     ageFeelTagIds: [],
   };
   const parts = [];
-  const characterLabels = [
-    ...character.speciesTagIds.map((tagId) => getHeaderFilterTagLabel(tagId)),
-    ...character.bodyTypeTagIds.map((tagId) => getHeaderFilterTagLabel(tagId)),
-    ...character.ageFeelTagIds.map((tagId) => getHeaderFilterTagLabel(tagId)),
-  ].filter(Boolean);
+  const characterLabels = uniqueFinderValues([
+    ...character.speciesTagIds.map((tagId) => getHeaderFilterQuickTagLabel(tagId)),
+    ...character.bodyTypeTagIds.map((tagId) => getHeaderFilterQuickTagLabel(tagId)),
+    ...character.ageFeelTagIds.map((tagId) => getHeaderFilterQuickTagLabel(tagId)),
+  ]).filter(Boolean);
   const includeLabels = uniqueFinderValues(search.includeTagIds)
     .map((tagId) => getHeaderFilterTagLabel(tagId))
     .filter(Boolean);
@@ -1068,22 +1078,84 @@ const normalizeSearchFilterText = (value) =>
     .replace(/\s+/g, " ")
     .trim();
 
-const getHeaderFilterTagMap = () =>
-  new Map(
+const sortHeaderFilterTagsByPreferredOrder = (tags, preferredIds = []) => {
+  const orderMap = new Map(preferredIds.map((tagId, index) => [tagId, index]));
+  return (Array.isArray(tags) ? tags : [])
+    .slice()
+    .sort((left, right) => {
+      const leftOrder = orderMap.has(left.id) ? orderMap.get(left.id) : Number.MAX_SAFE_INTEGER;
+      const rightOrder = orderMap.has(right.id) ? orderMap.get(right.id) : Number.MAX_SAFE_INTEGER;
+      if (leftOrder !== rightOrder) return leftOrder - rightOrder;
+      return left.label.localeCompare(right.label, "ja");
+    });
+};
+
+const getHeaderFilterOptionTagIds = (option = {}) => {
+  const tagIds = uniqueFinderValues(option.tagIds);
+  if (tagIds.length) return tagIds;
+  return option.tagId ? [option.tagId] : [];
+};
+
+const getHeaderFilterUsedTagIds = () =>
+  new Set(
+    (Array.isArray(window.FINDER_SEED?.works) ? window.FINDER_SEED.works : [])
+      .filter((work) => work?.status === "published")
+      .flatMap((work) => [
+        ...(Array.isArray(work.tagIds) ? work.tagIds : []),
+        ...(Array.isArray(work.primaryTagIds) ? work.primaryTagIds : []),
+      ])
+      .filter(Boolean)
+  );
+
+const getHeaderFilterTagMap = () => {
+  const usedTagIds = getHeaderFilterUsedTagIds();
+  return new Map(
     (Array.isArray(window.FINDER_SEED?.tags) ? window.FINDER_SEED.tags : [])
-      .filter((tag) => tag && tag.id)
+      .filter((tag) => tag && tag.id && tag.isPublic !== false && usedTagIds.has(tag.id))
       .map((tag) => [tag.id, tag])
   );
+};
 
 const getHeaderFilterTagLabel = (tagId, fallback = "") =>
   getHeaderFilterTagMap().get(tagId)?.label || fallback || tagId;
 
+const getHeaderFilterQuickTagLabel = (tagId, fallback = "") => {
+  const bodyOption = HEADER_FILTER_BODY_OPTIONS.find((option) =>
+    getHeaderFilterOptionTagIds(option).includes(tagId)
+  );
+  if (bodyOption) return bodyOption.label;
+  return getHeaderFilterTagLabel(tagId, fallback);
+};
+
 const getHeaderFilterSortMeta = (sort) => HEADER_FILTER_SORT_META[sort] || HEADER_FILTER_SORT_META.recommended;
+
+const getHeaderFilterSpeciesTags = () =>
+  sortHeaderFilterTagsByPreferredOrder(
+    Array.from(getHeaderFilterTagMap().values()).filter((tag) => tag.groupId === "species"),
+    HEADER_FILTER_SPECIES_TAG_ORDER
+  );
+
+const getHeaderFilterBodyOptions = () => {
+  const visibleTagIdSet = new Set(getHeaderFilterTagMap().keys());
+  return HEADER_FILTER_BODY_OPTIONS.map((option) => ({
+    ...option,
+    availableTagIds: getHeaderFilterOptionTagIds(option).filter((tagId) => visibleTagIdSet.has(tagId)),
+  })).filter((option) => option.availableTagIds.length);
+};
+
+const getHeaderFilterAgeOptions = () =>
+  sortHeaderFilterTagsByPreferredOrder(
+    Array.from(getHeaderFilterTagMap().values()).filter((tag) => tag.groupId === "age-feel"),
+    HEADER_FILTER_AGE_TAG_ORDER
+  ).map((tag) => ({
+    tagId: tag.id,
+    label: tag.label,
+  }));
 
 const getHeaderFilterGroupedTags = () => {
   const tagGroups = Array.isArray(window.FINDER_SEED?.tagGroups) ? window.FINDER_SEED.tagGroups : [];
-  const visibleTags = (Array.isArray(window.FINDER_SEED?.tags) ? window.FINDER_SEED.tags : []).filter(
-    (tag) => tag && tag.id && tag.label && tag.isPublic !== false
+  const visibleTags = Array.from(getHeaderFilterTagMap().values()).filter(
+    (tag) => tag && tag.id && tag.label
   );
   const tagsByGroup = new Map();
 
@@ -1143,11 +1215,20 @@ const getHeaderFilterQuickTagGroups = () =>
 const getHeaderFilterQuickSelectableTags = () =>
   getHeaderFilterQuickTagGroups().flatMap((group) => group.tags);
 
-const normalizeSearchFilterCharacterState = (value = {}) => ({
-  speciesTagIds: uniqueFinderValues(value.speciesTagIds),
-  bodyTypeTagIds: uniqueFinderValues(value.bodyTypeTagIds),
-  ageFeelTagIds: uniqueFinderValues(value.ageFeelTagIds),
-});
+const normalizeSearchFilterCharacterState = (value = {}) => {
+  const tagMap = getHeaderFilterTagMap();
+  return {
+    speciesTagIds: uniqueFinderValues(value.speciesTagIds).filter(
+      (tagId) => tagMap.get(tagId)?.groupId === "species"
+    ),
+    bodyTypeTagIds: uniqueFinderValues(value.bodyTypeTagIds).filter(
+      (tagId) => tagMap.get(tagId)?.groupId === "body-type"
+    ),
+    ageFeelTagIds: uniqueFinderValues(value.ageFeelTagIds).filter(
+      (tagId) => tagMap.get(tagId)?.groupId === "age-feel"
+    ),
+  };
+};
 
 const getSearchFilterCharacterState = (screen) =>
   normalizeSearchFilterCharacterState(screen?._characterFilterState);
@@ -1200,8 +1281,13 @@ const setSearchFilterCharacterState = (screen, nextState) => {
 
 const setSearchFilterTagSelections = (screen, nextState = {}) => {
   if (!screen) return;
-  screen._searchFilterIncludeTagIds = uniqueFinderValues(nextState.includeTagIds);
-  screen._searchFilterExcludeTagIds = uniqueFinderValues(nextState.excludeTagIds);
+  const tagMap = getHeaderFilterTagMap();
+  screen._searchFilterIncludeTagIds = uniqueFinderValues(nextState.includeTagIds).filter((tagId) =>
+    tagMap.has(tagId)
+  );
+  screen._searchFilterExcludeTagIds = uniqueFinderValues(nextState.excludeTagIds).filter((tagId) =>
+    tagMap.has(tagId)
+  );
   syncSearchFilterHiddenInputs(screen);
 };
 
@@ -1213,15 +1299,11 @@ const setSearchFilterSortValue = (screen, sort) => {
 const getSearchFilterSummary = (screen) => {
   const characterState = getSearchFilterCharacterState(screen);
   const parts = [];
-  const characterLabels = [
-    ...characterState.speciesTagIds.map((tagId) => getHeaderFilterTagLabel(tagId)),
-    ...characterState.bodyTypeTagIds.map((tagId) =>
-      HEADER_FILTER_BODY_OPTIONS.find((option) => option.tagId === tagId)?.label || tagId
-    ),
-    ...characterState.ageFeelTagIds.map((tagId) =>
-      HEADER_FILTER_AGE_OPTIONS.find((option) => option.tagId === tagId)?.label || tagId
-    ),
-  ].filter(Boolean);
+  const characterLabels = uniqueFinderValues([
+    ...characterState.speciesTagIds.map((tagId) => getHeaderFilterQuickTagLabel(tagId)),
+    ...characterState.bodyTypeTagIds.map((tagId) => getHeaderFilterQuickTagLabel(tagId)),
+    ...characterState.ageFeelTagIds.map((tagId) => getHeaderFilterQuickTagLabel(tagId)),
+  ]).filter(Boolean);
   const includeLabels = getSearchFilterIncludeTagIds(screen)
     .map((tagId) => getHeaderFilterTagLabel(tagId))
     .filter(Boolean);
@@ -1284,7 +1366,7 @@ const createSearchFilterBodyButton = ({ label, imageSrc = "", selected = false, 
   return button;
 };
 
-const toggleSearchFilterCharacterValue = (screen, field, tagId) => {
+const toggleSearchFilterCharacterValues = (screen, field, tagIds) => {
   const characterState = getSearchFilterCharacterState(screen);
   const nextState = {
     speciesTagIds: characterState.speciesTagIds.slice(),
@@ -1297,9 +1379,13 @@ const toggleSearchFilterCharacterValue = (screen, field, tagId) => {
       : field === "body"
         ? "bodyTypeTagIds"
         : "ageFeelTagIds";
-  nextState[key] = nextState[key].includes(tagId)
-    ? nextState[key].filter((value) => value !== tagId)
-    : uniqueFinderValues([...nextState[key], tagId]);
+  const nextTagIds = uniqueFinderValues(tagIds);
+  if (!nextTagIds.length) return;
+  const currentValues = nextState[key].slice();
+  const hasAllSelected = nextTagIds.every((tagId) => currentValues.includes(tagId));
+  nextState[key] = hasAllSelected
+    ? currentValues.filter((value) => !nextTagIds.includes(value))
+    : uniqueFinderValues([...currentValues, ...nextTagIds]);
   setSearchFilterCharacterState(screen, nextState);
 };
 
@@ -1389,40 +1475,43 @@ const renderSearchFilterFields = (screen) => {
 
   const characterState = getSearchFilterCharacterState(screen);
   const allQuickTags = getHeaderFilterQuickSelectableTags();
+  const speciesTags = getHeaderFilterSpeciesTags();
+  const bodyOptions = getHeaderFilterBodyOptions();
+  const ageOptions = getHeaderFilterAgeOptions();
 
   summary.textContent = getSearchFilterSummary(screen);
 
   speciesRow.textContent = "";
-  HEADER_FILTER_SPECIES_TAG_IDS.forEach((tagId) => {
+  speciesTags.forEach((tag) => {
     speciesRow.appendChild(
       createSearchFilterChipButton({
-        label: getHeaderFilterTagLabel(tagId, tagId),
-        selected: characterState.speciesTagIds.includes(tagId),
+        label: tag.label,
+        selected: characterState.speciesTagIds.includes(tag.id),
         dataset: {
           searchFilterCharacterField: "species",
-          searchFilterTagId: tagId,
+          searchFilterTagId: tag.id,
         },
       })
     );
   });
 
   bodyGrid.textContent = "";
-  HEADER_FILTER_BODY_OPTIONS.forEach((option) => {
+  bodyOptions.forEach((option) => {
     bodyGrid.appendChild(
       createSearchFilterBodyButton({
         label: option.label,
         imageSrc: option.imageSrc,
-        selected: characterState.bodyTypeTagIds.includes(option.tagId),
+        selected: option.availableTagIds.some((tagId) => characterState.bodyTypeTagIds.includes(tagId)),
         dataset: {
           searchFilterCharacterField: "body",
-          searchFilterTagId: option.tagId,
+          searchFilterTagIds: option.availableTagIds.join(","),
         },
       })
     );
   });
 
   ageRow.textContent = "";
-  HEADER_FILTER_AGE_OPTIONS.forEach((option) => {
+  ageOptions.forEach((option) => {
     ageRow.appendChild(
       createSearchFilterChipButton({
         label: option.label,
@@ -1969,9 +2058,12 @@ const initSearchFilterScreen = () => {
     if (characterButton) {
       const screen = characterButton.closest("[data-search-filter-screen]");
       const field = characterButton.dataset.searchFilterCharacterField || "";
-      const tagId = characterButton.dataset.searchFilterTagId || "";
-      if (!screen || !field || !tagId) return;
-      toggleSearchFilterCharacterValue(screen, field, tagId);
+      const tagIds = (characterButton.dataset.searchFilterTagIds || characterButton.dataset.searchFilterTagId || "")
+        .split(",")
+        .map((tagId) => tagId.trim())
+        .filter(Boolean);
+      if (!screen || !field || !tagIds.length) return;
+      toggleSearchFilterCharacterValues(screen, field, tagIds);
       renderSearchFilterFields(screen);
       return;
     }

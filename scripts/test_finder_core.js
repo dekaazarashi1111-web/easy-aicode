@@ -20,6 +20,18 @@ assert.equal(
   "seed work should keep character cards data"
 );
 
+assert.equal(
+  core.getVisibleTags(state, "kemohomo-main").some((tag) => tag.id === "species-wolf"),
+  true,
+  "used public tags should remain visible"
+);
+
+assert.equal(
+  core.getVisibleTags(state, "kemohomo-main").some((tag) => tag.id === "species-fox"),
+  false,
+  "unused public tags should not appear in visible tags"
+);
+
 assert.deepEqual(
   core
     .filterWorks({
@@ -152,6 +164,12 @@ assert.equal(
     .some((work) => work.slug === "test-seed-work"),
   true,
   "saved work should become searchable after bulk publish and tag add"
+);
+
+assert.equal(
+  core.getVisibleTags(state, "kemohomo-main").some((tag) => tag.id === "aftercare-clear"),
+  true,
+  "newly used public tags should become visible after publish"
 );
 
 assert.equal(

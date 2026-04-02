@@ -87,7 +87,20 @@
       next.siteProfiles.map((profile) => profile?.id).filter(Boolean)
     );
     const validWorkIds = new Set(next.works.map((work) => work?.id).filter(Boolean));
-    const validTagIds = new Set(next.tags.map((tag) => tag?.id).filter(Boolean));
+    const usedTagIds = new Set(
+      next.works
+        .filter((work) => work?.status === "published")
+        .flatMap((work) => [
+          ...(Array.isArray(work.tagIds) ? work.tagIds : []),
+          ...(Array.isArray(work.primaryTagIds) ? work.primaryTagIds : []),
+        ])
+        .filter(Boolean)
+    );
+    const validTagIds = new Set(
+      next.tags
+        .filter((tag) => tag?.id && tag.isPublic !== false && usedTagIds.has(tag.id))
+        .map((tag) => tag.id)
+    );
     const validCollectionIds = new Set(
       next.collections.map((collection) => collection?.id).filter(Boolean)
     );

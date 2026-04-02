@@ -96,11 +96,23 @@
     });
   };
 
+  const getUsedTagIds = (state, profileId, { publicOnly = true } = {}) => {
+    const works = getProfileWorks(state, profileId, { publicOnly });
+    return new Set(
+      works.flatMap((work) => [
+        ...ensureArray(work.tagIds),
+        ...ensureArray(work.primaryTagIds),
+      ])
+    );
+  };
+
   const getVisibleTags = (state, profileId) => {
     const profile = getProfile(state, profileId);
     const visibleGroups = new Set(ensureArray(profile?.visibleTagGroupIds));
+    const usedTagIds = getUsedTagIds(state, profileId, { publicOnly: true });
     return ensureArray(state?.tags).filter((tag) => {
       if (!tag.isPublic) return false;
+      if (!usedTagIds.has(tag.id)) return false;
       if (!visibleGroups.size) return true;
       return visibleGroups.has(tag.groupId);
     });
@@ -633,6 +645,7 @@
     getProfileCollections,
     getProfileWorks,
     getTagMap,
+    getUsedTagIds,
     getVisibleTags,
     groupTags,
     aggregateLogs,

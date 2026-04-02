@@ -191,7 +191,7 @@
     "avoid",
   ]);
 
-  const QUICK_FILTER_SPECIES_TAG_IDS = [
+  const QUICK_FILTER_SPECIES_TAG_ORDER = [
     "species-wolf",
     "species-dog",
     "species-fox",
@@ -200,6 +200,8 @@
     "species-tiger",
     "species-lion",
     "species-bull",
+    "species-boar",
+    "species-pig",
   ];
 
   const QUICK_FILTER_BODY_OPTIONS = [
@@ -220,12 +222,7 @@
     },
   ];
 
-  const QUICK_FILTER_AGE_OPTIONS = [
-    { tagId: "age-adult", label: "成年" },
-    { tagId: "age-older", label: "熟年" },
-  ];
-  const QUICK_FILTER_AGE_TAG_IDS = QUICK_FILTER_AGE_OPTIONS.map((option) => option.tagId);
-  const QUICK_FILTER_AGE_TAG_ID_SET = new Set(QUICK_FILTER_AGE_TAG_IDS);
+  const QUICK_FILTER_AGE_TAG_ORDER = ["age-young", "age-adult", "age-older"];
   const getQuickFilterOptionTagIds = (option) =>
     ensureArray(option?.tagIds).length
       ? ensureArray(option.tagIds)
@@ -234,6 +231,30 @@
         : [];
   const QUICK_FILTER_TAG_PREVIEW_LIMIT = 10;
   const HOVER_GALLERY_INTERVAL_MS = 3000;
+
+  const sortTagsByPreferredOrder = (tags, preferredIds = []) => {
+    const orderMap = new Map(preferredIds.map((tagId, index) => [tagId, index]));
+    return ensureArray(tags)
+      .slice()
+      .sort((left, right) => {
+        const leftOrder = orderMap.has(left.id) ? orderMap.get(left.id) : Number.MAX_SAFE_INTEGER;
+        const rightOrder = orderMap.has(right.id) ? orderMap.get(right.id) : Number.MAX_SAFE_INTEGER;
+        if (leftOrder !== rightOrder) return leftOrder - rightOrder;
+        return left.label.localeCompare(right.label, "ja");
+      });
+  };
+
+  const getQuickFilterTagsByGroup = (visibleTags, groupId, preferredIds = []) =>
+    sortTagsByPreferredOrder(
+      ensureArray(visibleTags).filter((tag) => tag.groupId === groupId),
+      preferredIds
+    );
+
+  const getAvailableQuickFilterBodyOptions = (visibleTagIdSet) =>
+    QUICK_FILTER_BODY_OPTIONS.map((option) => ({
+      ...option,
+      availableTagIds: getQuickFilterOptionTagIds(option).filter((tagId) => visibleTagIdSet.has(tagId)),
+    })).filter((option) => option.availableTagIds.length);
 
   const hashString = (value) => {
     let hash = 0;
@@ -253,8 +274,6 @@
   };
 
   const getQuickFilterTagLabel = (tagId, tagMap) => {
-    const ageOption = QUICK_FILTER_AGE_OPTIONS.find((option) => option.tagId === tagId);
-    if (ageOption) return ageOption.label;
     if (tagId === "body-muscular" || tagId === "body-beefy") return "筋肉・ガチムチ";
     return tagMap.get(tagId)?.label || tagId;
   };
@@ -1281,14 +1300,27 @@
     id: value?.id || fallbackId,
     speciesTagIds: unique(value?.speciesTagIds),
     bodyTypeTagIds: unique(value?.bodyTypeTagIds),
-    ageFeelTagIds: unique(value?.ageFeelTagIds).filter((tagId) =>
-      QUICK_FILTER_AGE_TAG_ID_SET.has(tagId)
-    ),
+    ageFeelTagIds: unique(value?.ageFeelTagIds),
   });
 
   const normalizeCharacters = (characters) => {
     const nextCharacters = ensureArray(characters).map((character, index) =>
       normalizeCharacterState(character, `character-${index + 1}`)
+    );
+    return nextCharacters.length ? nextCharacters : [createEmptyCharacterState()];
+  };
+
+  const sanitizeCharactersByVisibleTagIds = (characters, visibleTagIdSet) => {
+    const nextCharacters = normalizeCharacters(characters).map((character, index) =>
+      normalizeCharacterState(
+        {
+          ...character,
+          speciesTagIds: ensureArray(character.speciesTagIds).filter((tagId) => visibleTagIdSet.has(tagId)),
+          bodyTypeTagIds: ensureArray(character.bodyTypeTagIds).filter((tagId) => visibleTagIdSet.has(tagId)),
+          ageFeelTagIds: ensureArray(character.ageFeelTagIds).filter((tagId) => visibleTagIdSet.has(tagId)),
+        },
+        `character-${index + 1}`
+      )
     );
     return nextCharacters.length ? nextCharacters : [createEmptyCharacterState()];
   };
@@ -2190,6 +2222,18 @@
     const profile = core.getActiveProfile(state);
     if (!profile) return;
     const visibleTags = core.getVisibleTags(state, profile.id);
+    const visibleTagIdSet = new Set(visibleTags.map((tag) => tag.id));
+    const availableQuickSpeciesTags = getQuickFilterTagsByGroup(
+      visibleTags,
+      "species",
+      QUICK_FILTER_SPECIES_TAG_ORDER
+    );
+    const availableQuickBodyOptions = getAvailableQuickFilterBodyOptions(visibleTagIdSet);
+    const availableQuickAgeTags = getQuickFilterTagsByGroup(
+      visibleTags,
+      "age-feel",
+      QUICK_FILTER_AGE_TAG_ORDER
+    );
     const groupedTags = core.groupTags(visibleTags, state.tagGroups);
     const tagMap = core.getTagMap(state);
     let logTimer = null;
@@ -2239,9 +2283,16 @@
       pageState.sort = params.get("sort") || "recommended";
       pageState.collectionId = params.get("collection") || "";
       pageState.matchMode = params.get("mode") === "or" ? "or" : "and";
-      pageState.includeTagIds = unique(params.getAll("include"));
-      pageState.excludeTagIds = unique(params.getAll("exclude"));
-      pageState.characters = normalizeCharacters(readCharactersFromParams(params));
+      pageState.includeTagIds = unique(params.getAll("include")).filter((tagId) =>
+        visibleTagIdSet.has(tagId)
+      );
+      pageState.excludeTagIds = unique(params.getAll("exclude")).filter((tagId) =>
+        visibleTagIdSet.has(tagId)
+      );
+      pageState.characters = sanitizeCharactersByVisibleTagIds(
+        readCharactersFromParams(params),
+        visibleTagIdSet
+      );
       pageState.page = Math.max(Number.parseInt(params.get("page") || "1", 10) || 1, 1);
     };
 
@@ -2627,16 +2678,14 @@
         searchMoreLink
       );
       const speciesRow = createElement("div", "catalog-quick-filter-chipRow");
-      QUICK_FILTER_SPECIES_TAG_IDS.forEach((tagId) => {
-        const tag = tagMap.get(tagId);
-        if (!tag) return;
+      availableQuickSpeciesTags.forEach((tag) => {
         speciesRow.appendChild(
           createQuickFilterChip({
             label: tag.label,
-            selected: character.speciesTagIds.includes(tagId),
+            selected: character.speciesTagIds.includes(tag.id),
             dataset: {
               quickCharacterField: "species",
-              quickTagId: tagId,
+              quickTagId: tag.id,
             },
           })
         );
@@ -2646,16 +2695,15 @@
       const bodyField = createElement("section", "catalog-quick-filter-field");
       bodyField.appendChild(createElement("strong", "catalog-quick-filter-field__label", "体型"));
       const bodyGrid = createElement("div", "catalog-quick-filter-bodyGrid");
-      QUICK_FILTER_BODY_OPTIONS.forEach((option) => {
-        const optionTagIds = getQuickFilterOptionTagIds(option);
+      availableQuickBodyOptions.forEach((option) => {
         bodyGrid.appendChild(
           createQuickFilterBodyButton({
             label: option.label,
             imageSrc: option.imageSrc,
-            selected: optionTagIds.some((tagId) => character.bodyTypeTagIds.includes(tagId)),
+            selected: option.availableTagIds.some((tagId) => character.bodyTypeTagIds.includes(tagId)),
             dataset: {
               quickCharacterField: "body",
-              quickTagIds: optionTagIds.join(","),
+              quickTagIds: option.availableTagIds.join(","),
             },
           })
         );
@@ -2665,16 +2713,14 @@
       const ageField = createElement("section", "catalog-quick-filter-field");
       ageField.appendChild(createElement("strong", "catalog-quick-filter-field__label", "年齢"));
       const ageRow = createElement("div", "catalog-quick-filter-chipRow");
-      QUICK_FILTER_AGE_OPTIONS.forEach((option) => {
-        const tag = tagMap.get(option.tagId);
-        if (!tag) return;
+      availableQuickAgeTags.forEach((tag) => {
         ageRow.appendChild(
           createQuickFilterChip({
-            label: option.label,
-            selected: character.ageFeelTagIds.includes(option.tagId),
+            label: tag.label,
+            selected: character.ageFeelTagIds.includes(tag.id),
             dataset: {
               quickCharacterField: "age",
-              quickTagId: option.tagId,
+              quickTagId: tag.id,
             },
           })
         );
@@ -4245,6 +4291,7 @@
     const profile = core.getActiveProfile(state);
     if (!profile) return;
     const visibleTags = core.getVisibleTags(state, profile.id);
+    const visibleTagIdSet = new Set(visibleTags.map((tag) => tag.id));
     const groupedTags = core.groupTags(visibleTags, state.tagGroups);
     const tagMap = core.getTagMap(state);
     const collections = core.getProfileCollections(state, profile.id, { publicOnly: true });
@@ -4265,8 +4312,12 @@
       pageState.creatorQuery = params.get("creator") || "";
       pageState.collectionId = params.get("collection") || "";
       pageState.matchMode = params.get("mode") === "or" ? "or" : "and";
-      pageState.includeTagIds = unique(params.getAll("include"));
-      pageState.excludeTagIds = unique(params.getAll("exclude"));
+      pageState.includeTagIds = unique(params.getAll("include")).filter((tagId) =>
+        visibleTagIdSet.has(tagId)
+      );
+      pageState.excludeTagIds = unique(params.getAll("exclude")).filter((tagId) =>
+        visibleTagIdSet.has(tagId)
+      );
     };
 
     const updateBuilderUrl = () => {
