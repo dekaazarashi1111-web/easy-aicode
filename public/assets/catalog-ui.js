@@ -834,21 +834,27 @@
 
   const createHomeShowcasePosterBanner = ({ article, work }) => {
     const link = createElement("a", "home-showcase-banner home-showcase-banner--poster");
-    const badge = createElement("span", "home-showcase-banner__badge home-showcase-banner__badge--pink", "記事");
+    const badge = createElement(
+      "span",
+      "home-showcase-banner__badge home-showcase-banner__badge--pink",
+      article ? "記事" : "作品"
+    );
     const headline = createElement("div", "home-showcase-poster__headline");
     const note = createElement("p", "home-showcase-poster__note");
     const footer = createElement("div", "home-showcase-poster__footer");
     const footerText = createElement(
       "p",
       "home-showcase-poster__footerText",
-      article?.title || "作品紹介記事から探し方を決める"
+      article?.title || work?.title || "作品一覧から探し方を決める"
     );
 
-    link.href = article?.url || "/articles/";
-    ["記事から", "始める"].forEach((line) => {
+    link.href = article?.url || (work ? toWorkPath(work) : "/finder/");
+    [article ? "記事から" : "作品を", article ? "始める" : "探す"].forEach((line) => {
       headline.appendChild(createElement("span", "", line));
     });
-    note.textContent = "まずは作品紹介記事から、体格やシチュの好みを掴む。";
+    note.textContent = article
+      ? "まずは作品紹介記事から、体格やシチュの好みを掴む。"
+      : "作品カードから、体格やシチュの好みに近い1冊を探す。";
     footer.append(footerText);
     if (work) {
       footer.appendChild(createHomeShowcaseThumb(work, "home-showcase-poster__thumb"));

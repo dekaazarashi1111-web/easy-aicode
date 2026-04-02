@@ -381,9 +381,6 @@ const getRelatedArticlesForWork = (work, limit = 3) => {
     .slice(0, limit);
 };
 
-const getPrimaryArticleForWork = (work) =>
-  recentArticles.find((article) => ensureArray(article.relatedWorkSlugs).includes(work?.slug)) || null;
-
 const getRelatedArticlesForArticle = (article, limit = 3) => {
   const relatedWorkSlugSet = new Set(ensureArray(article?.relatedWorkSlugs));
   const relatedCollectionIdSet = new Set(ensureArray(article?.relatedCollectionIds));
@@ -482,20 +479,11 @@ const renderArticleCategoryChip = (type, count) => `
   </a>
 `;
 
-const getWorkDisplayTags = (work, article = null) => {
-  const articleLabels = ensureArray(article?.tags);
-  const articleTagIds = ensureArray(article?.workTagIds);
-  if (articleLabels.length) {
-    return articleLabels.map((label, index) => ({
-      label,
-      href: articleTagIds[index] ? createFinderUrl({ includeTagIds: [articleTagIds[index]] }) : "",
-    }));
-  }
-  return ensureArray(work?.primaryTagObjects).map((tag) => ({
+const getWorkDisplayTags = (work) =>
+  ensureArray(work?.primaryTagObjects).map((tag) => ({
     label: tag.label,
     href: createFinderUrl({ includeTagIds: [tag.id] }),
   }));
-};
 
 const getCharacterTagLabels = (tagIds = []) =>
   unique(
@@ -824,7 +812,9 @@ const renderCollectionLinks = (work) =>
     )
     .join("");
 
-const renderArticleSidebar = ({ excludeSlug = "" } = {}) => `
+const renderArticleSidebar = ({ excludeSlug = "" } = {}) => {
+  if (!recentArticles.length) return "";
+  return `
   <section class="detail-widget">
     <h3 class="detail-widget__title">最近公開した記事</h3>
     <div class="detail-link-list">
@@ -845,6 +835,7 @@ const renderArticleSidebar = ({ excludeSlug = "" } = {}) => `
     </div>
   </section>
 `;
+};
 
 const renderPrimaryNav = (currentSection = "") => {
   const navItems = [
@@ -911,7 +902,7 @@ const renderHomeSpotlightBanner = ({ profile, collection, work, relatedWorks = [
         <span class="home-showcase-banner__titleLine">${escapeHtml(profile?.shortName || "ケモホモ")}</span>
         <span class="home-showcase-banner__titleLine">作品ファインダー</span>
       </strong>
-      <p class="home-showcase-banner__description">入口作品、作品紹介記事、特集、条件検索を行き来しながら、次の1冊へ進みやすい導線をトップにまとめています。</p>
+      <p class="home-showcase-banner__description">入口作品、特集、条件検索を行き来しながら、次の1冊へ進みやすい導線をトップにまとめています。</p>
       <div class="home-showcase-banner__chipRow">
         ${[
           collection?.title || "入口特集",
@@ -950,15 +941,25 @@ const renderHomeCollageBanner = ({ collection, works = [] }) => `
 `;
 
 const renderHomePosterBanner = ({ article, work }) => `
-  <a class="home-showcase-banner home-showcase-banner--poster" href="${escapeHtml(article?.url || "/articles/")}">
-    <span class="home-showcase-banner__badge home-showcase-banner__badge--pink">記事</span>
+  <a class="home-showcase-banner home-showcase-banner--poster" href="${escapeHtml(
+    article?.url || getWorkPath(work) || "/finder/"
+  )}">
+    <span class="home-showcase-banner__badge home-showcase-banner__badge--pink">${escapeHtml(
+      article ? "記事" : "作品"
+    )}</span>
     <div class="home-showcase-poster__headline">
-      <span>記事から</span>
-      <span>始める</span>
+      <span>${escapeHtml(article ? "記事から" : "作品を")}</span>
+      <span>${escapeHtml(article ? "始める" : "探す")}</span>
     </div>
-    <p class="home-showcase-poster__note">まずは作品紹介記事から、体格やシチュの好みを掴むための入口です。</p>
+    <p class="home-showcase-poster__note">${escapeHtml(
+      article
+        ? "まずは作品紹介記事から、体格やシチュの好みを掴むための入口です。"
+        : "作品カードから、体格やシチュの好みに近い1冊を探すための入口です。"
+    )}</p>
     <div class="home-showcase-poster__footer">
-      <p class="home-showcase-poster__footerText">${escapeHtml(article?.title || "作品紹介記事から探し方を決める")}</p>
+      <p class="home-showcase-poster__footerText">${escapeHtml(
+        article?.title || work?.title || "作品一覧から探し方を決める"
+      )}</p>
       ${work ? renderHomeThumb(work, "home-showcase-poster__thumb", "home-showcase-collage__image") : ""}
     </div>
   </a>
@@ -1360,7 +1361,7 @@ const renderHomePage = () => {
   const profile = activeProfile;
   const homePageTitle = `${BRAND_NAME} | 条件と除外条件から作品を探す`;
   const homePageDescription =
-    "狼、虎、異世界、主従、多種族などの切り口から、ケモホモ作品を条件と特集記事の両方で探せる作品ファインダーです。";
+    "狼、虎、異世界、主従、多種族などの切り口から、ケモホモ作品を条件と作品カード中心で探せる作品ファインダーです。";
   const visibleTags = core.getVisibleTags(seed, profile?.id).slice(0, 24);
   const featuredCollections = publicCollections.filter((collection) =>
     ensureArray(profile?.featuredCollectionIds).includes(collection.id)
@@ -1530,6 +1531,9 @@ ${renderPrimaryNav("home")}
       </div>
     </section>
 
+    ${
+      recentArticles.length
+        ? `
     <section class="card stack">
       <h2 class="h3">最近の特集記事</h2>
       <p class="muted">${escapeHtml(profile?.audienceNote || "まずは入口を迷わせず、その先で深い条件へ落としていく構成です。")}</p>
@@ -1537,6 +1541,9 @@ ${renderPrimaryNav("home")}
         ${recentArticles.slice(0, 4).map((article) => renderArticleListLink(article)).join("")}
       </div>
     </section>
+    `
+        : ""
+    }
   </div>
 </main>
 ${renderEditorialFooter()}
@@ -1546,6 +1553,53 @@ ${renderEditorialFooter()}
 };
 
 const renderArticlesIndexPage = () => {
+  if (!recentArticles.length) {
+    const listLd = {
+      "@context": "https://schema.org",
+      "@type": "CollectionPage",
+      name: "特集記事一覧",
+      url: absoluteUrl("/articles/"),
+      description: "現在公開中の特集記事はありません。",
+    };
+
+    return `<!doctype html>
+<html lang="ja">
+${renderHead({
+  title: `特集記事一覧 | ${BRAND_NAME}`,
+  description: "現在公開中の特集記事はありません。",
+  pathName: "/articles/",
+  ogImage: DEFAULT_OG_IMAGE,
+  ogImageAlt: "特集記事一覧のOG画像",
+  themeColor: "#ffffff",
+  jsonLd: [listLd],
+  scriptUrls: ["/assets/site-config.js", "/assets/finder-seed.js"],
+  deferScriptUrls: ["/site.js"],
+})}
+<body>
+${GENERATED_MARK}
+<a class="skip-link" href="#main">本文へスキップ</a>
+${renderPrimaryNav("articles")}
+<main id="main" class="main">
+  <section class="section section--tight">
+    <div class="container stack stack--lg">
+      <section class="card stack">
+        <p class="storefront-eyebrow">Articles</p>
+        <h1 class="h2">現在公開中の特集記事はありません</h1>
+        <p class="muted">作品は通常の作品カードとして作品検索から探せます。</p>
+        <div class="cluster">
+          <a class="btn btn--primary" href="/finder/">作品検索へ</a>
+          <a class="btn btn--secondary" href="/collections/">特集一覧へ</a>
+        </div>
+      </section>
+    </div>
+  </section>
+</main>
+${renderEditorialFooter()}
+</body>
+</html>
+`;
+  }
+
   const topTags = Array.from(
     recentArticles.reduce((acc, article) => {
       ensureArray(article.tags).forEach((tag) => {
@@ -1698,11 +1752,10 @@ ${renderEditorialFooter()}
 const renderWorkPage = (work) => {
   const profile = resolveProfile(work.siteProfileIds);
   const primaryTags = ensureArray(work.primaryTagObjects);
-  const primaryArticle = getPrimaryArticleForWork(work);
-  const displayTagEntries = getWorkDisplayTags(work, primaryArticle);
-  const articleBodyParagraphs = ensureArray(primaryArticle?.bodyParagraphs);
-  const leadText = articleBodyParagraphs[0] || work.shortDescription || work.publicNote || "";
-  const storyParagraphs = articleBodyParagraphs.slice(1);
+  const displayTagEntries = getWorkDisplayTags(work);
+  const bodyParagraphs = ensureArray(work.bodyParagraphs);
+  const leadText = bodyParagraphs[0] || work.shortDescription || work.publicNote || "";
+  const storyParagraphs = bodyParagraphs.length > 1 ? bodyParagraphs.slice(1) : ensureArray([work.publicNote]).filter(Boolean);
   const relatedWorks = core.findSimilarWorks({
     state: seed,
     work,
@@ -1815,8 +1868,8 @@ ${renderPrimaryNav()}
             </div>
           </header>
           ${renderWorkCharacters(work)}
-          ${renderWorkRecommendationCard(primaryArticle)}
-          ${renderWorkGallery(primaryArticle ? { ...work, publicNote: leadText } : work)}
+          ${renderWorkRecommendationCard({ recommendationBullets: work.recommendationBullets })}
+          ${renderWorkGallery(bodyParagraphs.length ? { ...work, publicNote: leadText } : work)}
           ${renderWorkStoryCard(storyParagraphs)}
           ${
             collectionLinks
@@ -2016,12 +2069,18 @@ ${renderPrimaryNav()}
               </div>
             </div>
             <div class="divider"></div>
+            ${
+              recentArticles.length
+                ? `
             <div class="stack">
               <h3 class="h3">最近公開した記事</h3>
               <div class="detail-link-list">
                 ${recentArticles.slice(0, 3).map((article) => renderArticleListLink(article)).join("")}
               </div>
             </div>
+            `
+                : ""
+            }
           </div>
         </aside>
       </div>
