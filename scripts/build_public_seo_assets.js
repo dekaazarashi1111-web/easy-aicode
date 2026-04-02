@@ -381,6 +381,9 @@ const getRelatedArticlesForWork = (work, limit = 3) => {
     .slice(0, limit);
 };
 
+const getPrimaryArticleForWork = (work) =>
+  recentArticles.find((article) => ensureArray(article.relatedWorkSlugs).includes(work?.slug)) || null;
+
 const getRelatedArticlesForArticle = (article, limit = 3) => {
   const relatedWorkSlugSet = new Set(ensureArray(article?.relatedWorkSlugs));
   const relatedCollectionIdSet = new Set(ensureArray(article?.relatedCollectionIds));
@@ -478,6 +481,21 @@ const renderArticleCategoryChip = (type, count) => `
     <span>${count}件</span>
   </a>
 `;
+
+const getWorkDisplayTags = (work, article = null) => {
+  const articleLabels = ensureArray(article?.tags);
+  const articleTagIds = ensureArray(article?.workTagIds);
+  if (articleLabels.length) {
+    return articleLabels.map((label, index) => ({
+      label,
+      href: articleTagIds[index] ? createFinderUrl({ includeTagIds: [articleTagIds[index]] }) : "",
+    }));
+  }
+  return ensureArray(work?.primaryTagObjects).map((tag) => ({
+    label: tag.label,
+    href: createFinderUrl({ includeTagIds: [tag.id] }),
+  }));
+};
 
 const getCharacterTagLabels = (tagIds = []) =>
   unique(
@@ -665,6 +683,30 @@ const renderWorkGallery = (work) => {
           : "画像未登録のため、作品情報から生成したポスターを表示しています。"
       }</p>
     </section>
+  `;
+};
+
+const renderWorkRecommendationCard = (article = null) => {
+  const bullets = ensureArray(article?.recommendationBullets);
+  if (!bullets.length) return "";
+  return `
+    <section class="detail-callout">
+      <p class="detail-callout__eyebrow">こんな人におすすめ</p>
+      <ul class="detail-summary-list">
+        ${bullets.map((item) => `<li>${escapeHtml(item)}</li>`).join("")}
+      </ul>
+    </section>
+  `;
+};
+
+const renderWorkStoryCard = (paragraphs = []) => {
+  const bodyParagraphs = ensureArray(paragraphs).filter(Boolean);
+  if (!bodyParagraphs.length) return "";
+  return `
+    <article class="detail-prose detail-work-card">
+      <h2>作品メモ</h2>
+      ${bodyParagraphs.map((paragraph) => `<p>${escapeHtml(paragraph)}</p>`).join("")}
+    </article>
   `;
 };
 
@@ -1656,17 +1698,20 @@ ${renderEditorialFooter()}
 const renderWorkPage = (work) => {
   const profile = resolveProfile(work.siteProfileIds);
   const primaryTags = ensureArray(work.primaryTagObjects);
-  const startTagIds = primaryTags.slice(0, 2).map((tag) => tag.id);
+  const primaryArticle = getPrimaryArticleForWork(work);
+  const displayTagEntries = getWorkDisplayTags(work, primaryArticle);
+  const articleBodyParagraphs = ensureArray(primaryArticle?.bodyParagraphs);
+  const leadText = articleBodyParagraphs[0] || work.shortDescription || work.publicNote || "";
+  const storyParagraphs = articleBodyParagraphs.slice(1);
   const relatedWorks = core.findSimilarWorks({
     state: seed,
     work,
     profileId: profile?.id,
     limit: 3,
   });
-  const relatedArticles = getRelatedArticlesForWork(work, 3);
   const collectionLinks = renderCollectionLinks(work);
   const publicExternalLinks = getPublicExternalLinks(work);
-  const description = truncate(work.shortDescription || work.publicNote || work.matchSummary, 140);
+  const description = truncate(leadText || work.publicNote || work.matchSummary, 140);
   const pagePath = getWorkPath(work);
   const breadcrumbLd = {
     "@context": "https://schema.org",
@@ -1693,7 +1738,7 @@ const renderWorkPage = (work) => {
     dateModified: work.updatedAt || work.releasedAt || undefined,
     image: unique([...getAllWorkImages(work), getPrimaryWorkImage(work)]).map((url) => absoluteUrl(url)),
     keywords: unique([
-      ...primaryTags.map((tag) => tag.label),
+      ...displayTagEntries.map((tag) => tag.label),
       ...ensureArray(work.highlightPoints),
       work.format,
     ]),
@@ -1728,7 +1773,7 @@ ${renderPrimaryNav()}
               )}</span>
             </div>
             <h1 class="detail-title">${escapeHtml(work.title)}</h1>
-            <p class="detail-lead">${escapeHtml(collapseText(work.shortDescription || work.publicNote || ""))}</p>
+            <p class="detail-lead">${escapeHtml(collapseText(leadText || work.publicNote || ""))}</p>
             <div class="detail-byline">
               <span class="detail-byline__avatar">${escapeHtml(`${work.creator || work.title}`.trim().slice(0, 1) || "作")}</span>
               <div class="detail-byline__body">
@@ -1737,11 +1782,11 @@ ${renderPrimaryNav()}
               </div>
             </div>
             <div class="detail-tag-row">
-              ${primaryTags
+              ${displayTagEntries
                 .map((tag) =>
                   renderTagChip({
                     label: tag.label,
-                    href: createFinderUrl({ includeTagIds: [tag.id] }),
+                    href: tag.href,
                   })
                 )
                 .join("")}
@@ -1770,28 +1815,9 @@ ${renderPrimaryNav()}
             </div>
           </header>
           ${renderWorkCharacters(work)}
-          <section class="detail-callout">
-            <p class="detail-callout__eyebrow">この作品が合いやすい人</p>
-            <p>${escapeHtml(collapseText(work.matchSummary || work.publicNote || work.shortDescription || ""))}</p>
-            <p class="muted">${escapeHtml(collapseText(work.publicNote || ""))}</p>
-          </section>
-          ${renderWorkGallery(work)}
-          <div class="detail-section-grid">
-            <section class="detail-work-card">
-              <p class="detail-section__eyebrow">Caution</p>
-              <h2>苦手な人向け注意</h2>
-              <p>${escapeHtml(collapseText(work.cautionNote || "強い注意点はまだ登録されていません。"))}</p>
-            </section>
-            <section class="detail-work-card">
-              <p class="detail-section__eyebrow">Key Points</p>
-              <h2>起点にしやすい条件</h2>
-              <ul>
-                ${ensureArray(work.highlightPoints)
-                  .map((item) => `<li>${escapeHtml(item)}</li>`)
-                  .join("")}
-              </ul>
-            </section>
-          </div>
+          ${renderWorkRecommendationCard(primaryArticle)}
+          ${renderWorkGallery(primaryArticle ? { ...work, publicNote: leadText } : work)}
+          ${renderWorkStoryCard(storyParagraphs)}
           ${
             collectionLinks
               ? `
@@ -1800,20 +1826,6 @@ ${renderPrimaryNav()}
                     <h2>この作品から次に行ける入口</h2>
                     <p>近い温度感や条件の作品へ移りやすいように、関連する入口特集をまとめています。</p>
                     <div class="detail-tag-row">${collectionLinks}</div>
-                  </section>
-                `
-              : ""
-          }
-          ${
-            relatedArticles.length
-              ? `
-                  <section class="detail-work-card">
-                    <p class="detail-section__eyebrow">Articles</p>
-                    <h2>この作品から読める特集記事</h2>
-                    <p>この作品とつながりが強い作品紹介記事を並べています。</p>
-                    <div class="detail-link-list">
-                      ${relatedArticles.map((article) => renderArticleListLink(article)).join("")}
-                    </div>
                   </section>
                 `
               : ""
@@ -1859,35 +1871,6 @@ ${renderPrimaryNav()}
           </section>
         </div>
         <aside class="detail-sidebar">
-          <section class="detail-widget detail-widget--cta">
-            <p class="detail-widget__eyebrow">Search Next</p>
-            <h2 class="detail-widget__title">この作品を起点に次を探す</h2>
-            <p class="detail-widget__text">主要タグ、同作者、詳細条件ビルダーから次の探索へつなげます。</p>
-            <div class="detail-link-list">
-              ${startTagIds.length
-                ? renderFinderMiniLink({
-                    label: "主要タグを起点に一覧を見る",
-                    href: createFinderUrl({ includeTagIds: startTagIds }),
-                    meta: primaryTags
-                      .slice(0, 2)
-                      .map((tag) => tag.label)
-                      .join(" / "),
-                  })
-                : ""}
-              ${work.creator
-                ? renderFinderMiniLink({
-                    label: "同作者から探す",
-                    href: createFinderUrl({ creatorQuery: work.creator }),
-                    meta: work.creator,
-                  })
-                : ""}
-              ${renderFinderMiniLink({
-                label: "この条件をビルダーで編集する",
-                href: createBuilderUrl({ includeTagIds: startTagIds, creatorQuery: work.creator || "" }),
-                meta: "タグや除外条件をさらに追加できます。",
-              })}
-            </div>
-          </section>
           ${renderArticleSidebar()}
         </aside>
       </div>
@@ -2067,7 +2050,8 @@ ${renderPrimaryNav()}
 
 const writeFile = (filePath, content) => {
   fs.mkdirSync(path.dirname(filePath), { recursive: true });
-  fs.writeFileSync(filePath, content, "utf8");
+  const normalizedContent = `${String(content).replace(/[ \t]+$/gm, "").trimEnd()}\n`;
+  fs.writeFileSync(filePath, normalizedContent, "utf8");
 };
 
 const buildSitemap = () => {

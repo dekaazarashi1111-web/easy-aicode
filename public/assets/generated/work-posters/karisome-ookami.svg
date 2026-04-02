@@ -55,7 +55,7 @@
       fill="#ffffff"
       font-size="30"
       font-family="'Hiragino Sans','Yu Gothic',sans-serif"
-    >年の差</text>
+    >歳の差</text>
   </g>
   <g transform="translate(720, 1080)">
     <rect width="256" height="70" rx="35" fill="#f4f7fc" fill-opacity="0.18" stroke="rgba(255,255,255,0.18)" />
