@@ -2061,9 +2061,6 @@ const renderSiteChrome = () => {
     const shell = document.createElement("div");
     const header = document.createElement("div");
     const headerInner = document.createElement("div");
-    const brand = document.createElement("a");
-    const brandFrame = document.createElement("span");
-    const brandOval = document.createElement("span");
     const menu = document.createElement("nav");
     const searchForm = document.createElement("form");
     const searchShell = document.createElement("div");
@@ -2076,15 +2073,6 @@ const renderSiteChrome = () => {
     shell.className = "catalog-shell";
     header.className = "catalog-shell__header";
     headerInner.className = "catalog-shell__headerInner";
-    brand.className = "catalog-shell__logo";
-    brand.href = "/";
-    brand.setAttribute("aria-label", `${BRAND_NAME} トップへ`);
-    brandFrame.className = "catalog-shell__logoFrame";
-    brandOval.className = "catalog-shell__logoOval";
-    brandOval.textContent = "FIND";
-    brandFrame.appendChild(brandOval);
-    brand.appendChild(brandFrame);
-
     menu.className = "catalog-shell__menu";
     menu.setAttribute("aria-label", "主要メニュー");
 
@@ -2140,7 +2128,7 @@ const renderSiteChrome = () => {
       actionBar.appendChild(link);
     });
 
-    headerInner.append(brand, menu, searchForm, actionBar);
+    headerInner.append(menu, searchForm, actionBar);
     header.appendChild(headerInner);
     shell.appendChild(header);
     nav.appendChild(shell);

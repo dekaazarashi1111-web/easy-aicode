@@ -7325,7 +7325,7 @@ body {
 .catalog-shell__headerInner {
   min-height: 86px;
   display: grid;
-  grid-template-columns: auto 1fr auto auto;
+  grid-template-columns: auto 1fr auto;
   align-items: center;
   gap: 28px;
 }
@@ -9946,17 +9946,12 @@ body.finder-tag-picker-open {
   }
 
   .catalog-shell__headerInner {
-    grid-template-columns: auto 1fr;
+    grid-template-columns: 1fr auto;
     grid-template-areas:
-      "logo actions"
-      "menu menu"
+      "menu actions"
       "search search";
     gap: 18px;
     padding: 18px 0;
-  }
-
-  .catalog-shell__logo {
-    grid-area: logo;
   }
 
   .catalog-shell__actions {
@@ -9968,6 +9963,10 @@ body.finder-tag-picker-open {
     grid-area: menu;
     flex-wrap: wrap;
     gap: 18px 24px;
+  }
+
+  .catalog-shell__searchForm {
+    grid-area: search;
   }
 
   .catalog-shell__searchForm {
