@@ -516,8 +516,8 @@ const EDITORIAL_FOOTER_TEMPLATE = (brandName) => `
       <h3>読む</h3>
       <ul class="editorial-footer__links">
         <li><a href="/articles/">特集記事</a></li>
-        <li><a href="/articles/comparison-template/">比較記事</a></li>
-        <li><a href="/articles/review-structure/">レビュー記事</a></li>
+        <li><a href="/finder/">作品検索</a></li>
+        <li><a href="/collections/">特集一覧</a></li>
       </ul>
     </div>
 

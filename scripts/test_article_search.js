@@ -8,28 +8,30 @@ const articles = require(path.join(__dirname, "..", "public", "assets", "article
 
 const slugs = (items) => items.map((item) => item.slug);
 
-assert.equal(articles.length >= 4, true, "article index should include at least four entries");
+assert.equal(articles.length, 6, "article index should include the six visible entries");
 
 assert.deepEqual(
   slugs(articleSearch.filterArticles({ articles })),
   [
-    "content-planning-checklist",
-    "comparison-template",
-    "review-structure",
-    "article-layout-test",
+    "hebereke-kansai-tora-ossan",
+    "iguma-senpai-kumase-kun",
+    "karisome-ookami",
+    "mikosuri-san",
+    "dosukoi-mammoth-ketsuware-bu",
+    "buta-no-harami-bukuro-2",
   ],
   "no filters should return all articles in source order"
 );
 
 assert.deepEqual(
-  slugs(articleSearch.filterArticles({ articles, query: "狼 虎 異世界", mode: "and" })),
-  ["comparison-template"],
+  slugs(articleSearch.filterArticles({ articles, query: "ガチムチ 臭い", mode: "and" })),
+  ["hebereke-kansai-tora-ossan", "dosukoi-mammoth-ketsuware-bu"],
   "AND text search should require all tokens"
 );
 
 assert.deepEqual(
-  slugs(articleSearch.filterArticles({ articles, selectedTags: ["異世界", "主従"], mode: "or" })),
-  ["comparison-template", "review-structure", "article-layout-test"],
+  slugs(articleSearch.filterArticles({ articles, selectedTags: ["ユニフェチ", "乱行"], mode: "or" })),
+  ["dosukoi-mammoth-ketsuware-bu", "buta-no-harami-bukuro-2"],
   "OR tag search should match any selected tag"
 );
 
@@ -37,17 +39,21 @@ assert.deepEqual(
   slugs(
     articleSearch.filterArticles({
       articles,
-      selectedTypes: ["使い方ガイド"],
-      selectedTags: ["入口", "初読"],
+      selectedTypes: ["作品紹介記事"],
+      selectedTags: ["ガテン系", "臭い"],
       mode: "and",
     })
   ),
-  ["content-planning-checklist"],
+  ["hebereke-kansai-tora-ossan", "mikosuri-san"],
   "AND search should require type and both tags"
 );
 
 const options = articleSearch.collectFilterOptions(articles);
-assert.equal(options.types.some((option) => option.value === "使い方ガイド"), true, "guide type should become a filter");
-assert.equal(options.tags.some((option) => option.value === "異世界"), true, "new tag should become a filter");
+assert.equal(
+  options.types.some((option) => option.value === "作品紹介記事"),
+  true,
+  "work-guide type should become a filter"
+);
+assert.equal(options.tags.some((option) => option.value === "臭い"), true, "new tag should become a filter");
 
 console.log("[article-search] ok");

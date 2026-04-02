@@ -11,6 +11,7 @@ const SITE_URL = "https://wintergator.com";
 const BRAND_NAME = "ケモホモ作品ファインダー";
 const ROOT_DIR = path.resolve(__dirname, "..");
 const PUBLIC_DIR = path.join(ROOT_DIR, "public");
+const ARTICLES_DIR = path.join(PUBLIC_DIR, "articles");
 const WORKS_DIR = path.join(PUBLIC_DIR, "works");
 const COLLECTIONS_DIR = path.join(PUBLIC_DIR, "collections");
 const WORK_POSTERS_DIR = path.join(PUBLIC_DIR, "assets", "generated", "work-posters");
@@ -173,7 +174,8 @@ const POSTER_PALETTES = {
 
 const getPosterPalette = (work) => POSTER_PALETTES[getVisualTone(work?.id || work?.slug || work?.title)] || POSTER_PALETTES.sky;
 
-const getWorkPosterPath = (work) => `${WORK_POSTERS_PATH}/${encodeURIComponent(work.slug || work.id || "work")}.svg`;
+const getWorkPosterPath = (work = {}) =>
+  `${WORK_POSTERS_PATH}/${encodeURIComponent(work.slug || work.id || "work")}.svg`;
 
 const createWorkPosterSvg = (work) => {
   const palette = getPosterPalette(work);
@@ -335,6 +337,7 @@ const publishedWorks = ensureArray(seed.works)
   .filter((work) => work.status === "published")
   .map((work) => decorateWorkLite(work));
 const workMap = new Map(publishedWorks.map((work) => [work.id, work]));
+const workSlugMap = new Map(publishedWorks.map((work) => [work.slug, work]));
 const publicCollections = ensureArray(seed.collections)
   .filter((collection) => collection.isPublic !== false)
   .map((collection) => core.decorateCollection(collection, seed));
@@ -347,19 +350,67 @@ const articleTypeCounts = recentArticles.reduce((acc, article) => {
   return acc;
 }, new Map());
 
+const getWorkBySlug = (slug = "") => workSlugMap.get(slug) || null;
+
+const getRelatedWorksForArticle = (article = {}) =>
+  unique(ensureArray(article.relatedWorkSlugs))
+    .map((slug) => getWorkBySlug(slug))
+    .filter(Boolean);
+
+const getRelatedCollectionsForArticle = (article = {}) =>
+  unique(ensureArray(article.relatedCollectionIds))
+    .map((collectionId) => collectionMap.get(collectionId))
+    .filter(Boolean);
+
 const getRelatedArticlesForWork = (work, limit = 3) => {
   const workSlug = work?.slug;
   const collectionIdSet = new Set(ensureArray(work?.collectionIds));
   const primaryTagIdSet = new Set(ensureArray(work?.primaryTagIds));
+  const directMatches = recentArticles.filter((article) =>
+    ensureArray(article.relatedWorkSlugs).includes(workSlug)
+  );
+  if (directMatches.length) return directMatches.slice(0, limit);
+
   return recentArticles
     .filter((article) => {
-      if (ensureArray(article.relatedWorkSlugs).includes(workSlug)) return true;
       if (ensureArray(article.relatedCollectionIds).some((collectionId) => collectionIdSet.has(collectionId))) {
         return true;
       }
       return ensureArray(article.workTagIds).some((tagId) => primaryTagIdSet.has(tagId));
     })
     .slice(0, limit);
+};
+
+const getRelatedArticlesForArticle = (article, limit = 3) => {
+  const relatedWorkSlugSet = new Set(ensureArray(article?.relatedWorkSlugs));
+  const relatedCollectionIdSet = new Set(ensureArray(article?.relatedCollectionIds));
+  const relatedTagIdSet = new Set(ensureArray(article?.workTagIds));
+  return recentArticles
+    .filter((candidate) => candidate.slug !== article?.slug)
+    .map((candidate) => {
+      let score = 0;
+      ensureArray(candidate.relatedWorkSlugs).forEach((slug) => {
+        if (relatedWorkSlugSet.has(slug)) score += 6;
+      });
+      ensureArray(candidate.relatedCollectionIds).forEach((collectionId) => {
+        if (relatedCollectionIdSet.has(collectionId)) score += 4;
+      });
+      ensureArray(candidate.workTagIds).forEach((tagId) => {
+        if (relatedTagIdSet.has(tagId)) score += 2;
+      });
+      ensureArray(candidate.tags).forEach((tag) => {
+        if (ensureArray(article?.tags).includes(tag)) score += 1;
+      });
+      return { candidate, score };
+    })
+    .filter((item) => item.score > 0)
+    .sort(
+      (left, right) =>
+        right.score - left.score ||
+        Date.parse(right.candidate.publishedAt || 0) - Date.parse(left.candidate.publishedAt || 0)
+    )
+    .slice(0, limit)
+    .map((item) => item.candidate);
 };
 
 const resolveProfile = (siteProfileIds = []) => {
@@ -381,7 +432,8 @@ const getRealWorkImages = (work) =>
     ...ensureArray(work?.galleryImageUrls),
   ]);
 
-const getPrimaryWorkImage = (work) => getRealWorkImages(work)[0] || getWorkPosterPath(work) || DEFAULT_OG_IMAGE;
+const getPrimaryWorkImage = (work) =>
+  (work ? getRealWorkImages(work)[0] || getWorkPosterPath(work) : "") || DEFAULT_OG_IMAGE;
 
 const getAllWorkImages = (work) => {
   const realImages = getRealWorkImages(work);
@@ -391,8 +443,7 @@ const getAllWorkImages = (work) => {
 
 const getListingWorkImage = (work) => getPrimaryWorkImage(work);
 
-const getArticleImage = (article) =>
-  DEFAULT_OG_IMAGE;
+const getArticleImage = (article) => getPrimaryWorkImage(getRelatedWorksForArticle(article)[0]) || DEFAULT_OG_IMAGE;
 
 const getWorkPath = (workOrSlug) => core.getWorkPath(workOrSlug);
 const getCollectionPath = (collectionOrSlug) => core.getCollectionPath(collectionOrSlug);
@@ -638,8 +689,8 @@ const renderEditorialFooter = () => `
         <h3>読む</h3>
         <ul class="editorial-footer__links">
           <li><a href="/articles/">特集記事</a></li>
-          <li><a href="/articles/comparison-template/">比較記事</a></li>
-          <li><a href="/articles/review-structure/">レビュー記事</a></li>
+          <li><a href="/finder/">作品検索</a></li>
+          <li><a href="/collections/">特集一覧</a></li>
         </ul>
       </div>
       <div class="editorial-footer__column">
@@ -731,11 +782,15 @@ const renderCollectionLinks = (work) =>
     )
     .join("");
 
-const renderArticleSidebar = () => `
+const renderArticleSidebar = ({ excludeSlug = "" } = {}) => `
   <section class="detail-widget">
     <h3 class="detail-widget__title">最近公開した記事</h3>
     <div class="detail-link-list">
-      ${recentArticles.slice(0, 3).map((article) => renderArticleListLink(article)).join("")}
+      ${recentArticles
+        .filter((article) => article.slug !== excludeSlug)
+        .slice(0, 3)
+        .map((article) => renderArticleListLink(article))
+        .join("")}
     </div>
   </section>
   <section class="detail-widget">
@@ -814,7 +869,7 @@ const renderHomeSpotlightBanner = ({ profile, collection, work, relatedWorks = [
         <span class="home-showcase-banner__titleLine">${escapeHtml(profile?.shortName || "ケモホモ")}</span>
         <span class="home-showcase-banner__titleLine">作品ファインダー</span>
       </strong>
-      <p class="home-showcase-banner__description">入口作品、関係性特集、シリーズ記事、条件検索を行き来しながら、次の1冊へ進みやすい導線をトップにまとめています。</p>
+      <p class="home-showcase-banner__description">入口作品、作品紹介記事、特集、条件検索を行き来しながら、次の1冊へ進みやすい導線をトップにまとめています。</p>
       <div class="home-showcase-banner__chipRow">
         ${[
           collection?.title || "入口特集",
@@ -859,9 +914,9 @@ const renderHomePosterBanner = ({ article, work }) => `
       <span>記事から</span>
       <span>始める</span>
     </div>
-    <p class="home-showcase-poster__note">まずは入口比較や関係性ガイドから切り口を決めるためのまとめです。</p>
+    <p class="home-showcase-poster__note">まずは作品紹介記事から、体格やシチュの好みを掴むための入口です。</p>
     <div class="home-showcase-poster__footer">
-      <p class="home-showcase-poster__footerText">${escapeHtml(article?.title || "特集記事から探し方を決める")}</p>
+      <p class="home-showcase-poster__footerText">${escapeHtml(article?.title || "作品紹介記事から探し方を決める")}</p>
       ${work ? renderHomeThumb(work, "home-showcase-poster__thumb", "home-showcase-collage__image") : ""}
     </div>
   </a>
@@ -999,6 +1054,264 @@ const renderArticleCard = (article) => {
       </div>
     </article>
   `;
+};
+
+const getArticleCompanionLabel = (article = {}) =>
+  article.type === "作品紹介記事" ? "Work Guide" : "Feature";
+
+const toShortChipLabel = (value = "", fallback = "記") => {
+  const glyphs = Array.from(String(value || "").trim());
+  return glyphs.length ? glyphs.slice(0, 2).join("") : fallback;
+};
+
+const renderArticleWorkListLink = (work) => {
+  const thumbLabel = toShortChipLabel(
+    work?.primaryTagObjects?.[0]?.label || ensureArray(work?.highlightPoints)[0] || work?.format,
+    "作"
+  );
+  const meta = [
+    work?.pageCount ? `${work.pageCount}P` : "",
+    work?.creator || "",
+    collapseText(work?.matchSummary || work?.publicNote || work?.shortDescription || ""),
+  ]
+    .filter(Boolean)
+    .join(" | ");
+
+  return `
+    <a class="detail-list-link" href="${escapeHtml(getWorkPath(work))}">
+      <span class="detail-list-link__thumb">${escapeHtml(thumbLabel)}</span>
+      <span class="detail-list-link__body">
+        <strong>${escapeHtml(work.title)}</strong>
+        <span>${escapeHtml(meta || "作品詳細へ")}</span>
+      </span>
+    </a>
+  `;
+};
+
+const renderArticlePage = (article) => {
+  const relatedWorks = getRelatedWorksForArticle(article);
+  const relatedCollections = getRelatedCollectionsForArticle(article);
+  const relatedArticles = getRelatedArticlesForArticle(article, 3);
+  const ogImage = getArticleImage(article);
+  const description = truncate(article.summary || article.lead || article.title, 140);
+  const breadcrumbLd = {
+    "@context": "https://schema.org",
+    "@type": "BreadcrumbList",
+    itemListElement: [
+      { "@type": "ListItem", position: 1, name: "ホーム", item: absoluteUrl("/") },
+      { "@type": "ListItem", position: 2, name: "特集記事", item: absoluteUrl("/articles/") },
+      { "@type": "ListItem", position: 3, name: article.title, item: absoluteUrl(article.url) },
+    ],
+  };
+  const articleLd = {
+    "@context": "https://schema.org",
+    "@type": "Article",
+    headline: article.title,
+    url: absoluteUrl(article.url),
+    description,
+    datePublished: article.publishedAt || undefined,
+    dateModified: article.publishedAt || undefined,
+    author: {
+      "@type": "Organization",
+      name: `${BRAND_NAME} 編集部`,
+    },
+    image: [absoluteUrl(ogImage)],
+    keywords: unique([...ensureArray(article.tags), ...ensureArray(article.keywords)]),
+  };
+  const articleTagChips = [
+    renderTagChip({
+      label: article.type || "特集記事",
+      href: createArticlesUrl({ selectedTypes: [article.type] }),
+    }),
+    ...ensureArray(article.tags).map((tag) =>
+      renderTagChip({
+        label: tag,
+        href: createArticlesUrl({ selectedTags: [tag] }),
+      })
+    ),
+    article.publishedAt
+      ? renderTagChip({
+          label: `公開 ${article.publishedAt}`,
+          className: "tag",
+        })
+      : "",
+  ]
+    .filter(Boolean)
+    .join("");
+
+  return `<!doctype html>
+<html lang="ja">
+${renderHead({
+  title: `${article.title} | ${BRAND_NAME}`,
+  description,
+  pathName: article.url,
+  ogImage,
+  ogImageAlt: `${article.title} のイメージ`,
+  ogType: "article",
+  jsonLd: [breadcrumbLd, articleLd],
+  scriptUrls: [
+    "/assets/site-config.js",
+    "/assets/finder-seed.js",
+    "/assets/articles.js",
+    "/assets/article-search.js",
+  ],
+  deferScriptUrls: ["/site.js"],
+})}
+<body class="editorial-page editorial-page--article">
+${GENERATED_MARK}
+<a class="skip-link" href="#main">本文へスキップ</a>
+${renderPrimaryNav("articles")}
+<main id="main">
+  <section class="section section--tight">
+    <div class="container detail-shell detail-shell--article">
+      <div class="detail-primary">
+        <p class="detail-breadcrumb"><a href="/">ホーム</a> / <a href="/articles/">特集記事</a> / ${escapeHtml(article.title)}</p>
+        <header class="detail-header">
+          <div class="detail-badges">
+            <span class="detail-badge">${escapeHtml(article.type || "特集記事")}</span>
+            <span class="detail-badge detail-badge--muted">${escapeHtml(getArticleCompanionLabel(article))}</span>
+          </div>
+          <h1 class="detail-title">${escapeHtml(article.title)}</h1>
+          <p class="detail-lead">${escapeHtml(collapseText(article.lead || article.summary || ""))}</p>
+          <div class="detail-byline">
+            <span class="detail-byline__avatar">${escapeHtml(article.type === "作品紹介記事" ? "紹" : "記")}</span>
+            <div class="detail-byline__body">
+              <strong>${escapeHtml(`${BRAND_NAME} 編集部`)}</strong>
+              <span>${escapeHtml(article.publishedAt ? `公開 ${article.publishedAt}` : "公開日未設定")}</span>
+            </div>
+          </div>
+          <div class="detail-tag-row">${articleTagChips}</div>
+        </header>
+
+        ${
+          ensureArray(article.recommendationBullets).length
+            ? `
+                <section class="detail-callout">
+                  <p class="detail-callout__eyebrow">こんな方におすすめ</p>
+                  <ul class="detail-summary-list">
+                    ${ensureArray(article.recommendationBullets)
+                      .map((item) => `<li>${escapeHtml(item)}</li>`)
+                      .join("")}
+                  </ul>
+                </section>
+              `
+            : ""
+        }
+
+        ${
+          relatedWorks.length
+            ? `
+                <section class="detail-callout">
+                  <p class="detail-callout__eyebrow">紹介作品</p>
+                  <div class="detail-link-list">
+                    ${relatedWorks.map((work) => renderArticleWorkListLink(work)).join("")}
+                  </div>
+                </section>
+              `
+            : ""
+        }
+
+        ${
+          relatedCollections.length
+            ? `
+                <section class="detail-work-card">
+                  <p class="detail-section__eyebrow">Collections</p>
+                  <h2>近い入口特集</h2>
+                  <p>この作品紹介と近い温度感で横に広げやすい特集をまとめています。</p>
+                  <div class="detail-tag-row">
+                    ${relatedCollections
+                      .map((collection) =>
+                        renderTagChip({
+                          label: collection.title,
+                          href: getCollectionPath(collection),
+                        })
+                      )
+                      .join("")}
+                  </div>
+                </section>
+              `
+            : ""
+        }
+
+        <article class="detail-prose guide-article-card">
+          <h2>作品メモ</h2>
+          ${ensureArray(article.bodyParagraphs)
+            .map((paragraph) => `<p>${escapeHtml(collapseText(paragraph))}</p>`)
+            .join("")}
+        </article>
+
+        ${
+          article.note
+            ? `
+                <section class="detail-author-card">
+                  <span class="detail-author-card__avatar">注</span>
+                  <div class="detail-author-card__body">
+                    <strong>補足メモ</strong>
+                    <p>${escapeHtml(collapseText(article.note))}</p>
+                  </div>
+                </section>
+              `
+            : ""
+        }
+
+        <section class="detail-cta-band">
+          <p class="detail-section__eyebrow">Next Step</p>
+          <h2>次に進む入口</h2>
+          <p>紹介作品の詳細へ進むか、記事一覧から近い切り口をたどるかで次の候補を広げられます。</p>
+          <div class="detail-widget__actions">
+            ${
+              relatedWorks[0]
+                ? `<a class="btn btn--primary" href="${escapeHtml(getWorkPath(relatedWorks[0]))}">${escapeHtml(
+                    `${relatedWorks[0].title} の詳細へ`
+                  )}</a>`
+                : ""
+            }
+            ${
+              relatedCollections[0]
+                ? `<a class="btn btn--secondary" href="${escapeHtml(getCollectionPath(relatedCollections[0]))}">${escapeHtml(
+                    `${relatedCollections[0].title} へ`
+                  )}</a>`
+                : ""
+            }
+            <a class="btn btn--secondary" href="/articles/">記事一覧へ</a>
+          </div>
+        </section>
+
+        ${
+          relatedArticles.length
+            ? `
+                <section class="detail-related" id="related-articles">
+                  <p class="detail-related__eyebrow">Related</p>
+                  <h2>関連記事</h2>
+                  <p>近いタグや紹介対象が重なる記事をまとめています。</p>
+                  <div class="detail-link-list">
+                    ${relatedArticles.map((item) => renderArticleListLink(item)).join("")}
+                  </div>
+                </section>
+              `
+            : ""
+        }
+      </div>
+
+      <aside class="detail-sidebar">
+        <section class="detail-widget detail-widget--cta">
+          <p class="detail-widget__eyebrow">Article Path</p>
+          <h2 class="detail-widget__title">記事から次の1冊へつなぐ</h2>
+          <p class="detail-widget__text">作品詳細、特集一覧、作品検索を行き来しながら、近い条件へ広げられます。</p>
+          <div class="detail-widget__actions">
+            <a class="btn btn--primary" href="/articles/">記事一覧へ</a>
+            <a class="btn btn--secondary" href="/finder/">作品検索へ</a>
+          </div>
+        </section>
+        ${renderArticleSidebar({ excludeSlug: article.slug })}
+      </aside>
+    </div>
+  </section>
+</main>
+${renderEditorialFooter()}
+</body>
+</html>
+`;
 };
 
 const renderHomePage = () => {
@@ -1206,7 +1519,7 @@ const renderArticlesIndexPage = () => {
     "@type": "CollectionPage",
     name: "特集記事一覧",
     url: absoluteUrl("/articles/"),
-    description: "Draw Two の入口比較、関係性ガイド、異世界シリーズレビューをまとめた特集記事一覧です。",
+    description: "掲載中の作品紹介記事をまとめた特集記事一覧です。",
     mainEntity: {
       "@type": "ItemList",
       itemListElement: recentArticles.map((article, index) => ({
@@ -1222,7 +1535,7 @@ const renderArticlesIndexPage = () => {
 <html lang="ja">
 ${renderHead({
   title: `特集記事一覧 | ${BRAND_NAME}`,
-  description: "Draw Two の入口比較、関係性ガイド、異世界シリーズレビューをまとめた特集記事一覧です。",
+  description: "掲載中の作品紹介記事をまとめた特集記事一覧です。",
   pathName: "/articles/",
   ogImage: DEFAULT_OG_IMAGE,
   ogImageAlt: "特集記事一覧のOG画像",
@@ -1351,6 +1664,7 @@ const renderWorkPage = (work) => {
     limit: 3,
   });
   const relatedArticles = getRelatedArticlesForWork(work, 3);
+  const collectionLinks = renderCollectionLinks(work);
   const publicExternalLinks = getPublicExternalLinks(work);
   const description = truncate(work.shortDescription || work.publicNote || work.matchSummary, 140);
   const pagePath = getWorkPath(work);
@@ -1478,19 +1792,25 @@ ${renderPrimaryNav()}
               </ul>
             </section>
           </div>
-          <section class="detail-work-card">
-            <p class="detail-section__eyebrow">Collections</p>
-            <h2>この作品から次に行ける入口</h2>
-            <p>近い温度感や条件の作品へ移りやすいように、関連する入口特集をまとめています。</p>
-            <div class="detail-tag-row">${renderCollectionLinks(work)}</div>
-          </section>
+          ${
+            collectionLinks
+              ? `
+                  <section class="detail-work-card">
+                    <p class="detail-section__eyebrow">Collections</p>
+                    <h2>この作品から次に行ける入口</h2>
+                    <p>近い温度感や条件の作品へ移りやすいように、関連する入口特集をまとめています。</p>
+                    <div class="detail-tag-row">${collectionLinks}</div>
+                  </section>
+                `
+              : ""
+          }
           ${
             relatedArticles.length
               ? `
                   <section class="detail-work-card">
                     <p class="detail-section__eyebrow">Articles</p>
                     <h2>この作品から読める特集記事</h2>
-                    <p>入口比較、シリーズ導線、関係性ガイドのうち、この作品とつながりが強い記事を並べています。</p>
+                    <p>この作品とつながりが強い作品紹介記事を並べています。</p>
                     <div class="detail-link-list">
                       ${relatedArticles.map((article) => renderArticleListLink(article)).join("")}
                     </div>
@@ -1751,7 +2071,7 @@ const writeFile = (filePath, content) => {
 };
 
 const buildSitemap = () => {
-  const latestPublishedAt = recentArticles[0]?.publishedAt || "2026-03-30";
+  const latestPublishedAt = recentArticles[0]?.publishedAt || "2026-04-02";
   const pages = [
     { loc: absoluteUrl("/"), lastmod: latestPublishedAt, changefreq: "weekly", priority: "1.0" },
     { loc: absoluteUrl("/collections/"), lastmod: latestPublishedAt, changefreq: "weekly", priority: "0.9" },
@@ -1811,11 +2131,15 @@ const buildRobots = () => {
 };
 
 const buildStaticPages = () => {
+  cleanGeneratedChildren(ARTICLES_DIR, { preserveNames: ["index.html"] });
   cleanGeneratedChildren(WORKS_DIR);
   cleanGeneratedChildren(COLLECTIONS_DIR, { preserveNames: ["index.html"] });
   syncGeneratedWorkPosters(publishedWorks);
   writeFile(path.join(PUBLIC_DIR, "index.html"), renderHomePage());
   writeFile(path.join(PUBLIC_DIR, "articles", "index.html"), renderArticlesIndexPage());
+  recentArticles.forEach((article) => {
+    writeFile(path.join(ARTICLES_DIR, article.slug, "index.html"), renderArticlePage(article));
+  });
   publishedWorks.forEach((work) => {
     writeFile(path.join(WORKS_DIR, work.slug, "index.html"), renderWorkPage(work));
   });
@@ -1829,5 +2153,5 @@ buildSitemap();
 buildRobots();
 
 process.stdout.write(
-  `generated home, article index, ${publishedWorks.length} works, ${publicCollections.length} collections, sitemap, robots\n`
+  `generated home, article index, ${recentArticles.length} articles, ${publishedWorks.length} works, ${publicCollections.length} collections, sitemap, robots\n`
 );

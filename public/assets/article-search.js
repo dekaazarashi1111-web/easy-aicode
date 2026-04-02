@@ -5,7 +5,7 @@
   }
   root.ArticleSearch = api;
 })(typeof globalThis !== "undefined" ? globalThis : this, function () {
-  const TYPE_ORDER = ["比較記事", "レビュー記事", "使い方ガイド", "ニュース", "コラム"];
+  const TYPE_ORDER = ["作品紹介記事", "比較記事", "レビュー記事", "使い方ガイド", "ニュース", "コラム"];
 
   const normalizeSearchValue = (value) =>
     (value || "")

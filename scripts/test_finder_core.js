@@ -29,7 +29,7 @@ assert.deepEqual(
       sort: "recommended",
     })
     .map((work) => work.slug),
-  ["ookami-nanka-kowakunai", "karisome-ookami", "ame-to-uso"],
+  ["ookami-nanka-kowakunai", "karisome-ookami", "ame-to-uso", "dosukoi-mammoth-ketsuware-bu"],
   "include filters should require all selected tags in AND mode"
 );
 
@@ -56,7 +56,18 @@ assert.deepEqual(
       sort: "recommended",
     })
     .map((work) => work.slug),
-  ["devil-nanka-janai", "bbb", "dakara-haru-uru-1", "dakara-haru-uru-2", "dakara-haru-uru-3", "booth-item-2427390"],
+  [
+    "devil-nanka-janai",
+    "bbb",
+    "dakara-haru-uru-1",
+    "dakara-haru-uru-2",
+    "dakara-haru-uru-3",
+    "booth-item-2427390",
+    "hebereke-kansai-tora-ossan",
+    "iguma-senpai-kumase-kun",
+    "mikosuri-san",
+    "buta-no-harami-bukuro-2",
+  ],
   "exclude filters should remove works containing excluded tags"
 );
 

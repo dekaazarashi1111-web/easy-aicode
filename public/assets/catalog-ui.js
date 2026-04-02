@@ -171,6 +171,7 @@
     style: "雰囲気",
     transformation: "変化要素",
     relationship: "関係性",
+    fetish: "プレイ・フェチ",
     format: "媒体",
     curation: "運営選抜",
     avoid: "除外条件",
@@ -370,17 +371,10 @@
     }
   };
 
-  const resolveCardImageUrls = (work) => {
+  const collectDistinctImageUrls = (sources = []) => {
     const order = [];
     const preferredByKey = new Map();
-    [
-      work.primaryImage?.url,
-      work.hoverImageUrl,
-      ...ensureArray(work.galleryImages).map((image) => image?.url),
-      ...ensureArray(work.galleryImageUrls),
-      work.hoverPreviewImageUrl,
-      work.cardHoverImageUrl,
-    ]
+    ensureArray(sources)
       .filter(Boolean)
       .forEach((url) => {
         const key = normalizeGalleryImageKey(url);
@@ -396,6 +390,40 @@
         }
       });
     return order.map((key) => preferredByKey.get(key)).filter(Boolean);
+  };
+
+  const getGeneratedPosterUrl = (work) =>
+    work?.slug ? `/assets/generated/work-posters/${encodeURIComponent(work.slug)}.svg` : "";
+
+  const getSeedPublishedWorkBySlug = (slug = "") =>
+    ensureArray(globalThis.FINDER_SEED?.works).find((work) => work?.status === "published" && work?.slug === slug) || null;
+
+  const resolveCardImageUrls = (work) => {
+    const directImages = collectDistinctImageUrls([
+      work.primaryImage?.url,
+      work.hoverImageUrl,
+      ...ensureArray(work.galleryImages).map((image) => image?.url),
+      ...ensureArray(work.galleryImageUrls),
+      work.hoverPreviewImageUrl,
+      work.cardHoverImageUrl,
+    ]);
+    if (directImages.length) return directImages;
+
+    if (!ensureArray(work.relatedWorkSlugs).length) return [];
+
+    return collectDistinctImageUrls(
+      ensureArray(work.relatedWorkSlugs).flatMap((slug) => {
+        const relatedWork = getSeedPublishedWorkBySlug(slug);
+        if (!relatedWork) return [];
+        return [
+          relatedWork.primaryImage?.url,
+          relatedWork.hoverImageUrl,
+          ...ensureArray(relatedWork.galleryImages).map((image) => image?.url),
+          ...ensureArray(relatedWork.galleryImageUrls),
+          getGeneratedPosterUrl(relatedWork),
+        ];
+      })
+    );
   };
 
   const createProductCardImage = (className, src) => {
@@ -813,14 +841,14 @@
     const footerText = createElement(
       "p",
       "home-showcase-poster__footerText",
-      article?.title || "特集記事から探し方を決める"
+      article?.title || "作品紹介記事から探し方を決める"
     );
 
     link.href = article?.url || "/articles/";
     ["記事から", "始める"].forEach((line) => {
       headline.appendChild(createElement("span", "", line));
     });
-    note.textContent = "まずは特集とレビューから入口を決める。";
+    note.textContent = "まずは作品紹介記事から、体格やシチュの好みを掴む。";
     footer.append(footerText);
     if (work) {
       footer.appendChild(createHomeShowcaseThumb(work, "home-showcase-poster__thumb"));
