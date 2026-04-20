@@ -5,6 +5,8 @@
 ## 方針メモ
 - 戦略メモ: `docs/kemohomo-finder-strategy.md`
 
+編集テスト: README の更新を実施しました。
+
 ## 主要ページ
 - トップ: `public/index.html` → `/`
 - 作品検索: `public/finder/index.html` → `/finder/`
